@@ -31,20 +31,62 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+
+  # ── State Management ──────────────────────────────────────────────────────
+  flutter_bloc: ^9.1.1        # BLoC + Cubit
+  equatable: ^2.0.7           # value equality for bloc states/events
+
+  # ── Dependency Injection ──────────────────────────────────────────────────
+  get_it: ^8.0.3              # service locator
+
+  # ── Navigation ────────────────────────────────────────────────────────────
+  go_router: ^15.1.2          # declarative routing + guards
+
+  # ── Networking ────────────────────────────────────────────────────────────
+  dio: ^5.8.0+1               # HTTP client
+  connectivity_plus: ^6.1.4   # network connectivity check
+
+  # ── Functional Programming ────────────────────────────────────────────────
+  dartz: ^0.10.1              # Either / Option for use-cases
+
+  # ── Local Storage ─────────────────────────────────────────────────────────
+  shared_preferences: ^2.5.3  # lightweight key-value store
+  flutter_secure_storage: ^9.2.4  # secure token storage
+
+  # ── Maps ──────────────────────────────────────────────────────────────────
+  google_maps_flutter: ^2.12.1  # Google Maps (MapPickerScreen)
+  geolocator: ^14.0.0           # device location
+
+  # ── Images ────────────────────────────────────────────────────────────────
+  cached_network_image: ^3.4.1  # image caching
+  image_picker: ^1.1.2          # avatar upload
+
+  # ── UI Utilities ──────────────────────────────────────────────────────────
+  flutter_svg: ^2.0.17          # SVG assets
+  shimmer: ^3.0.0               # skeleton loading
+  smooth_page_indicator: ^1.2.1 # onboarding dots
+  pin_code_fields: ^8.0.1       # OTP 6-digit input
+  lottie: ^3.3.1                # animated splash / success
+
+  # ── Permissions ───────────────────────────────────────────────────────────
+  permission_handler: ^11.4.0
+
+  # ── Firebase / Push Notifications ─────────────────────────────────────────
+  firebase_core: ^3.13.0
+  firebase_messaging: ^15.2.5
+  flutter_local_notifications: ^19.2.1
+
+  # ── Misc ──────────────────────────────────────────────────────────────────
+  intl: ^0.20.2                 # date / currency formatting
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  bloc_test: ^10.0.0            # BLoC unit testing helpers
+  mocktail: ^1.0.4              # mocking without code-gen
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
