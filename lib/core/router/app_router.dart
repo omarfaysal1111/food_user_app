@@ -14,7 +14,6 @@ import '../../features/restaurant/presentation/pages/restaurant_list_screen.dart
 import '../../features/restaurant/presentation/pages/restaurant_detail_screen.dart';
 import '../../features/restaurant/presentation/pages/menu_item_detail_screen.dart';
 import '../../features/cart/presentation/pages/cart_screen.dart';
-import '../../features/cart/presentation/pages/cart_empty_screen.dart';
 import '../../features/checkout/presentation/pages/checkout_screen.dart';
 import '../../features/checkout/presentation/pages/address_selection_screen.dart';
 import '../../features/checkout/presentation/pages/add_edit_address_screen.dart';
@@ -38,6 +37,8 @@ class AppRouter {
   AppRouter._();
 
   static final router = GoRouter(
+    // Auth UI Preview Mode: start from splash for design review.
+    // TODO: Decide startup route once real auth/onboarding is ready.
     initialLocation: RouteNames.splash,
     // TODO: add redirect guard (auth check)
     routes: [
