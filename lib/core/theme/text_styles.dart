@@ -203,6 +203,14 @@ class AppTextStyles {
     height: 1.3,
   );
 
+  /// Invisible text style for the OTP capture [TextField] (hidden behind boxes).
+  static const hiddenOtpInput = TextStyle(
+    fontFamily: _fontFamily,
+    fontSize: 1,
+    height: 1,
+    color: AppColors.transparent,
+  );
+
   static const timerText = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 14,

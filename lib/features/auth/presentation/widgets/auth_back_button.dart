@@ -10,14 +10,14 @@ class AuthBackButton extends StatelessWidget {
     return Align(
       alignment: Alignment.centerRight,
       child: SizedBox(
-        width: 28,
-        height: 28,
+        width: 40,
+        height: 40,
         child: InkWell(
           borderRadius: BorderRadius.circular(999),
           onTap: () => context.pop(),
           child: const Icon(
-            Icons.arrow_forward_ios,
-            size: 28,
+            Icons.arrow_back_ios_new,
+            size: 24,
             color: AppColors.onSurface,
           ),
         ),
@@ -25,4 +25,3 @@ class AuthBackButton extends StatelessWidget {
     );
   }
 }
-
