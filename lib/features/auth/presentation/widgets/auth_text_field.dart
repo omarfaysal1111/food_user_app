@@ -39,7 +39,7 @@ class AuthTextField extends StatelessWidget {
         Text(
           label,
           textAlign: TextAlign.right,
-          style: AppTextStyles.fieldLabel,
+          style: AppTextStyles.fieldLabel(context),
         ),
         const SizedBox(height: 8),
         TextFormField(
@@ -49,7 +49,8 @@ class AuthTextField extends StatelessWidget {
           obscureText: obscureText,
           validator: validator,
           textAlign: TextAlign.right,
-          style: AppTextStyles.inputText,
+          style: AppTextStyles.inputText(context),
+          cursorColor: AppColors.cursor(context),
           maxLength: maxLength,
           inputFormatters: inputFormatters,
           onTapOutside: (_) {
@@ -66,9 +67,9 @@ class AuthTextField extends StatelessWidget {
               : null,
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: AppTextStyles.inputHint,
+            hintStyle: AppTextStyles.inputHint(context),
             filled: true,
-            fillColor: AppColors.surfaceCard,
+            fillColor: AppColors.surfaceCard(context),
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
             contentPadding: const EdgeInsets.symmetric(
@@ -77,29 +78,29 @@ class AuthTextField extends StatelessWidget {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(
-                color: AppColors.border,
+              borderSide: BorderSide(
+                color: AppColors.border(context),
                 width: 0.5,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(
-                color: AppColors.onSurface,
+              borderSide: BorderSide(
+                color: AppColors.fieldFocusBorder(context),
                 width: 0.5,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(
-                color: AppColors.fieldError,
+              borderSide: BorderSide(
+                color: AppColors.fieldError(context),
                 width: 0.5,
               ),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(
-                color: AppColors.fieldError,
+              borderSide: BorderSide(
+                color: AppColors.fieldError(context),
                 width: 0.5,
               ),
             ),

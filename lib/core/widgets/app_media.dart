@@ -38,7 +38,11 @@ class AppSvgImage extends StatelessWidget {
       placeholderBuilder: (context) => SizedBox(
         width: width ?? 24,
         height: height ?? 24,
-        child: Icon(Icons.image_outlined, size: 20, color: AppColors.hint),
+        child: Icon(
+          Icons.image_outlined,
+          size: 20,
+          color: AppColors.hint(context),
+        ),
       ),
     );
   }
@@ -76,7 +80,10 @@ class AppRasterImage extends StatelessWidget {
         return SizedBox(
           width: width,
           height: height,
-          child: Icon(Icons.broken_image_outlined, color: AppColors.paragraph),
+          child: Icon(
+            Icons.broken_image_outlined,
+            color: AppColors.paragraph(context),
+          ),
         );
       },
     );
@@ -116,7 +123,10 @@ class AppNetworkImage extends StatelessWidget {
         return SizedBox(
           width: width,
           height: height,
-          child: Icon(Icons.broken_image_outlined, color: AppColors.paragraph),
+          child: Icon(
+            Icons.broken_image_outlined,
+            color: AppColors.paragraph(context),
+          ),
         );
       },
       loadingBuilder: (context, child, loadingProgress) {
@@ -130,7 +140,7 @@ class AppNetworkImage extends StatelessWidget {
               height: 22,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: AppColors.paragraph,
+                color: AppColors.paragraph(context),
                 value: loadingProgress.expectedTotalBytes != null
                     ? loadingProgress.cumulativeBytesLoaded /
                         loadingProgress.expectedTotalBytes!

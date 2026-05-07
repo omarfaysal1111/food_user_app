@@ -14,7 +14,7 @@ class AuthScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: AppColors.scaffoldBackground(context),
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: SafeArea(
@@ -23,7 +23,8 @@ class AuthScaffold extends StatelessWidget {
             onTap: () => FocusScope.of(context).unfocus(),
             child: SingleChildScrollView(
               padding: padding,
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              keyboardDismissBehavior:
+                  ScrollViewKeyboardDismissBehavior.onDrag,
               child: child,
             ),
           ),

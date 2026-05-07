@@ -15,16 +15,10 @@ class AuthPasswordVisibilitySuffix extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: onPressed,
-      style: IconButton.styleFrom(
-        foregroundColor: AppColors.hint,
-        padding: EdgeInsets.zero,
-        minimumSize: const Size(40, 40),
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      ),
       icon: Icon(
-        isVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+        isVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
         size: 20,
-        color: AppColors.hint,
+        color: AppColors.iconMuted(context),
       ),
     );
   }

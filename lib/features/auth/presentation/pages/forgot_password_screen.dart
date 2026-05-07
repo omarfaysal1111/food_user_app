@@ -44,16 +44,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           children: [
             const AuthBackButton(),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'نسيت كلمة المرور !',
               textAlign: TextAlign.right,
-              style: AppTextStyles.screenTitle,
+              style: AppTextStyles.screenTitle(context),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'قم بادخال البريد الالكتروني الخاص بك للتأكد من حسابك',
               textAlign: TextAlign.right,
-              style: AppTextStyles.subtitle,
+              style: AppTextStyles.subtitle(context),
             ),
             const SizedBox(height: 32),
             AuthTextField(

@@ -49,16 +49,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           children: [
             const AuthBackButton(),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'إعادة تعيين كلمة المرور !',
               textAlign: TextAlign.right,
-              style: AppTextStyles.screenTitle,
+              style: AppTextStyles.screenTitle(context),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'ادخل كلمة مرور جديدة لحماية جميع بياناتك',
               textAlign: TextAlign.right,
-              style: AppTextStyles.subtitle,
+              style: AppTextStyles.subtitle(context),
             ),
             const SizedBox(height: 32),
             AuthTextField(

@@ -15,13 +15,13 @@ class HomePlaceholderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Directionality(
+    return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         body: Center(
           child: Text(
             'الصفحة الرئيسية المؤقتة',
-            style: AppTextStyles.homeHeadline,
+            style: AppTextStyles.homeHeadline(context),
           ),
         ),
       ),

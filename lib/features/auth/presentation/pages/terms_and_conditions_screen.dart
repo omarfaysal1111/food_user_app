@@ -11,31 +11,33 @@ class TermsAndConditionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bg = AppColors.scaffoldBackground(context);
+    final fg = AppColors.onSurface(context);
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: AppColors.scaffoldBackground,
-        foregroundColor: AppColors.onSurface,
+        backgroundColor: bg,
+        foregroundColor: fg,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          color: AppColors.onSurface,
+          color: fg,
           onPressed: () => context.pop(),
         ),
-        title: const Text(
+        title: Text(
           'الشروط والاحكام',
-          style: AppTextStyles.appBarTitle,
+          style: AppTextStyles.appBarTitle(context),
         ),
         centerTitle: true,
       ),
-      body: const Directionality(
+      body: Directionality(
         textDirection: TextDirection.rtl,
         child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(20, 8, 20, 32),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
           child: Text(
             _body,
             textAlign: TextAlign.right,
-            style: AppTextStyles.termsBody,
+            style: AppTextStyles.termsBody(context),
           ),
         ),
       ),

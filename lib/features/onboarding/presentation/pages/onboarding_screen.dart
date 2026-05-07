@@ -19,11 +19,15 @@ class OnboardingScreen extends StatelessWidget {
     final screenHeight = MediaQuery.sizeOf(context).height;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     final collageH = screenHeight * 0.6;
+    final scaffoldBg = AppColors.scaffoldBackground(context);
+    final collageAsset = Theme.of(context).brightness == Brightness.dark
+        ? AppAssets.onboardingCollageDark
+        : AppAssets.onboardingCollage;
 
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
+        backgroundColor: scaffoldBg,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -38,8 +42,8 @@ class OnboardingScreen extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    const AppRasterImage.asset(
-                      AppAssets.onboardingCollage,
+                    AppRasterImage.asset(
+                      collageAsset,
                       fit: BoxFit.cover,
                     ),
                     DecoratedBox(
@@ -48,10 +52,9 @@ class OnboardingScreen extends StatelessWidget {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            AppColors.scaffoldBackground.withValues(alpha: 0),
-                            AppColors.scaffoldBackground
-                                .withValues(alpha: 0.35),
-                            AppColors.scaffoldBackground,
+                            scaffoldBg.withValues(alpha: 0),
+                            scaffoldBg.withValues(alpha: 0.35),
+                            scaffoldBg,
                           ],
                           stops: const [0.45, 0.72, 1],
                         ),
@@ -85,7 +88,7 @@ class OnboardingScreen extends StatelessWidget {
                   Text(
                     'توصيل أسرع، خيارات أكتر، وتجربة استخدام مصممة\nعلشان راحتك في كل طلب',
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.onboardingDescription,
+                    style: AppTextStyles.onboardingDescription(context),
                   ),
                   const SizedBox(height: 24),
                   AuthPrimaryButton(
@@ -116,12 +119,12 @@ class _OnboardingTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text.rich(
       TextSpan(
-        style: AppTextStyles.screenTitle,
-        children: const [
-          TextSpan(text: 'أكل أكتر، انتظار أقل …'),
+        style: AppTextStyles.screenTitle(context),
+        children: [
+          const TextSpan(text: 'أكل أكتر، انتظار أقل …'),
           TextSpan(
             text: ' اطلب الآن',
-            style: AppTextStyles.onboardingTitleAccent,
+            style: AppTextStyles.onboardingTitleAccent(context),
           ),
         ],
       ),

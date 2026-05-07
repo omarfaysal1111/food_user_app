@@ -1,102 +1,100 @@
 import 'package:flutter/material.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 
+/// Typography. Styles that vary with brightness take [BuildContext].
 class AppTextStyles {
   AppTextStyles._();
 
   static const String _fontFamily = 'ExpoArabic';
 
-  static const heading1 = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 20,
-    fontWeight: FontWeight.w600,
-    color: AppColors.onSurface,
-  );
+  static TextStyle heading1(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: AppColors.onSurface(context),
+      );
 
-  static const textFieldHeading = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: AppColors.onSurface,
-  );
+  static TextStyle textFieldHeading(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: AppColors.onSurface(context),
+      );
 
-  static const buttonHeading = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w500,
-    color: AppColors.onSurface,
-  );
+  static TextStyle buttonHeading(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: AppColors.onSurface(context),
+      );
 
-  static const heading4 = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
-    color: AppColors.onSurface,
-  );
+  static TextStyle heading4(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: AppColors.onSurface(context),
+      );
 
-  static const body = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w500,
-    color: AppColors.onSurface,
-  );
+  static TextStyle body(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: AppColors.onSurface(context),
+      );
 
-  static const caption = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 12,
-    color: AppColors.paragraph,
-    fontWeight: FontWeight.w400,
-  );
+  static TextStyle caption(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 12,
+        color: AppColors.paragraph(context),
+        fontWeight: FontWeight.w400,
+      );
 
-  /// Screen titles (auth headers).
-  static const textFieldTitle = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: AppColors.onSurface,
-    height: 1.4,
-  );
+  static TextStyle textFieldTitle(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: AppColors.onSurface(context),
+        height: 1.4,
+      );
 
-  static const screenTitle = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 20,
-    fontWeight: FontWeight.w600,
-    color: AppColors.onSurface,
-    height: 1.4,
-  );
+  static TextStyle screenTitle(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: AppColors.onSurface(context),
+        height: 1.4,
+      );
 
-  /// Onboarding headline accent segment (same scale as [screenTitle]).
-  static const onboardingTitleAccent = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 20,
-    fontWeight: FontWeight.w600,
-    color: AppColors.primary,
-    height: 1.4,
-  );
+  static TextStyle onboardingTitleAccent(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: AppColors.primary,
+        height: 1.4,
+      );
 
-  /// Onboarding supporting paragraph under the title (Figma body Book; 13 for two lines on narrow widths).
-  static const onboardingDescription = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-    color: AppColors.onboardingMuted,
-    height: 1.3,
-  );
+  static TextStyle onboardingDescription(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 13,
+        fontWeight: FontWeight.w400,
+        color: AppColors.paragraph(context),
+        height: 1.3,
+      );
 
-  static const textLink = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    color: AppColors.onSurface,
-  );
+  static TextStyle textLink(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: AppColors.onSurface(context),
+      );
 
-  static const subtitle = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 12,
-    fontWeight: FontWeight.w400,
-    color: AppColors.paragraph,
-    height: 1.3,
-  );
+  static TextStyle subtitle(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        color: AppColors.paragraph(context),
+        height: 1.3,
+      );
 
   static const richTextBase12 = TextStyle(
     fontFamily: _fontFamily,
@@ -104,12 +102,12 @@ class AppTextStyles {
     height: 1.3,
   );
 
-  static const termsMuted = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 12,
-    color: AppColors.paragraph,
-    height: 1.3,
-  );
+  static TextStyle termsMuted(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 12,
+        color: AppColors.paragraph(context),
+        height: 1.3,
+      );
 
   static const termsLink = TextStyle(
     fontFamily: _fontFamily,
@@ -130,7 +128,6 @@ class AppTextStyles {
     height: 1.3,
   );
 
-  /// Short validation line below custom fields (e.g. phone row).
   static const validationCaption = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 12,
@@ -144,12 +141,12 @@ class AppTextStyles {
     fontSize: 14,
   );
 
-  static const footerSecondary = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    color: AppColors.paragraph,
-    height: 1.35,
-  );
+  static TextStyle footerSecondary(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 14,
+        color: AppColors.paragraph(context),
+        height: 1.35,
+      );
 
   static const linkEmphasis = TextStyle(
     fontFamily: _fontFamily,
@@ -159,51 +156,49 @@ class AppTextStyles {
     height: 1.25,
   );
 
-  /// Resend / secondary action when timer has not expired (muted).
-  static const resendActionDisabled = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    color: AppColors.paragraph,
-    fontWeight: FontWeight.w600,
-    height: 1.25,
-  );
+  static TextStyle resendActionDisabled(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 14,
+        color: AppColors.paragraph(context),
+        fontWeight: FontWeight.w600,
+        height: 1.25,
+      );
 
-  static const fieldLabel = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    color: AppColors.onSurface,
-    height: 1.35,
-  );
+  static TextStyle fieldLabel(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 14,
+        color: AppColors.onSurface(context),
+        height: 1.35,
+      );
 
-  static const inputHint = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 12,
-    color: AppColors.hint,
-    height: 1.3,
-  );
+  static TextStyle inputHint(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 12,
+        color: AppColors.hint(context),
+        height: 1.3,
+      );
 
-  static const inputText = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    color: AppColors.onSurface,
-    fontWeight: FontWeight.w400,
-  );
+  static TextStyle inputText(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 14,
+        color: AppColors.onSurface(context),
+        fontWeight: FontWeight.w400,
+      );
 
-  static const otpDigitActive = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 12,
-    color: AppColors.onSurface,
-    height: 1.3,
-  );
+  static TextStyle otpDigitActive(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 12,
+        color: AppColors.onSurface(context),
+        height: 1.3,
+      );
 
-  static const otpDigitInactive = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 12,
-    color: AppColors.paragraph,
-    height: 1.3,
-  );
+  static TextStyle otpDigitInactive(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 12,
+        color: AppColors.paragraph(context),
+        height: 1.3,
+      );
 
-  /// Invisible text style for the OTP capture [TextField] (hidden behind boxes).
   static const hiddenOtpInput = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 1,
@@ -211,41 +206,41 @@ class AppTextStyles {
     color: AppColors.transparent,
   );
 
-  static const timerText = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    color: AppColors.paragraph,
-    height: 1.35,
-  );
+  static TextStyle timerText(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 14,
+        color: AppColors.paragraph(context),
+        height: 1.35,
+      );
 
-  static const textLinkUnderline = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    color: AppColors.onSurface,
-    decoration: TextDecoration.underline,
-    decorationColor: AppColors.onSurface,
-    decorationThickness: 1.2,
-  );
+  static TextStyle textLinkUnderline(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: AppColors.onSurface(context),
+        decoration: TextDecoration.underline,
+        decorationColor: AppColors.onSurface(context),
+        decorationThickness: 1.2,
+      );
 
-  static const languageChipLabel = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 12,
-    color: AppColors.onSurface,
-  );
+  static TextStyle languageChipLabel(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 12,
+        color: AppColors.onSurface(context),
+      );
 
-  static const dividerLabel = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 12,
-    color: AppColors.paragraph,
-  );
+  static TextStyle dividerLabel(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 12,
+        color: AppColors.paragraph(context),
+      );
 
-  static const socialButtonLabel = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    color: AppColors.onSurface,
-    fontWeight: FontWeight.w500,
-  );
+  static TextStyle socialButtonLabel(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 14,
+        color: AppColors.onSurface(context),
+        fontWeight: FontWeight.w500,
+      );
 
   static const primaryButtonLabel = TextStyle(
     fontFamily: _fontFamily,
@@ -254,32 +249,35 @@ class AppTextStyles {
     color: AppColors.text,
   );
 
-  static const appBarTitle = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-    color: AppColors.onSurface,
-  );
+  static TextStyle appBarTitle(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        color: AppColors.onSurface(context),
+      );
 
-  static const termsBody = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: AppColors.onSurface,
-    height: 1.45,
-  );
+  static TextStyle termsBody(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: AppColors.onSurface(context),
+        height: 1.45,
+      );
 
-  static const homeHeadline = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 22,
-    fontWeight: FontWeight.w600,
-    color: AppColors.onSurface,
-  );
+  static TextStyle homeHeadline(BuildContext context) => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 22,
+        fontWeight: FontWeight.w600,
+        color: AppColors.onSurface(context),
+      );
 
-  static const snackBarMessage = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: AppColors.onSurface,
-  );
+  static TextStyle snackBarMessage(BuildContext context) {
+    final base = Theme.of(context).snackBarTheme.contentTextStyle;
+    return TextStyle(
+      fontFamily: _fontFamily,
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      color: base?.color ?? AppColors.onSurface(context),
+    );
+  }
 }

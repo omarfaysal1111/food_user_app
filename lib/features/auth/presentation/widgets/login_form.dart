@@ -88,7 +88,7 @@ class _LoginFormState extends State<LoginForm> {
             child: TextButton(
               onPressed: widget.onForgotPassword,
               style: TextButton.styleFrom(
-                foregroundColor: AppColors.onSurface,
+                foregroundColor: AppColors.onSurface(context),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -96,12 +96,16 @@ class _LoginFormState extends State<LoginForm> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
+                  Text(
                     'نسيت كلمة المرور؟',
-                    style: AppTextStyles.textLink,
+                    style: AppTextStyles.textLink(context),
                   ),
                   const SizedBox(height: 2),
-                  Container(width: 92, height: 1, color: AppColors.onSurface),
+                  Container(
+                    width: 92,
+                    height: 1,
+                    color: AppColors.onSurface(context),
+                  ),
                 ],
               ),
             ),

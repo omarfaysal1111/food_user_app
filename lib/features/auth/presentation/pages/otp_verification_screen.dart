@@ -80,7 +80,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       SnackBar(
         content: Text(
           'تم إرسال الكود مرة أخرى',
-          style: AppTextStyles.snackBarMessage,
+          style: AppTextStyles.snackBarMessage(context),
         ),
       ),
     );
@@ -120,16 +120,16 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           children: [
             const AuthBackButton(),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'كود التحقق',
               textAlign: TextAlign.right,
-              style: AppTextStyles.screenTitle,
+              style: AppTextStyles.screenTitle(context),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'أدخل الكود المرسل إليك لتأكيد رقم الجوال والمتابعة.',
               textAlign: TextAlign.right,
-              style: AppTextStyles.subtitle,
+              style: AppTextStyles.subtitle(context),
             ),
             const SizedBox(height: 32),
             FormField<String>(
@@ -221,7 +221,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               children: [
                 Text(
                   '$_secondsRemaining ثانية',
-                  style: AppTextStyles.timerText,
+                  style: AppTextStyles.timerText(context),
                 ),
                 const SizedBox(width: 4),
                 GestureDetector(
@@ -229,7 +229,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   child: Text(
                     'إعادة إرسال الكود ؟',
                     style: _secondsRemaining > 0
-                        ? AppTextStyles.resendActionDisabled
+                        ? AppTextStyles.resendActionDisabled(context)
                         : AppTextStyles.linkEmphasis,
                   ),
                 ),
@@ -258,18 +258,20 @@ class _OtpDigitBox extends StatelessWidget {
       height: 48,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
+        color: AppColors.surfaceCard(context),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: active ? AppColors.otpActiveBorder : AppColors.border,
+          color: active
+              ? AppColors.otpActiveBorder(context)
+              : AppColors.border(context),
         ),
       ),
       child: Text(
         char,
         textAlign: TextAlign.center,
         style: active
-            ? AppTextStyles.otpDigitActive
-            : AppTextStyles.otpDigitInactive,
+            ? AppTextStyles.otpDigitActive(context)
+            : AppTextStyles.otpDigitInactive(context),
       ),
     );
   }

@@ -83,33 +83,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
               textDirection: TextDirection.rtl,
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
                           'مرحباً بك !',
                           textAlign: TextAlign.start,
-                          style: AppTextStyles.screenTitle,
+                          style: AppTextStyles.screenTitle(context),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           'انضم إلينا اليوم واستمتع بتجربة توصيل أسرع',
                           textAlign: TextAlign.start,
-                          style: AppTextStyles.subtitle,
+                          style: AppTextStyles.subtitle(context),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(width: 12),
                   AuthLanguageChip(
+                    label: 'عربي',
                     flagAsset: AppAssets.flagEg,
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
                             'Language switch is coming soon',
-                            style: AppTextStyles.snackBarMessage,
+                            style: AppTextStyles.snackBarMessage(context),
                           ),
                         ),
                       );
@@ -188,12 +189,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               decoration: BoxDecoration(
                                 color: _acceptedTerms
                                     ? AppColors.primary
-                                    : AppColors.surfaceCard,
+                                    : AppColors.surfaceCard(context),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
                                   color: _acceptedTerms
                                       ? AppColors.primary
-                                      : AppColors.border,
+                                      : AppColors.border(context),
                                   width: 0.5,
                                 ),
                               ),
@@ -213,9 +214,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
+                        Text(
                           'الموافقة على ',
-                          style: AppTextStyles.termsMuted,
+                          style: AppTextStyles.termsMuted(context),
                         ),
                         GestureDetector(
                           behavior: HitTestBehavior.opaque,
@@ -250,14 +251,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: TextButton(
                 onPressed: () => context.go(RouteNames.login),
                 child: RichText(
-                  text: const TextSpan(
+                  text: TextSpan(
                     style: AppTextStyles.richTextBase14,
                     children: [
                       TextSpan(
                         text: 'هل لديك حساب من قبل ؟ ',
-                        style: AppTextStyles.footerSecondary,
+                        style: AppTextStyles.footerSecondary(context),
                       ),
-                      TextSpan(
+                      const TextSpan(
                         text: 'تسجيل دخول',
                         style: AppTextStyles.linkEmphasis,
                       ),
@@ -286,22 +287,22 @@ class _RegisterPhoneField extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               'رقم الجوال',
               textAlign: TextAlign.right,
-              style: AppTextStyles.fieldLabel,
+              style: AppTextStyles.fieldLabel(state.context),
             ),
             const SizedBox(height: 8),
             Container(
               height: 48,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: AppColors.surfaceCard,
+                color: AppColors.surfaceCard(state.context),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: state.hasError
-                      ? AppColors.fieldError
-                      : AppColors.border,
+                      ? AppColors.fieldError(state.context)
+                      : AppColors.border(state.context),
                   width: 0.5,
                 ),
               ),
@@ -312,14 +313,15 @@ class _RegisterPhoneField extends StatelessWidget {
                       controller: controller,
                       keyboardType: TextInputType.phone,
                       textAlign: TextAlign.right,
-                      style: AppTextStyles.inputText,
+                      style: AppTextStyles.inputText(state.context),
+                      cursorColor: AppColors.cursor(state.context),
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp(r'[\d\s]')),
                       ],
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'رقم الجوال',
-                        hintStyle: AppTextStyles.inputHint,
+                        hintStyle: AppTextStyles.inputHint(state.context),
                       ),
                       onChanged: (_) => state.didChange(controller.text),
                       onTapOutside: (_) {
@@ -334,12 +336,15 @@ class _RegisterPhoneField extends StatelessWidget {
                       Container(
                         width: 0.5,
                         height: 16,
-                        color: AppColors.border,
+                        color: AppColors.border(state.context),
                       ),
                       const SizedBox(width: 8),
-                      const Directionality(
+                      Directionality(
                         textDirection: TextDirection.ltr,
-                        child: Text('+20', style: AppTextStyles.termsMuted),
+                        child: Text(
+                          '+20',
+                          style: AppTextStyles.termsMuted(state.context),
+                        ),
                       ),
                       const SizedBox(width: 4),
                       ClipRRect(

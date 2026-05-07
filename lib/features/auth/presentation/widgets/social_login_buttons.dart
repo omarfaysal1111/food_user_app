@@ -9,58 +9,65 @@ class SocialLoginButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dividerColor = AppColors.border(context);
+    final appleAsset = Theme.of(context).brightness == Brightness.dark
+        ? AppAssets.socialAppleDark
+        : AppAssets.socialApple;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Row(
+        Row(
           children: [
-            Expanded(child: Divider(color: AppColors.border)),
+            Expanded(child: Divider(color: dividerColor)),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
                 'او',
                 textAlign: TextAlign.center,
-                style: AppTextStyles.dividerLabel,
+                style: AppTextStyles.dividerLabel(context),
               ),
             ),
-            Expanded(child: Divider(color: AppColors.border)),
+            Expanded(child: Divider(color: dividerColor)),
           ],
         ),
         const SizedBox(height: 12),
         OutlinedButton.icon(
           onPressed: () {
-            // TODO: Reconnect AuthBloc and real API after backend is ready.
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
                   'دخول عبر Apple قريباً',
-                  style: AppTextStyles.snackBarMessage,
+                  style: AppTextStyles.snackBarMessage(context),
                 ),
               ),
             );
           },
-          icon: const AppSvgImage.asset(
-            AppAssets.socialApple,
+          icon: AppSvgImage.asset(
+            appleAsset,
             width: 23,
             height: 28,
             fit: BoxFit.contain,
           ),
           style: OutlinedButton.styleFrom(
             minimumSize: const Size(double.infinity, 44),
-            side: const BorderSide(color: AppColors.border),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            side: BorderSide(color: AppColors.border(context)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
-          label: const Text('دخول عبر Apple', style: AppTextStyles.socialButtonLabel),
+          label: Text(
+            'دخول عبر Apple',
+            style: AppTextStyles.socialButtonLabel(context),
+          ),
         ),
         const SizedBox(height: 8),
         OutlinedButton.icon(
           onPressed: () {
-            // TODO: Reconnect AuthBloc and real API after backend is ready.
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
                   'دخول عبر Google قريباً',
-                  style: AppTextStyles.snackBarMessage,
+                  style: AppTextStyles.snackBarMessage(context),
                 ),
               ),
             );
@@ -73,10 +80,15 @@ class SocialLoginButtons extends StatelessWidget {
           ),
           style: OutlinedButton.styleFrom(
             minimumSize: const Size(double.infinity, 44),
-            side: const BorderSide(color: AppColors.border),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            side: BorderSide(color: AppColors.border(context)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
-          label: const Text('دخول عبر Google', style: AppTextStyles.socialButtonLabel),
+          label: Text(
+            'دخول عبر Google',
+            style: AppTextStyles.socialButtonLabel(context),
+          ),
         ),
       ],
     );

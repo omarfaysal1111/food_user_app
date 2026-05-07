@@ -15,10 +15,10 @@ class AuthBackButton extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(999),
           onTap: () => context.pop(),
-          child: const Icon(
+          child: Icon(
             Icons.arrow_back_ios_new,
             size: 24,
-            color: AppColors.onSurface,
+            color: AppColors.onSurface(context),
           ),
         ),
       ),

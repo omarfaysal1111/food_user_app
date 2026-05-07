@@ -14,7 +14,6 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Reconnect AuthBloc and real API after backend is ready.
     return AuthScaffold(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
       child: Column(
@@ -23,13 +22,14 @@ class LoginPage extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: AuthLanguageChip(
+              label: 'عربي',
               flagAsset: AppAssets.flagEg,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
                       'Language switch is coming soon',
-                      style: AppTextStyles.snackBarMessage,
+                      style: AppTextStyles.snackBarMessage(context),
                     ),
                   ),
                 );
@@ -46,16 +46,16 @@ class LoginPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 40),
-          const Text(
+          Text(
             'تسجيل دخول !',
             textAlign: TextAlign.right,
-            style: AppTextStyles.screenTitle,
+            style: AppTextStyles.screenTitle(context),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'مرحبا بعودتك مره اخرى سجل دخول الان !',
             textAlign: TextAlign.right,
-            style: AppTextStyles.subtitle,
+            style: AppTextStyles.subtitle(context),
           ),
           const SizedBox(height: 32),
           LoginForm(
@@ -69,14 +69,14 @@ class LoginPage extends StatelessWidget {
             child: TextButton(
               onPressed: () => context.push(RouteNames.register),
               child: RichText(
-                text: const TextSpan(
+                text: TextSpan(
                   style: AppTextStyles.richTextBase14,
                   children: [
                     TextSpan(
                       text: 'ليس لديك حساب من قبل ؟ ',
-                      style: AppTextStyles.footerSecondary,
+                      style: AppTextStyles.footerSecondary(context),
                     ),
-                    TextSpan(
+                    const TextSpan(
                       text: 'إنشاء حساب',
                       style: AppTextStyles.linkEmphasis,
                     ),
