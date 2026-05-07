@@ -65,6 +65,24 @@ class AppTextStyles {
     height: 1.4,
   );
 
+  /// Onboarding headline accent segment (same scale as [screenTitle]).
+  static const onboardingTitleAccent = TextStyle(
+    fontFamily: _fontFamily,
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+    color: AppColors.primary,
+    height: 1.4,
+  );
+
+  /// Onboarding supporting paragraph under the title (Figma body Book; 13 for two lines on narrow widths).
+  static const onboardingDescription = TextStyle(
+    fontFamily: _fontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    color: AppColors.onboardingMuted,
+    height: 1.3,
+  );
+
   static const textLink = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 12,

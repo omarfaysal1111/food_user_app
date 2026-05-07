@@ -24,6 +24,9 @@ class AppColors {
   /// Auth and light scaffold backgrounds.
   static const scaffoldBackground = Color(0xFFFAFAFA);
 
+  /// Onboarding body copy (Figma #999999).
+  static const onboardingMuted = Color(0xFF999999);
+
   /// Cards, text fields, elevated surfaces (white).
   static const surfaceCard = Color(0xFFFFFFFF);
 

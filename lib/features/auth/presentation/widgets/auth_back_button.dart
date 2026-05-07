@@ -16,7 +16,7 @@ class AuthBackButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(999),
           onTap: () => context.pop(),
           child: const Icon(
-            Icons.arrow_back_ios_new,
+            Icons.arrow_forward_ios,
             size: 28,
             color: AppColors.onSurface,
           ),
@@ -25,3 +25,4 @@ class AuthBackButton extends StatelessWidget {
     );
   }
 }
+

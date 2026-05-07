@@ -7,4 +7,9 @@ class AppAssets {
   static const flagEg = 'assets/images/flag_eg.svg';
   static const socialApple = 'assets/images/social_apple.svg';
   static const socialGoogle = 'assets/images/social_google.svg';
+
+  static const onboardingCollage =
+      'assets/images/onboarding_collage/onboarding_collage.png';
+  static const onboardingScooter = 'assets/images/onboarding_scooter.svg';
+  static const onboardingArrow = 'assets/images/onboarding_arrow.svg';
 }

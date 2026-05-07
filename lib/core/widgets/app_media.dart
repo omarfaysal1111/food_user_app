@@ -13,6 +13,7 @@ class AppSvgImage extends StatelessWidget {
     this.height,
     this.fit = BoxFit.contain,
     this.semanticsLabel,
+    this.color,
   });
 
   final String assetName;
@@ -21,6 +22,9 @@ class AppSvgImage extends StatelessWidget {
   final BoxFit fit;
   final String? semanticsLabel;
 
+  /// When set, replaces solid fills in the SVG (e.g. white icon on primary button).
+  final Color? color;
+
   @override
   Widget build(BuildContext context) {
     return SvgPicture.asset(
@@ -28,6 +32,8 @@ class AppSvgImage extends StatelessWidget {
       width: width,
       height: height,
       fit: fit,
+      colorFilter:
+          color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
       semanticsLabel: semanticsLabel,
       placeholderBuilder: (context) => SizedBox(
         width: width ?? 24,
@@ -62,7 +68,7 @@ class AppRasterImage extends StatelessWidget {
       fit: fit,
       errorBuilder: (context, error, stackTrace) {
         developer.log(
-          'AppRasterImage failed to load asset',
+          'AppRasterImage failed to load asset path=$assetName error=$error',
           name: 'AppRasterImage',
           error: error,
           stackTrace: stackTrace,

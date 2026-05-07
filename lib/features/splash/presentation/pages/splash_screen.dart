@@ -20,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // TODO: Replace with real startup flow when backend/auth is ready.
     Future<void>.delayed(const Duration(milliseconds: 900), () {
       if (!mounted) return;
-      context.go(RouteNames.login);
+      context.go(RouteNames.onboarding);
     });
   }
 
