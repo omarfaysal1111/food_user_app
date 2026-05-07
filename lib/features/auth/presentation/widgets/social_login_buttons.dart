@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/core/constants/app_assets.dart';
+import 'package:food_user_app/core/theme/app_colors.dart';
+import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/widgets/app_media.dart';
 
 class SocialLoginButtons extends StatelessWidget {
   const SocialLoginButtons({super.key});
@@ -10,16 +14,16 @@ class SocialLoginButtons extends StatelessWidget {
       children: [
         const Row(
           children: [
-            Expanded(child: Divider(color: Color(0xFFE5E5E5))),
+            Expanded(child: Divider(color: AppColors.border)),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 8),
               child: Text(
                 'او',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Color(0xFFA7A7A7), fontSize: 12),
+                style: AppTextStyles.dividerLabel,
               ),
             ),
-            Expanded(child: Divider(color: Color(0xFFE5E5E5))),
+            Expanded(child: Divider(color: AppColors.border)),
           ],
         ),
         const SizedBox(height: 12),
@@ -27,40 +31,52 @@ class SocialLoginButtons extends StatelessWidget {
           onPressed: () {
             // TODO: Reconnect AuthBloc and real API after backend is ready.
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('دخول عبر Apple قريباً')),
+              SnackBar(
+                content: Text(
+                  'دخول عبر Apple قريباً',
+                  style: AppTextStyles.snackBarMessage,
+                ),
+              ),
             );
           },
-          icon: Image.network(
-            'https://www.figma.com/api/mcp/asset/f855905d-9bbc-48f1-b66d-f1ef84f5d516',
+          icon: const AppSvgImage.asset(
+            AppAssets.socialApple,
             width: 23,
             height: 28,
+            fit: BoxFit.contain,
           ),
           style: OutlinedButton.styleFrom(
             minimumSize: const Size(double.infinity, 44),
-            side: const BorderSide(color: Color(0xFFE5E5E5)),
+            side: const BorderSide(color: AppColors.border),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
-          label: const Text('دخول عبر Apple', style: TextStyle(color: Color(0xFF1B1B1B))),
+          label: const Text('دخول عبر Apple', style: AppTextStyles.socialButtonLabel),
         ),
         const SizedBox(height: 8),
         OutlinedButton.icon(
           onPressed: () {
             // TODO: Reconnect AuthBloc and real API after backend is ready.
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('دخول عبر Google قريباً')),
+              SnackBar(
+                content: Text(
+                  'دخول عبر Google قريباً',
+                  style: AppTextStyles.snackBarMessage,
+                ),
+              ),
             );
           },
-          icon: Image.network(
-            'https://www.figma.com/api/mcp/asset/e25a2a0c-0088-4777-a734-4d2b145cddd1',
+          icon: const AppSvgImage.asset(
+            AppAssets.socialGoogle,
             width: 28,
             height: 28,
+            fit: BoxFit.contain,
           ),
           style: OutlinedButton.styleFrom(
             minimumSize: const Size(double.infinity, 44),
-            side: const BorderSide(color: Color(0xFFE5E5E5)),
+            side: const BorderSide(color: AppColors.border),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
-          label: const Text('دخول عبر Google', style: TextStyle(color: Color(0xFF1B1B1B))),
+          label: const Text('دخول عبر Google', style: AppTextStyles.socialButtonLabel),
         ),
       ],
     );

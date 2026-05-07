@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/core/theme/app_colors.dart';
 
 class AuthScaffold extends StatelessWidget {
   final Widget child;
@@ -13,13 +14,17 @@ class AuthScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFAFA),
+      backgroundColor: AppColors.scaffoldBackground,
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: padding,
-            child: child,
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: SingleChildScrollView(
+              padding: padding,
+              child: child,
+            ),
           ),
         ),
       ),

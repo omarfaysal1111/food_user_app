@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/core/theme/app_colors.dart';
+import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/utils/auth_validators.dart';
+import 'package:food_user_app/features/auth/presentation/widgets/auth_password_visibility_suffix.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
 
@@ -21,6 +25,7 @@ class _LoginFormState extends State<LoginForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isSubmitting = false;
+  bool _isPasswordVisible = false;
 
   @override
   void dispose() {
@@ -29,27 +34,14 @@ class _LoginFormState extends State<LoginForm> {
     super.dispose();
   }
 
-  String? _validateEmail(String? value) {
-    final email = value?.trim() ?? '';
-    if (email.isEmpty) {
-      return 'البريد الالكتروني مطلوب';
-    }
+  String? _validateEmail(String? value) =>
+      AuthValidators.emailRequiredDotCom(value);
 
-    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    if (!emailRegex.hasMatch(email)) {
-      return 'يرجى إدخال بريد الكتروني صحيح';
-    }
-    return null;
-  }
-
-  String? _validatePassword(String? value) {
-    if ((value ?? '').trim().isEmpty) {
-      return 'كلمة المرور مطلوبة';
-    }
-    return null;
-  }
+  String? _validatePassword(String? value) =>
+      AuthValidators.passwordRequiredMin8(value);
 
   void _onSubmit() {
+    FocusManager.instance.primaryFocus?.unfocus();
     if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
@@ -82,26 +74,35 @@ class _LoginFormState extends State<LoginForm> {
             controller: _passwordController,
             label: 'كلمة المرور',
             hintText: 'كلمة المرور',
-            obscureText: true,
-            suffixIcon: Image.network(
-              'https://www.figma.com/api/mcp/asset/0f231293-87b1-461f-9b1f-b4ea67d9e515',
-              width: 16,
-              height: 16,
+            obscureText: !_isPasswordVisible,
+            suffixIcon: AuthPasswordVisibilitySuffix(
+              isVisible: _isPasswordVisible,
+              onPressed: () =>
+                  setState(() => _isPasswordVisible = !_isPasswordVisible),
             ),
             validator: _validatePassword,
           ),
           const SizedBox(height: 8),
           Align(
-            alignment: Alignment.centerRight,
+            alignment: Alignment.centerLeft,
             child: TextButton(
               onPressed: widget.onForgotPassword,
-              child: const Text(
-                'نسيت كلمة المرور؟',
-                style: TextStyle(
-                  color: Color(0xFF1B1B1B),
-                  decoration: TextDecoration.underline,
-                  fontSize: 12,
-                ),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.onSurface,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'نسيت كلمة المرور؟',
+                    style: AppTextStyles.textLink,
+                  ),
+                  const SizedBox(height: 2),
+                  Container(width: 92, height: 1, color: AppColors.onSurface),
+                ],
               ),
             ),
           ),

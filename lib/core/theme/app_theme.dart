@@ -7,6 +7,7 @@ class AppTheme {
   static final light = ThemeData(
     colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
     useMaterial3: true,
+    fontFamily: 'ExpoArabic',
     // TODO: wire text theme, component themes
   );
 
@@ -16,5 +17,6 @@ class AppTheme {
       brightness: Brightness.dark,
     ),
     useMaterial3: true,
+    fontFamily: 'ExpoArabic',
   );
 }

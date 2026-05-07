@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:food_user_app/core/theme/app_colors.dart';
 
 class AuthBackButton extends StatelessWidget {
   const AuthBackButton({super.key});
@@ -16,8 +17,8 @@ class AuthBackButton extends StatelessWidget {
           onTap: () => context.pop(),
           child: const Icon(
             Icons.arrow_forward_ios,
-            size: 18,
-            color: Color(0xFF1B1B1B),
+            size: 28,
+            color: AppColors.onSurface,
           ),
         ),
       ),

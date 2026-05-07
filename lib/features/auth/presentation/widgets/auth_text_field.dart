@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:food_user_app/core/theme/app_colors.dart';
+import 'package:food_user_app/core/theme/text_styles.dart';
 
 class AuthTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -10,6 +13,8 @@ class AuthTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
   final bool enabled;
+  final int? maxLength;
+  final List<TextInputFormatter>? inputFormatters;
 
   const AuthTextField({
     super.key,
@@ -22,6 +27,8 @@ class AuthTextField extends StatelessWidget {
     this.suffixIcon,
     this.validator,
     this.enabled = true,
+    this.maxLength,
+    this.inputFormatters,
   });
 
   @override
@@ -32,11 +39,7 @@ class AuthTextField extends StatelessWidget {
         Text(
           label,
           textAlign: TextAlign.right,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Color(0xFF1B1B1B),
-            height: 1.35,
-          ),
+          style: AppTextStyles.fieldLabel,
         ),
         const SizedBox(height: 8),
         TextFormField(
@@ -46,15 +49,23 @@ class AuthTextField extends StatelessWidget {
           obscureText: obscureText,
           validator: validator,
           textAlign: TextAlign.right,
+          style: AppTextStyles.inputText,
+          maxLength: maxLength,
+          inputFormatters: inputFormatters,
+          buildCounter: maxLength != null
+              ? (
+                  context, {
+                  required currentLength,
+                  required isFocused,
+                  maxLength,
+                }) =>
+                  null
+              : null,
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFFB9B9B9),
-              height: 1.3,
-            ),
+            hintStyle: AppTextStyles.inputHint,
             filled: true,
-            fillColor: Colors.white,
+            fillColor: AppColors.surfaceCard,
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
             contentPadding: const EdgeInsets.symmetric(
@@ -64,28 +75,28 @@ class AuthTextField extends StatelessWidget {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(
-                color: Color(0xFFE5E5E5),
+                color: AppColors.border,
                 width: 0.5,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(
-                color: Color(0xFF1B1B1B),
+                color: AppColors.onSurface,
                 width: 0.5,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(
-                color: Color(0xFFE63946),
+                color: AppColors.fieldError,
                 width: 0.5,
               ),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(
-                color: Color(0xFFE63946),
+                color: AppColors.fieldError,
                 width: 0.5,
               ),
             ),

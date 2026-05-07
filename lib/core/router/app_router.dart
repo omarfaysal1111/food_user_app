@@ -7,6 +7,7 @@ import '../../features/auth/presentation/pages/register_screen.dart';
 import '../../features/auth/presentation/pages/otp_verification_screen.dart';
 import '../../features/auth/presentation/pages/forgot_password_screen.dart';
 import '../../features/auth/presentation/pages/reset_password_screen.dart';
+import '../../features/auth/presentation/pages/terms_and_conditions_screen.dart';
 import '../../features/home/presentation/pages/home_screen.dart';
 import '../../features/home/presentation/pages/search_screen.dart';
 import '../../features/home/presentation/pages/search_results_screen.dart';
@@ -49,6 +50,7 @@ class AppRouter {
       GoRoute(path: RouteNames.otp,               builder: (c, s) => const OtpVerificationScreen()),
       GoRoute(path: RouteNames.forgotPassword,    builder: (c, s) => const ForgotPasswordScreen()),
       GoRoute(path: RouteNames.resetPassword,     builder: (c, s) => const ResetPasswordScreen()),
+      GoRoute(path: RouteNames.termsAndConditions, builder: (c, s) => const TermsAndConditionsScreen()),
       GoRoute(path: RouteNames.home,              builder: (c, s) => const HomeScreen()),
       GoRoute(path: RouteNames.search,            builder: (c, s) => const SearchScreen()),
       GoRoute(path: RouteNames.searchResults,     builder: (c, s) => const SearchResultsScreen()),

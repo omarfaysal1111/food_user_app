@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/router/route_names.dart';
+import 'package:food_user_app/core/theme/app_colors.dart';
+import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/utils/auth_validators.dart';
+import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_language_chip.dart';
+import 'package:food_user_app/features/auth/presentation/widgets/auth_password_visibility_suffix.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_scaffold.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_text_field.dart';
@@ -14,13 +21,17 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  bool _acceptedTerms = true;
+  bool _acceptedTerms = false;
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+  String? _termsError;
 
   @override
   void dispose() {
@@ -32,238 +43,328 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  void _onToggleTerms() {
+    setState(() {
+      _acceptedTerms = !_acceptedTerms;
+      if (_acceptedTerms) {
+        _termsError = null;
+      }
+    });
+  }
+
+  void _onRegister() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _termsError = null);
+
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
+
+    if (!_acceptedTerms) {
+      setState(() {
+        _termsError = 'يجب الموافقة على الشروط والاحكام';
+      });
+      return;
+    }
+
+    context.go(RouteNames.home);
+  }
+
   @override
   Widget build(BuildContext context) {
     return AuthScaffold(
-      padding: const EdgeInsets.fromLTRB(16, 64, 16, 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              AuthLanguageChip(
-                flagImageUrl:
-                    'https://www.figma.com/api/mcp/asset/f3313224-f65a-4c6c-9c87-33c61a83f82a',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Language switch is coming soon')),
-                  );
-                },
-              ),
-              const Spacer(),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Directionality(
+              textDirection: TextDirection.rtl,
+              child: Row(
                 children: [
-                  Text(
-                    'مرحباً بك !',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF1B1B1B),
-                      height: 1.4,
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'مرحباً بك !',
+                          textAlign: TextAlign.start,
+                          style: AppTextStyles.screenTitle,
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'انضم إلينا اليوم واستمتع بتجربة توصيل أسرع',
+                          textAlign: TextAlign.start,
+                          style: AppTextStyles.subtitle,
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    'انضم إلينا اليوم واستمتع بتجربة توصيل أسرع',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFFA7A7A7),
-                      height: 1.3,
-                    ),
+                  const SizedBox(width: 12),
+                  AuthLanguageChip(
+                    flagAsset: AppAssets.flagEg,
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Language switch is coming soon',
+                            style: AppTextStyles.snackBarMessage,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
-            ],
-          ),
-          const SizedBox(height: 32),
-          AuthTextField(
-            controller: _usernameController,
-            label: 'اسم المستخدم',
-            hintText: 'اسم المستخدم',
-          ),
-          const SizedBox(height: 20),
-          _PhoneField(controller: _phoneController),
-          const SizedBox(height: 20),
-          AuthTextField(
-            controller: _emailController,
-            label: 'البريد الالكتروني',
-            hintText: 'البريد الالكتروني',
-            keyboardType: TextInputType.emailAddress,
-          ),
-          const SizedBox(height: 20),
-          AuthTextField(
-            controller: _passwordController,
-            label: 'كلمة المرور',
-            hintText: 'كلمة المرور',
-            obscureText: true,
-            suffixIcon: Image.network(
-              'https://www.figma.com/api/mcp/asset/af47f040-9bbf-4d74-bb78-bf53e4ca4621',
-              width: 16,
-              height: 16,
             ),
-          ),
-          const SizedBox(height: 20),
-          AuthTextField(
-            controller: _confirmPasswordController,
-            label: 'تأكيد كلمه المرور',
-            hintText: 'تأكيد كلمه المرور',
-            obscureText: true,
-            suffixIcon: Image.network(
-              'https://www.figma.com/api/mcp/asset/af47f040-9bbf-4d74-bb78-bf53e4ca4621',
-              width: 16,
-              height: 16,
+            const SizedBox(height: 32),
+            AuthTextField(
+              controller: _usernameController,
+              label: 'اسم المستخدم',
+              hintText: 'اسم المستخدم',
+              validator: AuthValidators.usernameRegister,
             ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              RichText(
-                text: const TextSpan(
-                  style: TextStyle(fontSize: 12, height: 1.3),
-                  children: [
-                    TextSpan(
-                      text: 'الموافقه على ',
-                      style: TextStyle(color: Color(0xFFA7A7A7)),
-                    ),
-                    TextSpan(
-                      text: 'الشروط والاحكام',
-                      style: TextStyle(
-                        color: Color(0xFFA3090F),
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ],
+            const SizedBox(height: 20),
+            _RegisterPhoneField(controller: _phoneController),
+            const SizedBox(height: 20),
+            AuthTextField(
+              controller: _emailController,
+              label: 'البريد الالكتروني',
+              hintText: 'البريد الالكتروني',
+              keyboardType: TextInputType.emailAddress,
+              validator: AuthValidators.emailRequiredDotCom,
+            ),
+            const SizedBox(height: 20),
+            AuthTextField(
+              controller: _passwordController,
+              label: 'كلمة المرور',
+              hintText: 'كلمة المرور',
+              obscureText: !_isPasswordVisible,
+              suffixIcon: AuthPasswordVisibilitySuffix(
+                isVisible: _isPasswordVisible,
+                onPressed: () =>
+                    setState(() => _isPasswordVisible = !_isPasswordVisible),
+              ),
+              validator: AuthValidators.passwordRequiredMin8,
+            ),
+            const SizedBox(height: 20),
+            AuthTextField(
+              controller: _confirmPasswordController,
+              label: 'تأكيد كلمه المرور',
+              hintText: 'تأكيد كلمه المرور',
+              obscureText: !_isConfirmPasswordVisible,
+              suffixIcon: AuthPasswordVisibilitySuffix(
+                isVisible: _isConfirmPasswordVisible,
+                onPressed: () => setState(
+                  () => _isConfirmPasswordVisible = !_isConfirmPasswordVisible,
                 ),
               ),
-              const SizedBox(width: 13),
-              GestureDetector(
-                onTap: () => setState(() => _acceptedTerms = !_acceptedTerms),
-                child: Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: _acceptedTerms ? const Color(0xFFA3090F) : Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: _acceptedTerms ? const Color(0xFFA3090F) : const Color(0xFFE5E5E5),
-                      width: 0.5,
-                    ),
-                  ),
-                  child: _acceptedTerms
-                      ? Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Image.network(
-                            'https://www.figma.com/api/mcp/asset/d59dd236-993c-47a2-b029-70f3f41c9de8',
-                            fit: BoxFit.contain,
+              validator: (value) => AuthValidators.confirmPassword(
+                value,
+                _passwordController.text,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Material(
+                      color: AppColors.transparent,
+                      child: InkWell(
+                        onTap: _onToggleTerms,
+                        borderRadius: BorderRadius.circular(8),
+                        child: SizedBox(
+                          width: 48,
+                          height: 48,
+                          child: Center(
+                            child: Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                color: _acceptedTerms
+                                    ? AppColors.primary
+                                    : AppColors.surfaceCard,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: _acceptedTerms
+                                      ? AppColors.primary
+                                      : AppColors.border,
+                                  width: 0.5,
+                                ),
+                              ),
+                              child: _acceptedTerms
+                                  ? const Icon(
+                                      Icons.check_rounded,
+                                      size: 16,
+                                      color: AppColors.text,
+                                    )
+                                  : null,
+                            ),
                           ),
-                        )
-                      : null,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          AuthPrimaryButton(
-            label: 'إنشاء حساب',
-            onPressed: _acceptedTerms ? () => context.go(RouteNames.home) : null,
-          ),
-          const SizedBox(height: 24),
-          Center(
-            child: TextButton(
-              onPressed: () => context.go(RouteNames.login),
-              child: RichText(
-                text: const TextSpan(
-                  style: TextStyle(fontSize: 14),
-                  children: [
-                    TextSpan(
-                      text: 'هل لديك حساب من قبل ؟ ',
-                      style: TextStyle(color: Color(0xFFA7A7A7), height: 1.35),
-                    ),
-                    TextSpan(
-                      text: 'تسجيل دخول',
-                      style: TextStyle(
-                        color: Color(0xFFA3090F),
-                        fontWeight: FontWeight.w600,
-                        height: 1.25,
+                        ),
                       ),
+                    ),
+                    const SizedBox(width: 4),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'الموافقة على ',
+                          style: AppTextStyles.termsMuted,
+                        ),
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () =>
+                              context.push(RouteNames.termsAndConditions),
+                          child: const Text(
+                            'الشروط والاحكام',
+                            style: AppTextStyles.termsLink,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
-          ),
-        ],
+            if (_termsError != null) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  _termsError!,
+                  textAlign: TextAlign.right,
+                  style: AppTextStyles.termsInlineError,
+                ),
+              ),
+            ],
+            const SizedBox(height: 24),
+            AuthPrimaryButton(label: 'إنشاء حساب', onPressed: _onRegister),
+            const SizedBox(height: 24),
+            Center(
+              child: TextButton(
+                onPressed: () => context.go(RouteNames.login),
+                child: RichText(
+                  text: const TextSpan(
+                    style: AppTextStyles.richTextBase14,
+                    children: [
+                      TextSpan(
+                        text: 'هل لديك حساب من قبل ؟ ',
+                        style: AppTextStyles.footerSecondary,
+                      ),
+                      TextSpan(
+                        text: 'تسجيل دخول',
+                        style: AppTextStyles.linkEmphasis,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _PhoneField extends StatelessWidget {
+class _RegisterPhoneField extends StatelessWidget {
   final TextEditingController controller;
 
-  const _PhoneField({required this.controller});
+  const _RegisterPhoneField({required this.controller});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Text(
-          'رقم الجوال',
-          textAlign: TextAlign.right,
-          style: TextStyle(fontSize: 14, color: Color(0xFF1B1B1B), height: 1.35),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          height: 48,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFFE5E5E5), width: 0.5),
-          ),
-          child: Row(
-            children: [
-              Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      'https://www.figma.com/api/mcp/asset/1eb9f866-38e9-475c-a6a5-df5f41d9249d',
-                      width: 16,
-                      height: 16,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  const Text(
-                    '+20',
-                    style: TextStyle(fontSize: 12, color: Color(0xFFA7A7A7), height: 1.3),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(width: 0.5, height: 16, color: const Color(0xFFE5E5E5)),
-                  const SizedBox(width: 8),
-                ],
-              ),
-              Expanded(
-                child: TextField(
-                  controller: controller,
-                  keyboardType: TextInputType.phone,
-                  textAlign: TextAlign.right,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'رقم الجوال',
-                    hintStyle: TextStyle(fontSize: 12, color: Color(0xFFB9B9B9), height: 1.3),
-                  ),
+    return FormField<String>(
+      validator: (_) => AuthValidators.egyptianPhone(controller.text),
+      builder: (state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'رقم الجوال',
+              textAlign: TextAlign.right,
+              style: AppTextStyles.fieldLabel,
+            ),
+            const SizedBox(height: 8),
+            Container(
+              height: 48,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceCard,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: state.hasError
+                      ? AppColors.fieldError
+                      : AppColors.border,
+                  width: 0.5,
                 ),
               ),
-            ],
-          ),
-        ),
-      ],
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: controller,
+                      keyboardType: TextInputType.phone,
+                      textAlign: TextAlign.right,
+                      style: AppTextStyles.inputText,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[\d\s]')),
+                      ],
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'رقم الجوال',
+                        hintStyle: AppTextStyles.inputHint,
+                      ),
+                      onChanged: (_) => state.didChange(controller.text),
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 0.5,
+                        height: 16,
+                        color: AppColors.border,
+                      ),
+                      const SizedBox(width: 8),
+                      const Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Text('+20', style: AppTextStyles.termsMuted),
+                      ),
+                      const SizedBox(width: 4),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: const AppSvgImage.asset(
+                          AppAssets.flagEg,
+                          width: 16,
+                          height: 16,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsetsDirectional.only(top: 6, start: 4),
+                child: Text(
+                  state.errorText ?? '',
+                  textAlign: TextAlign.right,
+                  style: AppTextStyles.validationCaption,
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }
-

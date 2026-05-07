@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/router/route_names.dart';
+import 'package:food_user_app/core/theme/app_colors.dart';
+import 'package:food_user_app/core/widgets/app_media.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -10,9 +13,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  static const _splashLogoUrl =
-      'https://www.figma.com/api/mcp/asset/aa19c6ac-9d1f-4421-b8f5-bfaa8c6f6fc4';
-
   @override
   void initState() {
     super.initState();
@@ -27,13 +27,15 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFA3090F),
+      backgroundColor: AppColors.primary,
       body: Center(
         child: SizedBox(
           width: 142,
           height: 114,
-          child: Image(
-            image: NetworkImage(_splashLogoUrl),
+          child: AppSvgImage.asset(
+            AppAssets.appLogo,
+            width: 142,
+            height: 114,
             fit: BoxFit.contain,
           ),
         ),

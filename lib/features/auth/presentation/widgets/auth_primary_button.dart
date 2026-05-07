@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/core/theme/app_colors.dart';
+import 'package:food_user_app/core/theme/text_styles.dart';
 
 class AuthPrimaryButton extends StatelessWidget {
   final String label;
@@ -18,18 +20,17 @@ class AuthPrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFA3090F),
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.text,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
         ),
         child: Text(
           label,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          style: AppTextStyles.primaryButtonLabel,
         ),
       ),
     );
   }
 }
-

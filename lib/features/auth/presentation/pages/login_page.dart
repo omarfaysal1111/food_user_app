@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/router/route_names.dart';
+import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/login_form.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/social_login_buttons.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_scaffold.dart';
@@ -13,26 +16,30 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: Reconnect AuthBloc and real API after backend is ready.
     return AuthScaffold(
-      padding: const EdgeInsets.fromLTRB(16, 64, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Align(
             alignment: Alignment.centerLeft,
             child: AuthLanguageChip(
-              flagImageUrl:
-                  'https://www.figma.com/api/mcp/asset/6e3cc6f8-d12f-4d1c-9753-0507771dd5d7',
+              flagAsset: AppAssets.flagEg,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Language switch is coming soon')),
+                  SnackBar(
+                    content: Text(
+                      'Language switch is coming soon',
+                      style: AppTextStyles.snackBarMessage,
+                    ),
+                  ),
                 );
               },
             ),
           ),
           const SizedBox(height: 20),
           Center(
-            child: Image.network(
-              'https://www.figma.com/api/mcp/asset/553de026-e6c3-456a-aa8c-a7c4dbeee6b9',
+            child: AppSvgImage.asset(
+              AppAssets.loginLogo,
               width: 84,
               height: 68,
               fit: BoxFit.contain,
@@ -42,18 +49,13 @@ class LoginPage extends StatelessWidget {
           const Text(
             'تسجيل دخول !',
             textAlign: TextAlign.right,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF1B1B1B),
-              height: 1.4,
-            ),
+            style: AppTextStyles.screenTitle,
           ),
           const SizedBox(height: 8),
           const Text(
             'مرحبا بعودتك مره اخرى سجل دخول الان !',
             textAlign: TextAlign.right,
-            style: TextStyle(fontSize: 12, color: Color(0xFFA7A7A7), height: 1.3),
+            style: AppTextStyles.subtitle,
           ),
           const SizedBox(height: 32),
           LoginForm(
@@ -68,19 +70,15 @@ class LoginPage extends StatelessWidget {
               onPressed: () => context.push(RouteNames.register),
               child: RichText(
                 text: const TextSpan(
-                  style: TextStyle(fontSize: 14),
+                  style: AppTextStyles.richTextBase14,
                   children: [
                     TextSpan(
                       text: 'ليس لديك حساب من قبل ؟ ',
-                      style: TextStyle(color: Color(0xFFA7A7A7), height: 1.35),
+                      style: AppTextStyles.footerSecondary,
                     ),
                     TextSpan(
                       text: 'إنشاء حساب',
-                      style: TextStyle(
-                        color: Color(0xFFA3090F),
-                        fontWeight: FontWeight.w600,
-                        height: 1.25,
-                      ),
+                      style: AppTextStyles.linkEmphasis,
                     ),
                   ],
                 ),

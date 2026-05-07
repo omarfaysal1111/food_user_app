@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/core/theme/text_styles.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -20,7 +21,7 @@ class HomePlaceholderPage extends StatelessWidget {
         body: Center(
           child: Text(
             'الصفحة الرئيسية المؤقتة',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+            style: AppTextStyles.homeHeadline,
           ),
         ),
       ),
