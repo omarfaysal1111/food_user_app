@@ -141,6 +141,15 @@ class AppTextStyles {
     height: 1.25,
   );
 
+  /// Resend / secondary action when timer has not expired (muted).
+  static const resendActionDisabled = TextStyle(
+    fontFamily: _fontFamily,
+    fontSize: 14,
+    color: AppColors.paragraph,
+    fontWeight: FontWeight.w600,
+    height: 1.25,
+  );
+
   static const fieldLabel = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 14,

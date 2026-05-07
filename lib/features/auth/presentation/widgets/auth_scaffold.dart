@@ -20,9 +20,10 @@ class AuthScaffold extends StatelessWidget {
         child: SafeArea(
           child: GestureDetector(
             behavior: HitTestBehavior.translucent,
-            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            onTap: () => FocusScope.of(context).unfocus(),
             child: SingleChildScrollView(
               padding: padding,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               child: child,
             ),
           ),
@@ -31,4 +32,3 @@ class AuthScaffold extends StatelessWidget {
     );
   }
 }
-

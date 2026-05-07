@@ -41,7 +41,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return AuthScaffold(
-      padding: const EdgeInsets.fromLTRB(16, 64, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
       child: Form(
         key: _formKey,
         child: Column(

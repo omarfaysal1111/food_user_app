@@ -322,6 +322,9 @@ class _RegisterPhoneField extends StatelessWidget {
                         hintStyle: AppTextStyles.inputHint,
                       ),
                       onChanged: (_) => state.didChange(controller.text),
+                      onTapOutside: (_) {
+                        FocusScope.of(state.context).unfocus();
+                      },
                     ),
                   ),
                   Row(

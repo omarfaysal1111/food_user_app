@@ -26,7 +26,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   void _onSubmit() {
-    FocusManager.instance.primaryFocus?.unfocus();
+    FocusScope.of(context).unfocus();
     if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
@@ -36,7 +36,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return AuthScaffold(
-      padding: const EdgeInsets.fromLTRB(16, 64, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
       child: Form(
         key: _formKey,
         child: Column(

@@ -52,6 +52,9 @@ class AuthTextField extends StatelessWidget {
           style: AppTextStyles.inputText,
           maxLength: maxLength,
           inputFormatters: inputFormatters,
+          onTapOutside: (_) {
+            FocusScope.of(context).unfocus();
+          },
           buildCounter: maxLength != null
               ? (
                   context, {
