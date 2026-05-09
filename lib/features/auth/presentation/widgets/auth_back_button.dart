@@ -8,7 +8,7 @@ class AuthBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment.centerRight,
+      alignment: AlignmentDirectional.centerStart,
       child: SizedBox(
         width: 40,
         height: 40,

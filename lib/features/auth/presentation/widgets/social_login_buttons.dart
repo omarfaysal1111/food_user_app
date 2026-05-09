@@ -3,12 +3,14 @@ import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class SocialLoginButtons extends StatelessWidget {
   const SocialLoginButtons({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final dividerColor = AppColors.border(context);
     final appleAsset = Theme.of(context).brightness == Brightness.dark
         ? AppAssets.socialAppleDark
@@ -22,7 +24,7 @@ class SocialLoginButtons extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                'او',
+                l10n.socialDivider,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.dividerLabel(context),
               ),
@@ -36,7 +38,7 @@ class SocialLoginButtons extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'دخول عبر Apple قريباً',
+                  l10n.socialAppleSoon,
                   style: AppTextStyles.snackBarMessage(context),
                 ),
               ),
@@ -56,7 +58,7 @@ class SocialLoginButtons extends StatelessWidget {
             ),
           ),
           label: Text(
-            'دخول عبر Apple',
+            l10n.socialAppleLabel,
             style: AppTextStyles.socialButtonLabel(context),
           ),
         ),
@@ -66,7 +68,7 @@ class SocialLoginButtons extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'دخول عبر Google قريباً',
+                  l10n.socialGoogleSoon,
                   style: AppTextStyles.snackBarMessage(context),
                 ),
               ),
@@ -86,7 +88,7 @@ class SocialLoginButtons extends StatelessWidget {
             ),
           ),
           label: Text(
-            'دخول عبر Google',
+            l10n.socialGoogleLabel,
             style: AppTextStyles.socialButtonLabel(context),
           ),
         ),

@@ -8,10 +8,9 @@ class AuthLanguageChip extends StatelessWidget {
   final String? flagAsset;
   final VoidCallback onTap;
 
-  /// When null, shows [AppColors.flagRed] as a tiny placeholder (no network call).
   const AuthLanguageChip({
     super.key,
-    this.label = 'عربي',
+    required this.label,
     required this.flagAsset,
     required this.onTap,
   });

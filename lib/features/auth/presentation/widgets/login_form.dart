@@ -5,6 +5,7 @@ import 'package:food_user_app/core/utils/auth_validators.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_password_visibility_suffix.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class LoginForm extends StatefulWidget {
   final VoidCallback onForgotPassword;
@@ -26,6 +27,23 @@ class _LoginFormState extends State<LoginForm> {
   final _passwordController = TextEditingController();
   bool _isSubmitting = false;
   bool _isPasswordVisible = false;
+  bool _hasAttemptedValidation = false;
+  String? _lastLanguageCode;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final lang = Localizations.localeOf(context).languageCode;
+    if (_hasAttemptedValidation &&
+        _lastLanguageCode != null &&
+        _lastLanguageCode != lang) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _formKey.currentState?.validate();
+      });
+    }
+    _lastLanguageCode = lang;
+  }
 
   @override
   void dispose() {
@@ -34,14 +52,9 @@ class _LoginFormState extends State<LoginForm> {
     super.dispose();
   }
 
-  String? _validateEmail(String? value) =>
-      AuthValidators.emailRequiredDotCom(value);
-
-  String? _validatePassword(String? value) =>
-      AuthValidators.passwordRequiredMin8(value);
-
   void _onSubmit() {
     FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _hasAttemptedValidation = true);
     if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
@@ -57,34 +70,46 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final isArabic = Directionality.of(context) == TextDirection.rtl;
+
     return Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           AuthTextField(
             controller: _emailController,
-            label: 'البريد الالكتروني',
-            hintText: 'البريد الالكتروني',
+            label: l10n.loginEmailLabel,
+            hintText: l10n.loginEmailHint,
             keyboardType: TextInputType.emailAddress,
-            validator: _validateEmail,
+            validator: (value) => AuthValidators.emailRequiredDotCom(
+              value,
+              requiredMessage: l10n.validationEmailRequiredDotComRequired,
+              invalidMessage: l10n.validationEmailRequiredDotComInvalid,
+              dotComMessage: l10n.validationEmailRequiredDotComNeedsCom,
+            ),
           ),
           const SizedBox(height: 12),
           AuthTextField(
             controller: _passwordController,
-            label: 'كلمة المرور',
-            hintText: 'كلمة المرور',
+            label: l10n.loginPasswordLabel,
+            hintText: l10n.loginPasswordHint,
             obscureText: !_isPasswordVisible,
             suffixIcon: AuthPasswordVisibilitySuffix(
               isVisible: _isPasswordVisible,
               onPressed: () =>
                   setState(() => _isPasswordVisible = !_isPasswordVisible),
             ),
-            validator: _validatePassword,
+            validator: (value) => AuthValidators.passwordRequiredMin8(
+              value,
+              requiredMessage: l10n.validationPasswordRequired,
+              minMessage: l10n.validationPasswordMin8,
+            ),
           ),
           const SizedBox(height: 8),
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: isArabic ? Alignment.centerLeft : Alignment.centerRight,
             child: TextButton(
               onPressed: widget.onForgotPassword,
               style: TextButton.styleFrom(
@@ -93,26 +118,19 @@ class _LoginFormState extends State<LoginForm> {
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'نسيت كلمة المرور؟',
-                    style: AppTextStyles.textLink(context),
-                  ),
-                  const SizedBox(height: 2),
-                  Container(
-                    width: 92,
-                    height: 1,
-                    color: AppColors.onSurface(context),
-                  ),
-                ],
+              child: Text(
+                l10n.loginForgotPassword,
+                textAlign: isArabic ? TextAlign.left : TextAlign.right,
+                style: AppTextStyles.textLink(context).copyWith(
+                  decoration: TextDecoration.underline,
+                  decorationColor: AppColors.onSurface(context),
+                ),
               ),
             ),
           ),
           const SizedBox(height: 16),
           AuthPrimaryButton(
-            label: _isSubmitting ? '...' : 'تسجيل دخول',
+            label: _isSubmitting ? l10n.loginSubmitting : l10n.loginSubmit,
             onPressed: _isSubmitting ? null : _onSubmit,
           ),
         ],

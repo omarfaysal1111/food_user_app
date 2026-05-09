@@ -57,4 +57,52 @@ class AppColors {
   static Color iconMuted(BuildContext context) => hint(context);
 
   static Color cursor(BuildContext context) => onSurface(context);
+
+  /// Dimmed scrim behind modals (e.g. language picker).
+  static Color modalBarrierScrim(BuildContext context) =>
+      Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45);
+
+  /// Dialog/modal barrier (same scrim as [modalBarrierScrim]).
+  static Color overlay(BuildContext context) => modalBarrierScrim(context);
+
+  /// Centered language-picker card fill; slightly lifted from scaffold in dark mode.
+  static Color languageModalBackground(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    if (Theme.of(context).brightness == Brightness.dark) {
+      return Color.alphaBlend(
+        scheme.onSurface.withValues(alpha: 0.1),
+        scheme.surface,
+      );
+    }
+    return scheme.surface;
+  }
+
+  /// Language-picker card outline; stronger in dark mode for separation.
+  static Color languageModalBorder(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    if (Theme.of(context).brightness == Brightness.dark) {
+      return Color.alphaBlend(
+        scheme.onSurface.withValues(alpha: 0.28),
+        scheme.outline,
+      );
+    }
+    return scheme.outline;
+  }
+
+  /// Dividers inside the language picker; clearer in dark mode.
+  static Color languageModalDivider(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    if (Theme.of(context).brightness == Brightness.dark) {
+      return scheme.onSurface.withValues(alpha: 0.22);
+    }
+    return scheme.outline;
+  }
+
+  /// Dimmer behind the language picker in dark mode for contrast.
+  static Color languageModalBarrier(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final alpha =
+        Theme.of(context).brightness == Brightness.dark ? 0.58 : 0.45;
+    return scheme.onSurface.withValues(alpha: alpha);
+  }
 }

@@ -1,50 +1,67 @@
-/// Shared validation rules for auth flows (Arabic error messages).
+/// Shared validation rules for auth flows. Pass localized messages from
+/// [AppLocalizations] at the call site.
 class AuthValidators {
   AuthValidators._();
 
-  static String? emailRequiredDotCom(String? value) {
+  static String? emailRequiredDotCom(
+    String? value, {
+    required String requiredMessage,
+    required String invalidMessage,
+    required String dotComMessage,
+  }) {
     final email = value?.trim() ?? '';
     if (email.isEmpty) {
-      return 'البريد الالكتروني مطلوب';
+      return requiredMessage;
     }
     final basic = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
     if (!basic.hasMatch(email)) {
-      return 'يرجى إدخال بريد الكتروني صحيح';
+      return invalidMessage;
     }
     if (!email.toLowerCase().endsWith('.com')) {
-      return 'يجب أن ينتهي البريد الالكتروني بـ .com';
+      return dotComMessage;
     }
     return null;
   }
 
-  static String? passwordRequiredMin8(String? value) {
+  static String? passwordRequiredMin8(
+    String? value, {
+    required String requiredMessage,
+    required String minMessage,
+  }) {
     final password = value ?? '';
     if (password.isEmpty) {
-      return 'كلمة المرور مطلوبة';
+      return requiredMessage;
     }
     if (password.length < 8) {
-      return 'كلمة المرور يجب ألا تقل عن ٨ أحرف';
+      return minMessage;
     }
     return null;
   }
 
-  static String? usernameRegister(String? value) {
+  static String? usernameRegister(
+    String? value, {
+    required String requiredMessage,
+    required String minMessage,
+  }) {
     final name = value?.trim() ?? '';
     if (name.isEmpty) {
-      return 'اسم المستخدم مطلوب';
+      return requiredMessage;
     }
     if (name.length < 3) {
-      return 'اسم المستخدم يجب ألا يقل عن ٣ أحرف';
+      return minMessage;
     }
     return null;
   }
 
   /// Egyptian mobile: user types local number with optional leading 0.
-  /// Accepts 10 digits starting with 1, or 11 digits starting with 01, or full 12 digits with 20 prefix.
-  static String? egyptianPhone(String? value) {
+  static String? egyptianPhone(
+    String? value, {
+    required String requiredMessage,
+    required String invalidMessage,
+  }) {
     var digits = (value ?? '').replaceAll(RegExp(r'\D'), '');
     if (digits.isEmpty) {
-      return 'رقم الجوال مطلوب';
+      return requiredMessage;
     }
     if (digits.startsWith('20') && digits.length >= 12) {
       digits = digits.substring(2);
@@ -55,27 +72,36 @@ class AuthValidators {
     if (digits.length == 10 && digits.startsWith('1')) {
       return null;
     }
-    return 'يرجى إدخال رقم جوال مصري صحيح (١٠ أو ١١ رقماً بعد +٢٠)';
+    return invalidMessage;
   }
 
-  static String? confirmPassword(String? confirm, String password) {
+  static String? confirmPassword(
+    String? confirm,
+    String password, {
+    required String requiredMessage,
+    required String mismatchMessage,
+  }) {
     final c = confirm ?? '';
     if (c.isEmpty) {
-      return 'تأكيد كلمة المرور مطلوب';
+      return requiredMessage;
     }
     if (c != password) {
-      return 'كلمة المرور غير متطابقة';
+      return mismatchMessage;
     }
     return null;
   }
 
-  static String? otpSixDigits(String? value) {
+  static String? otpSixDigits(
+    String? value, {
+    required String requiredMessage,
+    required String invalidMessage,
+  }) {
     final s = (value ?? '').trim();
     if (s.isEmpty) {
-      return 'رمز التحقق مطلوب';
+      return requiredMessage;
     }
     if (s.length != 6 || RegExp(r'\D').hasMatch(s)) {
-      return 'يرجى إدخال ٦ أرقام';
+      return invalidMessage;
     }
     return null;
   }

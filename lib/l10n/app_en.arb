@@ -1,0 +1,89 @@
+{
+  "@@locale": "en",
+  "appTitle": "Food User App",
+
+  "changeAppLanguageTitle": "Change App Language",
+  "languageArabic": "Arabic",
+  "languageEnglish": "English",
+
+  "loginTitle": "Sign in!",
+  "loginSubtitle": "Welcome back — sign in to continue.",
+  "loginEmailLabel": "Email",
+  "loginEmailHint": "Email",
+  "loginPasswordLabel": "Password",
+  "loginPasswordHint": "Password",
+  "loginForgotPassword": "Forgot password?",
+  "loginSubmit": "Sign in",
+  "loginSubmitting": "…",
+  "loginNoAccount": "Don't have an account? ",
+  "loginCreateAccount": "Create account",
+
+  "registerWelcomeTitle": "Welcome!",
+  "registerWelcomeSubtitle": "Join us today and enjoy faster delivery.",
+  "registerUsernameLabel": "Username",
+  "registerUsernameHint": "Username",
+  "registerPhoneLabel": "Mobile number",
+  "registerPhoneHint": "Mobile number",
+  "registerEmailLabel": "Email",
+  "registerEmailHint": "Email",
+  "registerPasswordLabel": "Password",
+  "registerPasswordHint": "Password",
+  "registerConfirmPasswordLabel": "Confirm password",
+  "registerConfirmPasswordHint": "Confirm password",
+  "registerTermsPrefix": "I agree to the ",
+  "registerTermsLink": "Terms & Conditions",
+  "registerTermsError": "You must accept the Terms & Conditions.",
+  "registerSubmit": "Create account",
+  "registerHasAccount": "Already have an account? ",
+  "registerSignIn": "Sign in",
+
+  "forgotPasswordTitle": "Forgot password!",
+  "forgotPasswordSubtitle": "Enter your email so we can verify your account.",
+  "forgotPasswordSubmit": "Confirm",
+
+  "resetPasswordTitle": "Reset password!",
+  "resetPasswordSubtitle": "Enter a new password to keep your data secure.",
+  "resetPasswordSubmit": "Confirm",
+
+  "otpTitle": "Verification code",
+  "otpSubtitle": "Enter the code sent to you to confirm your mobile number and continue.",
+  "otpVerify": "Verify",
+  "otpTimerSeconds": "{seconds}s",
+  "@otpTimerSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "otpResend": "Resend code?",
+  "otpResentSnackbar": "Code sent again",
+
+  "termsTitle": "Terms & Conditions",
+  "termsBody": "This is the Terms & Conditions page for the app. By using this app, you agree to follow the usage policies, respect platform rules, and keep your account information confidential. This page will be updated with final legal content later.",
+
+  "onboardingTitleLine1": "Order more, wait less …",
+  "onboardingTitleAccent": " Order now",
+  "onboardingDescription": "Faster delivery, more options, and an experience designed\nfor your comfort with every order.",
+  "onboardingCta": "Start now",
+
+  "socialDivider": "or",
+  "socialAppleSoon": "Sign in with Apple is coming soon",
+  "socialGoogleSoon": "Sign in with Google is coming soon",
+  "socialAppleLabel": "Sign in with Apple",
+  "socialGoogleLabel": "Sign in with Google",
+
+  "validationEmailRequiredDotComRequired": "Email is required",
+  "validationEmailRequiredDotComInvalid": "Please enter a valid email address",
+  "validationEmailRequiredDotComNeedsCom": "Email must end with .com",
+  "validationPasswordRequired": "Password is required",
+  "validationPasswordMin8": "Password must be at least 8 characters",
+  "validationUsernameRequired": "Username is required",
+  "validationUsernameMin3": "Username must be at least 3 characters",
+  "validationPhoneRequired": "Mobile number is required",
+  "validationPhoneEgyptian": "Please enter a valid Egyptian mobile number (10 or 11 digits after +20)",
+  "validationConfirmPasswordRequired": "Password confirmation is required",
+  "validationConfirmPasswordMismatch": "Passwords do not match",
+  "validationOtpRequired": "Verification code is required",
+  "validationOtpSixDigits": "Please enter 6 digits"
+}

@@ -38,7 +38,7 @@ class AuthTextField extends StatelessWidget {
       children: [
         Text(
           label,
-          textAlign: TextAlign.right,
+          textAlign: TextAlign.start,
           style: AppTextStyles.fieldLabel(context),
         ),
         const SizedBox(height: 8),
@@ -48,7 +48,7 @@ class AuthTextField extends StatelessWidget {
           keyboardType: keyboardType,
           obscureText: obscureText,
           validator: validator,
-          textAlign: TextAlign.right,
+          textAlign: TextAlign.start,
           style: AppTextStyles.inputText(context),
           cursorColor: AppColors.cursor(context),
           maxLength: maxLength,

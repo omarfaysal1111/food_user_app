@@ -1,0 +1,89 @@
+{
+  "@@locale": "ar",
+  "appTitle": "تطبيق توصيل الطعام",
+
+  "changeAppLanguageTitle": "تغيير لغة التطبيق",
+  "languageArabic": "العربية",
+  "languageEnglish": "الإنجليزية",
+
+  "loginTitle": "تسجيل دخول !",
+  "loginSubtitle": "مرحبا بعودتك مره اخرى سجل دخول الان !",
+  "loginEmailLabel": "البريد الالكتروني",
+  "loginEmailHint": "البريد الالكتروني",
+  "loginPasswordLabel": "كلمة المرور",
+  "loginPasswordHint": "كلمة المرور",
+  "loginForgotPassword": "نسيت كلمة المرور؟",
+  "loginSubmit": "تسجيل دخول",
+  "loginSubmitting": "…",
+  "loginNoAccount": "ليس لديك حساب من قبل ؟ ",
+  "loginCreateAccount": "إنشاء حساب",
+
+  "registerWelcomeTitle": "مرحباً بك !",
+  "registerWelcomeSubtitle": "انضم إلينا اليوم واستمتع بتجربة توصيل أسرع",
+  "registerUsernameLabel": "اسم المستخدم",
+  "registerUsernameHint": "اسم المستخدم",
+  "registerPhoneLabel": "رقم الجوال",
+  "registerPhoneHint": "رقم الجوال",
+  "registerEmailLabel": "البريد الالكتروني",
+  "registerEmailHint": "البريد الالكتروني",
+  "registerPasswordLabel": "كلمة المرور",
+  "registerPasswordHint": "كلمة المرور",
+  "registerConfirmPasswordLabel": "تأكيد كلمه المرور",
+  "registerConfirmPasswordHint": "تأكيد كلمه المرور",
+  "registerTermsPrefix": "الموافقة على ",
+  "registerTermsLink": "الشروط والاحكام",
+  "registerTermsError": "يجب الموافقة على الشروط والاحكام",
+  "registerSubmit": "إنشاء حساب",
+  "registerHasAccount": "هل لديك حساب من قبل ؟ ",
+  "registerSignIn": "تسجيل دخول",
+
+  "forgotPasswordTitle": "نسيت كلمة المرور !",
+  "forgotPasswordSubtitle": "قم بادخال البريد الالكتروني الخاص بك للتأكد من حسابك",
+  "forgotPasswordSubmit": "تأكيد",
+
+  "resetPasswordTitle": "إعادة تعيين كلمة المرور !",
+  "resetPasswordSubtitle": "ادخل كلمة مرور جديدة لحماية جميع بياناتك",
+  "resetPasswordSubmit": "تأكيد",
+
+  "otpTitle": "كود التحقق",
+  "otpSubtitle": "أدخل الكود المرسل إليك لتأكيد رقم الجوال والمتابعة.",
+  "otpVerify": "تحقق",
+  "otpTimerSeconds": "{seconds} ثانية",
+  "@otpTimerSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "otpResend": "إعادة إرسال الكود ؟",
+  "otpResentSnackbar": "تم إرسال الكود مرة أخرى",
+
+  "termsTitle": "الشروط والاحكام",
+  "termsBody": "هذه صفحة الشروط والاحكام الخاصة بالتطبيق. باستخدامك لهذا التطبيق، فإنك توافق على الالتزام بسياسات الاستخدام، واحترام قواعد المنصة، والحفاظ على سرية بيانات حسابك. سيتم تحديث هذه الصفحة لاحقاً بالمحتوى القانوني النهائي.",
+
+  "onboardingTitleLine1": "أكل أكتر، انتظار أقل …",
+  "onboardingTitleAccent": " اطلب الآن",
+  "onboardingDescription": "توصيل أسرع، خيارات أكتر، وتجربة استخدام مصممة\nعلشان راحتك في كل طلب",
+  "onboardingCta": "أبدء الان",
+
+  "socialDivider": "او",
+  "socialAppleSoon": "دخول عبر Apple قريباً",
+  "socialGoogleSoon": "دخول عبر Google قريباً",
+  "socialAppleLabel": "دخول عبر Apple",
+  "socialGoogleLabel": "دخول عبر Google",
+
+  "validationEmailRequiredDotComRequired": "البريد الالكتروني مطلوب",
+  "validationEmailRequiredDotComInvalid": "يرجى إدخال بريد الكتروني صحيح",
+  "validationEmailRequiredDotComNeedsCom": "يجب أن ينتهي البريد الالكتروني بـ .com",
+  "validationPasswordRequired": "كلمة المرور مطلوبة",
+  "validationPasswordMin8": "كلمة المرور يجب ألا تقل عن ٨ أحرف",
+  "validationUsernameRequired": "اسم المستخدم مطلوب",
+  "validationUsernameMin3": "اسم المستخدم يجب ألا يقل عن ٣ أحرف",
+  "validationPhoneRequired": "رقم الجوال مطلوب",
+  "validationPhoneEgyptian": "يرجى إدخال رقم جوال مصري صحيح (١٠ أو ١١ رقماً بعد +٢٠)",
+  "validationConfirmPasswordRequired": "تأكيد كلمة المرور مطلوب",
+  "validationConfirmPasswordMismatch": "كلمة المرور غير متطابقة",
+  "validationOtpRequired": "رمز التحقق مطلوب",
+  "validationOtpSixDigits": "يرجى إدخال ٦ أرقام"
+}

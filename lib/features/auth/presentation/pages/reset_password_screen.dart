@@ -8,6 +8,7 @@ import 'package:food_user_app/features/auth/presentation/widgets/auth_password_v
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_scaffold.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -22,6 +23,23 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _confirmController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _hasAttemptedValidation = false;
+  String? _lastLanguageCode;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final lang = Localizations.localeOf(context).languageCode;
+    if (_hasAttemptedValidation &&
+        _lastLanguageCode != null &&
+        _lastLanguageCode != lang) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _formKey.currentState?.validate();
+      });
+    }
+    _lastLanguageCode = lang;
+  }
 
   @override
   void dispose() {
@@ -32,6 +50,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   void _onSubmit() {
     FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _hasAttemptedValidation = true);
     if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
@@ -40,6 +59,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AuthScaffold(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
       child: Form(
@@ -50,34 +71,38 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             const AuthBackButton(),
             const SizedBox(height: 20),
             Text(
-              'إعادة تعيين كلمة المرور !',
-              textAlign: TextAlign.right,
+              l10n.resetPasswordTitle,
+              textAlign: TextAlign.start,
               style: AppTextStyles.screenTitle(context),
             ),
             const SizedBox(height: 8),
             Text(
-              'ادخل كلمة مرور جديدة لحماية جميع بياناتك',
-              textAlign: TextAlign.right,
+              l10n.resetPasswordSubtitle,
+              textAlign: TextAlign.start,
               style: AppTextStyles.subtitle(context),
             ),
             const SizedBox(height: 32),
             AuthTextField(
               controller: _passController,
-              label: 'كلمة المرور',
-              hintText: 'كلمة المرور',
+              label: l10n.registerPasswordLabel,
+              hintText: l10n.registerPasswordHint,
               obscureText: !_isPasswordVisible,
               suffixIcon: AuthPasswordVisibilitySuffix(
                 isVisible: _isPasswordVisible,
                 onPressed: () =>
                     setState(() => _isPasswordVisible = !_isPasswordVisible),
               ),
-              validator: AuthValidators.passwordRequiredMin8,
+              validator: (value) => AuthValidators.passwordRequiredMin8(
+                value,
+                requiredMessage: l10n.validationPasswordRequired,
+                minMessage: l10n.validationPasswordMin8,
+              ),
             ),
             const SizedBox(height: 20),
             AuthTextField(
               controller: _confirmController,
-              label: 'تأكيد كلمه المرور',
-              hintText: 'تأكيد كلمه المرور',
+              label: l10n.registerConfirmPasswordLabel,
+              hintText: l10n.registerConfirmPasswordHint,
               obscureText: !_isConfirmPasswordVisible,
               suffixIcon: AuthPasswordVisibilitySuffix(
                 isVisible: _isConfirmPasswordVisible,
@@ -88,11 +113,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               validator: (value) => AuthValidators.confirmPassword(
                 value,
                 _passController.text,
+                requiredMessage: l10n.validationConfirmPasswordRequired,
+                mismatchMessage: l10n.validationConfirmPasswordMismatch,
               ),
             ),
             const SizedBox(height: 24),
             AuthPrimaryButton(
-              label: 'تأكيد',
+              label: l10n.resetPasswordSubmit,
               onPressed: _onSubmit,
             ),
           ],

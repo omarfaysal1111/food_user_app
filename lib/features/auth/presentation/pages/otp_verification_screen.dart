@@ -10,6 +10,7 @@ import 'package:food_user_app/core/utils/auth_validators.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_back_button.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_scaffold.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({super.key});
@@ -25,12 +26,29 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   Timer? _timer;
   int _secondsRemaining = 59;
+  bool _shouldRefreshValidationOnLocaleChange = false;
+  String? _lastLanguageCode;
 
   @override
   void initState() {
     super.initState();
     _otpFocusNode.addListener(_onFocusChanged);
     _startCountdown();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final lang = Localizations.localeOf(context).languageCode;
+    if (_shouldRefreshValidationOnLocaleChange &&
+        _lastLanguageCode != null &&
+        _lastLanguageCode != lang) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _formKey.currentState?.validate();
+      });
+    }
+    _lastLanguageCode = lang;
   }
 
   void _onFocusChanged() {
@@ -69,9 +87,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   void _onResend() {
     if (_secondsRemaining > 0) return;
+    final l10n = AppLocalizations.of(context)!;
     _otpController.clear();
     _formKey.currentState?.reset();
-    setState(() {});
+    setState(() {
+      _shouldRefreshValidationOnLocaleChange = false;
+    });
     _startCountdown();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _otpFocusNode.requestFocus();
@@ -79,7 +100,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'تم إرسال الكود مرة أخرى',
+          l10n.otpResentSnackbar,
           style: AppTextStyles.snackBarMessage(context),
         ),
       ),
@@ -89,8 +110,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   void _onVerify() {
     FocusScope.of(context).unfocus();
     if (!(_formKey.currentState?.validate() ?? false)) {
+      setState(() => _shouldRefreshValidationOnLocaleChange = true);
       return;
     }
+    setState(() => _shouldRefreshValidationOnLocaleChange = false);
     context.push(RouteNames.resetPassword);
   }
 
@@ -111,6 +134,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AuthScaffold(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
       child: Form(
@@ -121,23 +146,26 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             const AuthBackButton(),
             const SizedBox(height: 20),
             Text(
-              'كود التحقق',
-              textAlign: TextAlign.right,
+              l10n.otpTitle,
+              textAlign: TextAlign.start,
               style: AppTextStyles.screenTitle(context),
             ),
             const SizedBox(height: 8),
             Text(
-              'أدخل الكود المرسل إليك لتأكيد رقم الجوال والمتابعة.',
-              textAlign: TextAlign.right,
+              l10n.otpSubtitle,
+              textAlign: TextAlign.start,
               style: AppTextStyles.subtitle(context),
             ),
             const SizedBox(height: 32),
             FormField<String>(
-              validator: (_) =>
-                  AuthValidators.otpSixDigits(_otpController.text),
+              validator: (_) => AuthValidators.otpSixDigits(
+                _otpController.text,
+                requiredMessage: l10n.validationOtpRequired,
+                invalidMessage: l10n.validationOtpSixDigits,
+              ),
               builder: (fieldState) {
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     SizedBox(
                       height: 48,
@@ -145,34 +173,37 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         clipBehavior: Clip.none,
                         children: [
                           Positioned.fill(
-                            child: TextField(
-                              controller: _otpController,
-                              focusNode: _otpFocusNode,
-                              keyboardType: TextInputType.number,
-                              maxLength: 6,
-                              textAlign: TextAlign.left,
-                              textInputAction: TextInputAction.done,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              style: AppTextStyles.hiddenOtpInput,
-                              showCursor: false,
-                              cursorColor: AppColors.transparent,
-                              cursorWidth: 0,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                filled: false,
-                                contentPadding: EdgeInsets.zero,
-                                counterText: '',
+                            child: Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: TextField(
+                                controller: _otpController,
+                                focusNode: _otpFocusNode,
+                                keyboardType: TextInputType.number,
+                                maxLength: 6,
+                                textAlign: TextAlign.left,
+                                textInputAction: TextInputAction.done,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                style: AppTextStyles.hiddenOtpInput,
+                                showCursor: false,
+                                cursorColor: AppColors.transparent,
+                                cursorWidth: 0,
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  filled: false,
+                                  contentPadding: EdgeInsets.zero,
+                                  counterText: '',
+                                ),
+                                onChanged: (value) {
+                                  fieldState.didChange(value);
+                                  setState(() {});
+                                },
+                                onTapOutside: (_) =>
+                                    FocusScope.of(context).unfocus(),
                               ),
-                              onChanged: (value) {
-                                fieldState.didChange(value);
-                                setState(() {});
-                              },
-                              onTapOutside: (_) =>
-                                  FocusScope.of(context).unfocus(),
                             ),
                           ),
                           Directionality(
@@ -199,10 +230,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     ),
                     if (fieldState.hasError)
                       Padding(
-                        padding: const EdgeInsets.only(top: 6),
+                        padding: const EdgeInsetsDirectional.only(top: 6),
                         child: Text(
                           fieldState.errorText ?? '',
-                          textAlign: TextAlign.right,
+                          textAlign: TextAlign.start,
                           style: AppTextStyles.validationCaption,
                         ),
                       ),
@@ -212,7 +243,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             ),
             const SizedBox(height: 20),
             AuthPrimaryButton(
-              label: 'تحقق',
+              label: l10n.otpVerify,
               onPressed: _onVerify,
             ),
             const SizedBox(height: 24),
@@ -220,14 +251,14 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '$_secondsRemaining ثانية',
+                  l10n.otpTimerSeconds(_secondsRemaining),
                   style: AppTextStyles.timerText(context),
                 ),
                 const SizedBox(width: 4),
                 GestureDetector(
                   onTap: _onResend,
                   child: Text(
-                    'إعادة إرسال الكود ؟',
+                    l10n.otpResend,
                     style: _secondsRemaining > 0
                         ? AppTextStyles.resendActionDisabled(context)
                         : AppTextStyles.linkEmphasis,
