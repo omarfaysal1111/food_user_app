@@ -75,7 +75,7 @@ class AppTheme {
           surface: Color(0xFF0F0F0F),
           onSurface: Color(0xFFFFFFFF),
           onSurfaceVariant: Color(0xFF999999),
-          outline: Color(0xFF141414),
+          outline: Color(0xFF1A1A1A),
         ),
         snackBarTheme: SnackBarThemeData(
           backgroundColor: const Color(0xFF1A1A1A),

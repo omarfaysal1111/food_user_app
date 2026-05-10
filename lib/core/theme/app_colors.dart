@@ -12,6 +12,7 @@ class AppColors {
   static const error = Color(0xFFEC2D30);
   static const success = Color(0xFF0C9D61);
   static const warning = Color(0xFFF1D060);
+  static const _neutralDarkStroke = Color(0xFF1A1A1A);
 
   /// Legacy neutral surface (non-auth); prefer [surfaceCard] in new code.
   static const surface = Color(0xFFF8F9FA);
@@ -34,7 +35,9 @@ class AppColors {
       Theme.of(context).colorScheme.surface;
 
   static Color border(BuildContext context) =>
-      Theme.of(context).colorScheme.outline;
+      Theme.of(context).brightness == Brightness.dark
+          ? _neutralDarkStroke
+          : Theme.of(context).colorScheme.outline;
 
   static Color hint(BuildContext context) => Theme.of(context).hintColor;
 
@@ -81,10 +84,7 @@ class AppColors {
   static Color languageModalBorder(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     if (Theme.of(context).brightness == Brightness.dark) {
-      return Color.alphaBlend(
-        scheme.onSurface.withValues(alpha: 0.28),
-        scheme.outline,
-      );
+      return _neutralDarkStroke;
     }
     return scheme.outline;
   }
@@ -93,16 +93,18 @@ class AppColors {
   static Color languageModalDivider(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     if (Theme.of(context).brightness == Brightness.dark) {
-      return scheme.onSurface.withValues(alpha: 0.22);
+      return _neutralDarkStroke;
     }
     return scheme.outline;
   }
 
-  /// Dimmer behind the language picker in dark mode for contrast.
-  static Color languageModalBarrier(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final alpha =
-        Theme.of(context).brightness == Brightness.dark ? 0.58 : 0.45;
-    return scheme.onSurface.withValues(alpha: alpha);
-  }
+/// Dimmer behind the language picker in dark mode for contrast.
+static Color languageModalBarrier(BuildContext context) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+
+  return isDark
+      ? const Color(0x80000000)
+      : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45);
 }
+}
+  

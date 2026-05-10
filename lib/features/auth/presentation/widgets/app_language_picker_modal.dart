@@ -42,7 +42,7 @@ Future<void> showAppLanguagePicker(BuildContext context) {
               borderRadius: BorderRadius.circular(28),
               side: BorderSide(
                 color: AppColors.languageModalBorder(dialogContext),
-                width: 1,
+                width: 0.5,
               ),
             ),
             clipBehavior: Clip.antiAlias,
@@ -61,7 +61,7 @@ Future<void> showAppLanguagePicker(BuildContext context) {
                     padding: const EdgeInsets.only(top: 16, bottom: 8),
                     child: Divider(
                       height: 1,
-                      thickness: 1,
+                      thickness: 0.5,
                       color: AppColors.languageModalDivider(dialogContext),
                     ),
                   ),
@@ -77,7 +77,7 @@ Future<void> showAppLanguagePicker(BuildContext context) {
                   ),
                   Divider(
                     height: 1,
-                    thickness: 1,
+                    thickness: 0.5,
                     color: AppColors.languageModalDivider(dialogContext),
                   ),
                   _LanguagePickerOptionRow(
