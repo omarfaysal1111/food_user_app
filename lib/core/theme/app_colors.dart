@@ -36,8 +36,8 @@ class AppColors {
 
   static Color border(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark
-          ? _neutralDarkStroke
-          : Theme.of(context).colorScheme.outline;
+      ? _neutralDarkStroke
+      : Theme.of(context).colorScheme.outline;
 
   static Color hint(BuildContext context) => Theme.of(context).hintColor;
 
@@ -47,14 +47,14 @@ class AppColors {
   /// Focus ring for text fields (Figma dark: white hairline).
   static Color fieldFocusBorder(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark
-          ? text
-          : onSurface(context);
+      ? text
+      : onSurface(context);
 
   /// OTP cell when focused (light: dark border; dark: white).
   static Color otpActiveBorder(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark
-          ? text
-          : const Color(0xFF141414);
+      ? text
+      : const Color(0xFF141414);
 
   /// Muted icons (e.g. password visibility).
   static Color iconMuted(BuildContext context) => hint(context);
@@ -68,16 +68,11 @@ class AppColors {
   /// Dialog/modal barrier (same scrim as [modalBarrierScrim]).
   static Color overlay(BuildContext context) => modalBarrierScrim(context);
 
-  /// Centered language-picker card fill; slightly lifted from scaffold in dark mode.
+  /// Centered language-picker card fill.
   static Color languageModalBackground(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    if (Theme.of(context).brightness == Brightness.dark) {
-      return Color.alphaBlend(
-        scheme.onSurface.withValues(alpha: 0.1),
-        scheme.surface,
-      );
-    }
-    return scheme.surface;
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF080404)
+        : const Color(0xFFFAFAFA);
   }
 
   /// Language-picker card outline; stronger in dark mode for separation.
@@ -98,13 +93,12 @@ class AppColors {
     return scheme.outline;
   }
 
-/// Dimmer behind the language picker in dark mode for contrast.
-static Color languageModalBarrier(BuildContext context) {
-  final isDark = Theme.of(context).brightness == Brightness.dark;
+  /// Dimmer behind the language picker in dark mode for contrast.
+  static Color languageModalBarrier(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-  return isDark
-      ? const Color(0x80000000)
-      : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45);
+    return isDark
+        ? const Color(0x80000000)
+        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45);
+  }
 }
-}
-  
