@@ -1,27 +1,156 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+
 import 'package:food_user_app/core/errors/exceptions.dart';
 import 'package:food_user_app/core/errors/failures.dart';
+import 'package:food_user_app/core/network/dio_error_mapper.dart';
+import 'package:food_user_app/core/network/network_info.dart';
+import 'package:food_user_app/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:food_user_app/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:food_user_app/features/auth/data/models/auth_response_model.dart';
 import 'package:food_user_app/features/auth/domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthRemoteDataSource remoteDataSource;
+  AuthRepositoryImpl({
+    required this.remoteDataSource,
+    required this.localDataSource,
+    required this.networkInfo,
+  });
 
-  AuthRepositoryImpl({required this.remoteDataSource});
+  final AuthRemoteDataSource remoteDataSource;
+  final AuthLocalDataSource localDataSource;
+  final NetworkInfo networkInfo;
 
   @override
   Future<Either<Failure, User>> login({
     required String email,
     required String password,
   }) async {
-    try {
-      final user = await remoteDataSource.login(email: email, password: password);
-      return Right(user);
-    } on AuthException catch (error) {
-      return Left(AuthFailure(error.message));
-    } on ServerException catch (error) {
-      return Left(ServerFailure(error.message));
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure('No internet connection'));
     }
+    try {
+      final auth = await remoteDataSource.login(
+        email: email,
+        password: password,
+      );
+      await _persistSession(auth);
+      return Right(auth.user);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> register({
+    required String name,
+    required String email,
+    required String password,
+    required String phone,
+    String role = 'ROLE_CUSTOMER',
+  }) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure('No internet connection'));
+    }
+    try {
+      final auth = await remoteDataSource.register(
+        name: name,
+        email: email,
+        password: password,
+        role: role,
+      );
+      await _persistSession(auth);
+      return Right(auth.user);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User?>> getCachedUser() async {
+    try {
+      final user = await localDataSource.getCachedUser();
+      return Right(user);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(e.message));
+    } catch (e) {
+      return Left(UnknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String?>> getCachedToken() async {
+    try {
+      final token = await localDataSource.getAccessToken();
+      return Right(token);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(e.message));
+    } catch (e) {
+      return Left(UnknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<bool> get isLoggedIn async {
+    try {
+      final token = await localDataSource.getAccessToken();
+      if (token == null || token.isEmpty) return false;
+      final user = await localDataSource.getCachedUser();
+      return user != null;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> logout() async {
+    final refresh = await localDataSource.getRefreshToken();
+    if (refresh != null &&
+        refresh.isNotEmpty &&
+        await networkInfo.isConnected) {
+      try {
+        await remoteDataSource.logout(refreshToken: refresh);
+      } catch (_) {
+        // Best-effort remote logout; local session is cleared regardless.
+      }
+    }
+    await _clearLocalSession();
+    return const Right(unit);
+  }
+
+  Future<void> _clearLocalSession() async {
+    await localDataSource.clearTokens();
+    await localDataSource.clearCachedUser();
+  }
+
+  Future<void> _persistSession(AuthResponseModel auth) async {
+    await localDataSource.cacheAccessToken(auth.accessToken);
+    final refresh = auth.refreshToken;
+    if (refresh != null && refresh.isNotEmpty) {
+      await localDataSource.cacheRefreshToken(refresh);
+    } else {
+      await localDataSource.clearRefreshToken();
+    }
+    await localDataSource.cacheUser(auth.user);
+  }
+
+  Failure _mapExceptionToFailure(Object error) {
+    if (error is DioException) {
+      return _mapExceptionToFailure(DioErrorMapper.map(error));
+    }
+    if (error is AuthException) return AuthFailure(error.message);
+    if (error is ServerException) return ServerFailure(error.message);
+    if (error is NetworkException) return NetworkFailure(error.message);
+    if (error is TimeoutException) return TimeoutFailure(error.message);
+    if (error is UnauthorizedException) {
+      return UnauthorizedFailure(error.message);
+    }
+    if (error is ValidationException) {
+      return ValidationFailure(error.message, errors: error.errors);
+    }
+    if (error is UnknownException) return UnknownFailure(error.message);
+    if (error is CacheException) return CacheFailure(error.message);
+    return UnknownFailure(error.toString());
   }
 }

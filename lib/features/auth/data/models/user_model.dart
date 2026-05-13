@@ -4,14 +4,22 @@ class UserModel extends User {
   const UserModel({
     required super.id,
     required super.name,
-    required super.token,
+    super.email,
+    super.role,
   });
 
+  /// Parses a flat user-shaped JSON object.
+  ///
+  /// Supports both `id` and `userId` as the id field so this model can be
+  /// reused from the register response (which uses `userId`) and from any
+  /// future `GET /auth/me` style endpoint (which typically uses `id`).
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    final rawId = json['userId'] ?? json['id'];
     return UserModel(
-      id: json['id']?.toString() ?? '',
+      id: rawId?.toString() ?? '',
       name: json['name']?.toString() ?? '',
-      token: json['token']?.toString() ?? '',
+      email: json['email']?.toString(),
+      role: json['role']?.toString(),
     );
   }
 
@@ -19,7 +27,8 @@ class UserModel extends User {
     return {
       'id': id,
       'name': name,
-      'token': token,
+      if (email != null) 'email': email,
+      if (role != null) 'role': role,
     };
   }
 }

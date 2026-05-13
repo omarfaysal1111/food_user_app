@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/utils/auth_validators.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_password_visibility_suffix.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
@@ -25,7 +29,6 @@ class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isSubmitting = false;
   bool _isPasswordVisible = false;
   bool _hasAttemptedValidation = false;
   String? _lastLanguageCode;
@@ -59,13 +62,12 @@ class _LoginFormState extends State<LoginForm> {
       return;
     }
 
-    // TODO: Reconnect AuthBloc and real API after backend is ready.
-    setState(() => _isSubmitting = true);
-    Future<void>.delayed(const Duration(seconds: 1), () {
-      if (!mounted) return;
-      setState(() => _isSubmitting = false);
-      widget.onLoginSuccess();
-    });
+    context.read<AuthBloc>().add(
+          LoginSubmitted(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          ),
+        );
   }
 
   @override
@@ -73,68 +75,96 @@ class _LoginFormState extends State<LoginForm> {
     final l10n = AppLocalizations.of(context)!;
     final isArabic = Directionality.of(context) == TextDirection.rtl;
 
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          AuthTextField(
-            controller: _emailController,
-            label: l10n.loginEmailLabel,
-            hintText: l10n.loginEmailHint,
-            keyboardType: TextInputType.emailAddress,
-            validator: (value) => AuthValidators.emailRequiredDotCom(
-              value,
-              requiredMessage: l10n.validationEmailRequiredDotComRequired,
-              invalidMessage: l10n.validationEmailRequiredDotComInvalid,
-              dotComMessage: l10n.validationEmailRequiredDotComNeedsCom,
-            ),
-          ),
-          const SizedBox(height: 12),
-          AuthTextField(
-            controller: _passwordController,
-            label: l10n.loginPasswordLabel,
-            hintText: l10n.loginPasswordHint,
-            obscureText: !_isPasswordVisible,
-            suffixIcon: AuthPasswordVisibilitySuffix(
-              isVisible: _isPasswordVisible,
-              onPressed: () =>
-                  setState(() => _isPasswordVisible = !_isPasswordVisible),
-            ),
-            validator: (value) => AuthValidators.passwordRequiredMin8(
-              value,
-              requiredMessage: l10n.validationPasswordRequired,
-              minMessage: l10n.validationPasswordMin8,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Align(
-            alignment: isArabic ? Alignment.centerLeft : Alignment.centerRight,
-            child: TextButton(
-              onPressed: widget.onForgotPassword,
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.onSurface(context),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    return BlocConsumer<AuthBloc, AuthState>(
+      listenWhen: (prev, curr) =>
+          prev != curr && (curr is AuthSuccess || curr is AuthError),
+      listener: (context, state) {
+        if (state is AuthSuccess) {
+          widget.onLoginSuccess();
+        } else if (state is AuthError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                state.message,
+                style: AppTextStyles.snackBarMessage(context),
               ),
-              child: Text(
-                l10n.loginForgotPassword,
-                textAlign: isArabic ? TextAlign.left : TextAlign.right,
-                style: AppTextStyles.textLink(context).copyWith(
-                  decoration: TextDecoration.underline,
-                  decorationColor: AppColors.onSurface(context),
+            ),
+          );
+        }
+      },
+      buildWhen: (prev, curr) =>
+          curr is AuthStateInitial ||
+          curr is AuthLoading ||
+          curr is AuthSuccess ||
+          curr is AuthError,
+      builder: (context, state) {
+        final isSubmitting = state is AuthLoading;
+        return Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AuthTextField(
+                controller: _emailController,
+                label: l10n.loginEmailLabel,
+                hintText: l10n.loginEmailHint,
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) => AuthValidators.emailRequiredDotCom(
+                  value,
+                  requiredMessage: l10n.validationEmailRequiredDotComRequired,
+                  invalidMessage: l10n.validationEmailRequiredDotComInvalid,
+                  dotComMessage: l10n.validationEmailRequiredDotComNeedsCom,
                 ),
               ),
-            ),
+              const SizedBox(height: 12),
+              AuthTextField(
+                controller: _passwordController,
+                label: l10n.loginPasswordLabel,
+                hintText: l10n.loginPasswordHint,
+                obscureText: !_isPasswordVisible,
+                suffixIcon: AuthPasswordVisibilitySuffix(
+                  isVisible: _isPasswordVisible,
+                  onPressed: () =>
+                      setState(() => _isPasswordVisible = !_isPasswordVisible),
+                ),
+                validator: (value) => AuthValidators.passwordRequiredMin8(
+                  value,
+                  requiredMessage: l10n.validationPasswordRequired,
+                  minMessage: l10n.validationPasswordMin8,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment:
+                    isArabic ? Alignment.centerLeft : Alignment.centerRight,
+                child: TextButton(
+                  onPressed: widget.onForgotPassword,
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.onSurface(context),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    l10n.loginForgotPassword,
+                    textAlign: isArabic ? TextAlign.left : TextAlign.right,
+                    style: AppTextStyles.textLink(context).copyWith(
+                      decoration: TextDecoration.underline,
+                      decorationColor: AppColors.onSurface(context),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              AuthPrimaryButton(
+                label: isSubmitting ? l10n.loginSubmitting : l10n.loginSubmit,
+                onPressed: isSubmitting ? null : _onSubmit,
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          AuthPrimaryButton(
-            label: _isSubmitting ? l10n.loginSubmitting : l10n.loginSubmit,
-            onPressed: _isSubmitting ? null : _onSubmit,
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

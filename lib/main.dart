@@ -7,7 +7,7 @@ import 'package:food_user_app/core/localization/locale_controller.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
-  await di.init();
+  await di.init(prefs: prefs);
   final localeController = LocaleController(prefs);
   localeController.hydrate();
   runApp(App(localeController: localeController));

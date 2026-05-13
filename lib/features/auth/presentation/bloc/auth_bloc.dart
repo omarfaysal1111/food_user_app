@@ -1,13 +1,51 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:food_user_app/core/usecases/usecase.dart';
+import 'package:food_user_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:food_user_app/features/auth/domain/usecases/login_usecase.dart';
+import 'package:food_user_app/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:food_user_app/features/auth/domain/usecases/register_usecase.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final LoginUseCase loginUseCase;
-
-  AuthBloc({required this.loginUseCase}) : super(const AuthStateInitial()) {
+  AuthBloc({
+    required this.loginUseCase,
+    required this.registerUseCase,
+    required this.logoutUseCase,
+    required this.authRepository,
+  }) : super(const AuthStateInitial()) {
+    on<AuthCheckRequested>(_onAuthCheckRequested);
     on<LoginSubmitted>(_onLoginSubmitted);
+    on<RegisterSubmitted>(_onRegisterSubmitted);
+    on<LogoutRequested>(_onLogoutRequested);
+  }
+
+  final LoginUseCase loginUseCase;
+  final RegisterUseCase registerUseCase;
+  final LogoutUseCase logoutUseCase;
+  final AuthRepository authRepository;
+
+  Future<void> _onAuthCheckRequested(
+    AuthCheckRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    final loggedIn = await authRepository.isLoggedIn;
+    if (!loggedIn) {
+      emit(const Unauthenticated());
+      return;
+    }
+    final cachedUser = await authRepository.getCachedUser();
+    cachedUser.fold(
+      (_) => emit(const Unauthenticated()),
+      (user) {
+        if (user == null) {
+          emit(const Unauthenticated());
+        } else {
+          emit(Authenticated(user));
+        }
+      },
+    );
   }
 
   Future<void> _onLoginSubmitted(
@@ -24,5 +62,35 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (failure) => emit(AuthError(failure.message)),
       (user) => emit(AuthSuccess(user)),
     );
+  }
+
+  Future<void> _onRegisterSubmitted(
+    RegisterSubmitted event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const RegisterInProgress());
+
+    final result = await registerUseCase(
+      RegisterParams(
+        name: event.name.trim(),
+        email: event.email.trim(),
+        password: event.password,
+        phone: event.phone.trim(),
+      ),
+    );
+
+    result.fold(
+      (failure) => emit(RegisterFailure(failure.message)),
+      (user) => emit(RegisterSuccess(user)),
+    );
+  }
+
+  Future<void> _onLogoutRequested(
+    LogoutRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const LogoutInProgress());
+    await logoutUseCase(const NoParams());
+    emit(const Unauthenticated());
   }
 }
