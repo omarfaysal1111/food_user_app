@@ -15,6 +15,7 @@ abstract class AuthRemoteDataSource {
     required String name,
     required String email,
     required String password,
+    required String phone,
     String role,
   });
 
@@ -56,6 +57,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String name,
     required String email,
     required String password,
+    required String phone,
     String role = 'ROLE_CUSTOMER',
   }) async {
     try {
@@ -66,6 +68,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'email': email,
           'password': password,
           'role': role,
+          'phone': _toEgyptianE164(phone),
         },
       );
       final raw = response.data;
@@ -76,6 +79,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }
+  }
+
+  /// Normalizes an Egyptian mobile number to E.164 (`+20XXXXXXXXXX`).
+  /// Accepts inputs like `01012345678`, `1012345678`, `201012345678`,
+  /// or `+201012345678` (with optional spaces).
+  static String _toEgyptianE164(String raw) {
+    var digits = raw.replaceAll(RegExp(r'\D'), '');
+    if (digits.startsWith('20')) {
+      digits = digits.substring(2);
+    }
+    if (digits.startsWith('0')) {
+      digits = digits.substring(1);
+    }
+    return '+20$digits';
   }
 
   @override

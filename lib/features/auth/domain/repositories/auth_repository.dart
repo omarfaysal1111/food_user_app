@@ -8,8 +8,6 @@ abstract class AuthRepository {
     required String password,
   });
 
-  /// [phone] is accepted for UI / future backend support but is not sent
-  /// to the API until the backend accepts it.
   Future<Either<Failure, User>> register({
     required String name,
     required String email,
