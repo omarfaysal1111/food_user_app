@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/utils/auth_validators.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_back_button.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_scaffold.dart';
@@ -49,54 +53,82 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
-    context.push(RouteNames.otp);
+    context.read<AuthBloc>().add(
+      ForgotPasswordSubmitted(email: _emailController.text.trim()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return AuthScaffold(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const AuthBackButton(),
-            const SizedBox(height: 20),
-            Text(
-              l10n.forgotPasswordTitle,
-              textAlign: TextAlign.start,
-              style: AppTextStyles.screenTitle(context),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.forgotPasswordSubtitle,
-              textAlign: TextAlign.start,
-              style: AppTextStyles.subtitle(context),
-            ),
-            const SizedBox(height: 32),
-            AuthTextField(
-              controller: _emailController,
-              label: l10n.registerEmailLabel,
-              hintText: l10n.registerEmailHint,
-              keyboardType: TextInputType.emailAddress,
-              validator: (value) => AuthValidators.emailRequiredDotCom(
-                value,
-                requiredMessage: l10n.validationEmailRequiredDotComRequired,
-                invalidMessage: l10n.validationEmailRequiredDotComInvalid,
-                dotComMessage: l10n.validationEmailRequiredDotComNeedsCom,
+    return BlocConsumer<AuthBloc, AuthState>(
+      listenWhen: (prev, curr) =>
+          curr is ForgotPasswordSuccess || curr is ForgotPasswordFailure,
+      listener: (context, state) {
+        if (state is ForgotPasswordSuccess) {
+          context.push(RouteNames.otp, extra: state.email);
+        } else if (state is ForgotPasswordFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                state.message,
+                style: AppTextStyles.snackBarMessage(context),
               ),
             ),
-            const SizedBox(height: 20),
-            AuthPrimaryButton(
-              label: l10n.forgotPasswordSubmit,
-              onPressed: _onSubmit,
+          );
+        }
+      },
+      buildWhen: (prev, curr) =>
+          curr is ForgotPasswordInProgress ||
+          curr is ForgotPasswordSuccess ||
+          curr is ForgotPasswordFailure ||
+          curr is AuthStateInitial,
+      builder: (context, state) {
+        final l10n = AppLocalizations.of(context)!;
+        final isLoading = state is ForgotPasswordInProgress;
+
+        return AuthScaffold(
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const AuthBackButton(),
+                const SizedBox(height: 20),
+                Text(
+                  l10n.forgotPasswordTitle,
+                  textAlign: TextAlign.start,
+                  style: AppTextStyles.screenTitle(context),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.forgotPasswordSubtitle,
+                  textAlign: TextAlign.start,
+                  style: AppTextStyles.subtitle(context),
+                ),
+                const SizedBox(height: 32),
+                AuthTextField(
+                  controller: _emailController,
+                  label: l10n.registerEmailLabel,
+                  hintText: l10n.registerEmailHint,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) => AuthValidators.emailRequiredDotCom(
+                    value,
+                    requiredMessage: l10n.validationEmailRequiredDotComRequired,
+                    invalidMessage: l10n.validationEmailRequiredDotComInvalid,
+                    dotComMessage: l10n.validationEmailRequiredDotComNeedsCom,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                AuthPrimaryButton(
+                  label: l10n.forgotPasswordSubmit,
+                  onPressed: isLoading ? null : _onSubmit,
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

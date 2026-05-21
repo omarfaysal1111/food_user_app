@@ -69,6 +69,38 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, Unit>> sendOtp({
+    required String email,
+    String role = 'ROLE_CUSTOMER',
+  }) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure('No internet connection'));
+    }
+    try {
+      await remoteDataSource.sendOtp(email: email, role: role);
+      return const Right(unit);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure('No internet connection'));
+    }
+    try {
+      await remoteDataSource.verifyOtp(email: email, otp: otp);
+      return const Right(unit);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
   Future<Either<Failure, User?>> getCachedUser() async {
     try {
       final user = await localDataSource.getCachedUser();

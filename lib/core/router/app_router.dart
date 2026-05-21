@@ -47,9 +47,21 @@ class AppRouter {
       GoRoute(path: RouteNames.onboarding,        builder: (c, s) => const OnboardingScreen()),
       GoRoute(path: RouteNames.login,             builder: (c, s) => const LoginScreen()),
       GoRoute(path: RouteNames.register,          builder: (c, s) => const RegisterScreen()),
-      GoRoute(path: RouteNames.otp,               builder: (c, s) => const OtpVerificationScreen()),
+      GoRoute(
+        path: RouteNames.otp,
+        builder: (c, s) {
+          final email = s.extra is String ? s.extra as String : '';
+          return OtpVerificationScreen(email: email);
+        },
+      ),
       GoRoute(path: RouteNames.forgotPassword,    builder: (c, s) => const ForgotPasswordScreen()),
-      GoRoute(path: RouteNames.resetPassword,     builder: (c, s) => const ResetPasswordScreen()),
+      GoRoute(
+        path: RouteNames.resetPassword,
+        builder: (c, s) {
+          final email = s.extra is String ? s.extra as String : '';
+          return ResetPasswordScreen(email: email);
+        },
+      ),
       GoRoute(path: RouteNames.termsAndConditions, builder: (c, s) => const TermsAndConditionsScreen()),
       GoRoute(path: RouteNames.home,              builder: (c, s) => const HomeScreen()),
       GoRoute(path: RouteNames.search,            builder: (c, s) => const SearchScreen()),

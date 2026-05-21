@@ -11,9 +11,8 @@ class ApiEndpoints {
   // ── Auth ──────────────────────────────────────────────────────────────────
   static const String login = '/auth/login';
   static const String register = '/auth/register';
-  static const String forgotPassword = '/auth/forgot-password';
-  static const String verifyOtp = '/auth/verify-otp';
-  static const String resendOtp = '/auth/resend-otp';
+  static const String sendOtp = '/auth/otp/send';
+  static const String verifyOtp = '/auth/otp/verify';
   static const String resetPassword = '/auth/reset-password';
   static const String logout = '/auth/logout';
   static const String me = '/auth/me';
@@ -23,9 +22,8 @@ class ApiEndpoints {
   static const Set<String> publicAuthPaths = {
     login,
     register,
-    forgotPassword,
+    sendOtp,
     verifyOtp,
-    resendOtp,
     resetPassword,
     refreshToken,
   };

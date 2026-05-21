@@ -43,3 +43,26 @@ class RegisterSubmitted extends AuthEvent {
   @override
   List<Object?> get props => [name, phone, email, password];
 }
+
+/// Triggers `POST /auth/otp/send`. Customer app only sends
+/// `ROLE_CUSTOMER` by default.
+class ForgotPasswordSubmitted extends AuthEvent {
+  final String email;
+
+  const ForgotPasswordSubmitted({required this.email});
+
+  @override
+  List<Object?> get props => [email];
+}
+
+/// Triggers `POST /auth/otp/verify` using the email captured during the
+/// forgot-password step and the OTP entered by the user.
+class VerifyOtpSubmitted extends AuthEvent {
+  final String email;
+  final String otp;
+
+  const VerifyOtpSubmitted({required this.email, required this.otp});
+
+  @override
+  List<Object?> get props => [email, otp];
+}

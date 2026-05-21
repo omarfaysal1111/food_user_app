@@ -64,6 +64,54 @@ class RegisterFailure extends AuthState {
   List<Object?> get props => [message];
 }
 
+// ── Forgot password (send OTP) ──────────────────────────────────────────────
+
+class ForgotPasswordInProgress extends AuthState {
+  const ForgotPasswordInProgress();
+}
+
+class ForgotPasswordSuccess extends AuthState {
+  final String email;
+
+  const ForgotPasswordSuccess(this.email);
+
+  @override
+  List<Object?> get props => [email];
+}
+
+class ForgotPasswordFailure extends AuthState {
+  final String message;
+
+  const ForgotPasswordFailure(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+// ── Verify OTP ──────────────────────────────────────────────────────────────
+
+class VerifyOtpInProgress extends AuthState {
+  const VerifyOtpInProgress();
+}
+
+class VerifyOtpSuccess extends AuthState {
+  final String email;
+
+  const VerifyOtpSuccess(this.email);
+
+  @override
+  List<Object?> get props => [email];
+}
+
+class VerifyOtpFailure extends AuthState {
+  final String message;
+
+  const VerifyOtpFailure(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
 // ── Session status ──────────────────────────────────────────────────────────
 
 class Authenticated extends AuthState {

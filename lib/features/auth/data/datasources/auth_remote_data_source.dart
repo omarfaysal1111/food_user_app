@@ -19,6 +19,21 @@ abstract class AuthRemoteDataSource {
     String role,
   });
 
+  /// Sends an OTP to the given email for the forgot-password flow.
+  /// Backend contract: `POST /auth/otp/send` with `{ email, role }`.
+  Future<void> sendOtp({
+    required String email,
+    String role,
+  });
+
+  /// Verifies an OTP previously sent to [email].
+  /// Backend contract: `POST /auth/otp/verify` with `{ email, otp }`.
+  /// `role` is intentionally NOT sent — the endpoint only accepts email + otp.
+  Future<void> verifyOtp({
+    required String email,
+    required String otp,
+  });
+
   /// `Authorization: Bearer` is attached by [AuthInterceptor]; do not set it
   /// here. Body must include the refresh token per API contract.
   Future<void> logout({required String refreshToken});
@@ -93,6 +108,42 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       digits = digits.substring(1);
     }
     return '+20$digits';
+  }
+
+  @override
+  Future<void> sendOtp({
+    required String email,
+    String role = 'ROLE_CUSTOMER',
+  }) async {
+    try {
+      await _dio.post<dynamic>(
+        ApiEndpoints.sendOtp,
+        data: <String, dynamic>{
+          'email': email,
+          'role': role,
+        },
+      );
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<void> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    try {
+      await _dio.post<dynamic>(
+        ApiEndpoints.verifyOtp,
+        data: <String, dynamic>{
+          'email': email,
+          'otp': otp,
+        },
+      );
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
   }
 
   @override

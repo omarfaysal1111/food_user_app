@@ -2,18 +2,26 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/utils/auth_validators.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_back_button.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_scaffold.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
-  const OtpVerificationScreen({super.key});
+  /// Email captured during the Forgot Password step. Passed through the
+  /// router as `extra`. The verify-OTP request reuses the same value.
+  final String email;
+
+  const OtpVerificationScreen({super.key, required this.email});
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
@@ -114,7 +122,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       return;
     }
     setState(() => _shouldRefreshValidationOnLocaleChange = false);
-    context.push(RouteNames.resetPassword);
+    context.read<AuthBloc>().add(
+      VerifyOtpSubmitted(
+        email: widget.email,
+        otp: _otpController.text.trim(),
+      ),
+    );
   }
 
   int get _activeBoxIndex {
@@ -134,30 +147,54 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    return BlocConsumer<AuthBloc, AuthState>(
+      listenWhen: (prev, curr) =>
+          curr is VerifyOtpSuccess || curr is VerifyOtpFailure,
+      listener: (context, state) {
+        if (state is VerifyOtpSuccess) {
+          context.push(RouteNames.resetPassword, extra: state.email);
+        } else if (state is VerifyOtpFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                state.message,
+                style: AppTextStyles.snackBarMessage(context),
+              ),
+            ),
+          );
+        }
+      },
+      buildWhen: (prev, curr) =>
+          curr is VerifyOtpInProgress ||
+          curr is VerifyOtpSuccess ||
+          curr is VerifyOtpFailure ||
+          curr is AuthStateInitial,
+      builder: (context, state) {
+        final l10n = AppLocalizations.of(context)!;
+        final isLoading = state is VerifyOtpInProgress;
 
-    return AuthScaffold(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const AuthBackButton(),
-            const SizedBox(height: 20),
-            Text(
-              l10n.otpTitle,
-              textAlign: TextAlign.start,
-              style: AppTextStyles.screenTitle(context),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.otpSubtitle,
-              textAlign: TextAlign.start,
-              style: AppTextStyles.subtitle(context),
-            ),
-            const SizedBox(height: 32),
-            FormField<String>(
+        return AuthScaffold(
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const AuthBackButton(),
+                const SizedBox(height: 20),
+                Text(
+                  l10n.otpTitle,
+                  textAlign: TextAlign.start,
+                  style: AppTextStyles.screenTitle(context),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.otpSubtitle,
+                  textAlign: TextAlign.start,
+                  style: AppTextStyles.subtitle(context),
+                ),
+                const SizedBox(height: 32),
+                FormField<String>(
               validator: (_) => AuthValidators.otpSixDigits(
                 _otpController.text,
                 requiredMessage: l10n.validationOtpRequired,
@@ -244,7 +281,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             const SizedBox(height: 20),
             AuthPrimaryButton(
               label: l10n.otpVerify,
-              onPressed: _onVerify,
+              onPressed: isLoading ? null : _onVerify,
             ),
             const SizedBox(height: 24),
             Row(
@@ -269,6 +306,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           ],
         ),
       ),
+    );
+      },
     );
   }
 }

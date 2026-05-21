@@ -11,7 +11,11 @@ import 'package:food_user_app/features/auth/presentation/widgets/auth_text_field
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({super.key});
+  /// Email forwarded from the OTP verification step. The Set New Password
+  /// API will need this value once it's available on the backend.
+  final String email;
+
+  const ResetPasswordScreen({super.key, this.email = ''});
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
@@ -54,6 +58,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
+    // TODO(reset-password-api): Wire `POST /auth/reset-password` once the
+    // backend is ready. Use `widget.email` + `_passController.text` and
+    // dispatch a new `ResetPasswordSubmitted` event on AuthBloc. For now we
+    // just navigate the user back to the login screen so the UI flow stays
+    // testable end-to-end.
     context.go(RouteNames.login);
   }
 
