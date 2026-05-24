@@ -1,9 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:food_user_app/core/constants/api_endpoints.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
 import 'package:food_user_app/core/errors/exceptions.dart';
 import 'package:food_user_app/features/auth/data/models/auth_response_model.dart';
+import 'package:food_user_app/features/auth/data/models/send_otp_response_model.dart';
+import 'package:food_user_app/features/auth/data/models/verify_otp_response_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> login({
@@ -20,19 +23,28 @@ abstract class AuthRemoteDataSource {
   });
 
   /// Sends an OTP to the given email for the forgot-password flow.
-  /// Backend contract: `POST /auth/otp/send` with `{ email, role }`.
+  /// Backend contract: `POST /api/v2/auth/otp/send` with `{ email, role }`.
   Future<void> sendOtp({
     required String email,
     String role,
   });
 
   /// Verifies an OTP previously sent to [email].
-  /// Backend contract: `POST /auth/otp/verify` with `{ email, otp }`.
+  /// Backend contract: `POST /api/v2/auth/otp/verify` with `{ email, otp }`.
   /// `role` is intentionally NOT sent — the endpoint only accepts email + otp.
-  Future<void> verifyOtp({
+  ///
+  /// When the backend returns a (short-lived) access token alongside the
+  /// success response, it is captured in the returned model so the repository
+  /// can persist it before the immediately-following set-password call.
+  Future<VerifyOtpResponseModel> verifyOtp({
     required String email,
     required String otp,
   });
+
+  /// Sets a new password for the currently authenticated user.
+  /// Backend contract: `POST /api/v2/auth/set-password` with `{ newPassword }`.
+  /// Requires a Bearer token — attached by [AuthInterceptor].
+  Future<void> setPassword({required String newPassword});
 
   /// `Authorization: Bearer` is attached by [AuthInterceptor]; do not set it
   /// here. Body must include the refresh token per API contract.
@@ -116,29 +128,70 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     String role = 'ROLE_CUSTOMER',
   }) async {
     try {
-      await _dio.post<dynamic>(
-        ApiEndpoints.sendOtp,
+      final response = await _dio.post<dynamic>(
+        ApiEndpoints.passwordRecoveryUrl(ApiEndpoints.sendOtp),
         data: <String, dynamic>{
           'email': email,
           'role': role,
         },
       );
+      final raw = response.data;
+      if (raw is Map<String, dynamic>) {
+        final parsed = SendOtpResponseModel.fromJson(raw);
+        // Dev-only: mail is not live yet, so the API may return OTP in the body.
+        if (kDebugMode) {
+          debugPrint('[Send OTP] status: ${response.statusCode}');
+          debugPrint('[Send OTP] response: $raw');
+          debugPrint('[Send OTP] message: ${parsed.message}');
+          if (parsed.otp != null) {
+            debugPrint('[Send OTP] otp: ${parsed.otp}');
+          }
+        }
+      } else if (kDebugMode) {
+        debugPrint('[Send OTP] status: ${response.statusCode}');
+        debugPrint('[Send OTP] response: $raw');
+      }
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }
   }
 
   @override
-  Future<void> verifyOtp({
+  Future<VerifyOtpResponseModel> verifyOtp({
     required String email,
     required String otp,
   }) async {
     try {
-      await _dio.post<dynamic>(
-        ApiEndpoints.verifyOtp,
+      final response = await _dio.post<dynamic>(
+        ApiEndpoints.passwordRecoveryUrl(ApiEndpoints.verifyOtp),
         data: <String, dynamic>{
           'email': email,
           'otp': otp,
+        },
+      );
+      final raw = response.data;
+      if (raw is! Map<String, dynamic>) {
+        throw const ServerException('Invalid response');
+      }
+      final model = VerifyOtpResponseModel.fromJson(raw);
+      if (!model.hasAccessToken) {
+        throw const ServerException(
+          'Verification succeeded but no access token was returned',
+        );
+      }
+      return model;
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<void> setPassword({required String newPassword}) async {
+    try {
+      await _dio.post<dynamic>(
+        ApiEndpoints.passwordRecoveryUrl(ApiEndpoints.setPassword),
+        data: <String, dynamic>{
+          'newPassword': newPassword,
         },
       );
     } on DioException catch (e) {

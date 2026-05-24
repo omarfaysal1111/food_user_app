@@ -93,7 +93,26 @@ class AuthRepositoryImpl implements AuthRepository {
       return const Left(NetworkFailure('No internet connection'));
     }
     try {
-      await remoteDataSource.verifyOtp(email: email, otp: otp);
+      final result = await remoteDataSource.verifyOtp(email: email, otp: otp);
+      await _persistSession(result.toAuthResponseModel());
+      return const Right(unit);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> setPassword({
+    required String newPassword,
+  }) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure('No internet connection'));
+    }
+    try {
+      await remoteDataSource.setPassword(newPassword: newPassword);
+      // OTP-verify tokens are only for this step; clear so splash/login do
+      // not treat the user as signed in before they log in with the new password.
+      await _clearLocalSession();
       return const Right(unit);
     } catch (e) {
       return Left(_mapExceptionToFailure(e));

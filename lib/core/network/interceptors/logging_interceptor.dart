@@ -14,6 +14,7 @@ class LoggingInterceptor extends Interceptor {
     'currentPassword',
     'refreshToken',
     'accessToken',
+    'otp',
   };
 
   @override

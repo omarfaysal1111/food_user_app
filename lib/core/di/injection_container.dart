@@ -19,6 +19,7 @@ import 'package:food_user_app/features/auth/domain/usecases/forgot_password_usec
 import 'package:food_user_app/features/auth/domain/usecases/login_usecase.dart';
 import 'package:food_user_app/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:food_user_app/features/auth/domain/usecases/register_usecase.dart';
+import 'package:food_user_app/features/auth/domain/usecases/set_password_usecase.dart';
 import 'package:food_user_app/features/auth/domain/usecases/verify_otp_usecase.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 
@@ -94,6 +95,7 @@ Future<void> init({SharedPreferences? prefs}) async {
   sl.registerLazySingleton(() => LogoutUseCase(sl<AuthRepository>()));
   sl.registerLazySingleton(() => ForgotPasswordUseCase(sl<AuthRepository>()));
   sl.registerLazySingleton(() => VerifyOtpUseCase(sl<AuthRepository>()));
+  sl.registerLazySingleton(() => SetPasswordUseCase(sl<AuthRepository>()));
 
   // Single AuthBloc shared across splash/login/register so the cached
   // session state is consistent. Provided globally in `app.dart`.
@@ -104,6 +106,7 @@ Future<void> init({SharedPreferences? prefs}) async {
       logoutUseCase: sl<LogoutUseCase>(),
       forgotPasswordUseCase: sl<ForgotPasswordUseCase>(),
       verifyOtpUseCase: sl<VerifyOtpUseCase>(),
+      setPasswordUseCase: sl<SetPasswordUseCase>(),
       authRepository: sl<AuthRepository>(),
     ),
   );

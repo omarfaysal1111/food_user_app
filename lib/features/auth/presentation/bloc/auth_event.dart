@@ -66,3 +66,15 @@ class VerifyOtpSubmitted extends AuthEvent {
   @override
   List<Object?> get props => [email, otp];
 }
+
+/// Triggers `POST /auth/set-password`. The Bearer token is attached by the
+/// [AuthInterceptor]; the body only carries [newPassword]. Password is sent
+/// exactly as typed — login/register don't trim passwords either.
+class SetPasswordSubmitted extends AuthEvent {
+  final String newPassword;
+
+  const SetPasswordSubmitted({required this.newPassword});
+
+  @override
+  List<Object?> get props => [newPassword];
+}

@@ -112,6 +112,25 @@ class VerifyOtpFailure extends AuthState {
   List<Object?> get props => [message];
 }
 
+// ── Set new password ────────────────────────────────────────────────────────
+
+class SetPasswordInProgress extends AuthState {
+  const SetPasswordInProgress();
+}
+
+class SetPasswordSuccess extends AuthState {
+  const SetPasswordSuccess();
+}
+
+class SetPasswordFailure extends AuthState {
+  final String message;
+
+  const SetPasswordFailure(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
 // ── Session status ──────────────────────────────────────────────────────────
 
 class Authenticated extends AuthState {
