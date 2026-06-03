@@ -404,6 +404,102 @@ abstract class AppLocalizations {
   /// **'Start now'**
   String get onboardingCta;
 
+  /// No description provided for @mainTabHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get mainTabHome;
+
+  /// No description provided for @mainTabCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Cart'**
+  String get mainTabCart;
+
+  /// No description provided for @mainTabOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get mainTabOrders;
+
+  /// No description provided for @mainTabAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get mainTabAccount;
+
+  /// No description provided for @accountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Account'**
+  String get accountTitle;
+
+  /// No description provided for @accountPlaceholderName.
+  ///
+  /// In en, this message translates to:
+  /// **'Ahmed Farag'**
+  String get accountPlaceholderName;
+
+  /// No description provided for @accountPlaceholderEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'afarag74@gmail.com'**
+  String get accountPlaceholderEmail;
+
+  /// No description provided for @accountGeneralSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'General Settings'**
+  String get accountGeneralSettings;
+
+  /// No description provided for @accountFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get accountFavorites;
+
+  /// No description provided for @accountDiscountPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount Points'**
+  String get accountDiscountPoints;
+
+  /// No description provided for @accountSavedAddresses.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Addresses'**
+  String get accountSavedAddresses;
+
+  /// No description provided for @accountCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards'**
+  String get accountCards;
+
+  /// No description provided for @accountTechnicalSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical Support'**
+  String get accountTechnicalSupport;
+
+  /// No description provided for @accountTermsAndConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms & Conditions'**
+  String get accountTermsAndConditions;
+
+  /// No description provided for @accountLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get accountLogout;
+
+  /// No description provided for @accountLoggingOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Logging out...'**
+  String get accountLoggingOut;
+
   /// No description provided for @socialDivider.
   ///
   /// In en, this message translates to:

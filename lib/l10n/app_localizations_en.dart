@@ -170,6 +170,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingCta => 'Start now';
 
   @override
+  String get mainTabHome => 'Home';
+
+  @override
+  String get mainTabCart => 'Cart';
+
+  @override
+  String get mainTabOrders => 'Orders';
+
+  @override
+  String get mainTabAccount => 'Account';
+
+  @override
+  String get accountTitle => 'My Account';
+
+  @override
+  String get accountPlaceholderName => 'Ahmed Farag';
+
+  @override
+  String get accountPlaceholderEmail => 'afarag74@gmail.com';
+
+  @override
+  String get accountGeneralSettings => 'General Settings';
+
+  @override
+  String get accountFavorites => 'Favorites';
+
+  @override
+  String get accountDiscountPoints => 'Discount Points';
+
+  @override
+  String get accountSavedAddresses => 'Saved Addresses';
+
+  @override
+  String get accountCards => 'Cards';
+
+  @override
+  String get accountTechnicalSupport => 'Technical Support';
+
+  @override
+  String get accountTermsAndConditions => 'Terms & Conditions';
+
+  @override
+  String get accountLogout => 'Logout';
+
+  @override
+  String get accountLoggingOut => 'Logging out...';
+
+  @override
   String get socialDivider => 'or';
 
   @override

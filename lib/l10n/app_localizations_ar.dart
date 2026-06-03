@@ -170,6 +170,54 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onboardingCta => 'أبدء الان';
 
   @override
+  String get mainTabHome => 'الرئيسية';
+
+  @override
+  String get mainTabCart => 'السلة';
+
+  @override
+  String get mainTabOrders => 'الطلبات';
+
+  @override
+  String get mainTabAccount => 'حسابي';
+
+  @override
+  String get accountTitle => 'حسابي';
+
+  @override
+  String get accountPlaceholderName => 'أحمد فرج';
+
+  @override
+  String get accountPlaceholderEmail => 'afarag74@gmail.com';
+
+  @override
+  String get accountGeneralSettings => 'الإعدادات العامة';
+
+  @override
+  String get accountFavorites => 'المفضلة';
+
+  @override
+  String get accountDiscountPoints => 'نقاط الخصم';
+
+  @override
+  String get accountSavedAddresses => 'العناوين المحفوظة';
+
+  @override
+  String get accountCards => 'البطاقات';
+
+  @override
+  String get accountTechnicalSupport => 'الدعم الفني';
+
+  @override
+  String get accountTermsAndConditions => 'الشروط والاحكام';
+
+  @override
+  String get accountLogout => 'تسجيل الخروج';
+
+  @override
+  String get accountLoggingOut => 'جاري تسجيل الخروج...';
+
+  @override
   String get socialDivider => 'او';
 
   @override

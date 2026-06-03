@@ -101,6 +101,8 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/icons/main/
+    - assets/images/icons/settings/
     - assets/images/onboarding_collage/
     - assets/images/onboarding_collage/2.0x/
     - assets/images/onboarding_collage/3.0x/
