@@ -59,7 +59,7 @@ class AppAssets {
       'assets/images/icons/address/gps_off.svg';
 
   static const supportHeaderPattern =
-      'assets/images/support/header_pattern.png';
+    'assets/images/support/header_pattern.png';
   static const supportAgentIcon = 'assets/images/icons/support/agent.svg';
   static const supportBackIcon = 'assets/images/icons/support/back.svg';
   static const supportAttachmentIcon =

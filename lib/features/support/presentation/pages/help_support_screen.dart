@@ -221,20 +221,15 @@ class _SupportChatHeader extends StatelessWidget {
       height: topSafe + _HelpSupportScreenState._headerContentHeight,
       child: Stack(
         fit: StackFit.expand,
+        clipBehavior: Clip.hardEdge,
         children: [
-          Container(
-            color: AppColors.primary,
-            child: Opacity(
-              opacity: 0.60,
-              child: Image.asset(
-                AppAssets.supportHeaderPattern,
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
-                repeat: ImageRepeat.repeat,
-              ),
-            ),
-          ),
+          Container(color: AppColors.primary),
+Positioned.fill(
+  child: Image.asset(
+    AppAssets.supportHeaderPattern,
+    fit: BoxFit.fill,
+  ),
+),
           PositionedDirectional(
             start: 16,
             end: 16,
