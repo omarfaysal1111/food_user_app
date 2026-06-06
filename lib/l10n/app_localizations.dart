@@ -572,6 +572,264 @@ abstract class AppLocalizations {
   /// **'Logging out...'**
   String get accountLoggingOut;
 
+  /// No description provided for @favoritesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favoritesTitle;
+
+  /// No description provided for @favoritesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No favorites yet'**
+  String get favoritesEmptyTitle;
+
+  /// No description provided for @favoritesEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurants and meals you save will appear here.'**
+  String get favoritesEmptyMessage;
+
+  /// No description provided for @favoriteSampleRestaurant.
+  ///
+  /// In en, this message translates to:
+  /// **'El Kelany Restaurant'**
+  String get favoriteSampleRestaurant;
+
+  /// No description provided for @favoriteSampleDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Grilled meals, sandwiches, and fast delivery'**
+  String get favoriteSampleDescription;
+
+  /// No description provided for @favoriteSampleMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Grilled Chicken Meal'**
+  String get favoriteSampleMeal;
+
+  /// No description provided for @favoriteSampleMealDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Chicken, rice, salad, and sauce'**
+  String get favoriteSampleMealDescription;
+
+  /// No description provided for @favoriteDeliveryTime.
+  ///
+  /// In en, this message translates to:
+  /// **'20 - 30 min'**
+  String get favoriteDeliveryTime;
+
+  /// No description provided for @favoriteRating.
+  ///
+  /// In en, this message translates to:
+  /// **'4.8'**
+  String get favoriteRating;
+
+  /// No description provided for @favoriteRestaurantAzAlSham.
+  ///
+  /// In en, this message translates to:
+  /// **'Az Al Sham Restaurant'**
+  String get favoriteRestaurantAzAlSham;
+
+  /// No description provided for @favoriteStatusAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get favoriteStatusAvailable;
+
+  /// No description provided for @favoriteStatusBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'Busy'**
+  String get favoriteStatusBusy;
+
+  /// No description provided for @favoriteStatusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get favoriteStatusClosed;
+
+  /// No description provided for @favoriteDeliveryTimeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'30-45 min'**
+  String get favoriteDeliveryTimeRange;
+
+  /// No description provided for @removeFromFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favorites'**
+  String get removeFromFavorites;
+
+  /// No description provided for @savedAddressesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Addresses'**
+  String get savedAddressesTitle;
+
+  /// No description provided for @homeAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get homeAddressTitle;
+
+  /// No description provided for @workAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get workAddressTitle;
+
+  /// No description provided for @sampleHomeAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'15 Tahrir Street, Dokki, Giza'**
+  String get sampleHomeAddress;
+
+  /// No description provided for @sampleWorkAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'12 Nile Corniche, Maadi, Cairo'**
+  String get sampleWorkAddress;
+
+  /// No description provided for @addNewAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Address'**
+  String get addNewAddress;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @helpSupportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get helpSupportTitle;
+
+  /// No description provided for @faqTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQ'**
+  String get faqTitle;
+
+  /// No description provided for @supportOrderIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'I have an issue with an order'**
+  String get supportOrderIssue;
+
+  /// No description provided for @supportPaymentIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment and refund help'**
+  String get supportPaymentIssue;
+
+  /// No description provided for @supportContactUs.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact us'**
+  String get supportContactUs;
+
+  /// No description provided for @supportPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Call support'**
+  String get supportPhone;
+
+  /// No description provided for @supportWhatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp support'**
+  String get supportWhatsapp;
+
+  /// No description provided for @supportEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email support'**
+  String get supportEmail;
+
+  /// No description provided for @cardsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards'**
+  String get cardsTitle;
+
+  /// No description provided for @paymentMethodsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Methods'**
+  String get paymentMethodsTitle;
+
+  /// No description provided for @addCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Card'**
+  String get addCard;
+
+  /// No description provided for @sampleCardHolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Ahmed Farag'**
+  String get sampleCardHolder;
+
+  /// No description provided for @paymentCardEnding.
+  ///
+  /// In en, this message translates to:
+  /// **'Visa ending in 4242'**
+  String get paymentCardEnding;
+
+  /// No description provided for @paymentIntegrationComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment card saving is coming soon.'**
+  String get paymentIntegrationComingSoon;
+
+  /// No description provided for @editProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Personal Data'**
+  String get editProfileTitle;
+
+  /// No description provided for @personalDataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Data'**
+  String get personalDataTitle;
+
+  /// No description provided for @fullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullName;
+
+  /// No description provided for @mobileNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile Number'**
+  String get mobileNumber;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @profileChangesSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes saved for design preview'**
+  String get profileChangesSaved;
+
   /// No description provided for @socialDivider.
   ///
   /// In en, this message translates to:

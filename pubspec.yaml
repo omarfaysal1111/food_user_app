@@ -104,6 +104,8 @@ flutter:
     - assets/images/icons/main/
     - assets/images/icons/settings/
     - assets/images/icons/general_settings/
+    - assets/images/favorites/
+    - assets/images/icons/favorites/
     - assets/images/onboarding_collage/
     - assets/images/onboarding_collage/2.0x/
     - assets/images/onboarding_collage/3.0x/

@@ -255,6 +255,138 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountLoggingOut => 'Logging out...';
 
   @override
+  String get favoritesTitle => 'Favorites';
+
+  @override
+  String get favoritesEmptyTitle => 'No favorites yet';
+
+  @override
+  String get favoritesEmptyMessage =>
+      'Restaurants and meals you save will appear here.';
+
+  @override
+  String get favoriteSampleRestaurant => 'El Kelany Restaurant';
+
+  @override
+  String get favoriteSampleDescription =>
+      'Grilled meals, sandwiches, and fast delivery';
+
+  @override
+  String get favoriteSampleMeal => 'Grilled Chicken Meal';
+
+  @override
+  String get favoriteSampleMealDescription => 'Chicken, rice, salad, and sauce';
+
+  @override
+  String get favoriteDeliveryTime => '20 - 30 min';
+
+  @override
+  String get favoriteRating => '4.8';
+
+  @override
+  String get favoriteRestaurantAzAlSham => 'Az Al Sham Restaurant';
+
+  @override
+  String get favoriteStatusAvailable => 'Available';
+
+  @override
+  String get favoriteStatusBusy => 'Busy';
+
+  @override
+  String get favoriteStatusClosed => 'Closed';
+
+  @override
+  String get favoriteDeliveryTimeRange => '30-45 min';
+
+  @override
+  String get removeFromFavorites => 'Remove from favorites';
+
+  @override
+  String get savedAddressesTitle => 'Saved Addresses';
+
+  @override
+  String get homeAddressTitle => 'Home';
+
+  @override
+  String get workAddressTitle => 'Work';
+
+  @override
+  String get sampleHomeAddress => '15 Tahrir Street, Dokki, Giza';
+
+  @override
+  String get sampleWorkAddress => '12 Nile Corniche, Maadi, Cairo';
+
+  @override
+  String get addNewAddress => 'Add New Address';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get helpSupportTitle => 'Help & Support';
+
+  @override
+  String get faqTitle => 'FAQ';
+
+  @override
+  String get supportOrderIssue => 'I have an issue with an order';
+
+  @override
+  String get supportPaymentIssue => 'Payment and refund help';
+
+  @override
+  String get supportContactUs => 'Contact us';
+
+  @override
+  String get supportPhone => 'Call support';
+
+  @override
+  String get supportWhatsapp => 'WhatsApp support';
+
+  @override
+  String get supportEmail => 'Email support';
+
+  @override
+  String get cardsTitle => 'Cards';
+
+  @override
+  String get paymentMethodsTitle => 'Payment Methods';
+
+  @override
+  String get addCard => 'Add Card';
+
+  @override
+  String get sampleCardHolder => 'Ahmed Farag';
+
+  @override
+  String get paymentCardEnding => 'Visa ending in 4242';
+
+  @override
+  String get paymentIntegrationComingSoon =>
+      'Payment card saving is coming soon.';
+
+  @override
+  String get editProfileTitle => 'Edit Personal Data';
+
+  @override
+  String get personalDataTitle => 'Personal Data';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get mobileNumber => 'Mobile Number';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get profileChangesSaved => 'Changes saved for design preview';
+
+  @override
   String get socialDivider => 'or';
 
   @override

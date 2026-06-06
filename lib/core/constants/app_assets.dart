@@ -38,6 +38,14 @@ class AppAssets {
   static const generalSettingsDeleteAccount =
       'assets/images/icons/general_settings/delete_account.svg';
 
+  static const favoriteRestaurantAzAlSham =
+      'assets/images/favorites/az_al_sham.jpg';
+  static const favoriteBackIcon = 'assets/images/icons/favorites/back.svg';
+  static const favoriteHeartIcon =
+      'assets/images/icons/favorites/favourite.svg';
+  static const favoriteTimeIcon = 'assets/images/icons/favorites/time.svg';
+  static const favoriteStarIcon = 'assets/images/icons/favorites/star.svg';
+
   static const onboardingCollage =
       'assets/images/onboarding_collage/onboarding_collage.png';
 

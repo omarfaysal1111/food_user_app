@@ -216,65 +216,69 @@ class _AccountProfileCard extends StatelessWidget {
       top: top,
       start: AccountTabPage._horizontalPadding,
       end: AccountTabPage._horizontalPadding,
-      child: Container(
-        height: AccountTabPage._profileHeight,
-        padding: const EdgeInsetsDirectional.symmetric(
-          horizontal: 12,
-          vertical: 16,
-        ),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceCard(context),
-          borderRadius: const BorderRadius.all(AppRadius.md),
-          boxShadow: const [
-            BoxShadow(color: AccountTabPage._shadowColor, blurRadius: 4),
-          ],
-        ),
-        child: Row(
-          children: [
-            _Avatar(letter: isRtl ? 'أ' : 'A'),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // TODO: Replace placeholder account data with real user data.
-                  Text(
-                    l10n.accountPlaceholderName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.start,
-                    style: AppTextStyles.textFieldTitle(context).copyWith(
-                      color: AppColors.onSurface(context),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      height: 1.35,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => context.push(RouteNames.editProfile),
+        child: Container(
+          height: AccountTabPage._profileHeight,
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: 12,
+            vertical: 16,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceCard(context),
+            borderRadius: const BorderRadius.all(AppRadius.md),
+            boxShadow: const [
+              BoxShadow(color: AccountTabPage._shadowColor, blurRadius: 4),
+            ],
+          ),
+          child: Row(
+            children: [
+              _Avatar(letter: isRtl ? 'أ' : 'A'),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // TODO: Replace placeholder account data with real user data.
+                    Text(
+                      l10n.accountPlaceholderName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.start,
+                      style: AppTextStyles.textFieldTitle(context).copyWith(
+                        color: AppColors.onSurface(context),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        height: 1.35,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n.accountPlaceholderEmail,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textDirection: TextDirection.ltr,
-                    textAlign: isRtl ? TextAlign.right : TextAlign.left,
-                    style: AppTextStyles.caption(context).copyWith(
-                      color: AppColors.paragraph(context),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      height: 1.3,
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.accountPlaceholderEmail,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textDirection: TextDirection.ltr,
+                      textAlign: isRtl ? TextAlign.right : TextAlign.left,
+                      style: AppTextStyles.caption(context).copyWith(
+                        color: AppColors.paragraph(context),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        height: 1.3,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Icon(
-              chevronIcon,
-              color: AppColors.onSurface(context),
-              size: AccountTabPage._arrowSize,
-            ),
-          ],
+              const SizedBox(width: 12),
+              Icon(
+                chevronIcon,
+                color: AppColors.onSurface(context),
+                size: AccountTabPage._arrowSize,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -255,6 +255,135 @@ class AppLocalizationsAr extends AppLocalizations {
   String get accountLoggingOut => 'جاري تسجيل الخروج...';
 
   @override
+  String get favoritesTitle => 'المفضلة';
+
+  @override
+  String get favoritesEmptyTitle => 'لا توجد مفضلة بعد';
+
+  @override
+  String get favoritesEmptyMessage => 'ستظهر هنا المطاعم والوجبات التي تحفظها.';
+
+  @override
+  String get favoriteSampleRestaurant => 'مطعم الكيلاني';
+
+  @override
+  String get favoriteSampleDescription => 'مشويات وساندويتشات وتوصيل سريع';
+
+  @override
+  String get favoriteSampleMeal => 'وجبة دجاج مشوي';
+
+  @override
+  String get favoriteSampleMealDescription => 'دجاج، أرز، سلطة، وصوص';
+
+  @override
+  String get favoriteDeliveryTime => '٢٠ - ٣٠ دقيقة';
+
+  @override
+  String get favoriteRating => '٤٫٨';
+
+  @override
+  String get favoriteRestaurantAzAlSham => 'مطعم عز الشام';
+
+  @override
+  String get favoriteStatusAvailable => 'متاح';
+
+  @override
+  String get favoriteStatusBusy => 'مشغول';
+
+  @override
+  String get favoriteStatusClosed => 'مغلق';
+
+  @override
+  String get favoriteDeliveryTimeRange => '30-45 دقيقة';
+
+  @override
+  String get removeFromFavorites => 'إزالة من المفضلة';
+
+  @override
+  String get savedAddressesTitle => 'العناوين المحفوظة';
+
+  @override
+  String get homeAddressTitle => 'المنزل';
+
+  @override
+  String get workAddressTitle => 'العمل';
+
+  @override
+  String get sampleHomeAddress => '١٥ شارع التحرير، الدقي، الجيزة';
+
+  @override
+  String get sampleWorkAddress => '١٢ كورنيش النيل، المعادي، القاهرة';
+
+  @override
+  String get addNewAddress => 'إضافة عنوان جديد';
+
+  @override
+  String get edit => 'تعديل';
+
+  @override
+  String get helpSupportTitle => 'الدعم الفني';
+
+  @override
+  String get faqTitle => 'الأسئلة الشائعة';
+
+  @override
+  String get supportOrderIssue => 'لدي مشكلة في طلب';
+
+  @override
+  String get supportPaymentIssue => 'المساعدة في الدفع والاسترداد';
+
+  @override
+  String get supportContactUs => 'تواصل معنا';
+
+  @override
+  String get supportPhone => 'اتصل بالدعم';
+
+  @override
+  String get supportWhatsapp => 'دعم واتساب';
+
+  @override
+  String get supportEmail => 'البريد الإلكتروني للدعم';
+
+  @override
+  String get cardsTitle => 'البطاقات';
+
+  @override
+  String get paymentMethodsTitle => 'طرق الدفع';
+
+  @override
+  String get addCard => 'إضافة بطاقة';
+
+  @override
+  String get sampleCardHolder => 'أحمد فرج';
+
+  @override
+  String get paymentCardEnding => 'بطاقة فيزا تنتهي بـ 4242';
+
+  @override
+  String get paymentIntegrationComingSoon => 'حفظ بطاقات الدفع قادم قريباً.';
+
+  @override
+  String get editProfileTitle => 'تعديل البيانات الشخصية';
+
+  @override
+  String get personalDataTitle => 'البيانات الشخصية';
+
+  @override
+  String get fullName => 'الاسم الكامل';
+
+  @override
+  String get mobileNumber => 'رقم الجوال';
+
+  @override
+  String get email => 'البريد الإلكتروني';
+
+  @override
+  String get saveChanges => 'حفظ التغييرات';
+
+  @override
+  String get profileChangesSaved => 'تم حفظ التغييرات لمعاينة التصميم';
+
+  @override
   String get socialDivider => 'او';
 
   @override
