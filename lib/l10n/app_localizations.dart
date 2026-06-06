@@ -704,6 +704,156 @@ abstract class AppLocalizations {
   /// **'Edit'**
   String get edit;
 
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @deleteAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Address'**
+  String get deleteAddress;
+
+  /// No description provided for @deleteAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Address'**
+  String get deleteAddressTitle;
+
+  /// No description provided for @deleteAddressMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this address?'**
+  String get deleteAddressMessage;
+
+  /// No description provided for @confirmLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirmLocation;
+
+  /// No description provided for @addAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Address'**
+  String get addAddressTitle;
+
+  /// No description provided for @editAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Address'**
+  String get editAddressTitle;
+
+  /// No description provided for @saveAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Add'**
+  String get saveAddress;
+
+  /// No description provided for @updateAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Edit'**
+  String get updateAddress;
+
+  /// No description provided for @building.
+  ///
+  /// In en, this message translates to:
+  /// **'Building Number'**
+  String get building;
+
+  /// No description provided for @apartment.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment Number'**
+  String get apartment;
+
+  /// No description provided for @floor.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor'**
+  String get floor;
+
+  /// No description provided for @addressSavedDesignOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Address saved for design preview'**
+  String get addressSavedDesignOnly;
+
+  /// No description provided for @addressUpdatedDesignOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Address updated for design preview'**
+  String get addressUpdatedDesignOnly;
+
+  /// No description provided for @chooseLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Location'**
+  String get chooseLocation;
+
+  /// No description provided for @selectedLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Your current address'**
+  String get selectedLocation;
+
+  /// No description provided for @searchForAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for your location'**
+  String get searchForAddress;
+
+  /// No description provided for @currentLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Current location'**
+  String get currentLocation;
+
+  /// No description provided for @deliveryAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'New Cairo, Madinaty, Al Zuhour District'**
+  String get deliveryAddress;
+
+  /// No description provided for @sampleAddressMeta.
+  ///
+  /// In en, this message translates to:
+  /// **'Building: El Saadany / Apartment: 201 / Floor: Fifth'**
+  String get sampleAddressMeta;
+
+  /// No description provided for @apartmentAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment'**
+  String get apartmentAddressTitle;
+
+  /// No description provided for @sampleBuildingName.
+  ///
+  /// In en, this message translates to:
+  /// **'El Saadany'**
+  String get sampleBuildingName;
+
+  /// No description provided for @sampleApartmentNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'201'**
+  String get sampleApartmentNumber;
+
+  /// No description provided for @sampleFloorName.
+  ///
+  /// In en, this message translates to:
+  /// **'Fifth'**
+  String get sampleFloorName;
+
+  /// No description provided for @editAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Address'**
+  String get editAddress;
+
   /// No description provided for @helpSupportTitle.
   ///
   /// In en, this message translates to:

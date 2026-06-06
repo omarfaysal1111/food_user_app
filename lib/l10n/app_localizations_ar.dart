@@ -52,7 +52,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'سيتم ربط تدفق حذف الحساب لاحقاً.';
 
   @override
-  String get cancel => 'إلغاء';
+  String get cancel => 'تراجع';
 
   @override
   String get confirm => 'تأكيد';
@@ -319,6 +319,81 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get edit => 'تعديل';
+
+  @override
+  String get delete => 'حذف';
+
+  @override
+  String get deleteAddress => 'حذف العنوان';
+
+  @override
+  String get deleteAddressTitle => 'حذف العنوان';
+
+  @override
+  String get deleteAddressMessage => 'هل أنت متأكد من انك تريد حذف العنوان؟';
+
+  @override
+  String get confirmLocation => 'تأكيد';
+
+  @override
+  String get addAddressTitle => 'العنوان الجديد';
+
+  @override
+  String get editAddressTitle => 'تعديل العنوان';
+
+  @override
+  String get saveAddress => 'تاكيد الإضافة';
+
+  @override
+  String get updateAddress => 'تاكيد التعديل';
+
+  @override
+  String get building => 'رقم المبنى';
+
+  @override
+  String get apartment => 'رقم الشقة';
+
+  @override
+  String get floor => 'الدور';
+
+  @override
+  String get addressSavedDesignOnly => 'تم حفظ العنوان لمعاينة التصميم';
+
+  @override
+  String get addressUpdatedDesignOnly => 'تم تحديث العنوان لمعاينة التصميم';
+
+  @override
+  String get chooseLocation => 'تحديد الموقع الجغرافي';
+
+  @override
+  String get selectedLocation => 'عنوانك الحالي';
+
+  @override
+  String get searchForAddress => 'إبحث على موقعك';
+
+  @override
+  String get currentLocation => 'الموقع الحالي';
+
+  @override
+  String get deliveryAddress => 'القاهره الجديده ، مدينتي ، حي الزهور';
+
+  @override
+  String get sampleAddressMeta => 'مبنى : السعدني / شقة : 201 / الدور : الخامس';
+
+  @override
+  String get apartmentAddressTitle => 'الشقة';
+
+  @override
+  String get sampleBuildingName => 'السعدني';
+
+  @override
+  String get sampleApartmentNumber => '201';
+
+  @override
+  String get sampleFloorName => 'الخامس';
+
+  @override
+  String get editAddress => 'تعديل العنوان';
 
   @override
   String get helpSupportTitle => 'الدعم الفني';

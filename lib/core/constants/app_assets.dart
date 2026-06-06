@@ -46,6 +46,18 @@ class AppAssets {
   static const favoriteTimeIcon = 'assets/images/icons/favorites/time.svg';
   static const favoriteStarIcon = 'assets/images/icons/favorites/star.svg';
 
+  static const addressMapPreview = 'assets/images/address/map_preview.png';
+  static const addressBackIcon = 'assets/images/icons/address/back.svg';
+  static const addressPlusIcon = 'assets/images/icons/address/plus.svg';
+  static const addressHomeIcon = 'assets/images/icons/address/home.svg';
+  static const addressEditIcon = 'assets/images/icons/address/edit.svg';
+  static const addressDeleteIcon = 'assets/images/icons/address/delete.svg';
+  static const addressLocationIcon = 'assets/images/icons/address/location.svg';
+  static const addressSearchIcon = 'assets/images/icons/address/search.svg';
+  static const addressMapIcon = 'assets/images/icons/address/map.svg';
+  static const addressDeleteDialogIcon =
+      'assets/images/icons/address/gps_off.svg';
+
   static const onboardingCollage =
       'assets/images/onboarding_collage/onboarding_collage.png';
 

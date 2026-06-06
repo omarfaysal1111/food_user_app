@@ -323,6 +323,83 @@ class AppLocalizationsEn extends AppLocalizations {
   String get edit => 'Edit';
 
   @override
+  String get delete => 'Delete';
+
+  @override
+  String get deleteAddress => 'Delete Address';
+
+  @override
+  String get deleteAddressTitle => 'Delete Address';
+
+  @override
+  String get deleteAddressMessage =>
+      'Are you sure you want to delete this address?';
+
+  @override
+  String get confirmLocation => 'Confirm';
+
+  @override
+  String get addAddressTitle => 'New Address';
+
+  @override
+  String get editAddressTitle => 'Edit Address';
+
+  @override
+  String get saveAddress => 'Confirm Add';
+
+  @override
+  String get updateAddress => 'Confirm Edit';
+
+  @override
+  String get building => 'Building Number';
+
+  @override
+  String get apartment => 'Apartment Number';
+
+  @override
+  String get floor => 'Floor';
+
+  @override
+  String get addressSavedDesignOnly => 'Address saved for design preview';
+
+  @override
+  String get addressUpdatedDesignOnly => 'Address updated for design preview';
+
+  @override
+  String get chooseLocation => 'Select Location';
+
+  @override
+  String get selectedLocation => 'Your current address';
+
+  @override
+  String get searchForAddress => 'Search for your location';
+
+  @override
+  String get currentLocation => 'Current location';
+
+  @override
+  String get deliveryAddress => 'New Cairo, Madinaty, Al Zuhour District';
+
+  @override
+  String get sampleAddressMeta =>
+      'Building: El Saadany / Apartment: 201 / Floor: Fifth';
+
+  @override
+  String get apartmentAddressTitle => 'Apartment';
+
+  @override
+  String get sampleBuildingName => 'El Saadany';
+
+  @override
+  String get sampleApartmentNumber => '201';
+
+  @override
+  String get sampleFloorName => 'Fifth';
+
+  @override
+  String get editAddress => 'Edit Address';
+
+  @override
   String get helpSupportTitle => 'Help & Support';
 
   @override

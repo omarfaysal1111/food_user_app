@@ -28,6 +28,8 @@ import '../../features/order/presentation/pages/rate_order_screen.dart';
 import '../../features/profile/presentation/pages/profile_screen.dart';
 import '../../features/profile/presentation/pages/edit_profile_screen.dart';
 import '../../features/profile/presentation/pages/address_book_screen.dart';
+import '../../features/profile/presentation/pages/add_edit_address_screen.dart'
+    as profile_address;
 import '../../features/profile/presentation/pages/discount_points_screen.dart';
 import '../../features/profile/presentation/pages/favourites_screen.dart';
 import '../../features/profile/presentation/pages/notifications_screen.dart';
@@ -146,6 +148,30 @@ class AppRouter {
       GoRoute(
         path: RouteNames.addressBook,
         builder: (c, s) => const AddressBookScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.addressBookAddMap,
+        builder: (c, s) => const profile_address.AddressMapSelectionScreen(
+          mode: profile_address.AddressFlowMode.add,
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.addressBookAddDetails,
+        builder: (c, s) => const profile_address.AddressDetailsScreen(
+          mode: profile_address.AddressFlowMode.add,
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.addressBookEditMap,
+        builder: (c, s) => const profile_address.AddressMapSelectionScreen(
+          mode: profile_address.AddressFlowMode.edit,
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.addressBookEditDetails,
+        builder: (c, s) => const profile_address.AddressDetailsScreen(
+          mode: profile_address.AddressFlowMode.edit,
+        ),
       ),
       GoRoute(
         path: RouteNames.favourites,
