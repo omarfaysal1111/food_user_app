@@ -153,7 +153,10 @@ class AddressDetailsScreen extends StatelessWidget {
                 ScaffoldMessenger.of(
                   context,
                 ).showSnackBar(SnackBar(content: Text(snackMessage)));
-                context.go(RouteNames.addressBook);
+                context.pop();
+                if (context.mounted && context.canPop()) {
+                  context.pop();
+                }
               },
             ),
           ],

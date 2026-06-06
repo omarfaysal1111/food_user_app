@@ -263,7 +263,7 @@ class _SavedAddressCard extends StatelessWidget {
   void _showDeleteAddressDialog(BuildContext context) {
     showDialog<void>(
       context: context,
-      barrierColor: AppColors.overlay(context),
+      barrierColor: AppColors.languageModalBarrier(context),
       builder: (dialogContext) {
         return const _DeleteAddressDialog();
       },

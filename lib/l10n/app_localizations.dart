@@ -902,6 +902,78 @@ abstract class AppLocalizations {
   /// **'Email support'**
   String get supportEmail;
 
+  /// No description provided for @supportChatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical Support'**
+  String get supportChatTitle;
+
+  /// No description provided for @supportToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get supportToday;
+
+  /// No description provided for @supportGoodEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening'**
+  String get supportGoodEvening;
+
+  /// No description provided for @supportHowCanWeHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'How can we help you?'**
+  String get supportHowCanWeHelp;
+
+  /// No description provided for @supportSampleUserIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'I have a problem with Az Al Sham Restaurant. The food was delayed beyond the expected time.'**
+  String get supportSampleUserIssue;
+
+  /// No description provided for @supportInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write here...'**
+  String get supportInputHint;
+
+  /// No description provided for @supportAttachmentOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment options'**
+  String get supportAttachmentOptions;
+
+  /// No description provided for @supportPickImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Image'**
+  String get supportPickImage;
+
+  /// No description provided for @supportPickVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Video'**
+  String get supportPickVideo;
+
+  /// No description provided for @supportCancelAttachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get supportCancelAttachment;
+
+  /// No description provided for @supportImageMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get supportImageMessage;
+
+  /// No description provided for @supportVideoMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get supportVideoMessage;
+
   /// No description provided for @cardsTitle.
   ///
   /// In en, this message translates to:

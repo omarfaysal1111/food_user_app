@@ -58,6 +58,14 @@ class AppAssets {
   static const addressDeleteDialogIcon =
       'assets/images/icons/address/gps_off.svg';
 
+  static const supportHeaderPattern =
+      'assets/images/support/header_pattern.png';
+  static const supportAgentIcon = 'assets/images/icons/support/agent.svg';
+  static const supportBackIcon = 'assets/images/icons/support/back.svg';
+  static const supportAttachmentIcon =
+      'assets/images/icons/support/attachment.svg';
+  static const supportSendIcon = 'assets/images/icons/support/send.svg';
+
   static const onboardingCollage =
       'assets/images/onboarding_collage/onboarding_collage.png';
 

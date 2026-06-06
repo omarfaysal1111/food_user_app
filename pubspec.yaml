@@ -108,6 +108,8 @@ flutter:
     - assets/images/icons/favorites/
     - assets/images/address/
     - assets/images/icons/address/
+    - assets/images/support/
+    - assets/images/icons/support/
     - assets/images/onboarding_collage/
     - assets/images/onboarding_collage/2.0x/
     - assets/images/onboarding_collage/3.0x/

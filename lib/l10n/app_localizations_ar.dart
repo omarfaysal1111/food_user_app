@@ -420,6 +420,43 @@ class AppLocalizationsAr extends AppLocalizations {
   String get supportEmail => 'البريد الإلكتروني للدعم';
 
   @override
+  String get supportChatTitle => 'الدعم الفني';
+
+  @override
+  String get supportToday => 'اليوم';
+
+  @override
+  String get supportGoodEvening => 'مساء الخير';
+
+  @override
+  String get supportHowCanWeHelp => 'نقد نساعد حضرتك ازاي ؟';
+
+  @override
+  String get supportSampleUserIssue =>
+      'عندي مشكله مع مطعم عز الشام الاكل اتأخر عن المده المحددة';
+
+  @override
+  String get supportInputHint => 'اكتب هنا...';
+
+  @override
+  String get supportAttachmentOptions => 'خيارات المرفقات';
+
+  @override
+  String get supportPickImage => 'اختر صورة';
+
+  @override
+  String get supportPickVideo => 'اختر فيديو';
+
+  @override
+  String get supportCancelAttachment => 'إلغاء';
+
+  @override
+  String get supportImageMessage => 'صورة';
+
+  @override
+  String get supportVideoMessage => 'فيديو';
+
+  @override
   String get cardsTitle => 'البطاقات';
 
   @override

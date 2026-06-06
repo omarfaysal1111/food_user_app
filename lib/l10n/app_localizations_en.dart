@@ -424,6 +424,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supportEmail => 'Email support';
 
   @override
+  String get supportChatTitle => 'Technical Support';
+
+  @override
+  String get supportToday => 'Today';
+
+  @override
+  String get supportGoodEvening => 'Good evening';
+
+  @override
+  String get supportHowCanWeHelp => 'How can we help you?';
+
+  @override
+  String get supportSampleUserIssue =>
+      'I have a problem with Az Al Sham Restaurant. The food was delayed beyond the expected time.';
+
+  @override
+  String get supportInputHint => 'Write here...';
+
+  @override
+  String get supportAttachmentOptions => 'Attachment options';
+
+  @override
+  String get supportPickImage => 'Pick Image';
+
+  @override
+  String get supportPickVideo => 'Pick Video';
+
+  @override
+  String get supportCancelAttachment => 'Cancel';
+
+  @override
+  String get supportImageMessage => 'Image';
+
+  @override
+  String get supportVideoMessage => 'Video';
+
+  @override
   String get cardsTitle => 'Cards';
 
   @override
