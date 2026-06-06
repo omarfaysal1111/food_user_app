@@ -122,6 +122,78 @@ abstract class AppLocalizations {
   /// **'English'**
   String get languageEnglish;
 
+  /// No description provided for @generalSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'General Settings'**
+  String get generalSettingsTitle;
+
+  /// No description provided for @changeAppLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Change App Language'**
+  String get changeAppLanguage;
+
+  /// No description provided for @notificationsControl.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications Control'**
+  String get notificationsControl;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkMode;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @arabicLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic'**
+  String get arabicLanguage;
+
+  /// No description provided for @englishLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get englishLanguage;
+
+  /// No description provided for @deleteAccountComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account flow is coming soon.'**
+  String get deleteAccountComingSoon;
+
+  /// No description provided for @deleteAccountConfirmationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccountConfirmationTitle;
+
+  /// No description provided for @deleteAccountConfirmationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account flow will be connected later.'**
+  String get deleteAccountConfirmationMessage;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
   /// No description provided for @loginTitle.
   ///
   /// In en, this message translates to:

@@ -21,6 +21,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageEnglish => 'English';
 
   @override
+  String get generalSettingsTitle => 'General Settings';
+
+  @override
+  String get changeAppLanguage => 'Change App Language';
+
+  @override
+  String get notificationsControl => 'Notifications Control';
+
+  @override
+  String get darkMode => 'Dark Mode';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get arabicLanguage => 'Arabic';
+
+  @override
+  String get englishLanguage => 'English';
+
+  @override
+  String get deleteAccountComingSoon => 'Delete account flow is coming soon.';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationMessage =>
+      'Delete account flow will be connected later.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
   String get loginTitle => 'Sign in!';
 
   @override

@@ -29,6 +29,15 @@ class AppAssets {
   static const settingsTerms = 'assets/images/icons/settings/settings-7.svg';
   static const settingsLogout = 'assets/images/icons/settings/settings-8.svg';
 
+  static const generalSettingsLanguage =
+      'assets/images/icons/general_settings/language.svg';
+  static const generalSettingsNotifications =
+      'assets/images/icons/general_settings/notifications.svg';
+  static const generalSettingsDarkMode =
+      'assets/images/icons/general_settings/dark_mode.svg';
+  static const generalSettingsDeleteAccount =
+      'assets/images/icons/general_settings/delete_account.svg';
+
   static const onboardingCollage =
       'assets/images/onboarding_collage/onboarding_collage.png';
 

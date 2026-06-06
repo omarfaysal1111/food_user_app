@@ -21,6 +21,43 @@ class AppLocalizationsAr extends AppLocalizations {
   String get languageEnglish => 'الإنجليزية';
 
   @override
+  String get generalSettingsTitle => 'الإعدادات العامة';
+
+  @override
+  String get changeAppLanguage => 'تغيير لغة التطبيق';
+
+  @override
+  String get notificationsControl => 'التحكم في الاشعارات';
+
+  @override
+  String get darkMode => 'الوضع الليلي';
+
+  @override
+  String get deleteAccount => 'حذف الحساب';
+
+  @override
+  String get arabicLanguage => 'عربي';
+
+  @override
+  String get englishLanguage => 'English';
+
+  @override
+  String get deleteAccountComingSoon => 'تدفق حذف الحساب قادم قريباً.';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'حذف الحساب';
+
+  @override
+  String get deleteAccountConfirmationMessage =>
+      'سيتم ربط تدفق حذف الحساب لاحقاً.';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get confirm => 'تأكيد';
+
+  @override
   String get loginTitle => 'تسجيل دخول !';
 
   @override
