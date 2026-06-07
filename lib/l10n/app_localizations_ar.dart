@@ -502,16 +502,70 @@ class AppLocalizationsAr extends AppLocalizations {
   String get paymentMethodsTitle => 'طرق الدفع';
 
   @override
-  String get addCard => 'إضافة بطاقة';
+  String get noCardsMessage => 'لا يوجد لديك اي بطاقة';
+
+  @override
+  String get addNewCard => 'إضافة بطاقة جديدة';
+
+  @override
+  String get addCard => 'إضافة';
+
+  @override
+  String get editCard => 'تعديل';
+
+  @override
+  String get editCardTitle => 'تعديل بيانات البطاقة';
+
+  @override
+  String get deleteCard => 'حذف';
+
+  @override
+  String get deleteCardTitle => 'حذف البطاقة';
+
+  @override
+  String get deleteCardMessage => 'هل أنت متأكد من انك تريد حذف البطاقة؟';
+
+  @override
+  String get confirmDelete => 'حذف البطاقة';
+
+  @override
+  String get updateCard => 'تعديل';
+
+  @override
+  String get cardHolderName => 'اسم حامل البطاقة';
+
+  @override
+  String get cardNumber => 'رقم البطاقة';
+
+  @override
+  String get expiryDate => 'تاريخ الانتهاء';
+
+  @override
+  String get cvv => 'رقم cvv';
 
   @override
   String get sampleCardHolder => 'أحمد فرج';
+
+  @override
+  String get sampleMaskedCardNumber => '**** **** **** 1234';
+
+  @override
+  String get sampleCardExpiry => '2026';
 
   @override
   String get paymentCardEnding => 'بطاقة فيزا تنتهي بـ 4242';
 
   @override
   String get paymentIntegrationComingSoon => 'حفظ بطاقات الدفع قادم قريباً.';
+
+  @override
+  String get cardAddedDesignOnly => 'تمت إضافة البطاقة لمعاينة التصميم';
+
+  @override
+  String get cardUpdatedDesignOnly => 'تم تعديل البطاقة لمعاينة التصميم';
+
+  @override
+  String get cardDeletedDesignOnly => 'تم حذف البطاقة لمعاينة التصميم';
 
   @override
   String get editProfileTitle => 'تعديل البيانات الشخصية';

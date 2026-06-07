@@ -1064,17 +1064,107 @@ abstract class AppLocalizations {
   /// **'Payment Methods'**
   String get paymentMethodsTitle;
 
+  /// No description provided for @noCardsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have any card'**
+  String get noCardsMessage;
+
+  /// No description provided for @addNewCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Card'**
+  String get addNewCard;
+
   /// No description provided for @addCard.
   ///
   /// In en, this message translates to:
-  /// **'Add Card'**
+  /// **'Add'**
   String get addCard;
+
+  /// No description provided for @editCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editCard;
+
+  /// No description provided for @editCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Card Details'**
+  String get editCardTitle;
+
+  /// No description provided for @deleteCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteCard;
+
+  /// No description provided for @deleteCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Card'**
+  String get deleteCardTitle;
+
+  /// No description provided for @deleteCardMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this card?'**
+  String get deleteCardMessage;
+
+  /// No description provided for @confirmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Card'**
+  String get confirmDelete;
+
+  /// No description provided for @updateCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get updateCard;
+
+  /// No description provided for @cardHolderName.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Holder Name'**
+  String get cardHolderName;
+
+  /// No description provided for @cardNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Number'**
+  String get cardNumber;
+
+  /// No description provided for @expiryDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry Date'**
+  String get expiryDate;
+
+  /// No description provided for @cvv.
+  ///
+  /// In en, this message translates to:
+  /// **'CVV'**
+  String get cvv;
 
   /// No description provided for @sampleCardHolder.
   ///
   /// In en, this message translates to:
   /// **'Ahmed Farag'**
   String get sampleCardHolder;
+
+  /// No description provided for @sampleMaskedCardNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'**** **** **** 1234'**
+  String get sampleMaskedCardNumber;
+
+  /// No description provided for @sampleCardExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'2026'**
+  String get sampleCardExpiry;
 
   /// No description provided for @paymentCardEnding.
   ///
@@ -1087,6 +1177,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payment card saving is coming soon.'**
   String get paymentIntegrationComingSoon;
+
+  /// No description provided for @cardAddedDesignOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Card added for design preview'**
+  String get cardAddedDesignOnly;
+
+  /// No description provided for @cardUpdatedDesignOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Card updated for design preview'**
+  String get cardUpdatedDesignOnly;
+
+  /// No description provided for @cardDeletedDesignOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Card deleted for design preview'**
+  String get cardDeletedDesignOnly;
 
   /// No description provided for @editProfileTitle.
   ///

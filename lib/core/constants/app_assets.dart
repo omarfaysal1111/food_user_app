@@ -61,6 +61,21 @@ class AppAssets {
   static const addressDeleteDialogIcon =
       'assets/images/icons/address/gps_off.svg';
 
+  static const paymentCardPattern =
+      'assets/images/payment/payment_card_pattern.png';
+  static const paymentEmptyIcon =
+      'assets/images/icons/payment/payment_empty_card_add.svg';
+  static const paymentCardIcon = 'assets/images/icons/payment/payment_card.svg';
+  static const paymentMoreIcon = 'assets/images/icons/payment/payment_more.svg';
+  static const paymentEditIcon = 'assets/images/icons/payment/payment_edit.svg';
+  static const paymentDeleteIcon =
+      'assets/images/icons/payment/payment_delete.svg';
+  static const paymentAddIcon = 'assets/images/icons/payment/payment_add.svg';
+  static const paymentCloseIcon =
+      'assets/images/icons/payment/payment_close.svg';
+  static const paymentDeleteDialogIcon =
+      'assets/images/icons/payment/payment_delete_dialog.svg';
+
   static const supportHeaderPattern =
       'assets/images/support/header_pattern.png';
   static const supportAgentIcon = 'assets/images/icons/support/agent.svg';

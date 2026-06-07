@@ -510,10 +510,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentMethodsTitle => 'Payment Methods';
 
   @override
-  String get addCard => 'Add Card';
+  String get noCardsMessage => 'You don\'t have any card';
+
+  @override
+  String get addNewCard => 'Add New Card';
+
+  @override
+  String get addCard => 'Add';
+
+  @override
+  String get editCard => 'Edit';
+
+  @override
+  String get editCardTitle => 'Edit Card Details';
+
+  @override
+  String get deleteCard => 'Delete';
+
+  @override
+  String get deleteCardTitle => 'Delete Card';
+
+  @override
+  String get deleteCardMessage => 'Are you sure you want to delete this card?';
+
+  @override
+  String get confirmDelete => 'Delete Card';
+
+  @override
+  String get updateCard => 'Edit';
+
+  @override
+  String get cardHolderName => 'Card Holder Name';
+
+  @override
+  String get cardNumber => 'Card Number';
+
+  @override
+  String get expiryDate => 'Expiry Date';
+
+  @override
+  String get cvv => 'CVV';
 
   @override
   String get sampleCardHolder => 'Ahmed Farag';
+
+  @override
+  String get sampleMaskedCardNumber => '**** **** **** 1234';
+
+  @override
+  String get sampleCardExpiry => '2026';
 
   @override
   String get paymentCardEnding => 'Visa ending in 4242';
@@ -521,6 +566,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get paymentIntegrationComingSoon =>
       'Payment card saving is coming soon.';
+
+  @override
+  String get cardAddedDesignOnly => 'Card added for design preview';
+
+  @override
+  String get cardUpdatedDesignOnly => 'Card updated for design preview';
+
+  @override
+  String get cardDeletedDesignOnly => 'Card deleted for design preview';
 
   @override
   String get editProfileTitle => 'Edit Personal Data';

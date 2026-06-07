@@ -109,6 +109,8 @@ flutter:
     - assets/images/icons/favorites/
     - assets/images/address/
     - assets/images/icons/address/
+    - assets/images/payment/
+    - assets/images/icons/payment/
     - assets/images/support/
     - assets/images/icons/support/
     - assets/images/onboarding_collage/
