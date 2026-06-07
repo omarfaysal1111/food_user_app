@@ -157,37 +157,41 @@ class _AccountHeaderBar extends StatelessWidget {
                       height: 1.4,
                     ),
                   ),
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.24),
-                        width: 0.5,
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => context.push(RouteNames.notifications),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.24),
+                          width: 0.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.08),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                          BoxShadow(
+                            color: Colors.white.withValues(alpha: 0.10),
+                            blurRadius: 2,
+                            offset: const Offset(0, -1),
+                          ),
+                        ],
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.08),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                      alignment: Alignment.center,
+                      child: SvgPicture.asset(
+                        AppAssets.mainNotification,
+                        width: 24,
+                        height: 24,
+                        colorFilter: const ColorFilter.mode(
+                          AppColors.text,
+                          BlendMode.srcIn,
                         ),
-                        BoxShadow(
-                          color: Colors.white.withValues(alpha: 0.10),
-                          blurRadius: 2,
-                          offset: const Offset(0, -1),
-                        ),
-                      ],
-                    ),
-                    alignment: Alignment.center,
-                    child: SvgPicture.asset(
-                      AppAssets.mainNotification,
-                      width: 24,
-                      height: 24,
-                      colorFilter: const ColorFilter.mode(
-                        AppColors.text,
-                        BlendMode.srcIn,
                       ),
                     ),
                   ),

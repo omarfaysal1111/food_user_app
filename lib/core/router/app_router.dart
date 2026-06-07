@@ -32,7 +32,7 @@ import '../../features/profile/presentation/pages/add_edit_address_screen.dart'
     as profile_address;
 import '../../features/profile/presentation/pages/discount_points_screen.dart';
 import '../../features/profile/presentation/pages/favourites_screen.dart';
-import '../../features/profile/presentation/pages/notifications_screen.dart';
+import '../../features/notifications/presentation/pages/notifications_screen.dart';
 import '../../features/profile/presentation/pages/settings_screen.dart';
 import '../../features/support/presentation/pages/help_support_screen.dart';
 import '../../features/support/presentation/pages/about_screen.dart';

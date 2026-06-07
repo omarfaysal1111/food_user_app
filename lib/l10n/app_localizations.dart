@@ -140,6 +140,84 @@ abstract class AppLocalizations {
   /// **'Notifications Control'**
   String get notificationsControl;
 
+  /// No description provided for @notificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTitle;
+
+  /// No description provided for @notificationsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet'**
+  String get notificationsEmptyTitle;
+
+  /// No description provided for @notificationsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates about orders and offers will appear here.'**
+  String get notificationsEmptyMessage;
+
+  /// No description provided for @notificationOrderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order update'**
+  String get notificationOrderTitle;
+
+  /// No description provided for @notificationOrderMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your order is being prepared and will be on its way soon.'**
+  String get notificationOrderMessage;
+
+  /// No description provided for @notificationOfferTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New offer'**
+  String get notificationOfferTitle;
+
+  /// No description provided for @notificationOfferMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Save on your next meal with today\'s special offer.'**
+  String get notificationOfferMessage;
+
+  /// No description provided for @notificationSystemTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account notification'**
+  String get notificationSystemTitle;
+
+  /// No description provided for @notificationSystemMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account settings were updated successfully.'**
+  String get notificationSystemMessage;
+
+  /// No description provided for @notificationToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get notificationToday;
+
+  /// No description provided for @notificationYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get notificationYesterday;
+
+  /// No description provided for @notificationTimeNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get notificationTimeNow;
+
+  /// No description provided for @notificationSampleTime.
+  ///
+  /// In en, this message translates to:
+  /// **'2:30 PM'**
+  String get notificationSampleTime;
+
   /// No description provided for @darkMode.
   ///
   /// In en, this message translates to:

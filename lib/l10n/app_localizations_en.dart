@@ -30,6 +30,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationsControl => 'Notifications Control';
 
   @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get notificationsEmptyTitle => 'No notifications yet';
+
+  @override
+  String get notificationsEmptyMessage =>
+      'Updates about orders and offers will appear here.';
+
+  @override
+  String get notificationOrderTitle => 'Order update';
+
+  @override
+  String get notificationOrderMessage =>
+      'Your order is being prepared and will be on its way soon.';
+
+  @override
+  String get notificationOfferTitle => 'New offer';
+
+  @override
+  String get notificationOfferMessage =>
+      'Save on your next meal with today\'s special offer.';
+
+  @override
+  String get notificationSystemTitle => 'Account notification';
+
+  @override
+  String get notificationSystemMessage =>
+      'Your account settings were updated successfully.';
+
+  @override
+  String get notificationToday => 'Today';
+
+  @override
+  String get notificationYesterday => 'Yesterday';
+
+  @override
+  String get notificationTimeNow => 'Now';
+
+  @override
+  String get notificationSampleTime => '2:30 PM';
+
+  @override
   String get darkMode => 'Dark Mode';
 
   @override

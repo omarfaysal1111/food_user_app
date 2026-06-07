@@ -30,6 +30,45 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notificationsControl => 'التحكم في الاشعارات';
 
   @override
+  String get notificationsTitle => 'الاشعارات';
+
+  @override
+  String get notificationsEmptyTitle => 'لا يوجد اشعارات حتى الآن';
+
+  @override
+  String get notificationsEmptyMessage => 'ستظهر هنا تحديثات الطلبات والعروض.';
+
+  @override
+  String get notificationOrderTitle => 'تحديث الطلب';
+
+  @override
+  String get notificationOrderMessage => 'طلبك قيد التحضير وسيصل إليك قريباً.';
+
+  @override
+  String get notificationOfferTitle => 'عرض جديد';
+
+  @override
+  String get notificationOfferMessage => 'وفر في طلبك القادم مع عرض اليوم.';
+
+  @override
+  String get notificationSystemTitle => 'إشعار الحساب';
+
+  @override
+  String get notificationSystemMessage => 'تم تحديث إعدادات حسابك بنجاح.';
+
+  @override
+  String get notificationToday => 'اليوم';
+
+  @override
+  String get notificationYesterday => 'أمس';
+
+  @override
+  String get notificationTimeNow => 'الآن';
+
+  @override
+  String get notificationSampleTime => '٢:٣٠ م';
+
+  @override
   String get darkMode => 'الوضع الليلي';
 
   @override

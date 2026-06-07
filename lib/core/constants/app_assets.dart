@@ -38,6 +38,9 @@ class AppAssets {
   static const generalSettingsDeleteAccount =
       'assets/images/icons/general_settings/delete_account.svg';
 
+  static const notificationEmptyIcon =
+      'assets/images/icons/notifications/notification_empty_bell.svg';
+
   static const favoriteRestaurantAzAlSham =
       'assets/images/favorites/az_al_sham.jpg';
   static const favoriteBackIcon = 'assets/images/icons/favorites/back.svg';
@@ -59,7 +62,7 @@ class AppAssets {
       'assets/images/icons/address/gps_off.svg';
 
   static const supportHeaderPattern =
-    'assets/images/support/header_pattern.png';
+      'assets/images/support/header_pattern.png';
   static const supportAgentIcon = 'assets/images/icons/support/agent.svg';
   static const supportBackIcon = 'assets/images/icons/support/back.svg';
   static const supportAttachmentIcon =
