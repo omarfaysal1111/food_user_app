@@ -262,6 +262,179 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mainTabAccount => 'Account';
 
   @override
+  String get ordersTitle => 'Orders';
+
+  @override
+  String get orderRestaurantAzAlSham => 'Az Al Sham';
+
+  @override
+  String get orderProductsCount => '3 products';
+
+  @override
+  String get orderEstimatedArrival => 'Expected arrival time';
+
+  @override
+  String get orderEstimatedArrivalRange => '15 : 20 min';
+
+  @override
+  String get orderWaitingAcceptance => 'Your order is waiting for acceptance';
+
+  @override
+  String get orderWaitingAcceptanceShort => 'Waiting for acceptance';
+
+  @override
+  String get orderPreparing => 'Your order is being prepared';
+
+  @override
+  String get orderPreparingShort => 'Being prepared';
+
+  @override
+  String get orderCourierOnWay => 'The courier is on the way to you';
+
+  @override
+  String get orderCourierOnWayShort => 'Courier on the way';
+
+  @override
+  String get orderDelivered => 'Order delivered';
+
+  @override
+  String get orderDeliveredShort => 'Closed order';
+
+  @override
+  String get orderCancelled => 'Order cancelled';
+
+  @override
+  String get orderCancelledShort => 'Cancelled order';
+
+  @override
+  String orderNumber(String number) {
+    return 'Order #$number';
+  }
+
+  @override
+  String get orderTotal => '340 EGP';
+
+  @override
+  String get orderDetails => 'View order';
+
+  @override
+  String get reorder => 'New order';
+
+  @override
+  String get trackOrder => 'Track order';
+
+  @override
+  String get trackYourOrder => 'Track your order';
+
+  @override
+  String get deliverTo => 'Deliver to:';
+
+  @override
+  String get orderItemsTitle => 'Ordered items:';
+
+  @override
+  String get paymentSummary => 'Order summary:';
+
+  @override
+  String get orderSubtotal => 'Order value';
+
+  @override
+  String get orderSubtotalValue => '400 EGP';
+
+  @override
+  String get orderDeliveryFee => 'Delivery';
+
+  @override
+  String get orderDeliveryFeeValue => '20 EGP';
+
+  @override
+  String get orderDiscount => 'Discount';
+
+  @override
+  String get orderDiscountValue => '80 EGP';
+
+  @override
+  String get orderGrandTotal => 'Total:';
+
+  @override
+  String orderQuantity(int count) {
+    return 'Qty: $count';
+  }
+
+  @override
+  String get orderProductName => 'Burger meal with fries offer';
+
+  @override
+  String get orderProductPrice => '200 EGP';
+
+  @override
+  String get cancelOrder => 'Cancel order';
+
+  @override
+  String get orderCancelDesignOnly => 'Order cancelled for design preview';
+
+  @override
+  String get courierDetails => 'Courier details:';
+
+  @override
+  String get orderCourierName => 'Ahmed Ali';
+
+  @override
+  String get orderCourierPhone => '01004059966';
+
+  @override
+  String get orderCourierRating => '4.5';
+
+  @override
+  String get orderAcceptedShort => 'Accepted';
+
+  @override
+  String get orderHandedToCourierShort => 'Handed to courier';
+
+  @override
+  String get orderYouCancelled => 'You cancelled the order';
+
+  @override
+  String get cancellationReasonTitle => 'Cancellation reason:';
+
+  @override
+  String get cancellationReasonSample => 'Delayed order confirmation';
+
+  @override
+  String get rateOrderTitle => 'Rating';
+
+  @override
+  String get yourRating => 'Your rating';
+
+  @override
+  String get ratingFeedbackHint =>
+      'Write how satisfied you are with the service';
+
+  @override
+  String get skipRating => 'Skip';
+
+  @override
+  String get submitRating => 'Send';
+
+  @override
+  String get ratingSubmittedDesignOnly => 'Rating submitted for design preview';
+
+  @override
+  String get orderDetailsDesignOnly => 'Updated for design preview';
+
+  @override
+  String get rateOrder => 'Rate order';
+
+  @override
+  String get currentOrders => 'Current';
+
+  @override
+  String get previousOrders => 'Previous';
+
+  @override
+  String get cancelledOrders => 'Cancelled';
+
+  @override
   String get accountTitle => 'My Account';
 
   @override

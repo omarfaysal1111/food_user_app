@@ -41,6 +41,22 @@ class AppAssets {
   static const notificationEmptyIcon =
       'assets/images/icons/notifications/notification_empty_bell.svg';
 
+  static const orderRestaurantAvatar =
+      'assets/images/orders/order_restaurant_avatar.png';
+  static const orderReceiptRollIcon =
+      'assets/images/icons/orders/order_receipt_roll.png';
+  static const orderTornReceiptIcon =
+      'assets/images/icons/orders/order_torn_receipt.png';
+  static const orderAcceptedIcon =
+      'assets/images/icons/orders/order_accepted.png';
+  static const orderCourierOnWayIcon =
+      'assets/images/icons/orders/order_courier_on_way.png';
+  static const orderDeliveredIcon =
+      'assets/images/icons/orders/order_delivered.png';
+  static const orderProductImage = 'assets/images/orders/order_product.png';
+  static const orderCourierAvatar =
+      'assets/images/orders/order_courier_avatar.png';
+
   static const favoriteRestaurantAzAlSham =
       'assets/images/favorites/az_al_sham.jpg';
   static const favoriteBackIcon = 'assets/images/icons/favorites/back.svg';

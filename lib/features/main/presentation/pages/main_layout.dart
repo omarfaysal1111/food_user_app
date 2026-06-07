@@ -12,6 +12,7 @@ import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/home/presentation/pages/home_screen.dart';
 import 'package:food_user_app/features/main/presentation/pages/account_tab_page.dart';
+import 'package:food_user_app/features/order/presentation/pages/order_history_screen.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class MainLayout extends StatefulWidget {
@@ -38,7 +39,7 @@ class _MainLayoutState extends State<MainLayout> {
     _MainTab(
       labelKey: _MainTabLabel.orders,
       iconAsset: AppAssets.mainOrders,
-      child: _PlaceholderTabPage(title: 'Orders'),
+      child: OrderHistoryScreen(),
     ),
     _MainTab(
       labelKey: _MainTabLabel.account,
@@ -215,4 +216,3 @@ class _PlaceholderTabPage extends StatelessWidget {
     );
   }
 }
-

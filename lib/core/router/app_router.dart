@@ -129,7 +129,12 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.orderDetail,
-        builder: (c, s) => const OrderDetailScreen(),
+        builder: (c, s) {
+          final status =
+              s.extra as OrderDetailsStatus? ??
+              OrderDetailsStatus.waitingAcceptance;
+          return OrderDetailsScreen(status: status);
+        },
       ),
       GoRoute(
         path: RouteNames.orderHistory,

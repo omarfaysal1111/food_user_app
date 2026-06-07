@@ -578,6 +578,342 @@ abstract class AppLocalizations {
   /// **'Account'**
   String get mainTabAccount;
 
+  /// No description provided for @ordersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get ordersTitle;
+
+  /// No description provided for @orderRestaurantAzAlSham.
+  ///
+  /// In en, this message translates to:
+  /// **'Az Al Sham'**
+  String get orderRestaurantAzAlSham;
+
+  /// No description provided for @orderProductsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'3 products'**
+  String get orderProductsCount;
+
+  /// No description provided for @orderEstimatedArrival.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected arrival time'**
+  String get orderEstimatedArrival;
+
+  /// No description provided for @orderEstimatedArrivalRange.
+  ///
+  /// In en, this message translates to:
+  /// **'15 : 20 min'**
+  String get orderEstimatedArrivalRange;
+
+  /// No description provided for @orderWaitingAcceptance.
+  ///
+  /// In en, this message translates to:
+  /// **'Your order is waiting for acceptance'**
+  String get orderWaitingAcceptance;
+
+  /// No description provided for @orderWaitingAcceptanceShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for acceptance'**
+  String get orderWaitingAcceptanceShort;
+
+  /// No description provided for @orderPreparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Your order is being prepared'**
+  String get orderPreparing;
+
+  /// No description provided for @orderPreparingShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Being prepared'**
+  String get orderPreparingShort;
+
+  /// No description provided for @orderCourierOnWay.
+  ///
+  /// In en, this message translates to:
+  /// **'The courier is on the way to you'**
+  String get orderCourierOnWay;
+
+  /// No description provided for @orderCourierOnWayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Courier on the way'**
+  String get orderCourierOnWayShort;
+
+  /// No description provided for @orderDelivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Order delivered'**
+  String get orderDelivered;
+
+  /// No description provided for @orderDeliveredShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed order'**
+  String get orderDeliveredShort;
+
+  /// No description provided for @orderCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Order cancelled'**
+  String get orderCancelled;
+
+  /// No description provided for @orderCancelledShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled order'**
+  String get orderCancelledShort;
+
+  /// No description provided for @orderNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Order #{number}'**
+  String orderNumber(String number);
+
+  /// No description provided for @orderTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'340 EGP'**
+  String get orderTotal;
+
+  /// No description provided for @orderDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View order'**
+  String get orderDetails;
+
+  /// No description provided for @reorder.
+  ///
+  /// In en, this message translates to:
+  /// **'New order'**
+  String get reorder;
+
+  /// No description provided for @trackOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Track order'**
+  String get trackOrder;
+
+  /// No description provided for @trackYourOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your order'**
+  String get trackYourOrder;
+
+  /// No description provided for @deliverTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Deliver to:'**
+  String get deliverTo;
+
+  /// No description provided for @orderItemsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ordered items:'**
+  String get orderItemsTitle;
+
+  /// No description provided for @paymentSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Order summary:'**
+  String get paymentSummary;
+
+  /// No description provided for @orderSubtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Order value'**
+  String get orderSubtotal;
+
+  /// No description provided for @orderSubtotalValue.
+  ///
+  /// In en, this message translates to:
+  /// **'400 EGP'**
+  String get orderSubtotalValue;
+
+  /// No description provided for @orderDeliveryFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get orderDeliveryFee;
+
+  /// No description provided for @orderDeliveryFeeValue.
+  ///
+  /// In en, this message translates to:
+  /// **'20 EGP'**
+  String get orderDeliveryFeeValue;
+
+  /// No description provided for @orderDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get orderDiscount;
+
+  /// No description provided for @orderDiscountValue.
+  ///
+  /// In en, this message translates to:
+  /// **'80 EGP'**
+  String get orderDiscountValue;
+
+  /// No description provided for @orderGrandTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total:'**
+  String get orderGrandTotal;
+
+  /// No description provided for @orderQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Qty: {count}'**
+  String orderQuantity(int count);
+
+  /// No description provided for @orderProductName.
+  ///
+  /// In en, this message translates to:
+  /// **'Burger meal with fries offer'**
+  String get orderProductName;
+
+  /// No description provided for @orderProductPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'200 EGP'**
+  String get orderProductPrice;
+
+  /// No description provided for @cancelOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel order'**
+  String get cancelOrder;
+
+  /// No description provided for @orderCancelDesignOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Order cancelled for design preview'**
+  String get orderCancelDesignOnly;
+
+  /// No description provided for @courierDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Courier details:'**
+  String get courierDetails;
+
+  /// No description provided for @orderCourierName.
+  ///
+  /// In en, this message translates to:
+  /// **'Ahmed Ali'**
+  String get orderCourierName;
+
+  /// No description provided for @orderCourierPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'01004059966'**
+  String get orderCourierPhone;
+
+  /// No description provided for @orderCourierRating.
+  ///
+  /// In en, this message translates to:
+  /// **'4.5'**
+  String get orderCourierRating;
+
+  /// No description provided for @orderAcceptedShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get orderAcceptedShort;
+
+  /// No description provided for @orderHandedToCourierShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Handed to courier'**
+  String get orderHandedToCourierShort;
+
+  /// No description provided for @orderYouCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'You cancelled the order'**
+  String get orderYouCancelled;
+
+  /// No description provided for @cancellationReasonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation reason:'**
+  String get cancellationReasonTitle;
+
+  /// No description provided for @cancellationReasonSample.
+  ///
+  /// In en, this message translates to:
+  /// **'Delayed order confirmation'**
+  String get cancellationReasonSample;
+
+  /// No description provided for @rateOrderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get rateOrderTitle;
+
+  /// No description provided for @yourRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Your rating'**
+  String get yourRating;
+
+  /// No description provided for @ratingFeedbackHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write how satisfied you are with the service'**
+  String get ratingFeedbackHint;
+
+  /// No description provided for @skipRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skipRating;
+
+  /// No description provided for @submitRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get submitRating;
+
+  /// No description provided for @ratingSubmittedDesignOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating submitted for design preview'**
+  String get ratingSubmittedDesignOnly;
+
+  /// No description provided for @orderDetailsDesignOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated for design preview'**
+  String get orderDetailsDesignOnly;
+
+  /// No description provided for @rateOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate order'**
+  String get rateOrder;
+
+  /// No description provided for @currentOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get currentOrders;
+
+  /// No description provided for @previousOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get previousOrders;
+
+  /// No description provided for @cancelledOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get cancelledOrders;
+
   /// No description provided for @accountTitle.
   ///
   /// In en, this message translates to:

@@ -258,6 +258,178 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mainTabAccount => 'حسابي';
 
   @override
+  String get ordersTitle => 'الطلبات';
+
+  @override
+  String get orderRestaurantAzAlSham => 'عز الشام';
+
+  @override
+  String get orderProductsCount => '3 منتجات';
+
+  @override
+  String get orderEstimatedArrival => 'وقت الوصول المتوقع';
+
+  @override
+  String get orderEstimatedArrivalRange => '15 : 20 دقيقة';
+
+  @override
+  String get orderWaitingAcceptance => 'طلبك بانتظار القبول';
+
+  @override
+  String get orderWaitingAcceptanceShort => 'بانتظار القبول';
+
+  @override
+  String get orderPreparing => 'جاري تحضير طلبك';
+
+  @override
+  String get orderPreparingShort => 'جاري التحضير';
+
+  @override
+  String get orderCourierOnWay => 'المندوب في الطريق إليك';
+
+  @override
+  String get orderCourierOnWayShort => 'في الطريق إليك';
+
+  @override
+  String get orderDelivered => 'تم تسليم الطلب';
+
+  @override
+  String get orderDeliveredShort => 'طلب مغلق';
+
+  @override
+  String get orderCancelled => 'طلب ملغي';
+
+  @override
+  String get orderCancelledShort => 'طلب ملغي';
+
+  @override
+  String orderNumber(String number) {
+    return 'طلب رقم $number';
+  }
+
+  @override
+  String get orderTotal => '340 ج.م';
+
+  @override
+  String get orderDetails => 'عرض الطلب';
+
+  @override
+  String get reorder => 'طلب جديد';
+
+  @override
+  String get trackOrder => 'تتبع الطلب';
+
+  @override
+  String get trackYourOrder => 'تابع طلبك';
+
+  @override
+  String get deliverTo => 'التوصيل الى :';
+
+  @override
+  String get orderItemsTitle => 'المنتجات المطلوبة :';
+
+  @override
+  String get paymentSummary => 'ملخص الطلب :';
+
+  @override
+  String get orderSubtotal => 'قيمة الطلب';
+
+  @override
+  String get orderSubtotalValue => '400 ج.م';
+
+  @override
+  String get orderDeliveryFee => 'التوصيل';
+
+  @override
+  String get orderDeliveryFeeValue => '20 ج.م';
+
+  @override
+  String get orderDiscount => 'الخصم';
+
+  @override
+  String get orderDiscountValue => '80 ج.م';
+
+  @override
+  String get orderGrandTotal => 'الاجمالي :';
+
+  @override
+  String orderQuantity(int count) {
+    return 'الكمية : $count';
+  }
+
+  @override
+  String get orderProductName => 'عرض البرجر مع الفرايز';
+
+  @override
+  String get orderProductPrice => '200 ج.م';
+
+  @override
+  String get cancelOrder => 'إلغاء الطلب';
+
+  @override
+  String get orderCancelDesignOnly => 'تم إلغاء الطلب لمعاينة التصميم';
+
+  @override
+  String get courierDetails => 'بيانات المندوب :';
+
+  @override
+  String get orderCourierName => 'احمد على';
+
+  @override
+  String get orderCourierPhone => '01004059966';
+
+  @override
+  String get orderCourierRating => '4.5';
+
+  @override
+  String get orderAcceptedShort => 'تم القبول';
+
+  @override
+  String get orderHandedToCourierShort => 'تسليم للمندوب';
+
+  @override
+  String get orderYouCancelled => 'لقد قمت بالغاء الطلب';
+
+  @override
+  String get cancellationReasonTitle => 'سبب الالغاء :';
+
+  @override
+  String get cancellationReasonSample => 'تأخر تأكيد الطلب';
+
+  @override
+  String get rateOrderTitle => 'تقييم';
+
+  @override
+  String get yourRating => 'تقييمك';
+
+  @override
+  String get ratingFeedbackHint => 'اكتب مدى رضاك عن الخدمة';
+
+  @override
+  String get skipRating => 'تخطي';
+
+  @override
+  String get submitRating => 'إرسال';
+
+  @override
+  String get ratingSubmittedDesignOnly => 'تم إرسال التقييم لمعاينة التصميم';
+
+  @override
+  String get orderDetailsDesignOnly => 'تم التحديث لمعاينة التصميم';
+
+  @override
+  String get rateOrder => 'تقييم الطلب';
+
+  @override
+  String get currentOrders => 'الحالية';
+
+  @override
+  String get previousOrders => 'السابقة';
+
+  @override
+  String get cancelledOrders => 'الملغية';
+
+  @override
   String get accountTitle => 'حسابي';
 
   @override
