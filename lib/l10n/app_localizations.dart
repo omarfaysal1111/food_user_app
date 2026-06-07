@@ -1238,6 +1238,108 @@ abstract class AppLocalizations {
   /// **'Changes saved for design preview'**
   String get profileChangesSaved;
 
+  /// No description provided for @changePhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get changePhone;
+
+  /// No description provided for @changePhoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Phone Number'**
+  String get changePhoneTitle;
+
+  /// No description provided for @changePhoneSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your new number correctly so we can send the activation code.'**
+  String get changePhoneSubtitle;
+
+  /// No description provided for @newPhoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'New Phone Number'**
+  String get newPhoneNumber;
+
+  /// No description provided for @continueButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueButton;
+
+  /// No description provided for @verifyPhoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Code'**
+  String get verifyPhoneTitle;
+
+  /// No description provided for @verifyPhoneMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A code was sent to your new number for verification.'**
+  String get verifyPhoneMessage;
+
+  /// No description provided for @otpCode.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP Code'**
+  String get otpCode;
+
+  /// No description provided for @confirmOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirmOtp;
+
+  /// No description provided for @resendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code?'**
+  String get resendCode;
+
+  /// No description provided for @resendCodeTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s'**
+  String resendCodeTimer(int seconds);
+
+  /// No description provided for @phoneChangedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number changed successfully'**
+  String get phoneChangedTitle;
+
+  /// No description provided for @phoneChangedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone number has been updated for design preview.'**
+  String get phoneChangedMessage;
+
+  /// No description provided for @profileUpdatedDesignOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated for design preview'**
+  String get profileUpdatedDesignOnly;
+
+  /// No description provided for @invalidPhoneMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a phone number'**
+  String get invalidPhoneMessage;
+
+  /// No description provided for @invalidPhoneLengthMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number must be 11 or 12 digits'**
+  String get invalidPhoneLengthMessage;
+
+  /// No description provided for @invalidOtpMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the complete verification code'**
+  String get invalidOtpMessage;
+
   /// No description provided for @socialDivider.
   ///
   /// In en, this message translates to:

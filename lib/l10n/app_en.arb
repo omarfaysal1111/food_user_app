@@ -210,6 +210,30 @@
   "email": "Email",
   "saveChanges": "Save Changes",
   "profileChangesSaved": "Changes saved for design preview",
+  "changePhone": "Change",
+  "changePhoneTitle": "Change Phone Number",
+  "changePhoneSubtitle": "Enter your new number correctly so we can send the activation code.",
+  "newPhoneNumber": "New Phone Number",
+  "continueButton": "Continue",
+  "verifyPhoneTitle": "Verification Code",
+  "verifyPhoneMessage": "A code was sent to your new number for verification.",
+  "otpCode": "OTP Code",
+  "confirmOtp": "Confirm",
+  "resendCode": "Resend code?",
+  "resendCodeTimer": "{seconds}s",
+  "@resendCodeTimer": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "phoneChangedTitle": "Phone number changed successfully",
+  "phoneChangedMessage": "Your phone number has been updated for design preview.",
+  "profileUpdatedDesignOnly": "Profile updated for design preview",
+  "invalidPhoneMessage": "Please enter a phone number",
+  "invalidPhoneLengthMessage": "Phone number must be 11 or 12 digits",
+  "invalidOtpMessage": "Please enter the complete verification code",
 
   "socialDivider": "or",
   "socialAppleSoon": "Sign in with Apple is coming soon",

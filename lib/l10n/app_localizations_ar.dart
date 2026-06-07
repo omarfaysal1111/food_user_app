@@ -589,6 +589,60 @@ class AppLocalizationsAr extends AppLocalizations {
   String get profileChangesSaved => 'تم حفظ التغييرات لمعاينة التصميم';
 
   @override
+  String get changePhone => 'تغيير';
+
+  @override
+  String get changePhoneTitle => 'تغيير رقم الجوال';
+
+  @override
+  String get changePhoneSubtitle =>
+      'ادخل رقمك الجديد بشكل صحيح ليصلك كود التفعيل !';
+
+  @override
+  String get newPhoneNumber => 'رقم الجوال الجديد';
+
+  @override
+  String get continueButton => 'متابعة';
+
+  @override
+  String get verifyPhoneTitle => 'كود التحقق';
+
+  @override
+  String get verifyPhoneMessage => 'تم إرسال كود على رقمك الجديد للتحقق !';
+
+  @override
+  String get otpCode => 'كود التحقق';
+
+  @override
+  String get confirmOtp => 'تأكيد';
+
+  @override
+  String get resendCode => 'إعادة إرسال الكود ؟';
+
+  @override
+  String resendCodeTimer(int seconds) {
+    return '$seconds ثانية';
+  }
+
+  @override
+  String get phoneChangedTitle => 'تم تغيير رقم الجوال بنجاح';
+
+  @override
+  String get phoneChangedMessage => 'تم تحديث رقم الجوال لمعاينة التصميم.';
+
+  @override
+  String get profileUpdatedDesignOnly => 'تم تحديث البيانات لمعاينة التصميم';
+
+  @override
+  String get invalidPhoneMessage => 'يرجى إدخال رقم الجوال';
+
+  @override
+  String get invalidPhoneLengthMessage => 'رقم الجوال يجب أن يكون 11 أو 12 رقم';
+
+  @override
+  String get invalidOtpMessage => 'يرجى إدخال كود التحقق كاملاً';
+
+  @override
   String get socialDivider => 'او';
 
   @override

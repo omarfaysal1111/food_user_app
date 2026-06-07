@@ -27,6 +27,8 @@ class RouteNames {
   static const rateOrder = '/order/:id/rate';
   static const profile = '/profile';
   static const editProfile = '/profile/edit';
+  static const changePhone = '/profile/change-phone';
+  static const verifyPhoneOtp = '/profile/change-phone/otp';
   static const addressBook = '/profile/addresses';
   static const addressBookAddMap = '/profile/address-book/add/map';
   static const addressBookAddDetails = '/profile/address-book/add/details';

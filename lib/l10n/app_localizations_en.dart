@@ -598,6 +598,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileChangesSaved => 'Changes saved for design preview';
 
   @override
+  String get changePhone => 'Change';
+
+  @override
+  String get changePhoneTitle => 'Change Phone Number';
+
+  @override
+  String get changePhoneSubtitle =>
+      'Enter your new number correctly so we can send the activation code.';
+
+  @override
+  String get newPhoneNumber => 'New Phone Number';
+
+  @override
+  String get continueButton => 'Continue';
+
+  @override
+  String get verifyPhoneTitle => 'Verification Code';
+
+  @override
+  String get verifyPhoneMessage =>
+      'A code was sent to your new number for verification.';
+
+  @override
+  String get otpCode => 'OTP Code';
+
+  @override
+  String get confirmOtp => 'Confirm';
+
+  @override
+  String get resendCode => 'Resend code?';
+
+  @override
+  String resendCodeTimer(int seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String get phoneChangedTitle => 'Phone number changed successfully';
+
+  @override
+  String get phoneChangedMessage =>
+      'Your phone number has been updated for design preview.';
+
+  @override
+  String get profileUpdatedDesignOnly => 'Profile updated for design preview';
+
+  @override
+  String get invalidPhoneMessage => 'Please enter a phone number';
+
+  @override
+  String get invalidPhoneLengthMessage =>
+      'Phone number must be 11 or 12 digits';
+
+  @override
+  String get invalidOtpMessage => 'Please enter the complete verification code';
+
+  @override
   String get socialDivider => 'or';
 
   @override

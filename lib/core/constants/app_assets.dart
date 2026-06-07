@@ -61,6 +61,13 @@ class AppAssets {
   static const addressDeleteDialogIcon =
       'assets/images/icons/address/gps_off.svg';
 
+  static const profileEditIcon =
+      'assets/images/icons/profile/profile_edit_icon.svg';
+  static const profilePhoneOtpIcon =
+      'assets/images/icons/profile/profile_phone_otp_icon.svg';
+  static const profileSuccessIcon =
+      'assets/images/icons/profile/profile_success_icon.gif';
+
   static const paymentCardPattern =
       'assets/images/payment/payment_card_pattern.png';
   static const paymentEmptyIcon =

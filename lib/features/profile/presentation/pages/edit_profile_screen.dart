@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:food_user_app/core/constants/app_assets.dart';
+import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_radius.dart';
-import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
@@ -16,23 +18,41 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController _nameController;
-  late final TextEditingController _mobileController;
   late final TextEditingController _emailController;
+  late final TextEditingController _phoneController;
+
+  String _savedName = 'أحمد فرج';
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: 'أحمد فرج');
-    _mobileController = TextEditingController(text: '+20 10 1234 5678');
+    _nameController = TextEditingController(text: _savedName);
     _emailController = TextEditingController(text: 'afarag74@gmail.com');
+    _phoneController = TextEditingController(text: '01004059966');
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _mobileController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     super.dispose();
+  }
+
+  void _saveProfile() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _savedName = _nameController.text.trim());
+
+    // TODO: Replace local profile update with the real update profile API.
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          l10n.profileUpdatedDesignOnly,
+          style: AppTextStyles.snackBarMessage(context),
+        ),
+      ),
+    );
   }
 
   @override
@@ -41,158 +61,73 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            _EditProfileHeader(title: l10n.editProfileTitle),
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const ClampingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(16, 28, 16, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.personalDataTitle,
-                      style: AppTextStyles.heading4(context),
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    _ProfileField(
-                      label: l10n.fullName,
-                      controller: _nameController,
-                    ),
-                    const SizedBox(height: 14),
-                    _ProfileField(
-                      label: l10n.mobileNumber,
-                      controller: _mobileController,
-                      keyboardType: TextInputType.phone,
-                    ),
-                    const SizedBox(height: 14),
-                    _ProfileField(
-                      label: l10n.email,
-                      controller: _emailController,
-                      readOnly: true,
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                    _SaveButton(
-                      label: l10n.saveChanges,
-                      onTap: () {
-                        // TODO: Updating name/mobile should send OTP later.
-                        // Email is read-only and cannot be edited.
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l10n.profileChangesSaved)),
-                        );
-                      },
-                    ),
-                  ],
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: SafeArea(
+          bottom: false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _ProfileHeader(title: l10n.personalDataTitle),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _ProfileField(
+                        label: l10n.email,
+                        controller: _emailController,
+                        readOnly: true,
+                        keyboardType: TextInputType.emailAddress,
+                        textDirection: TextDirection.ltr,
+                      ),
+                      const SizedBox(height: 16),
+                      _ProfileField(
+                        label: l10n.fullName,
+                        controller: _nameController,
+                        textInputAction: TextInputAction.done,
+                      ),
+                      const SizedBox(height: 16),
+                      _ProfileField(
+                        label: l10n.mobileNumber,
+                        controller: _phoneController,
+                        readOnly: true,
+                        keyboardType: TextInputType.phone,
+                        textDirection: TextDirection.ltr,
+                        trailing: _PhoneChangeAction(
+                          label: l10n.changePhone,
+                          onTap: () => context.push(RouteNames.changePhone),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      _PrimaryProfileButton(
+                        label: l10n.saveChanges,
+                        onTap: _saveProfile,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _ProfileField extends StatelessWidget {
-  const _ProfileField({
-    required this.label,
-    required this.controller,
-    this.readOnly = false,
-    this.keyboardType,
-  });
-
-  final String label;
-  final TextEditingController controller;
-  final bool readOnly;
-  final TextInputType? keyboardType;
-
-  @override
-  Widget build(BuildContext context) {
-    final fill = readOnly
-        ? AppColors.border(context).withValues(alpha: 0.24)
-        : AppColors.surfaceCard(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTextStyles.fieldLabel(context)),
-        const SizedBox(height: 8),
-        TextField(
-          controller: controller,
-          readOnly: readOnly,
-          keyboardType: keyboardType,
-          textDirection: readOnly && label.toLowerCase().contains('email')
-              ? TextDirection.ltr
-              : null,
-          style: AppTextStyles.inputText(context).copyWith(
-            color: readOnly
-                ? AppColors.paragraph(context)
-                : AppColors.onSurface(context),
-          ),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: fill,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 14,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(AppRadius.sm),
-              borderSide: BorderSide(color: AppColors.border(context)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(AppRadius.sm),
-              borderSide: BorderSide(color: AppColors.border(context)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(AppRadius.sm),
-              borderSide: BorderSide(
-                color: AppColors.fieldFocusBorder(context),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _SaveButton extends StatelessWidget {
-  const _SaveButton({required this.label, required this.onTap});
-
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Container(
-        height: 48,
-        decoration: const BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.all(AppRadius.sm),
-        ),
-        alignment: Alignment.center,
-        child: Text(label, style: AppTextStyles.primaryButtonLabel),
-      ),
-    );
-  }
-}
-
-class _EditProfileHeader extends StatelessWidget {
-  const _EditProfileHeader({required this.title});
+class _ProfileHeader extends StatelessWidget {
+  const _ProfileHeader({required this.title});
 
   final String title;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 56,
+      height: 64,
       child: Padding(
         padding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
         child: Row(
@@ -225,6 +160,167 @@ class _EditProfileHeader extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileField extends StatelessWidget {
+  const _ProfileField({
+    required this.label,
+    required this.controller,
+    this.readOnly = false,
+    this.keyboardType,
+    this.textDirection,
+    this.textInputAction,
+    this.trailing,
+  });
+
+  final String label;
+  final TextEditingController controller;
+  final bool readOnly;
+  final TextInputType? keyboardType;
+  final TextDirection? textDirection;
+  final TextInputAction? textInputAction;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final fieldTextAlign = textDirection == TextDirection.ltr && isRtl
+        ? TextAlign.right
+        : TextAlign.start;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          textAlign: TextAlign.start,
+          style: AppTextStyles.fieldLabel(context).copyWith(
+            color: AppColors.onSurface(context),
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            height: 1.35,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          height: 48,
+          padding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceCard(context),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppColors.border(context), width: 0.5),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  readOnly: readOnly,
+                  keyboardType: keyboardType,
+                  textInputAction: textInputAction,
+                  textDirection: textDirection,
+                  textAlign: fieldTextAlign,
+                  cursorColor: AppColors.cursor(context),
+                  style: AppTextStyles.inputText(context).copyWith(
+                    color: readOnly
+                        ? AppColors.paragraph(context)
+                        : AppColors.onSurface(context),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    height: 1.3,
+                  ),
+                  decoration: const InputDecoration(
+                    isDense: true,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ),
+              if (trailing != null) ...[const SizedBox(width: 12), trailing!],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PhoneChangeAction extends StatelessWidget {
+  const _PhoneChangeAction({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: SizedBox(
+        height: 32,
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: AppTextStyles.textLink(context).copyWith(
+                  color: AppColors.onSurface(context),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                  height: 1.3,
+                ),
+              ),
+              const SizedBox(width: 6),
+              SvgPicture.asset(
+                AppAssets.profileEditIcon,
+                width: 16,
+                height: 16,
+                colorFilter: const ColorFilter.mode(
+                  AppColors.primary,
+                  BlendMode.srcIn,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PrimaryProfileButton extends StatelessWidget {
+  const _PrimaryProfileButton({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
+        height: 48,
+        alignment: Alignment.center,
+        decoration: const BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.all(AppRadius.sm),
+        ),
+        child: Text(
+          label,
+          style: AppTextStyles.primaryButtonLabel.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            height: 1.25,
+          ),
         ),
       ),
     );

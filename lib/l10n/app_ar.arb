@@ -210,6 +210,30 @@
   "email": "البريد الإلكتروني",
   "saveChanges": "حفظ التغييرات",
   "profileChangesSaved": "تم حفظ التغييرات لمعاينة التصميم",
+  "changePhone": "تغيير",
+  "changePhoneTitle": "تغيير رقم الجوال",
+  "changePhoneSubtitle": "ادخل رقمك الجديد بشكل صحيح ليصلك كود التفعيل !",
+  "newPhoneNumber": "رقم الجوال الجديد",
+  "continueButton": "متابعة",
+  "verifyPhoneTitle": "كود التحقق",
+  "verifyPhoneMessage": "تم إرسال كود على رقمك الجديد للتحقق !",
+  "otpCode": "كود التحقق",
+  "confirmOtp": "تأكيد",
+  "resendCode": "إعادة إرسال الكود ؟",
+  "resendCodeTimer": "{seconds} ثانية",
+  "@resendCodeTimer": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "phoneChangedTitle": "تم تغيير رقم الجوال بنجاح",
+  "phoneChangedMessage": "تم تحديث رقم الجوال لمعاينة التصميم.",
+  "profileUpdatedDesignOnly": "تم تحديث البيانات لمعاينة التصميم",
+  "invalidPhoneMessage": "يرجى إدخال رقم الجوال",
+  "invalidPhoneLengthMessage": "رقم الجوال يجب أن يكون 11 أو 12 رقم",
+  "invalidOtpMessage": "يرجى إدخال كود التحقق كاملاً",
 
   "socialDivider": "او",
   "socialAppleSoon": "دخول عبر Apple قريباً",

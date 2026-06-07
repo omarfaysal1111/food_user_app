@@ -109,6 +109,7 @@ flutter:
     - assets/images/icons/favorites/
     - assets/images/address/
     - assets/images/icons/address/
+    - assets/images/icons/profile/
     - assets/images/payment/
     - assets/images/icons/payment/
     - assets/images/support/

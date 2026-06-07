@@ -27,6 +27,8 @@ import '../../features/order/presentation/pages/order_history_screen.dart';
 import '../../features/order/presentation/pages/rate_order_screen.dart';
 import '../../features/profile/presentation/pages/profile_screen.dart';
 import '../../features/profile/presentation/pages/edit_profile_screen.dart';
+import '../../features/profile/presentation/pages/change_phone_screen.dart';
+import '../../features/profile/presentation/pages/verify_phone_otp_screen.dart';
 import '../../features/profile/presentation/pages/address_book_screen.dart';
 import '../../features/profile/presentation/pages/add_edit_address_screen.dart'
     as profile_address;
@@ -144,6 +146,17 @@ class AppRouter {
       GoRoute(
         path: RouteNames.editProfile,
         builder: (c, s) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.changePhone,
+        builder: (c, s) => const ChangePhoneScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.verifyPhoneOtp,
+        builder: (c, s) {
+          final phone = s.extra is String ? s.extra as String : '';
+          return VerifyPhoneOtpScreen(phoneNumber: phone);
+        },
       ),
       GoRoute(
         path: RouteNames.addressBook,
