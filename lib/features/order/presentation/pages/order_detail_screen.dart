@@ -211,9 +211,9 @@ class _OrderDetailsConfig {
         cancelled: false,
       ),
       OrderDetailsStatus.delivered => _OrderDetailsConfig(
-          shortStatusLabel: l10n.orderDeliveredShort,
-          statusLabel: l10n.orderDelivered,
-          statusColor: const Color(0xFFA7A7A7),
+        shortStatusLabel: l10n.orderDeliveredShort,
+        statusLabel: l10n.orderDelivered,
+        statusColor: const Color(0xFFA7A7A7),
         statusIconAsset: AppAssets.orderDeliveredIcon,
         showEta: false,
         progressStep: null,
@@ -264,10 +264,18 @@ class _OrderDetailsHeader extends StatelessWidget {
           child: SizedBox(
             width: 28,
             height: 28,
-            child: Icon(
-              Icons.chevron_left_rounded,
-              size: 28,
-              color: AppColors.onSurface(context),
+            child: Center(
+              child: SvgPicture.asset(
+                AppAssets.orderBackIcon,
+                width: 9,
+                height: 15,
+                colorFilter: ColorFilter.mode(
+                  Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.text
+                      : AppColors.onSurface(context),
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
           ),
         ),
@@ -307,13 +315,9 @@ class _OrderDetailsHeader extends StatelessWidget {
             width: 28,
             height: 28,
             child: SvgPicture.asset(
-              AppAssets.settingsSupport,
+              AppAssets.orderSupportIcon,
               width: 28,
               height: 28,
-              colorFilter: const ColorFilter.mode(
-                AppColors.primary,
-                BlendMode.srcIn,
-              ),
             ),
           ),
         ),
@@ -589,12 +593,7 @@ class _CourierDetailsSection extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: Image.asset(
-            AppAssets.orderCourierAvatar,
-            width: 60,
-            height: 60,
-            fit: BoxFit.cover,
-          ),
+          child: _buildCourierAvatar(),
         ),
         const SizedBox(width: 8),
         SizedBox(
@@ -616,10 +615,10 @@ class _CourierDetailsSection extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.smartphone_outlined,
-                    size: 16,
-                    color: AppColors.onSurface(context),
+                  SvgPicture.asset(
+                    AppAssets.orderPhoneIcon,
+                    width: 16,
+                    height: 16,
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -659,7 +658,11 @@ class _CourierDetailsSection extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 2),
-          Icon(Icons.star_rounded, size: 14, color: const Color(0xFFEFBE1C)),
+          SvgPicture.asset(
+            AppAssets.orderRatingStarIcon,
+            width: 14,
+            height: 14,
+          ),
         ],
       ),
     );
@@ -715,13 +718,9 @@ class _DeliveryAddressSection extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             SvgPicture.asset(
-              AppAssets.addressLocationIcon,
+              AppAssets.orderLocationIcon,
               width: 16,
               height: 16,
-              colorFilter: const ColorFilter.mode(
-                AppColors.primary,
-                BlendMode.srcIn,
-              ),
             ),
             const SizedBox(width: 4),
             Expanded(
@@ -796,7 +795,7 @@ class _OrderItemRow extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppColors.border(context), width: 0.5),
           ),
-          alignment: Alignment.bottomCenter,
+          alignment: Alignment.center,
           child: Image.asset(
             AppAssets.orderProductImage,
             width: 46,
@@ -1199,7 +1198,9 @@ class _RatingTargetSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final image = ClipRRect(
       borderRadius: BorderRadius.circular(circularImage ? 30 : 12),
-      child: Image.asset(imageAsset, width: 60, height: 60, fit: BoxFit.cover),
+      child: imageAsset == AppAssets.orderCourierAvatar
+          ? _buildCourierAvatar()
+          : Image.asset(imageAsset, width: 60, height: 60, fit: BoxFit.cover),
     );
 
     return Column(
@@ -1227,12 +1228,12 @@ class _RatingTargetSection extends StatelessWidget {
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () => onRatingChanged(star),
-                    child: Icon(
+                    child: SvgPicture.asset(
                       star <= rating
-                          ? Icons.star_rounded
-                          : Icons.star_outline_rounded,
-                      size: 32,
-                      color: const Color(0xFFEFBE1C),
+                          ? AppAssets.orderRatingStarIcon
+                          : AppAssets.orderRatingStarOutlineIcon,
+                      width: 32,
+                      height: 32,
                     ),
                   ),
                   if (star != 5) const SizedBox(width: 16),
@@ -1299,6 +1300,14 @@ class _RatingTargetSection extends StatelessWidget {
       ],
     );
   }
+}
+
+Widget _buildCourierAvatar() {
+  final asset = AppAssets.orderCourierAvatar;
+  if (asset.toLowerCase().endsWith('.svg')) {
+    return SvgPicture.asset(asset, width: 60, height: 60, fit: BoxFit.cover);
+  }
+  return Image.asset(asset, width: 60, height: 60, fit: BoxFit.cover);
 }
 
 class _OutlineActionButton extends StatelessWidget {

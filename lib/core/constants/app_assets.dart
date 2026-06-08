@@ -56,6 +56,16 @@ class AppAssets {
   static const orderProductImage = 'assets/images/orders/order_product.png';
   static const orderCourierAvatar =
       'assets/images/orders/order_courier_avatar.png';
+  static const orderBackIcon = 'assets/images/icons/orders/order_back.svg';
+  static const orderSupportIcon =
+      'assets/images/icons/orders/order_support.svg';
+  static const orderLocationIcon =
+      'assets/images/icons/orders/order_location.svg';
+  static const orderPhoneIcon = 'assets/images/icons/orders/order_phone.svg';
+  static const orderRatingStarIcon =
+      'assets/images/icons/orders/order_rating_star.svg';
+  static const orderRatingStarOutlineIcon =
+      'assets/images/icons/orders/order_star.svg';
 
   static const favoriteRestaurantAzAlSham =
       'assets/images/favorites/az_al_sham.jpg';
