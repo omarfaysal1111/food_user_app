@@ -338,6 +338,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get productAddNotes => 'Add your notes';
 
   @override
+  String get productEditNotes => 'Edit your notes';
+
+  @override
+  String get productYourNotes => 'Your notes';
+
+  @override
+  String get productNotesTitle => 'Notes';
+
+  @override
+  String get productNotesHint => 'Write notes here ...';
+
+  @override
+  String get productNotesSubmit => 'Send';
+
+  @override
   String get productTypeTitle => 'Type';
 
   @override

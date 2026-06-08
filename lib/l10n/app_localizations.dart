@@ -722,6 +722,36 @@ abstract class AppLocalizations {
   /// **'Add your notes'**
   String get productAddNotes;
 
+  /// No description provided for @productEditNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit your notes'**
+  String get productEditNotes;
+
+  /// No description provided for @productYourNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Your notes'**
+  String get productYourNotes;
+
+  /// No description provided for @productNotesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get productNotesTitle;
+
+  /// No description provided for @productNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write notes here ...'**
+  String get productNotesHint;
+
+  /// No description provided for @productNotesSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get productNotesSubmit;
+
   /// No description provided for @productTypeTitle.
   ///
   /// In en, this message translates to:

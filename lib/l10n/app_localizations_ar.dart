@@ -333,6 +333,21 @@ class AppLocalizationsAr extends AppLocalizations {
   String get productAddNotes => 'اضف ملاحظاتك';
 
   @override
+  String get productEditNotes => 'تعديل ملاحظاتك';
+
+  @override
+  String get productYourNotes => 'ملاحظاتك';
+
+  @override
+  String get productNotesTitle => 'ملاحظات';
+
+  @override
+  String get productNotesHint => 'اكتب ملاحظات هنا ...';
+
+  @override
+  String get productNotesSubmit => 'إرسال';
+
+  @override
   String get productTypeTitle => 'النوع';
 
   @override

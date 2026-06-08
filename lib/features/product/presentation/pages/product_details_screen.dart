@@ -21,6 +21,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   int _quantity = 0;
   String _selectedType = 'chicken';
   String _selectedFlavor = 'hot';
+  String _notes = '';
 
   @override
   void initState() {
@@ -65,7 +66,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _ProductIntro(item: widget.item),
+                    _ProductIntro(
+                      item: widget.item,
+                      notes: _notes,
+                      onAddNotes: _showNotesDialog,
+                    ),
                     const SizedBox(height: 20),
                     _OptionGroup(
                       title: l10n.productTypeTitle,
@@ -107,6 +112,24 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _showNotesDialog() async {
+    final notes = await showGeneralDialog<String>(
+      context: context,
+      barrierColor: AppColors.overlay(context),
+      barrierDismissible: false,
+      transitionDuration: const Duration(milliseconds: 150),
+      pageBuilder: (dialogContext, animation, secondaryAnimation) {
+        return ProductNotesDialog(initialNotes: _notes);
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(opacity: animation, child: child);
+      },
+    );
+    if (!mounted || notes == null) return;
+
+    setState(() => _notes = notes);
   }
 }
 
@@ -192,13 +215,21 @@ class _HeroProductImage extends StatelessWidget {
 }
 
 class _ProductIntro extends StatelessWidget {
-  const _ProductIntro({required this.item});
+  const _ProductIntro({
+    required this.item,
+    required this.notes,
+    required this.onAddNotes,
+  });
 
   final CartItem item;
+  final String notes;
+  final VoidCallback onAddNotes;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final hasNotes = notes.trim().isNotEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -223,23 +254,322 @@ class _ProductIntro extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+        Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onAddNotes,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgPicture.asset(AppAssets.cartEditIcon, width: 14, height: 14),
+                const SizedBox(width: 4),
+                Text(
+                  hasNotes ? l10n.productEditNotes : l10n.productAddNotes,
+                  style: AppTextStyles.textLink(context).copyWith(
+                    color: AppColors.onSurface(context),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                    height: 1.25,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (hasNotes) ...[
+          const SizedBox(height: 16),
+          _SavedProductNotes(notes: notes.trim()),
+        ],
+      ],
+    );
+  }
+}
+
+class _SavedProductNotes extends StatelessWidget {
+  const _SavedProductNotes({required this.notes});
+
+  final String notes;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l10n.productYourNotes,
+          textAlign: TextAlign.start,
+          style: AppTextStyles.heading4(context).copyWith(
+            color: AppColors.onSurface(context),
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          notes,
+          textAlign: TextAlign.start,
+          style: AppTextStyles.caption(context).copyWith(
+            color: AppColors.onSurface(context),
+            fontSize: 12,
+            height: 1.3,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class ProductNotesDialog extends StatefulWidget {
+  const ProductNotesDialog({required this.initialNotes, super.key});
+
+  final String initialNotes;
+
+  @override
+  State<ProductNotesDialog> createState() => _ProductNotesDialogState();
+}
+
+class _ProductNotesDialogState extends State<ProductNotesDialog> {
+  static const _dialogHeight = 271.0;
+  static const _dialogMaxWidth = 375.0;
+  static const _keyboardGap = 20.0;
+  static const _minimumTopMargin = 20.0;
+
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialNotes);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+
+    return Material(
+      color: AppColors.transparent,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final dialogWidth = constraints.maxWidth < _dialogMaxWidth
+              ? constraints.maxWidth
+              : _dialogMaxWidth;
+          final centeredTop = (constraints.maxHeight - _dialogHeight) / 2;
+          final keyboardSafeTop =
+              constraints.maxHeight -
+              keyboardInset -
+              _keyboardGap -
+              _dialogHeight;
+          final top = _resolveDialogTop(
+            centeredTop: centeredTop,
+            keyboardSafeTop: keyboardSafeTop,
+            keyboardInset: keyboardInset,
+          );
+
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    Navigator.of(context).pop();
+                  },
+                  child: const SizedBox.expand(),
+                ),
+              ),
+              AnimatedPositionedDirectional(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOut,
+                top: top,
+                start: 0,
+                end: 0,
+                child: Align(
+                  alignment: AlignmentDirectional.topCenter,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+                    child: SizedBox(
+                      width: dialogWidth,
+                      height: _dialogHeight,
+                      child: Material(
+                        color: AppColors.scaffoldBackground(context),
+                        borderRadius: BorderRadius.circular(12),
+                        clipBehavior: Clip.antiAlias,
+                        child: _ProductNotesDialogContent(
+                          controller: _controller,
+                          l10n: l10n,
+                          fieldBorder: _fieldBorder,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  double _resolveDialogTop({
+    required double centeredTop,
+    required double keyboardSafeTop,
+    required double keyboardInset,
+  }) {
+    if (keyboardInset <= 0) {
+      return centeredTop.clamp(_minimumTopMargin, double.infinity).toDouble();
+    }
+
+    if (keyboardSafeTop < _minimumTopMargin) {
+      return _minimumTopMargin;
+    }
+
+    return centeredTop.clamp(_minimumTopMargin, keyboardSafeTop).toDouble();
+  }
+
+  OutlineInputBorder _fieldBorder(BuildContext context, Color color) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: color, width: 0.5),
+    );
+  }
+}
+
+class _ProductNotesDialogContent extends StatelessWidget {
+  const _ProductNotesDialogContent({
+    required this.controller,
+    required this.l10n,
+    required this.fieldBorder,
+  });
+
+  final TextEditingController controller;
+  final AppLocalizations l10n;
+  final OutlineInputBorder Function(BuildContext context, Color color)
+  fieldBorder;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SvgPicture.asset(AppAssets.cartEditIcon, width: 14, height: 14),
-            const SizedBox(width: 4),
             Text(
-              l10n.productAddNotes,
-              style: AppTextStyles.textLink(context).copyWith(
+              l10n.productNotesTitle,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.appBarTitle(context).copyWith(
                 color: AppColors.onSurface(context),
-                fontSize: 10,
-                fontWeight: FontWeight.w500,
-                height: 1.25,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Divider(
+              height: 1,
+              thickness: 0.5,
+              color: AppColors.border(context),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.productNotesTitle,
+              textAlign: TextAlign.start,
+              style: AppTextStyles.body(context).copyWith(
+                color: AppColors.onSurface(context),
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                height: 1.35,
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 96,
+              child: TextField(
+                controller: controller,
+                minLines: null,
+                maxLines: null,
+                expands: true,
+                textAlign: TextAlign.start,
+                textAlignVertical: TextAlignVertical.top,
+                keyboardType: TextInputType.multiline,
+                textInputAction: TextInputAction.newline,
+                cursorColor: AppColors.cursor(context),
+                style: AppTextStyles.inputText(
+                  context,
+                ).copyWith(fontSize: 12, height: 1.3),
+                decoration: InputDecoration(
+                  hintText: l10n.productNotesHint,
+                  hintStyle: AppTextStyles.inputHint(context).copyWith(
+                    color: AppColors.hint(context),
+                    fontSize: 12,
+                    height: 1.3,
+                  ),
+                  filled: true,
+                  fillColor: AppColors.surfaceCard(context),
+                  contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                    16,
+                    16,
+                    16,
+                    16,
+                  ),
+                  border: fieldBorder(context, AppColors.border(context)),
+                  enabledBorder: fieldBorder(
+                    context,
+                    AppColors.border(context),
+                  ),
+                  focusedBorder: fieldBorder(
+                    context,
+                    AppColors.fieldFocusBorder(context),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+                Navigator.of(context).pop(controller.text.trim());
+              },
+              child: Container(
+                height: 48,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  l10n.productNotesSubmit,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.primaryButtonLabel.copyWith(
+                    color: AppColors.text,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    height: 1.25,
+                  ),
+                ),
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 }
