@@ -96,6 +96,36 @@
   "mainTabCart": "السلة",
   "mainTabOrders": "الطلبات",
   "mainTabAccount": "حسابي",
+  "cartTitle": "سلة المشتريات",
+  "cartRestaurantSubtitle": "طلبك من مطعم عز الشام",
+  "cartProductBurgerCombo": "عرض البرجر مع الفرايز",
+  "cartNotesHint": "ملاحظاتك هنا...",
+  "cartDiscountCode": "كود الخصم",
+  "cartCheckout": "تابع الدفع",
+  "cartAddMore": "نزود شيئ",
+  "cartPrice": "{amount} ج.م",
+  "@cartPrice": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "productDetailsTitle": "تفاصيل المنتج",
+  "productBurgerDescription": "ساندوتش برجر طازج مُحضر من لحم بقري مشوي صوص البرجر الخاص، يُقدم مع بطاطس مقلية",
+  "productAddNotes": "اضف ملاحظاتك",
+  "productTypeTitle": "النوع",
+  "productTypeChicken": "فراخ",
+  "productTypeMeat": "لحمة",
+  "productFlavorTitle": "النكهة",
+  "productFlavorNormal": "عادي",
+  "productFlavorHot": "حار",
+  "productAddSomethingTitle": "إضافة شئ اخر ؟",
+  "productAddSomethingSubtitle": "اختر ما يناسبك من الإضافات",
+  "productAddonWater": "مياة معدنية",
+  "productAddonToast": "توسيت توت",
+  "productAddonChips": "شيبسي",
+  "productAddToCart": "إضافة الى السلة",
   "ordersTitle": "الطلبات",
   "orderRestaurantAzAlSham": "عز الشام",
   "orderProductsCount": "3 منتجات",

@@ -578,6 +578,144 @@ abstract class AppLocalizations {
   /// **'Account'**
   String get mainTabAccount;
 
+  /// No description provided for @cartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cart'**
+  String get cartTitle;
+
+  /// No description provided for @cartRestaurantSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your order from Az Al Sham Restaurant'**
+  String get cartRestaurantSubtitle;
+
+  /// No description provided for @cartProductBurgerCombo.
+  ///
+  /// In en, this message translates to:
+  /// **'Burger meal with fries offer'**
+  String get cartProductBurgerCombo;
+
+  /// No description provided for @cartNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your notes here...'**
+  String get cartNotesHint;
+
+  /// No description provided for @cartDiscountCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount code'**
+  String get cartDiscountCode;
+
+  /// No description provided for @cartCheckout.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue payment'**
+  String get cartCheckout;
+
+  /// No description provided for @cartAddMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Add more'**
+  String get cartAddMore;
+
+  /// No description provided for @cartPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} EGP'**
+  String cartPrice(int amount);
+
+  /// No description provided for @productDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Product details'**
+  String get productDetailsTitle;
+
+  /// No description provided for @productBurgerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh burger sandwich made with grilled beef, special burger sauce, served with crispy fries.'**
+  String get productBurgerDescription;
+
+  /// No description provided for @productAddNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your notes'**
+  String get productAddNotes;
+
+  /// No description provided for @productTypeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get productTypeTitle;
+
+  /// No description provided for @productTypeChicken.
+  ///
+  /// In en, this message translates to:
+  /// **'Chicken'**
+  String get productTypeChicken;
+
+  /// No description provided for @productTypeMeat.
+  ///
+  /// In en, this message translates to:
+  /// **'Meat'**
+  String get productTypeMeat;
+
+  /// No description provided for @productFlavorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Flavor'**
+  String get productFlavorTitle;
+
+  /// No description provided for @productFlavorNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get productFlavorNormal;
+
+  /// No description provided for @productFlavorHot.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot'**
+  String get productFlavorHot;
+
+  /// No description provided for @productAddSomethingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add something else?'**
+  String get productAddSomethingTitle;
+
+  /// No description provided for @productAddSomethingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the extras that suit you'**
+  String get productAddSomethingSubtitle;
+
+  /// No description provided for @productAddonWater.
+  ///
+  /// In en, this message translates to:
+  /// **'Mineral water'**
+  String get productAddonWater;
+
+  /// No description provided for @productAddonToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Berry toast'**
+  String get productAddonToast;
+
+  /// No description provided for @productAddonChips.
+  ///
+  /// In en, this message translates to:
+  /// **'Chips'**
+  String get productAddonChips;
+
+  /// No description provided for @productAddToCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to cart'**
+  String get productAddToCart;
+
   /// No description provided for @ordersTitle.
   ///
   /// In en, this message translates to:

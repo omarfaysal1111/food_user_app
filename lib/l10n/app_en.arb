@@ -96,6 +96,36 @@
   "mainTabCart": "Cart",
   "mainTabOrders": "Orders",
   "mainTabAccount": "Account",
+  "cartTitle": "Cart",
+  "cartRestaurantSubtitle": "Your order from Az Al Sham Restaurant",
+  "cartProductBurgerCombo": "Burger meal with fries offer",
+  "cartNotesHint": "Your notes here...",
+  "cartDiscountCode": "Discount code",
+  "cartCheckout": "Continue payment",
+  "cartAddMore": "Add more",
+  "cartPrice": "{amount} EGP",
+  "@cartPrice": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "productDetailsTitle": "Product details",
+  "productBurgerDescription": "Fresh burger sandwich made with grilled beef, special burger sauce, served with crispy fries.",
+  "productAddNotes": "Add your notes",
+  "productTypeTitle": "Type",
+  "productTypeChicken": "Chicken",
+  "productTypeMeat": "Meat",
+  "productFlavorTitle": "Flavor",
+  "productFlavorNormal": "Normal",
+  "productFlavorHot": "Hot",
+  "productAddSomethingTitle": "Add something else?",
+  "productAddSomethingSubtitle": "Choose the extras that suit you",
+  "productAddonWater": "Mineral water",
+  "productAddonToast": "Berry toast",
+  "productAddonChips": "Chips",
+  "productAddToCart": "Add to cart",
   "ordersTitle": "Orders",
   "orderRestaurantAzAlSham": "Az Al Sham",
   "orderProductsCount": "3 products",

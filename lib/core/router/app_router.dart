@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import '../constants/app_assets.dart';
 import 'route_names.dart';
 import '../../features/splash/presentation/pages/splash_screen.dart';
 import '../../features/onboarding/presentation/pages/onboarding_screen.dart';
@@ -14,7 +15,9 @@ import '../../features/home/presentation/pages/search_results_screen.dart';
 import '../../features/restaurant/presentation/pages/restaurant_list_screen.dart';
 import '../../features/restaurant/presentation/pages/restaurant_detail_screen.dart';
 import '../../features/restaurant/presentation/pages/menu_item_detail_screen.dart';
+import '../../features/cart/domain/entities/cart_item.dart';
 import '../../features/cart/presentation/pages/cart_screen.dart';
+import '../../features/product/presentation/pages/product_details_screen.dart';
 import '../../features/checkout/presentation/pages/checkout_screen.dart';
 import '../../features/checkout/presentation/pages/address_selection_screen.dart';
 import '../../features/checkout/presentation/pages/add_edit_address_screen.dart';
@@ -99,6 +102,22 @@ class AppRouter {
         builder: (c, s) => const MenuItemDetailScreen(),
       ),
       GoRoute(path: RouteNames.cart, builder: (c, s) => const CartScreen()),
+      GoRoute(
+        path: RouteNames.productDetails,
+        builder: (c, s) {
+          final item = s.extra is CartItem
+              ? s.extra as CartItem
+              : const CartItem(
+                  id: 'burger-combo',
+                  name: 'Burger meal with fries offer',
+                  description:
+                      'Fresh burger sandwich with grilled beef and special sauce, served with fries.',
+                  price: 200,
+                  imageAsset: AppAssets.cartProductImage,
+                );
+          return ProductDetailsScreen(item: item);
+        },
+      ),
       GoRoute(
         path: RouteNames.checkout,
         builder: (c, s) => const CheckoutScreen(),

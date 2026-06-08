@@ -6,10 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
-import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:food_user_app/features/cart/presentation/pages/cart_screen.dart';
 import 'package:food_user_app/features/home/presentation/pages/home_screen.dart';
 import 'package:food_user_app/features/main/presentation/pages/account_tab_page.dart';
 import 'package:food_user_app/features/order/presentation/pages/order_history_screen.dart';
@@ -34,7 +34,7 @@ class _MainLayoutState extends State<MainLayout> {
     _MainTab(
       labelKey: _MainTabLabel.cart,
       iconAsset: AppAssets.mainCart,
-      child: _PlaceholderTabPage(title: 'Cart'),
+      child: CartScreen(),
     ),
     _MainTab(
       labelKey: _MainTabLabel.orders,
@@ -189,29 +189,6 @@ class _BottomTabButton extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _PlaceholderTabPage extends StatelessWidget {
-  const _PlaceholderTabPage({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final localizedTitle = switch (title) {
-      'Orders' => l10n.mainTabOrders,
-      'Cart' => l10n.mainTabCart,
-      _ => title,
-    };
-
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      child: Center(
-        child: Text(localizedTitle, style: AppTextStyles.homeHeadline(context)),
       ),
     );
   }

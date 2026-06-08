@@ -105,6 +105,10 @@ flutter:
     - assets/images/icons/settings/
     - assets/images/icons/general_settings/
     - assets/images/icons/notifications/
+    - assets/images/cart/
+    - assets/images/icons/cart/
+    - assets/images/products/
+    - assets/images/icons/products/
     - assets/images/orders/
     - assets/images/icons/orders/
     - assets/images/favorites/

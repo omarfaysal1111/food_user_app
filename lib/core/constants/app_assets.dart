@@ -17,6 +17,18 @@ class AppAssets {
   static const mainNotification =
       'assets/images/icons/main/notification-03.svg';
 
+  static const cartProductImage = 'assets/images/cart/cart_product.png';
+  static const cartEditIcon = 'assets/images/icons/cart/edit.svg';
+  static const cartDeleteIcon = 'assets/images/icons/cart/delete.svg';
+  static const cartMinusIcon = 'assets/images/icons/cart/minus.svg';
+  static const cartPlusIcon = 'assets/images/icons/cart/plus.svg';
+
+  static const productBurgerCombo =
+      'assets/images/products/product_burger_combo.png';
+  static const productAddonWater = 'assets/images/products/addon_water.png';
+  static const productAddonToast = 'assets/images/products/addon_toast.png';
+  static const productCloseIcon = 'assets/images/icons/products/close.svg';
+
   static const settingsGeneral = 'assets/images/icons/settings/settings-1.svg';
   static const settingsFavorites =
       'assets/images/icons/settings/settings-2.svg';

@@ -262,6 +262,78 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mainTabAccount => 'Account';
 
   @override
+  String get cartTitle => 'Cart';
+
+  @override
+  String get cartRestaurantSubtitle => 'Your order from Az Al Sham Restaurant';
+
+  @override
+  String get cartProductBurgerCombo => 'Burger meal with fries offer';
+
+  @override
+  String get cartNotesHint => 'Your notes here...';
+
+  @override
+  String get cartDiscountCode => 'Discount code';
+
+  @override
+  String get cartCheckout => 'Continue payment';
+
+  @override
+  String get cartAddMore => 'Add more';
+
+  @override
+  String cartPrice(int amount) {
+    return '$amount EGP';
+  }
+
+  @override
+  String get productDetailsTitle => 'Product details';
+
+  @override
+  String get productBurgerDescription =>
+      'Fresh burger sandwich made with grilled beef, special burger sauce, served with crispy fries.';
+
+  @override
+  String get productAddNotes => 'Add your notes';
+
+  @override
+  String get productTypeTitle => 'Type';
+
+  @override
+  String get productTypeChicken => 'Chicken';
+
+  @override
+  String get productTypeMeat => 'Meat';
+
+  @override
+  String get productFlavorTitle => 'Flavor';
+
+  @override
+  String get productFlavorNormal => 'Normal';
+
+  @override
+  String get productFlavorHot => 'Hot';
+
+  @override
+  String get productAddSomethingTitle => 'Add something else?';
+
+  @override
+  String get productAddSomethingSubtitle => 'Choose the extras that suit you';
+
+  @override
+  String get productAddonWater => 'Mineral water';
+
+  @override
+  String get productAddonToast => 'Berry toast';
+
+  @override
+  String get productAddonChips => 'Chips';
+
+  @override
+  String get productAddToCart => 'Add to cart';
+
+  @override
   String get ordersTitle => 'Orders';
 
   @override

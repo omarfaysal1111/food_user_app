@@ -258,6 +258,78 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mainTabAccount => 'حسابي';
 
   @override
+  String get cartTitle => 'سلة المشتريات';
+
+  @override
+  String get cartRestaurantSubtitle => 'طلبك من مطعم عز الشام';
+
+  @override
+  String get cartProductBurgerCombo => 'عرض البرجر مع الفرايز';
+
+  @override
+  String get cartNotesHint => 'ملاحظاتك هنا...';
+
+  @override
+  String get cartDiscountCode => 'كود الخصم';
+
+  @override
+  String get cartCheckout => 'تابع الدفع';
+
+  @override
+  String get cartAddMore => 'نزود شيئ';
+
+  @override
+  String cartPrice(int amount) {
+    return '$amount ج.م';
+  }
+
+  @override
+  String get productDetailsTitle => 'تفاصيل المنتج';
+
+  @override
+  String get productBurgerDescription =>
+      'ساندوتش برجر طازج مُحضر من لحم بقري مشوي صوص البرجر الخاص، يُقدم مع بطاطس مقلية';
+
+  @override
+  String get productAddNotes => 'اضف ملاحظاتك';
+
+  @override
+  String get productTypeTitle => 'النوع';
+
+  @override
+  String get productTypeChicken => 'فراخ';
+
+  @override
+  String get productTypeMeat => 'لحمة';
+
+  @override
+  String get productFlavorTitle => 'النكهة';
+
+  @override
+  String get productFlavorNormal => 'عادي';
+
+  @override
+  String get productFlavorHot => 'حار';
+
+  @override
+  String get productAddSomethingTitle => 'إضافة شئ اخر ؟';
+
+  @override
+  String get productAddSomethingSubtitle => 'اختر ما يناسبك من الإضافات';
+
+  @override
+  String get productAddonWater => 'مياة معدنية';
+
+  @override
+  String get productAddonToast => 'توسيت توت';
+
+  @override
+  String get productAddonChips => 'شيبسي';
+
+  @override
+  String get productAddToCart => 'إضافة الى السلة';
+
+  @override
   String get ordersTitle => 'الطلبات';
 
   @override
