@@ -6,13 +6,16 @@ import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
 import 'package:food_user_app/features/cart/presentation/widgets/cart_item_tile.dart';
 import 'package:food_user_app/features/cart/presentation/widgets/cart_summary.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class CartScreen extends StatefulWidget {
-  const CartScreen({super.key});
+  const CartScreen({super.key, this.isActive = true});
+
+  final bool isActive;
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -21,11 +24,28 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   late List<CartItem> _items;
   var _seededMockItems = false;
+  var _wasClearedAfterMockPayment = false;
 
   @override
   void initState() {
     super.initState();
     _items = const [];
+  }
+
+  @override
+  void didUpdateWidget(covariant CartScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (!oldWidget.isActive &&
+        widget.isActive &&
+        _wasClearedAfterMockPayment &&
+        _items.isEmpty) {
+      final l10n = AppLocalizations.of(context)!;
+      setState(() {
+        _items = _mockItems(l10n);
+        _wasClearedAfterMockPayment = false;
+      });
+    }
   }
 
   @override
@@ -46,51 +66,57 @@ class _CartScreenState extends State<CartScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
-      body: SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          physics: const ClampingScrollPhysics(),
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 0),
-              sliver: SliverToBoxAdapter(child: _CartHeader(l10n: l10n)),
-            ),
-            SliverPadding(
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 28, 16, 0),
-              sliver: SliverList.separated(
-                itemCount: _items.length,
-                itemBuilder: (context, index) {
-                  final item = _items[index];
-                  return CartItemTile(
-                    item: item,
-                    onEdit: () => _openProductDetails(item),
-                    onIncrement: () => _changeQuantity(index, 1),
-                    onDecrement: () => _changeQuantity(index, -1),
-                  );
-                },
-                separatorBuilder: (_, _) => Divider(
-                  height: 32,
-                  thickness: 0.5,
-                  color: AppColors.border(context),
+      body: KeyboardDismissOnTap(
+        child: SafeArea(
+          bottom: false,
+          child: CustomScrollView(
+            physics: const ClampingScrollPhysics(),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 0),
+                sliver: SliverToBoxAdapter(child: _CartHeader(l10n: l10n)),
+              ),
+              SliverPadding(
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 28, 16, 0),
+                sliver: _items.isEmpty
+                    ? SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: _CartEmptyPlaceholder(l10n: l10n),
+                      )
+                    : SliverList.separated(
+                        itemCount: _items.length,
+                        itemBuilder: (context, index) {
+                          final item = _items[index];
+                          return CartItemTile(
+                            item: item,
+                            onEdit: () => _openProductDetails(item),
+                            onIncrement: () => _changeQuantity(index, 1),
+                            onDecrement: () => _changeQuantity(index, -1),
+                          );
+                        },
+                        separatorBuilder: (_, _) => Divider(
+                          height: 32,
+                          thickness: 0.5,
+                          color: AppColors.border(context),
+                        ),
+                      ),
+              ),
+              if (_items.isNotEmpty)
+                SliverToBoxAdapter(
+                  child: CartSummary(
+                    subtotal: subtotal,
+                    delivery: delivery,
+                    discount: discount,
+                    total: total,
+                    onCheckout: _openCheckout,
+                    onAddMore: () {
+                      // TODO: Navigate to restaurant menu when real cart source is wired.
+                    },
+                  ),
                 ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: CartSummary(
-                subtotal: subtotal,
-                delivery: delivery,
-                discount: discount,
-                total: total,
-                onCheckout: () {
-                  // TODO: Connect checkout once cart API integration is ready.
-                  context.push(RouteNames.checkout);
-                },
-                onAddMore: () {
-                  // TODO: Navigate to restaurant menu when real cart source is wired.
-                },
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -113,6 +139,17 @@ class _CartScreenState extends State<CartScreen> {
     context.push(RouteNames.productDetails, extra: item);
   }
 
+  Future<void> _openCheckout() async {
+    // TODO: Connect checkout once cart API integration is ready.
+    final completed = await context.push<bool>(RouteNames.checkout);
+    if (!mounted || completed != true) return;
+
+    setState(() {
+      _items.clear();
+      _wasClearedAfterMockPayment = true;
+    });
+  }
+
   List<CartItem> _mockItems(AppLocalizations l10n) {
     // TODO: Replace local mock cart data with real cart API response.
     return [
@@ -131,6 +168,49 @@ class _CartScreenState extends State<CartScreen> {
         imageAsset: AppAssets.cartProductImage,
       ),
     ];
+  }
+}
+
+class _CartEmptyPlaceholder extends StatelessWidget {
+  const _CartEmptyPlaceholder({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 64, 16, 64),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(AppAssets.paymentEmptyIcon, width: 80, height: 80),
+            const SizedBox(height: 20),
+            Text(
+              l10n.cartEmptyTitle,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.heading4(context).copyWith(
+                color: AppColors.onSurface(context),
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.cartEmptyMessage,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body(context).copyWith(
+                color: AppColors.paragraph(context),
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                height: 1.3,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

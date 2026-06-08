@@ -25,29 +25,6 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   int _selectedIndex = 0;
 
-  static const _tabs = [
-    _MainTab(
-      labelKey: _MainTabLabel.home,
-      iconAsset: AppAssets.mainHome,
-      child: HomeScreen(),
-    ),
-    _MainTab(
-      labelKey: _MainTabLabel.cart,
-      iconAsset: AppAssets.mainCart,
-      child: CartScreen(),
-    ),
-    _MainTab(
-      labelKey: _MainTabLabel.orders,
-      iconAsset: AppAssets.mainOrders,
-      child: OrderHistoryScreen(),
-    ),
-    _MainTab(
-      labelKey: _MainTabLabel.account,
-      iconAsset: AppAssets.mainAccount,
-      child: AccountTabPage(),
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
@@ -59,21 +36,47 @@ class _MainLayoutState extends State<MainLayout> {
         }
       },
       builder: (context, state) {
+        final tabs = _tabs;
         final body = IndexedStack(
           index: _selectedIndex,
-          children: _tabs.map((tab) => tab.child).toList(),
+          children: tabs.map((tab) => tab.child).toList(),
         );
 
         return Scaffold(
           body: SafeArea(top: _selectedIndex != 3, bottom: false, child: body),
           bottomNavigationBar: _BottomTabBar(
             selectedIndex: _selectedIndex,
-            tabs: _tabs,
+            tabs: tabs,
             onSelected: (index) => setState(() => _selectedIndex = index),
           ),
         );
       },
     );
+  }
+
+  List<_MainTab> get _tabs {
+    return [
+      const _MainTab(
+        labelKey: _MainTabLabel.home,
+        iconAsset: AppAssets.mainHome,
+        child: HomeScreen(),
+      ),
+      _MainTab(
+        labelKey: _MainTabLabel.cart,
+        iconAsset: AppAssets.mainCart,
+        child: CartScreen(isActive: _selectedIndex == 1),
+      ),
+      const _MainTab(
+        labelKey: _MainTabLabel.orders,
+        iconAsset: AppAssets.mainOrders,
+        child: OrderHistoryScreen(),
+      ),
+      const _MainTab(
+        labelKey: _MainTabLabel.account,
+        iconAsset: AppAssets.mainAccount,
+        child: AccountTabPage(),
+      ),
+    ];
   }
 }
 

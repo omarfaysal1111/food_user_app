@@ -104,19 +104,29 @@ class _NotesBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 58,
-      alignment: AlignmentDirectional.topStart,
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 0),
       decoration: BoxDecoration(
         color: AppColors.surfaceCard(context),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: AppColors.border(context), width: 0.5),
       ),
-      child: Text(
-        hint,
+      child: TextField(
+        minLines: 1,
+        maxLines: 2,
         textAlign: TextAlign.start,
-        style: AppTextStyles.caption(
+        textInputAction: TextInputAction.newline,
+        cursorColor: AppColors.cursor(context),
+        style: AppTextStyles.inputText(
           context,
-        ).copyWith(color: AppColors.hint(context), fontSize: 12, height: 1.3),
+        ).copyWith(fontSize: 12, height: 1.3),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: AppTextStyles.caption(
+            context,
+          ).copyWith(color: AppColors.hint(context), fontSize: 12, height: 1.3),
+          border: InputBorder.none,
+          isDense: true,
+          contentPadding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 0),
+        ),
       ),
     );
   }
@@ -142,16 +152,29 @@ class _DiscountBox extends StatelessWidget {
         ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            l10n.cartDiscountCode,
-            style: AppTextStyles.caption(context).copyWith(
-              color: AppColors.hint(context),
-              fontSize: 12,
-              height: 1.3,
+          Expanded(
+            child: TextField(
+              textAlign: TextAlign.start,
+              textInputAction: TextInputAction.done,
+              cursorColor: AppColors.cursor(context),
+              style: AppTextStyles.inputText(
+                context,
+              ).copyWith(fontSize: 12, height: 1.3),
+              decoration: InputDecoration(
+                hintText: l10n.cartDiscountCode,
+                hintStyle: AppTextStyles.caption(context).copyWith(
+                  color: AppColors.hint(context),
+                  fontSize: 12,
+                  height: 1.3,
+                ),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsetsDirectional.zero,
+              ),
             ),
           ),
+          const SizedBox(width: 12),
           Container(
             padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
             decoration: BoxDecoration(

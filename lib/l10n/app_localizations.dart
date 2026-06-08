@@ -608,6 +608,18 @@ abstract class AppLocalizations {
   /// **'Discount code'**
   String get cartDiscountCode;
 
+  /// No description provided for @cartEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cart is empty'**
+  String get cartEmptyTitle;
+
+  /// No description provided for @cartEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed orders are cleared from this preview cart.'**
+  String get cartEmptyMessage;
+
   /// No description provided for @cartCheckout.
   ///
   /// In en, this message translates to:
@@ -619,6 +631,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add more'**
   String get cartAddMore;
+
+  /// No description provided for @checkoutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout'**
+  String get checkoutTitle;
+
+  /// No description provided for @checkoutDeliveryAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery address'**
+  String get checkoutDeliveryAddress;
+
+  /// No description provided for @checkoutChangeAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Address'**
+  String get checkoutChangeAddress;
+
+  /// No description provided for @checkoutPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose payment method:'**
+  String get checkoutPaymentMethod;
+
+  /// No description provided for @checkoutCashOnDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash on delivery'**
+  String get checkoutCashOnDelivery;
+
+  /// No description provided for @checkoutCashOnDeliverySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay when your order arrives'**
+  String get checkoutCashOnDeliverySubtitle;
+
+  /// No description provided for @checkoutCardPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay by Visa'**
+  String get checkoutCardPayment;
+
+  /// No description provided for @checkoutConfirmOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Place order'**
+  String get checkoutConfirmOrder;
+
+  /// No description provided for @confirmPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm payment'**
+  String get confirmPayment;
+
+  /// No description provided for @checkoutOrderDesignOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Order submitted for design preview'**
+  String get checkoutOrderDesignOnly;
+
+  /// No description provided for @checkoutAddressUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Address updated for design preview'**
+  String get checkoutAddressUpdated;
 
   /// No description provided for @cartPrice.
   ///
@@ -1555,6 +1633,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add'**
   String get addCard;
+
+  /// No description provided for @saveCardDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Save card details'**
+  String get saveCardDetails;
+
+  /// No description provided for @forLaterUse.
+  ///
+  /// In en, this message translates to:
+  /// **'for later use'**
+  String get forLaterUse;
 
   /// No description provided for @editCard.
   ///

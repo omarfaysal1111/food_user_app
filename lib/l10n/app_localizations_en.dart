@@ -277,10 +277,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cartDiscountCode => 'Discount code';
 
   @override
+  String get cartEmptyTitle => 'Your cart is empty';
+
+  @override
+  String get cartEmptyMessage =>
+      'Completed orders are cleared from this preview cart.';
+
+  @override
   String get cartCheckout => 'Continue payment';
 
   @override
   String get cartAddMore => 'Add more';
+
+  @override
+  String get checkoutTitle => 'Checkout';
+
+  @override
+  String get checkoutDeliveryAddress => 'Delivery address';
+
+  @override
+  String get checkoutChangeAddress => 'Change Address';
+
+  @override
+  String get checkoutPaymentMethod => 'Choose payment method:';
+
+  @override
+  String get checkoutCashOnDelivery => 'Cash on delivery';
+
+  @override
+  String get checkoutCashOnDeliverySubtitle => 'Pay when your order arrives';
+
+  @override
+  String get checkoutCardPayment => 'Pay by Visa';
+
+  @override
+  String get checkoutConfirmOrder => 'Place order';
+
+  @override
+  String get confirmPayment => 'Confirm payment';
+
+  @override
+  String get checkoutOrderDesignOnly => 'Order submitted for design preview';
+
+  @override
+  String get checkoutAddressUpdated => 'Address updated for design preview';
 
   @override
   String cartPrice(int amount) {
@@ -762,6 +802,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addCard => 'Add';
+
+  @override
+  String get saveCardDetails => 'Save card details';
+
+  @override
+  String get forLaterUse => 'for later use';
 
   @override
   String get editCard => 'Edit';

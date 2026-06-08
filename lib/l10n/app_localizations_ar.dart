@@ -273,10 +273,49 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cartDiscountCode => 'كود الخصم';
 
   @override
+  String get cartEmptyTitle => 'سلة المشتريات فارغة';
+
+  @override
+  String get cartEmptyMessage => 'تم تفريغ السلة مؤقتاً بعد إتمام الدفع.';
+
+  @override
   String get cartCheckout => 'تابع الدفع';
 
   @override
   String get cartAddMore => 'نزود شيئ';
+
+  @override
+  String get checkoutTitle => 'تابع الدفع';
+
+  @override
+  String get checkoutDeliveryAddress => 'عنوان التوصيل';
+
+  @override
+  String get checkoutChangeAddress => 'تغيير العنوان';
+
+  @override
+  String get checkoutPaymentMethod => 'اختر طريقة الدفع :';
+
+  @override
+  String get checkoutCashOnDelivery => 'الدفع عند الاستلام';
+
+  @override
+  String get checkoutCashOnDeliverySubtitle => 'ادفع عند وصول طلبك';
+
+  @override
+  String get checkoutCardPayment => 'دفع عن طريق الفيزا';
+
+  @override
+  String get checkoutConfirmOrder => 'تنفيذ الطلب';
+
+  @override
+  String get confirmPayment => 'تأكيد الدفع';
+
+  @override
+  String get checkoutOrderDesignOnly => 'تم إرسال الطلب لمعاينة التصميم';
+
+  @override
+  String get checkoutAddressUpdated => 'تم تحديث العنوان لمعاينة التصميم';
 
   @override
   String cartPrice(int amount) {
@@ -753,6 +792,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get addCard => 'إضافة';
+
+  @override
+  String get saveCardDetails => 'حفظ بيانات البطاقة';
+
+  @override
+  String get forLaterUse => 'للاستخدام لاحقاٍ';
 
   @override
   String get editCard => 'تعديل';
