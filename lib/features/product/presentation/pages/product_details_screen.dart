@@ -188,23 +188,16 @@ class _HeroProductImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 160,
+      height: 120,
       width: double.infinity,
       child: Stack(
         alignment: Alignment.center,
         children: [
           Positioned.fill(
-            top: 34,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                for (var i = 0; i < 3; i++)
-                  Container(
-                    height: 10,
-                    width: double.infinity,
-                    color: AppColors.primary.withValues(alpha: 0.08),
-                  ),
-              ],
+            top: 10,
+            child: Image.asset(
+              AppAssets.productDetailsStripes,
+              fit: BoxFit.contain,
             ),
           ),
           Image.asset(imageAsset, width: 233, height: 120, fit: BoxFit.contain),
@@ -234,7 +227,7 @@ class _ProductIntro extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          item.name,
+          _localizedItemName(l10n),
           textAlign: TextAlign.start,
           style: AppTextStyles.body(context).copyWith(
             color: AppColors.onSurface(context),
@@ -245,7 +238,7 @@ class _ProductIntro extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          item.description,
+          _localizedItemDescription(l10n),
           textAlign: TextAlign.start,
           style: AppTextStyles.caption(context).copyWith(
             color: AppColors.paragraph(context),
@@ -283,6 +276,20 @@ class _ProductIntro extends StatelessWidget {
         ],
       ],
     );
+  }
+
+  String _localizedItemName(AppLocalizations l10n) {
+    if (item.id == 'burger-combo-1' || item.id == 'burger-combo-2') {
+      return l10n.cartProductBurgerCombo;
+    }
+    return item.name;
+  }
+
+  String _localizedItemDescription(AppLocalizations l10n) {
+    if (item.id == 'burger-combo-1' || item.id == 'burger-combo-2') {
+      return l10n.productBurgerDescription;
+    }
+    return item.description;
   }
 }
 
@@ -805,7 +812,7 @@ class _AddonCard extends StatelessWidget {
                   ),
                 ),
                 PositionedDirectional(
-                  start: 8,
+                  end: 8,
                   bottom: 8,
                   child: Container(
                     width: 28,

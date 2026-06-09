@@ -9,11 +9,7 @@ class ApiResponse<T> {
   final String? message;
   final bool success;
 
-  const ApiResponse({
-    required this.success,
-    this.data,
-    this.message,
-  });
+  const ApiResponse({required this.success, this.data, this.message});
 
   factory ApiResponse.fromJson(
     Map<String, dynamic> json,

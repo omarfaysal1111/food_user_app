@@ -32,8 +32,9 @@ class AppSvgImage extends StatelessWidget {
       width: width,
       height: height,
       fit: fit,
-      colorFilter:
-          color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
+      colorFilter: color != null
+          ? ColorFilter.mode(color!, BlendMode.srcIn)
+          : null,
       semanticsLabel: semanticsLabel,
       placeholderBuilder: (context) => SizedBox(
         width: width ?? 24,
@@ -143,7 +144,7 @@ class AppNetworkImage extends StatelessWidget {
                 color: AppColors.paragraph(context),
                 value: loadingProgress.expectedTotalBytes != null
                     ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
+                          loadingProgress.expectedTotalBytes!
                     : null,
               ),
             ),

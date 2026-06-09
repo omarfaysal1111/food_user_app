@@ -391,4 +391,3 @@ class _DarkModeSwitchKnob extends StatelessWidget {
     );
   }
 }
-    

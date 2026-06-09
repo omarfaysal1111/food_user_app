@@ -25,11 +25,29 @@ class _CartScreenState extends State<CartScreen> {
   late List<CartItem> _items;
   var _seededMockItems = false;
   var _wasClearedAfterMockPayment = false;
+  Locale? _mockItemsLocale;
 
   @override
   void initState() {
     super.initState();
     _items = const [];
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final locale = Localizations.localeOf(context);
+    if (_mockItemsLocale?.languageCode == locale.languageCode) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    if (!_seededMockItems) {
+      _items = _mockItems(l10n);
+      _seededMockItems = true;
+    } else if (_items.isNotEmpty) {
+      _items = _localizedMockItems(l10n, currentItems: _items);
+    }
+    _mockItemsLocale = locale;
   }
 
   @override
@@ -43,6 +61,7 @@ class _CartScreenState extends State<CartScreen> {
       final l10n = AppLocalizations.of(context)!;
       setState(() {
         _items = _mockItems(l10n);
+        _mockItemsLocale = Localizations.localeOf(context);
         _wasClearedAfterMockPayment = false;
       });
     }
@@ -54,6 +73,7 @@ class _CartScreenState extends State<CartScreen> {
     if (!_seededMockItems) {
       _items = _mockItems(l10n);
       _seededMockItems = true;
+      _mockItemsLocale = Localizations.localeOf(context);
     }
 
     final subtotal = _items.fold<int>(
@@ -168,6 +188,21 @@ class _CartScreenState extends State<CartScreen> {
         imageAsset: AppAssets.cartProductImage,
       ),
     ];
+  }
+
+  List<CartItem> _localizedMockItems(
+    AppLocalizations l10n, {
+    required List<CartItem> currentItems,
+  }) {
+    return currentItems.map((item) {
+      if (item.id == 'burger-combo-1' || item.id == 'burger-combo-2') {
+        return item.copyWith(
+          name: l10n.cartProductBurgerCombo,
+          description: l10n.productBurgerDescription,
+        );
+      }
+      return item;
+    }).toList();
   }
 }
 

@@ -103,8 +103,6 @@ class _AddressHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
-
     return SizedBox(
       height: 28,
       child: Align(
@@ -119,9 +117,7 @@ class _AddressHeader extends StatelessWidget {
                 width: 28,
                 height: 28,
                 child: Icon(
-                  isRtl
-                      ? Icons.chevron_left_rounded
-                      : Icons.chevron_right_rounded,
+                  Icons.chevron_left_rounded,
                   size: 28,
                   color: AppColors.onSurface(context),
                 ),

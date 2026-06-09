@@ -18,14 +18,9 @@ class LoggingInterceptor extends Interceptor {
   };
 
   @override
-  void onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (kDebugMode) {
-      debugPrint(
-        '[HTTP →] ${options.method} ${options.uri}',
-      );
+      debugPrint('[HTTP →] ${options.method} ${options.uri}');
       final body = _redactBody(options.data);
       if (body != null) {
         debugPrint('[HTTP →] body: $body');
@@ -35,10 +30,7 @@ class LoggingInterceptor extends Interceptor {
   }
 
   @override
-  void onResponse(
-    Response response,
-    ResponseInterceptorHandler handler,
-  ) {
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (kDebugMode) {
       debugPrint(
         '[HTTP ←] ${response.statusCode} ${response.requestOptions.method} '

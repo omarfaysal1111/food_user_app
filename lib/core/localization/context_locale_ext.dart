@@ -6,8 +6,7 @@ extension LocaleContextX on BuildContext {
 
   TextDirection get textDirection => Directionality.of(this);
 
-  AlignmentDirectional get centerStart =>
-      AlignmentDirectional.centerStart;
+  AlignmentDirectional get centerStart => AlignmentDirectional.centerStart;
 
   TextAlign get textAlignStart => TextAlign.start;
 }

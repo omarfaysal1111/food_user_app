@@ -33,22 +33,37 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   final List<_PaymentCardData> _cards = [];
   var _initialized = false;
   var _nextCardId = 1;
+  Locale? _cardsLocale;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    if (_initialized) return;
-
+    final locale = Localizations.localeOf(context);
     final l10n = AppLocalizations.of(context)!;
+    if (_initialized) {
+      if (_cardsLocale?.languageCode != locale.languageCode) {
+        _cardsLocale = locale;
+        for (var index = 0; index < _cards.length; index++) {
+          final card = _cards[index];
+          if (card.usesLocalizedSample) {
+            _cards[index] = card.copyWith(holder: l10n.sampleCardHolder);
+          }
+        }
+      }
+      return;
+    }
+
     _cards.add(
       _PaymentCardData(
         id: _nextCardId++,
         holder: l10n.sampleCardHolder,
         maskedNumber: l10n.sampleMaskedCardNumber,
         expiry: l10n.sampleCardExpiry,
+        usesLocalizedSample: true,
       ),
     );
+    _cardsLocale = locale;
     _initialized = true;
   }
 
@@ -97,16 +112,18 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     if (!mounted || result == null) return;
 
     final l10n = AppLocalizations.of(context)!;
+    final usesLocalizedSample = result.holder.isEmpty;
     setState(() {
       _cards.add(
         _PaymentCardData(
           id: _nextCardId++,
-          holder: result.holder.isEmpty ? l10n.sampleCardHolder : result.holder,
+          holder: usesLocalizedSample ? l10n.sampleCardHolder : result.holder,
           maskedNumber: _maskCardNumber(
             result.cardNumber,
             fallback: l10n.sampleMaskedCardNumber,
           ),
           expiry: result.expiry.isEmpty ? l10n.sampleCardExpiry : result.expiry,
+          usesLocalizedSample: usesLocalizedSample,
         ),
       );
     });
@@ -121,8 +138,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     setState(() {
       final index = _cards.indexWhere((item) => item.id == card.id);
       if (index == -1) return;
+      final usesLocalizedSample =
+          result.holder.isEmpty && _cards[index].usesLocalizedSample;
       _cards[index] = card.copyWith(
         holder: result.holder.isEmpty ? card.holder : result.holder,
+        usesLocalizedSample: usesLocalizedSample,
         maskedNumber: _maskCardNumber(
           result.cardNumber,
           fallback: card.maskedNumber,
@@ -251,23 +271,27 @@ class _PaymentCardData {
     required this.holder,
     required this.maskedNumber,
     required this.expiry,
+    this.usesLocalizedSample = false,
   });
 
   final int id;
   final String holder;
   final String maskedNumber;
   final String expiry;
+  final bool usesLocalizedSample;
 
   _PaymentCardData copyWith({
     String? holder,
     String? maskedNumber,
     String? expiry,
+    bool? usesLocalizedSample,
   }) {
     return _PaymentCardData(
       id: id,
       holder: holder ?? this.holder,
       maskedNumber: maskedNumber ?? this.maskedNumber,
       expiry: expiry ?? this.expiry,
+      usesLocalizedSample: usesLocalizedSample ?? this.usesLocalizedSample,
     );
   }
 }

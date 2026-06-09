@@ -1,6 +1,5 @@
 import 'package:food_user_app/features/order/domain/entities/driver.dart';
 
-
 class DriverModel extends Driver {
   const DriverModel() : super();
 

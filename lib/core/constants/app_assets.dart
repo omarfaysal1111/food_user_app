@@ -25,6 +25,8 @@ class AppAssets {
 
   static const productBurgerCombo =
       'assets/images/products/product_burger_combo.png';
+  static const productDetailsStripes =
+      'assets/images/products/product_details_stripes.png';
   static const productAddonWater = 'assets/images/products/addon_water.png';
   static const productAddonToast = 'assets/images/products/addon_toast.png';
   static const productCloseIcon = 'assets/images/icons/products/close.svg';

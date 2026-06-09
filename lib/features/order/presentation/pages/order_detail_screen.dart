@@ -265,18 +265,10 @@ class _OrderDetailsHeader extends StatelessWidget {
           child: SizedBox(
             width: 28,
             height: 28,
-            child: Center(
-              child: SvgPicture.asset(
-                AppAssets.orderBackIcon,
-                width: 9,
-                height: 15,
-                colorFilter: ColorFilter.mode(
-                  Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.text
-                      : AppColors.onSurface(context),
-                  BlendMode.srcIn,
-                ),
-              ),
+            child: Icon(
+              Icons.chevron_left_rounded,
+              size: 28,
+              color: AppColors.onSurface(context),
             ),
           ),
         ),

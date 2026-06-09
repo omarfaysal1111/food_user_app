@@ -30,7 +30,8 @@ class LocaleController extends ChangeNotifier {
   }
 
   static Locale _localeFromPlatform() {
-    final code = ui.PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+    final code = ui.PlatformDispatcher.instance.locale.languageCode
+        .toLowerCase();
     if (code == 'ar') {
       return const Locale('ar');
     }
@@ -43,7 +44,7 @@ class LocaleController extends ChangeNotifier {
       return;
     }
     _locale = Locale(code);
-    await _prefs.setString(_kPrefsLocaleCode, code);
     notifyListeners();
+    await _prefs.setString(_kPrefsLocaleCode, code);
   }
 }
