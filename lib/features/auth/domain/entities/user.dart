@@ -4,10 +4,5 @@ class User {
   final String? email;
   final String? role;
 
-  const User({
-    required this.id,
-    required this.name,
-    this.email,
-    this.role,
-  });
+  const User({required this.id, required this.name, this.email, this.role});
 }

@@ -250,6 +250,68 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingCta => 'Start now';
 
   @override
+  String get authEntryTitleAccent => 'Order';
+
+  @override
+  String get authEntryTitleRest => ' faster ... better service!';
+
+  @override
+  String get authEntrySubtitle =>
+      'Choose how you want to register and enjoy faster delivery.';
+
+  @override
+  String get authContinueWithPhone => 'Continue with mobile number';
+
+  @override
+  String get authContinueWithApple => 'Continue with Apple';
+
+  @override
+  String get authContinueWithGoogle => 'Continue with Google';
+
+  @override
+  String get authContinueWithFacebook => 'Continue with Facebook';
+
+  @override
+  String get authPhoneTitle => 'Mobile number';
+
+  @override
+  String get authPhoneSubtitle =>
+      'Enter your mobile number to complete registration.';
+
+  @override
+  String get authOtpSubtitle =>
+      'Enter the code sent to you to confirm your mobile number.';
+
+  @override
+  String get completeProfileTitle => 'Complete your data!';
+
+  @override
+  String get completeProfileSubtitle =>
+      'Join us today and enjoy a faster delivery experience.';
+
+  @override
+  String get firstNameLabel => 'First name';
+
+  @override
+  String get firstNameHint => 'First name';
+
+  @override
+  String get lastNameLabel => 'Last name';
+
+  @override
+  String get lastNameHint => 'Last name';
+
+  @override
+  String get completeProfileSubmit => 'Register now';
+
+  @override
+  String get completeProfileTermsPrefix =>
+      'By registering in the app, you agree to ';
+
+  @override
+  String get authAppLogoSemanticLabel => 'App logo';
+
+  @override
   String get mainTabHome => 'Home';
 
   @override

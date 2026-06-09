@@ -32,7 +32,7 @@ class _MainLayoutState extends State<MainLayout> {
           current is Unauthenticated && previous is LogoutInProgress,
       listener: (context, state) {
         if (state is Unauthenticated) {
-          context.go(RouteNames.login);
+          context.go(RouteNames.authEntry);
         }
       },
       builder: (context, state) {

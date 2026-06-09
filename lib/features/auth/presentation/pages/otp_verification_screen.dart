@@ -123,10 +123,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     }
     setState(() => _shouldRefreshValidationOnLocaleChange = false);
     context.read<AuthBloc>().add(
-      VerifyOtpSubmitted(
-        email: widget.email,
-        otp: _otpController.text.trim(),
-      ),
+      VerifyOtpSubmitted(email: widget.email, otp: _otpController.text.trim()),
     );
   }
 
@@ -195,128 +192,125 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 ),
                 const SizedBox(height: 32),
                 FormField<String>(
-              validator: (_) => AuthValidators.otpSixDigits(
-                _otpController.text,
-                requiredMessage: l10n.validationOtpRequired,
-                invalidMessage: l10n.validationOtpSixDigits,
-              ),
-              builder: (fieldState) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(
-                      height: 48,
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          Positioned.fill(
-                            child: Directionality(
-                              textDirection: TextDirection.ltr,
-                              child: TextField(
-                                controller: _otpController,
-                                focusNode: _otpFocusNode,
-                                keyboardType: TextInputType.number,
-                                maxLength: 6,
-                                textAlign: TextAlign.left,
-                                textInputAction: TextInputAction.done,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
-                                style: AppTextStyles.hiddenOtpInput,
-                                showCursor: false,
-                                cursorColor: AppColors.transparent,
-                                cursorWidth: 0,
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  filled: false,
-                                  contentPadding: EdgeInsets.zero,
-                                  counterText: '',
-                                ),
-                                onChanged: (value) {
-                                  fieldState.didChange(value);
-                                  setState(() {});
-                                },
-                                onTapOutside: (_) =>
-                                    FocusScope.of(context).unfocus(),
-                              ),
-                            ),
-                          ),
-                          Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                              children: [
-                                for (var i = 0; i < 6; i++)
-                                  InkWell(
-                                    onTap: () =>
-                                        _otpFocusNode.requestFocus(),
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: _OtpDigitBox(
-                                      char: _charAt(i),
-                                      active: i == _activeBoxIndex,
+                  validator: (_) => AuthValidators.otpSixDigits(
+                    _otpController.text,
+                    requiredMessage: l10n.validationOtpRequired,
+                    invalidMessage: l10n.validationOtpSixDigits,
+                  ),
+                  builder: (fieldState) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SizedBox(
+                          height: 48,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Positioned.fill(
+                                child: Directionality(
+                                  textDirection: TextDirection.ltr,
+                                  child: TextField(
+                                    controller: _otpController,
+                                    focusNode: _otpFocusNode,
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 6,
+                                    textAlign: TextAlign.left,
+                                    textInputAction: TextInputAction.done,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                    ],
+                                    style: AppTextStyles.hiddenOtpInput,
+                                    showCursor: false,
+                                    cursorColor: AppColors.transparent,
+                                    cursorWidth: 0,
+                                    decoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                      enabledBorder: InputBorder.none,
+                                      filled: false,
+                                      contentPadding: EdgeInsets.zero,
+                                      counterText: '',
                                     ),
+                                    onChanged: (value) {
+                                      fieldState.didChange(value);
+                                      setState(() {});
+                                    },
+                                    onTapOutside: (_) =>
+                                        FocusScope.of(context).unfocus(),
                                   ),
-                              ],
+                                ),
+                              ),
+                              Directionality(
+                                textDirection: TextDirection.ltr,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    for (var i = 0; i < 6; i++)
+                                      InkWell(
+                                        onTap: () =>
+                                            _otpFocusNode.requestFocus(),
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: _OtpDigitBox(
+                                          char: _charAt(i),
+                                          active: i == _activeBoxIndex,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (fieldState.hasError)
+                          Padding(
+                            padding: const EdgeInsetsDirectional.only(top: 6),
+                            child: Text(
+                              fieldState.errorText ?? '',
+                              textAlign: TextAlign.start,
+                              style: AppTextStyles.validationCaption,
                             ),
                           ),
-                        ],
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 20),
+                AuthPrimaryButton(
+                  label: l10n.otpVerify,
+                  onPressed: isLoading ? null : _onVerify,
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      l10n.otpTimerSeconds(_secondsRemaining),
+                      style: AppTextStyles.timerText(context),
+                    ),
+                    const SizedBox(width: 4),
+                    GestureDetector(
+                      onTap: _onResend,
+                      child: Text(
+                        l10n.otpResend,
+                        style: _secondsRemaining > 0
+                            ? AppTextStyles.resendActionDisabled(context)
+                            : AppTextStyles.linkEmphasis,
                       ),
                     ),
-                    if (fieldState.hasError)
-                      Padding(
-                        padding: const EdgeInsetsDirectional.only(top: 6),
-                        child: Text(
-                          fieldState.errorText ?? '',
-                          textAlign: TextAlign.start,
-                          style: AppTextStyles.validationCaption,
-                        ),
-                      ),
                   ],
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            AuthPrimaryButton(
-              label: l10n.otpVerify,
-              onPressed: isLoading ? null : _onVerify,
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  l10n.otpTimerSeconds(_secondsRemaining),
-                  style: AppTextStyles.timerText(context),
-                ),
-                const SizedBox(width: 4),
-                GestureDetector(
-                  onTap: _onResend,
-                  child: Text(
-                    l10n.otpResend,
-                    style: _secondsRemaining > 0
-                        ? AppTextStyles.resendActionDisabled(context)
-                        : AppTextStyles.linkEmphasis,
-                  ),
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        );
       },
     );
   }
 }
 
 class _OtpDigitBox extends StatelessWidget {
-  const _OtpDigitBox({
-    required this.char,
-    required this.active,
-  });
+  const _OtpDigitBox({required this.char, required this.active});
 
   final String char;
   final bool active;

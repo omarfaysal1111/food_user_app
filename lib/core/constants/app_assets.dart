@@ -3,6 +3,13 @@ class AppAssets {
   AppAssets._();
 
   static const appLogo = 'assets/images/app_logo.svg';
+  static const splashObjects = 'assets/images/splash_objects.png';
+  static const splashBottomStripe = 'assets/images/splash_bottom_stripe.png';
+  static const authEntryAstronaut = 'assets/images/auth_entry_astronaut.png';
+  static const authEntryLogo = 'assets/images/auth_entry_logo.png';
+  static const authPhoneIcon = 'assets/images/auth_phone_icon.png';
+  static const authHeaderLogo = 'assets/images/auth_header_logo.png';
+  static const authEntryStripe = 'assets/images/auth_entry_stripe.png';
   static const loginLogo = 'assets/images/login_logo.svg';
   static const flagEg = 'assets/images/flag_eg.svg';
   static const flagUsa = 'assets/images/flag_usa.svg';

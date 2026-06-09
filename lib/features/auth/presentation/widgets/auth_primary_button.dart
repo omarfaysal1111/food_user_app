@@ -29,14 +29,8 @@ class AuthPrimaryButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          label,
-          style: AppTextStyles.primaryButtonLabel,
-        ),
-        if (trailing != null) ...[
-          const SizedBox(width: 8),
-          trailing!,
-        ],
+        Text(label, style: AppTextStyles.primaryButtonLabel),
+        if (trailing != null) ...[const SizedBox(width: 8), trailing!],
       ],
     );
 
@@ -53,10 +47,7 @@ class AuthPrimaryButton extends StatelessWidget {
           ),
         ),
         child: preserveContentOrder
-            ? Directionality(
-                textDirection: TextDirection.ltr,
-                child: row,
-              )
+            ? Directionality(textDirection: TextDirection.ltr, child: row)
             : row,
       ),
     );

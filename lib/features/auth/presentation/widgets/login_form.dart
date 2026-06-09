@@ -63,11 +63,11 @@ class _LoginFormState extends State<LoginForm> {
     }
 
     context.read<AuthBloc>().add(
-          LoginSubmitted(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
-          ),
-        );
+      LoginSubmitted(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      ),
+    );
   }
 
   @override
@@ -135,14 +135,17 @@ class _LoginFormState extends State<LoginForm> {
               ),
               const SizedBox(height: 8),
               Align(
-                alignment:
-                    isArabic ? Alignment.centerLeft : Alignment.centerRight,
+                alignment: isArabic
+                    ? Alignment.centerLeft
+                    : Alignment.centerRight,
                 child: TextButton(
                   onPressed: widget.onForgotPassword,
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.onSurface(context),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),

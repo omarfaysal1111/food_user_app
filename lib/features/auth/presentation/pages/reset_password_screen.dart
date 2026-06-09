@@ -149,8 +149,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   suffixIcon: AuthPasswordVisibilitySuffix(
                     isVisible: _isConfirmPasswordVisible,
                     onPressed: () => setState(
-                      () =>
-                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible,
+                      () => _isConfirmPasswordVisible =
+                          !_isConfirmPasswordVisible,
                     ),
                   ),
                   validator: (value) => AuthValidators.confirmPassword(

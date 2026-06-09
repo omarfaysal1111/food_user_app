@@ -7,10 +7,7 @@ class SendOtpResponseModel {
   final String? otp;
   final String message;
 
-  const SendOtpResponseModel({
-    this.otp,
-    this.message = '',
-  });
+  const SendOtpResponseModel({this.otp, this.message = ''});
 
   factory SendOtpResponseModel.fromJson(Map<String, dynamic> json) {
     final otpValue = json['otp'];

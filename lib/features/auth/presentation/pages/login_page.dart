@@ -28,8 +28,12 @@ class LoginPage extends StatelessWidget {
           Align(
             alignment: isArabic ? Alignment.centerLeft : Alignment.centerRight,
             child: AuthLanguageChip(
-              label: context.isArabic ? l10n.languageArabic : l10n.languageEnglish,
-              flagAsset: context.isArabic ? AppAssets.flagEg : AppAssets.flagUsa,
+              label: context.isArabic
+                  ? l10n.languageArabic
+                  : l10n.languageEnglish,
+              flagAsset: context.isArabic
+                  ? AppAssets.flagEg
+                  : AppAssets.flagUsa,
               onTap: () => showAppLanguagePicker(context),
             ),
           ),

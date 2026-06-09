@@ -246,6 +246,66 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onboardingCta => 'أبدء الان';
 
   @override
+  String get authEntryTitleAccent => 'طلب';
+
+  @override
+  String get authEntryTitleRest => ' اسرع ... خدمة افضل !';
+
+  @override
+  String get authEntrySubtitle =>
+      'اختر طريقة التسجيل التي ترغب فيها واستمتع بأسرع خدمة توصيل';
+
+  @override
+  String get authContinueWithPhone => 'دخول عبر رقم الجوال';
+
+  @override
+  String get authContinueWithApple => 'دخول عن طريق Apple';
+
+  @override
+  String get authContinueWithGoogle => 'دخول عن طريق Google';
+
+  @override
+  String get authContinueWithFacebook => 'دخول عن طريق Facebook';
+
+  @override
+  String get authPhoneTitle => 'رقم الجوال';
+
+  @override
+  String get authPhoneSubtitle =>
+      'أدخل رقم الجوال الخاص بك لإتمام عملية التسجيل';
+
+  @override
+  String get authOtpSubtitle => 'أدخل الكود المرسل إليك للتأكد من رقم جوالك .';
+
+  @override
+  String get completeProfileTitle => 'استكمال بياناتك !';
+
+  @override
+  String get completeProfileSubtitle =>
+      'انضم إلينا اليوم واستمتع بأسرع تجربة توصيل .';
+
+  @override
+  String get firstNameLabel => 'الاسم الاول';
+
+  @override
+  String get firstNameHint => 'الاسم الاول';
+
+  @override
+  String get lastNameLabel => 'الاسم الاخير';
+
+  @override
+  String get lastNameHint => 'الاسم الاخير';
+
+  @override
+  String get completeProfileSubmit => 'تسجيل الان';
+
+  @override
+  String get completeProfileTermsPrefix => 'بتسجيلك في التطبيق أنت توافق على ';
+
+  @override
+  String get authAppLogoSemanticLabel => 'شعار التطبيق';
+
+  @override
   String get mainTabHome => 'الرئيسية';
 
   @override

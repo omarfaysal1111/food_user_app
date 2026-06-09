@@ -48,16 +48,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       return;
     }
     final cachedUser = await authRepository.getCachedUser();
-    cachedUser.fold(
-      (_) => emit(const Unauthenticated()),
-      (user) {
-        if (user == null) {
-          emit(const Unauthenticated());
-        } else {
-          emit(Authenticated(user));
-        }
-      },
-    );
+    cachedUser.fold((_) => emit(const Unauthenticated()), (user) {
+      if (user == null) {
+        emit(const Unauthenticated());
+      } else {
+        emit(Authenticated(user));
+      }
+    });
   }
 
   Future<void> _onLoginSubmitted(

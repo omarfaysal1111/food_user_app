@@ -554,6 +554,120 @@ abstract class AppLocalizations {
   /// **'Start now'**
   String get onboardingCta;
 
+  /// No description provided for @authEntryTitleAccent.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get authEntryTitleAccent;
+
+  /// No description provided for @authEntryTitleRest.
+  ///
+  /// In en, this message translates to:
+  /// **' faster ... better service!'**
+  String get authEntryTitleRest;
+
+  /// No description provided for @authEntrySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how you want to register and enjoy faster delivery.'**
+  String get authEntrySubtitle;
+
+  /// No description provided for @authContinueWithPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with mobile number'**
+  String get authContinueWithPhone;
+
+  /// No description provided for @authContinueWithApple.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Apple'**
+  String get authContinueWithApple;
+
+  /// No description provided for @authContinueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get authContinueWithGoogle;
+
+  /// No description provided for @authContinueWithFacebook.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Facebook'**
+  String get authContinueWithFacebook;
+
+  /// No description provided for @authPhoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile number'**
+  String get authPhoneTitle;
+
+  /// No description provided for @authPhoneSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your mobile number to complete registration.'**
+  String get authPhoneSubtitle;
+
+  /// No description provided for @authOtpSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code sent to you to confirm your mobile number.'**
+  String get authOtpSubtitle;
+
+  /// No description provided for @completeProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your data!'**
+  String get completeProfileTitle;
+
+  /// No description provided for @completeProfileSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join us today and enjoy a faster delivery experience.'**
+  String get completeProfileSubtitle;
+
+  /// No description provided for @firstNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'First name'**
+  String get firstNameLabel;
+
+  /// No description provided for @firstNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'First name'**
+  String get firstNameHint;
+
+  /// No description provided for @lastNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name'**
+  String get lastNameLabel;
+
+  /// No description provided for @lastNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name'**
+  String get lastNameHint;
+
+  /// No description provided for @completeProfileSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Register now'**
+  String get completeProfileSubmit;
+
+  /// No description provided for @completeProfileTermsPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'By registering in the app, you agree to '**
+  String get completeProfileTermsPrefix;
+
+  /// No description provided for @authAppLogoSemanticLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'App logo'**
+  String get authAppLogoSemanticLabel;
+
   /// No description provided for @mainTabHome.
   ///
   /// In en, this message translates to:

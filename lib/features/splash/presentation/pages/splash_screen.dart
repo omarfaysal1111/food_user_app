@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
       context.go(RouteNames.home);
     } else if (state is Unauthenticated) {
       _navigated = true;
-      context.go(RouteNames.onboarding);
+      context.go(RouteNames.authEntry);
     }
   }
 
@@ -63,19 +63,60 @@ class _SplashScreenState extends State<SplashScreen> {
       },
       child: Scaffold(
         backgroundColor: AppColors.primary,
-        body: Center(
-          child: SizedBox(
-            width: 142,
-            height: 114,
-            child: AppSvgImage.asset(
-              AppAssets.appLogo,
-              width: 142,
-              height: 114,
-              fit: BoxFit.contain,
-            ),
-          ),
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            final height = constraints.maxHeight;
+
+            return Stack(
+              clipBehavior: Clip.hardEdge,
+              children: [
+                Positioned(
+                  left: (width - 142) / 2,
+                  top: height * 0.43,
+                  child: const AppRasterImage.asset(
+                    AppAssets.splashObjects,
+                    width: 142,
+                    height: 114,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                PositionedDirectional(
+                  start: 0,
+                  end: 0,
+                  bottom: 0,
+                  child: const _SplashStripes(),
+                ),
+              ],
+            );
+          },
         ),
       ),
+    );
+  }
+}
+
+class _SplashStripes extends StatelessWidget {
+  const _SplashStripes();
+
+  static const _stripeHeight = 20.0;
+  static const _stripeGap = 6.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(3, (index) {
+        return Padding(
+          padding: EdgeInsets.only(top: index == 0 ? 0 : _stripeGap),
+          child: const AppRasterImage.asset(
+            AppAssets.splashBottomStripe,
+            height: _stripeHeight,
+            width: double.infinity,
+            fit: BoxFit.fill,
+          ),
+        );
+      }),
     );
   }
 }

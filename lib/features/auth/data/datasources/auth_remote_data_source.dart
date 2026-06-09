@@ -24,10 +24,7 @@ abstract class AuthRemoteDataSource {
 
   /// Sends an OTP to the given email for the forgot-password flow.
   /// Backend contract: `POST /api/v2/auth/otp/send` with `{ email, role }`.
-  Future<void> sendOtp({
-    required String email,
-    String role,
-  });
+  Future<void> sendOtp({required String email, String role});
 
   /// Verifies an OTP previously sent to [email].
   /// Backend contract: `POST /api/v2/auth/otp/verify` with `{ email, otp }`.
@@ -64,10 +61,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final response = await _dio.post<dynamic>(
         ApiEndpoints.login,
-        data: <String, dynamic>{
-          'email': email,
-          'password': password,
-        },
+        data: <String, dynamic>{'email': email, 'password': password},
       );
       final raw = response.data;
       if (raw is! Map<String, dynamic>) {
@@ -130,10 +124,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final response = await _dio.post<dynamic>(
         ApiEndpoints.passwordRecoveryUrl(ApiEndpoints.sendOtp),
-        data: <String, dynamic>{
-          'email': email,
-          'role': role,
-        },
+        data: <String, dynamic>{'email': email, 'role': role},
       );
       final raw = response.data;
       if (raw is Map<String, dynamic>) {
@@ -164,10 +155,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final response = await _dio.post<dynamic>(
         ApiEndpoints.passwordRecoveryUrl(ApiEndpoints.verifyOtp),
-        data: <String, dynamic>{
-          'email': email,
-          'otp': otp,
-        },
+        data: <String, dynamic>{'email': email, 'otp': otp},
       );
       final raw = response.data;
       if (raw is! Map<String, dynamic>) {
@@ -190,9 +178,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await _dio.post<dynamic>(
         ApiEndpoints.passwordRecoveryUrl(ApiEndpoints.setPassword),
-        data: <String, dynamic>{
-          'newPassword': newPassword,
-        },
+        data: <String, dynamic>{'newPassword': newPassword},
       );
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);

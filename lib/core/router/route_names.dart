@@ -2,6 +2,10 @@ class RouteNames {
   RouteNames._();
   static const splash = '/';
   static const onboarding = '/onboarding';
+  static const authEntry = '/auth';
+  static const phoneAuth = '/auth/phone';
+  static const mockOtp = '/auth/otp';
+  static const completeProfile = '/auth/complete-profile';
   static const login = '/login';
   static const register = '/register';
   static const otp = '/otp';

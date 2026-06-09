@@ -18,14 +18,8 @@ class TermsAndConditionsScreen extends StatelessWidget {
         backgroundColor: bg,
         foregroundColor: fg,
         elevation: 0,
-        leading: BackButton(
-          color: fg,
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          l10n.termsTitle,
-          style: AppTextStyles.appBarTitle(context),
-        ),
+        leading: BackButton(color: fg, onPressed: () => context.pop()),
+        title: Text(l10n.termsTitle, style: AppTextStyles.appBarTitle(context)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(

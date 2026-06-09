@@ -62,8 +62,7 @@ class AuthTextField extends StatelessWidget {
                   required currentLength,
                   required isFocused,
                   maxLength,
-                }) =>
-                  null
+                }) => null
               : null,
           decoration: InputDecoration(
             hintText: hintText,

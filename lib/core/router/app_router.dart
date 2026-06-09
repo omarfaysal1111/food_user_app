@@ -3,6 +3,10 @@ import '../constants/app_assets.dart';
 import 'route_names.dart';
 import '../../features/splash/presentation/pages/splash_screen.dart';
 import '../../features/onboarding/presentation/pages/onboarding_screen.dart';
+import '../../features/auth/presentation/pages/auth_entry_screen.dart';
+import '../../features/auth/presentation/pages/phone_auth_screen.dart';
+import '../../features/auth/presentation/pages/mock_otp_screen.dart';
+import '../../features/auth/presentation/pages/complete_profile_screen.dart';
 import '../../features/auth/presentation/pages/login_screen.dart';
 import '../../features/auth/presentation/pages/register_screen.dart';
 import '../../features/auth/presentation/pages/otp_verification_screen.dart';
@@ -55,6 +59,32 @@ class AppRouter {
       GoRoute(
         path: RouteNames.onboarding,
         builder: (c, s) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.authEntry,
+        builder: (c, s) => const AuthEntryScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.phoneAuth,
+        builder: (c, s) {
+          final args = s.extra is PhoneAuthArgs
+              ? s.extra as PhoneAuthArgs
+              : const PhoneAuthArgs();
+          return PhoneAuthScreen(args: args);
+        },
+      ),
+      GoRoute(
+        path: RouteNames.mockOtp,
+        builder: (c, s) {
+          final args = s.extra is MockOtpArgs
+              ? s.extra as MockOtpArgs
+              : const MockOtpArgs(phoneNumber: '');
+          return MockOtpScreen(args: args);
+        },
+      ),
+      GoRoute(
+        path: RouteNames.completeProfile,
+        builder: (c, s) => const CompleteProfileScreen(),
       ),
       GoRoute(path: RouteNames.login, builder: (c, s) => const LoginScreen()),
       GoRoute(
