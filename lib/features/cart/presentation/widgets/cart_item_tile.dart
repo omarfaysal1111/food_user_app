@@ -25,93 +25,99 @@ class CartItemTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppColors.surfaceCard(context),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: Image.asset(
-                item.imageAsset,
-                width: 70,
-                height: 36,
-                fit: BoxFit.contain,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.start,
-                  style: AppTextStyles.body(context).copyWith(
-                    color: AppColors.onSurface(context),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    height: 1.35,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  l10n.cartPrice(item.price),
-                  textAlign: TextAlign.start,
-                  style: AppTextStyles.heading4(context).copyWith(
-                    color: AppColors.onSurface(context),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ],
+        Container(
+          width: 80,
+          height: 80,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.surfaceCard(context),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Image.asset(
+            item.imageAsset,
+            width: 70,
+            height: 36,
+            fit: BoxFit.contain,
+          ),
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: onEdit,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SvgPicture.asset(
-                    AppAssets.cartEditIcon,
-                    width: 14,
-                    height: 14,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    l10n.edit,
-                    style: AppTextStyles.textLink(context).copyWith(
-                      color: AppColors.onSurface(context),
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                      height: 1.25,
-                    ),
-                  ),
-                ],
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.start,
+                style: AppTextStyles.body(context).copyWith(
+                  color: AppColors.onSurface(context),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  height: 1.35,
+                ),
               ),
-            ),
-            const SizedBox(height: 18),
-            _QuantityControl(
-              quantity: item.quantity,
-              onIncrement: onIncrement,
-              onDecrement: onDecrement,
-            ),
-          ],
+              const SizedBox(height: 16),
+              Text(
+                l10n.cartPrice(item.price),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.start,
+                style: AppTextStyles.heading4(context).copyWith(
+                  color: AppColors.onSurface(context),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  height: 1.4,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: 108,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: onEdit,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SvgPicture.asset(
+                      AppAssets.cartEditIcon,
+                      width: 14,
+                      height: 14,
+                    ),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        l10n.edit,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.textLink(context).copyWith(
+                          color: AppColors.onSurface(context),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          height: 1.25,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 18),
+              _QuantityControl(
+                quantity: item.quantity,
+                onIncrement: onIncrement,
+                onDecrement: onDecrement,
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -133,21 +139,22 @@ class _QuantityControl extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 38,
-      padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 12, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(10, 8, 10, 8),
       decoration: BoxDecoration(
         color: AppColors.surfaceCard(context),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.border(context), width: 0.5),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _IconButton(asset: AppAssets.cartPlusIcon, onTap: onIncrement),
-          const SizedBox(width: 14),
           SizedBox(
-            width: 13,
+            width: 24,
             child: Text(
               '$quantity',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: AppTextStyles.body(context).copyWith(
                 color: AppColors.onSurface(context),
@@ -157,7 +164,6 @@ class _QuantityControl extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 14),
           _IconButton(
             asset: quantity == 1
                 ? AppAssets.cartDeleteIcon

@@ -38,73 +38,90 @@ class AuthEntryScreen extends StatelessWidget {
       backgroundColor: AppColors.scaffoldBackground(context),
       body: SafeArea(
         top: false,
-        child: Column(
-          children: [
-            _AuthEntryHero(l10n: l10n),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsetsDirectional.fromSTEB(16, 32, 16, 28),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              padding: EdgeInsetsDirectional.only(
+                bottom: MediaQuery.paddingOf(context).bottom + 28,
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Center(
-                      child: AppRasterImage.asset(
-                        AppAssets.authEntryLogo,
-                        width: 72,
-                        height: 64,
-                        fit: BoxFit.contain,
+                    _AuthEntryHero(l10n: l10n),
+                    Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        16,
+                        32,
+                        16,
+                        0,
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    _AuthEntryTitle(l10n: l10n),
-                    const SizedBox(height: 24),
-                    _AuthMethodButton(
-                      label: l10n.authContinueWithPhone,
-                      onPressed: () => _startPhoneFlow(context),
-                      icon: const AppRasterImage.asset(
-                        AppAssets.authPhoneIcon,
-                        width: 20,
-                        height: 20,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _AuthMethodButton(
-                      label: l10n.authContinueWithApple,
-                      onPressed: () => _startSocialFlow(context),
-                      icon: AppSvgImage.asset(
-                        Theme.of(context).brightness == Brightness.dark
-                            ? AppAssets.socialAppleDark
-                            : AppAssets.socialApple,
-                        width: 20,
-                        height: 20,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _AuthMethodButton(
-                      label: l10n.authContinueWithGoogle,
-                      onPressed: () => _startSocialFlow(context),
-                      icon: const AppSvgImage.asset(
-                        AppAssets.socialGoogle,
-                        width: 20,
-                        height: 20,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _AuthMethodButton(
-                      label: l10n.authContinueWithFacebook,
-                      onPressed: () => _startSocialFlow(context),
-                      icon: const Icon(
-                        Icons.facebook_rounded,
-                        size: 20,
-                        color: Color(0xFF1877F2),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Center(
+                            child: AppRasterImage.asset(
+                              AppAssets.authEntryLogo,
+                              width: 72,
+                              height: 64,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          _AuthEntryTitle(l10n: l10n),
+                          const SizedBox(height: 24),
+                          _AuthMethodButton(
+                            label: l10n.authContinueWithPhone,
+                            onPressed: () => _startPhoneFlow(context),
+                            icon: const AppRasterImage.asset(
+                              AppAssets.authPhoneIcon,
+                              width: 20,
+                              height: 20,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          _AuthMethodButton(
+                            label: l10n.authContinueWithApple,
+                            onPressed: () => _startSocialFlow(context),
+                            icon: AppSvgImage.asset(
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? AppAssets.socialAppleDark
+                                  : AppAssets.socialApple,
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          _AuthMethodButton(
+                            label: l10n.authContinueWithGoogle,
+                            onPressed: () => _startSocialFlow(context),
+                            icon: const AppSvgImage.asset(
+                              AppAssets.socialGoogle,
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          _AuthMethodButton(
+                            label: l10n.authContinueWithFacebook,
+                            onPressed: () => _startSocialFlow(context),
+                            icon: const Icon(
+                              Icons.facebook_rounded,
+                              size: 20,
+                              color: Color(0xFF1877F2),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
@@ -119,8 +136,7 @@ class _AuthEntryHero extends StatelessWidget {
   static const _artworkHeight = 355.0;
   static const _stripeHeight = 20.0;
   static const _stripeGap = 6.0;
-  static const _stripesTotalHeight =
-      (_stripeHeight * 3) + (_stripeGap * 2);
+  static const _stripesTotalHeight = (_stripeHeight * 3) + (_stripeGap * 2);
 
   static const _heroTotalHeight = _artworkHeight + _stripesTotalHeight;
 
@@ -265,11 +281,17 @@ class _AuthMethodButton extends StatelessWidget {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
           children: [
             icon,
             const SizedBox(width: 8),
-            Text(label, style: AppTextStyles.textLink(context)),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.textLink(context),
+              ),
+            ),
           ],
         ),
       ),

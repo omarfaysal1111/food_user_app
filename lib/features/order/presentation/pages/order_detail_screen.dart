@@ -114,9 +114,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.scaffoldBackground(context),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-      ),
+      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height),
       builder: (sheetContext) => _OrderRatingSheet(
         onSkip: () => Navigator.of(sheetContext).pop(),
         onSubmit: () {
@@ -1068,101 +1066,125 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final bottomSafe = MediaQuery.of(context).padding.bottom;
-    final keyboardBottom = MediaQuery.of(context).viewInsets.bottom;
+    final mediaQuery = MediaQuery.of(context);
+    final bottomSafe = mediaQuery.padding.bottom;
+    final keyboardBottom = mediaQuery.viewInsets.bottom;
 
     return KeyboardDismissOnTap(
-      child: Padding(
-        padding: EdgeInsets.only(bottom: bottomSafe + keyboardBottom),
-        child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 0),
-                child: Column(
-                  children: [
-                    Text(
-                      l10n.rateOrderTitle,
-                      style: AppTextStyles.heading4(context).copyWith(
-                        color: AppColors.onSurface(context),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        height: 1.4,
+      child: SafeArea(
+        bottom: false,
+        child: SizedBox(
+          height: mediaQuery.size.height,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: EdgeInsets.only(bottom: bottomSafe + keyboardBottom),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          16,
+                          20,
+                          16,
+                          0,
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              l10n.rateOrderTitle,
+                              style: AppTextStyles.heading4(context).copyWith(
+                                color: AppColors.onSurface(context),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                height: 1.4,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Divider(
+                              height: 1,
+                              thickness: 0.5,
+                              color: AppColors.border(context),
+                            ),
+                            const SizedBox(height: 16),
+                            _RatingTargetSection(
+                              imageAsset: AppAssets.orderRestaurantAvatar,
+                              name: l10n.orderRestaurantAzAlSham,
+                              rating: _restaurantRating,
+                              feedbackController: _restaurantFeedbackController,
+                              feedbackLabel: l10n.yourRating,
+                              feedbackHint: l10n.ratingFeedbackHint,
+                              onRatingChanged: (value) =>
+                                  setState(() => _restaurantRating = value),
+                              circularImage: true,
+                            ),
+                            const SizedBox(height: 16),
+                            Divider(
+                              height: 1,
+                              thickness: 0.5,
+                              color: AppColors.border(context),
+                            ),
+                            const SizedBox(height: 16),
+                            _RatingTargetSection(
+                              imageAsset: AppAssets.orderCourierAvatar,
+                              name: l10n.orderCourierName,
+                              rating: _courierRating,
+                              feedbackController: _courierFeedbackController,
+                              feedbackLabel: l10n.yourRating,
+                              feedbackHint: l10n.ratingFeedbackHint,
+                              onRatingChanged: (value) =>
+                                  setState(() => _courierRating = value),
+                              circularImage: false,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Divider(
-                      height: 1,
-                      thickness: 0.5,
-                      color: AppColors.border(context),
-                    ),
-                    const SizedBox(height: 16),
-                    _RatingTargetSection(
-                      imageAsset: AppAssets.orderRestaurantAvatar,
-                      name: l10n.orderRestaurantAzAlSham,
-                      rating: _restaurantRating,
-                      feedbackController: _restaurantFeedbackController,
-                      feedbackLabel: l10n.yourRating,
-                      feedbackHint: l10n.ratingFeedbackHint,
-                      onRatingChanged: (value) =>
-                          setState(() => _restaurantRating = value),
-                      circularImage: true,
-                    ),
-                    const SizedBox(height: 16),
-                    Divider(
-                      height: 1,
-                      thickness: 0.5,
-                      color: AppColors.border(context),
-                    ),
-                    const SizedBox(height: 16),
-                    _RatingTargetSection(
-                      imageAsset: AppAssets.orderCourierAvatar,
-                      name: l10n.orderCourierName,
-                      rating: _courierRating,
-                      feedbackController: _courierFeedbackController,
-                      feedbackLabel: l10n.yourRating,
-                      feedbackHint: l10n.ratingFeedbackHint,
-                      onRatingChanged: (value) =>
-                          setState(() => _courierRating = value),
-                      circularImage: false,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 20),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceCard(context),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF2C2B2B).withValues(alpha: 0.08),
-                      blurRadius: 4,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _OutlineActionButton(
-                        label: l10n.skipRating,
-                        onTap: widget.onSkip,
+                      const SizedBox(height: 20),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          16,
+                          20,
+                          16,
+                          20,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceCard(context),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(
+                                0xFF2C2B2B,
+                              ).withValues(alpha: 0.08),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _OutlineActionButton(
+                                label: l10n.skipRating,
+                                onTap: widget.onSkip,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _PrimaryFilledButton(
+                                label: l10n.submitRating,
+                                onTap: widget.onSubmit,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _PrimaryFilledButton(
-                        label: l10n.submitRating,
-                        onTap: widget.onSubmit,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),

@@ -151,35 +151,52 @@ class _VerifyPhoneOtpScreenState extends State<VerifyPhoneOtpScreen> {
             children: [
               const _OtpBackHeader(),
               Expanded(
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _OtpIntro(
-                        title: l10n.verifyPhoneTitle,
-                        subtitle: l10n.verifyPhoneMessage,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      padding: EdgeInsetsDirectional.fromSTEB(
+                        16,
+                        0,
+                        16,
+                        MediaQuery.viewInsetsOf(context).bottom + 24,
                       ),
-                      const SizedBox(height: 24),
-                      _OtpInput(
-                        controller: _otpController,
-                        focusNode: _otpFocusNode,
-                        activeBoxIndex: _activeBoxIndex,
-                        charAt: _charAt,
-                        onChanged: _onOtpChanged,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _OtpIntro(
+                              title: l10n.verifyPhoneTitle,
+                              subtitle: l10n.verifyPhoneMessage,
+                            ),
+                            const SizedBox(height: 24),
+                            _OtpInput(
+                              controller: _otpController,
+                              focusNode: _otpFocusNode,
+                              activeBoxIndex: _activeBoxIndex,
+                              charAt: _charAt,
+                              onChanged: _onOtpChanged,
+                            ),
+                            const SizedBox(height: 24),
+                            _ResendCodeRow(
+                              resendLabel: l10n.resendCode,
+                              timerLabel: _secondsRemaining > 0
+                                  ? l10n.resendCodeTimer(_secondsRemaining)
+                                  : null,
+                              enabled: _secondsRemaining == 0 && !_isCompleting,
+                              onTap: _onResendCode,
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 24),
-                      _ResendCodeRow(
-                        resendLabel: l10n.resendCode,
-                        timerLabel: _secondsRemaining > 0
-                            ? l10n.resendCodeTimer(_secondsRemaining)
-                            : null,
-                        enabled: _secondsRemaining == 0 && !_isCompleting,
-                        onTap: _onResendCode,
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -225,47 +242,37 @@ class _OtpIntro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 113,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            AppAssets.profilePhoneOtpIcon,
-            width: 49,
-            height: 49,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SvgPicture.asset(AppAssets.profilePhoneOtpIcon, width: 49, height: 49),
+        const SizedBox(height: 16),
+        Text(
+          title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+          style: AppTextStyles.heading4(context).copyWith(
+            color: AppColors.onSurface(context),
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            height: 1.4,
           ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.heading4(context).copyWith(
-                    color: AppColors.onSurface(context),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  subtitle,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.footerSecondary(context).copyWith(
-                    color: AppColors.paragraph(context),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    height: 1.35,
-                  ),
-                ),
-              ],
-            ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          subtitle,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+          style: AppTextStyles.footerSecondary(context).copyWith(
+            color: AppColors.paragraph(context),
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            height: 1.35,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -289,71 +296,83 @@ class _OtpInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 48,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: Directionality(
-              textDirection: TextDirection.ltr,
-              child: TextField(
-                controller: controller,
-                focusNode: focusNode,
-                keyboardType: TextInputType.number,
-                maxLength: 6,
-                textAlign: TextAlign.left,
-                textInputAction: TextInputAction.done,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                style: AppTextStyles.hiddenOtpInput,
-                showCursor: false,
-                cursorColor: AppColors.transparent,
-                cursorWidth: 0,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  filled: false,
-                  contentPadding: EdgeInsets.zero,
-                  counterText: '',
-                ),
-                onChanged: onChanged,
-                onTapOutside: (_) => FocusScope.of(context).unfocus(),
-              ),
-            ),
-          ),
-          Directionality(
-            textDirection: TextDirection.ltr,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                for (var index = 0; index < 6; index++)
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => focusNode.requestFocus(),
-                    child: _OtpDigitBox(
-                      char: charAt(index),
-                      active: index == activeBoxIndex,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final boxSize = ((constraints.maxWidth - 40) / 6).clamp(40.0, 48.0);
+
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: TextField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    keyboardType: TextInputType.number,
+                    maxLength: 6,
+                    textAlign: TextAlign.left,
+                    textInputAction: TextInputAction.done,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    style: AppTextStyles.hiddenOtpInput,
+                    showCursor: false,
+                    cursorColor: AppColors.transparent,
+                    cursorWidth: 0,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      filled: false,
+                      contentPadding: EdgeInsets.zero,
+                      counterText: '',
                     ),
+                    onChanged: onChanged,
+                    onTapOutside: (_) => FocusScope.of(context).unfocus(),
                   ),
-              ],
-            ),
-          ),
-        ],
+                ),
+              ),
+              Directionality(
+                textDirection: TextDirection.ltr,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    for (var index = 0; index < 6; index++)
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => focusNode.requestFocus(),
+                        child: _OtpDigitBox(
+                          char: charAt(index),
+                          active: index == activeBoxIndex,
+                          size: boxSize,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 }
 
 class _OtpDigitBox extends StatelessWidget {
-  const _OtpDigitBox({required this.char, required this.active});
+  const _OtpDigitBox({
+    required this.char,
+    required this.active,
+    required this.size,
+  });
 
   final String char;
   final bool active;
+  final double size;
 
   bool get _isPlaceholder => char == '-';
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 48,
+      width: size,
       height: 48,
       alignment: Alignment.center,
       decoration: BoxDecoration(
@@ -402,30 +421,40 @@ class _ResendCodeRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: enabled ? onTap : null,
-            child: Text(
-              resendLabel,
-              textDirection: Directionality.of(context),
-              style: AppTextStyles.footerSecondary(context).copyWith(
-                color: AppColors.primary.withValues(alpha: enabled ? 1 : 0.55),
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                height: 1.25,
+          Flexible(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: enabled ? onTap : null,
+              child: Text(
+                resendLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textDirection: Directionality.of(context),
+                style: AppTextStyles.footerSecondary(context).copyWith(
+                  color: AppColors.primary.withValues(
+                    alpha: enabled ? 1 : 0.55,
+                  ),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  height: 1.25,
+                ),
               ),
             ),
           ),
           if (timerLabel != null) ...[
             const SizedBox(width: 4),
-            Text(
-              timerLabel!,
-              textDirection: Directionality.of(context),
-              style: AppTextStyles.footerSecondary(context).copyWith(
-                color: AppColors.paragraph(context),
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                height: 1.35,
+            Flexible(
+              child: Text(
+                timerLabel!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textDirection: Directionality.of(context),
+                style: AppTextStyles.footerSecondary(context).copyWith(
+                  color: AppColors.paragraph(context),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  height: 1.35,
+                ),
               ),
             ),
           ],
