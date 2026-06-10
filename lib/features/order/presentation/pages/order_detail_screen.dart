@@ -113,6 +113,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: AppColors.scaffoldBackground(context),
       constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height),
       builder: (sheetContext) => _OrderRatingSheet(
@@ -1053,13 +1054,53 @@ class _OrderRatingSheet extends StatefulWidget {
 class _OrderRatingSheetState extends State<_OrderRatingSheet> {
   int _restaurantRating = 0;
   int _courierRating = 0;
+  final _ratingScrollController = ScrollController();
   final _restaurantFeedbackController = TextEditingController();
   final _courierFeedbackController = TextEditingController();
+  final _restaurantFeedbackFocusNode = FocusNode();
+  final _courierFeedbackFocusNode = FocusNode();
+  final _restaurantFeedbackKey = GlobalKey();
+  final _courierFeedbackKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _restaurantFeedbackFocusNode.addListener(() {
+      if (_restaurantFeedbackFocusNode.hasFocus) {
+        _scrollFocusedFieldIntoView(_restaurantFeedbackKey);
+      }
+    });
+
+    _courierFeedbackFocusNode.addListener(() {
+      if (_courierFeedbackFocusNode.hasFocus) {
+        _scrollFocusedFieldIntoView(_courierFeedbackKey);
+      }
+    });
+  }
+
+  void _scrollFocusedFieldIntoView(GlobalKey key) {
+    Future.delayed(const Duration(milliseconds: 550), () {
+      final fieldContext = key.currentContext;
+      if (fieldContext == null || !fieldContext.mounted || !mounted) return;
+
+      Scrollable.ensureVisible(
+        fieldContext,
+        duration: const Duration(milliseconds: 260),
+        curve: Curves.easeOut,
+        alignment: 0.35,
+        alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+      );
+    });
+  }
 
   @override
   void dispose() {
+    _ratingScrollController.dispose();
     _restaurantFeedbackController.dispose();
     _courierFeedbackController.dispose();
+    _restaurantFeedbackFocusNode.dispose();
+    _courierFeedbackFocusNode.dispose();
     super.dispose();
   }
 
@@ -1069,124 +1110,119 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet> {
     final mediaQuery = MediaQuery.of(context);
     final bottomSafe = mediaQuery.padding.bottom;
     final keyboardBottom = mediaQuery.viewInsets.bottom;
+    final isKeyboardOpen = keyboardBottom > 0;
 
     return KeyboardDismissOnTap(
-      child: SafeArea(
-        bottom: false,
-        child: SizedBox(
-          height: mediaQuery.size.height,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: EdgeInsets.only(bottom: bottomSafe + keyboardBottom),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                          16,
-                          20,
-                          16,
-                          0,
-                        ),
-                        child: Column(
-                          children: [
-                            Text(
-                              l10n.rateOrderTitle,
-                              style: AppTextStyles.heading4(context).copyWith(
-                                color: AppColors.onSurface(context),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                height: 1.4,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Divider(
-                              height: 1,
-                              thickness: 0.5,
-                              color: AppColors.border(context),
-                            ),
-                            const SizedBox(height: 16),
-                            _RatingTargetSection(
-                              imageAsset: AppAssets.orderRestaurantAvatar,
-                              name: l10n.orderRestaurantAzAlSham,
-                              rating: _restaurantRating,
-                              feedbackController: _restaurantFeedbackController,
-                              feedbackLabel: l10n.yourRating,
-                              feedbackHint: l10n.ratingFeedbackHint,
-                              onRatingChanged: (value) =>
-                                  setState(() => _restaurantRating = value),
-                              circularImage: true,
-                            ),
-                            const SizedBox(height: 16),
-                            Divider(
-                              height: 1,
-                              thickness: 0.5,
-                              color: AppColors.border(context),
-                            ),
-                            const SizedBox(height: 16),
-                            _RatingTargetSection(
-                              imageAsset: AppAssets.orderCourierAvatar,
-                              name: l10n.orderCourierName,
-                              rating: _courierRating,
-                              feedbackController: _courierFeedbackController,
-                              feedbackLabel: l10n.yourRating,
-                              feedbackHint: l10n.ratingFeedbackHint,
-                              onRatingChanged: (value) =>
-                                  setState(() => _courierRating = value),
-                              circularImage: false,
-                            ),
-                          ],
-                        ),
+      child: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              controller: _ratingScrollController,
+              physics: const ClampingScrollPhysics(),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(
+                  16,
+                  20,
+                  16,
+                  isKeyboardOpen ? keyboardBottom + 160 : 120 + bottomSafe,
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      l10n.rateOrderTitle,
+                      style: AppTextStyles.heading4(context).copyWith(
+                        color: AppColors.onSurface(context),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        height: 1.4,
                       ),
-                      const SizedBox(height: 20),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                          16,
-                          20,
-                          16,
-                          20,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceCard(context),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(
-                                0xFF2C2B2B,
-                              ).withValues(alpha: 0.08),
-                              blurRadius: 4,
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: _OutlineActionButton(
-                                label: l10n.skipRating,
-                                onTap: widget.onSkip,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _PrimaryFilledButton(
-                                label: l10n.submitRating,
-                                onTap: widget.onSubmit,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                    ),
+                    const SizedBox(height: 12),
+                    Divider(
+                      height: 1,
+                      thickness: 0.5,
+                      color: AppColors.border(context),
+                    ),
+                    const SizedBox(height: 16),
+                    _RatingTargetSection(
+                      imageAsset: AppAssets.orderRestaurantAvatar,
+                      name: l10n.orderRestaurantAzAlSham,
+                      rating: _restaurantRating,
+                      feedbackController: _restaurantFeedbackController,
+                      feedbackFocusNode: _restaurantFeedbackFocusNode,
+                      feedbackFieldKey: _restaurantFeedbackKey,
+                      feedbackLabel: l10n.yourRating,
+                      feedbackHint: l10n.ratingFeedbackHint,
+                      onFeedbackTap: () =>
+                          _scrollFocusedFieldIntoView(_restaurantFeedbackKey),
+                      onRatingChanged: (value) =>
+                          setState(() => _restaurantRating = value),
+                      circularImage: true,
+                    ),
+                    const SizedBox(height: 16),
+                    Divider(
+                      height: 1,
+                      thickness: 0.5,
+                      color: AppColors.border(context),
+                    ),
+                    const SizedBox(height: 16),
+                    _RatingTargetSection(
+                      imageAsset: AppAssets.orderCourierAvatar,
+                      name: l10n.orderCourierName,
+                      rating: _courierRating,
+                      feedbackController: _courierFeedbackController,
+                      feedbackFocusNode: _courierFeedbackFocusNode,
+                      feedbackFieldKey: _courierFeedbackKey,
+                      feedbackLabel: l10n.yourRating,
+                      feedbackHint: l10n.ratingFeedbackHint,
+                      onFeedbackTap: () =>
+                          _scrollFocusedFieldIntoView(_courierFeedbackKey),
+                      onRatingChanged: (value) =>
+                          setState(() => _courierRating = value),
+                      circularImage: false,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsetsDirectional.fromSTEB(
+              16,
+              20,
+              16,
+              20 + bottomSafe,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceCard(context),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF2C2B2B).withValues(alpha: 0.08),
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _OutlineActionButton(
+                    label: l10n.skipRating,
+                    onTap: widget.onSkip,
                   ),
                 ),
-              );
-            },
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _PrimaryFilledButton(
+                    label: l10n.submitRating,
+                    onTap: widget.onSubmit,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -1198,8 +1234,11 @@ class _RatingTargetSection extends StatelessWidget {
     required this.name,
     required this.rating,
     required this.feedbackController,
+    required this.feedbackFocusNode,
+    required this.feedbackFieldKey,
     required this.feedbackLabel,
     required this.feedbackHint,
+    required this.onFeedbackTap,
     required this.onRatingChanged,
     required this.circularImage,
   });
@@ -1208,8 +1247,11 @@ class _RatingTargetSection extends StatelessWidget {
   final String name;
   final int rating;
   final TextEditingController feedbackController;
+  final FocusNode feedbackFocusNode;
+  final GlobalKey feedbackFieldKey;
   final String feedbackLabel;
   final String feedbackHint;
+  final VoidCallback onFeedbackTap;
   final ValueChanged<int> onRatingChanged;
   final bool circularImage;
 
@@ -1240,24 +1282,27 @@ class _RatingTargetSection extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (var star = 1; star <= 5; star++) ...[
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => onRatingChanged(star),
-                    child: SvgPicture.asset(
-                      star <= rating
-                          ? AppAssets.orderRatingStarIcon
-                          : AppAssets.orderRatingStarOutlineIcon,
-                      width: 32,
-                      height: 32,
+            Directionality(
+              textDirection: TextDirection.ltr,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (var star = 1; star <= 5; star++) ...[
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => onRatingChanged(star),
+                      child: SvgPicture.asset(
+                        star <= rating
+                            ? AppAssets.orderRatingStarIcon
+                            : AppAssets.orderRatingStarOutlineIcon,
+                        width: 32,
+                        height: 32,
+                      ),
                     ),
-                  ),
-                  if (star != 5) const SizedBox(width: 16),
+                    if (star != 5) const SizedBox(width: 16),
+                  ],
                 ],
-              ],
+              ),
             ),
           ],
         ),
@@ -1273,45 +1318,50 @@ class _RatingTargetSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
-          controller: feedbackController,
-          minLines: 3,
-          maxLines: 4,
-          textAlign: TextAlign.start,
-          cursorColor: AppColors.cursor(context),
-          style: AppTextStyles.inputText(context).copyWith(fontSize: 12),
-          decoration: InputDecoration(
-            hintText: feedbackHint,
-            hintStyle: AppTextStyles.inputHint(
-              context,
-            ).copyWith(color: AppColors.hint(context), fontSize: 12),
-            filled: true,
-            fillColor: AppColors.surfaceCard(context),
-            contentPadding: const EdgeInsetsDirectional.fromSTEB(
-              16,
-              16,
-              16,
-              60,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: AppColors.border(context),
-                width: 0.5,
+        Container(
+          key: feedbackFieldKey,
+          child: TextField(
+            controller: feedbackController,
+            focusNode: feedbackFocusNode,
+            minLines: 3,
+            maxLines: 4,
+            textAlign: TextAlign.start,
+            cursorColor: AppColors.cursor(context),
+            style: AppTextStyles.inputText(context).copyWith(fontSize: 12),
+            onTap: onFeedbackTap,
+            decoration: InputDecoration(
+              hintText: feedbackHint,
+              hintStyle: AppTextStyles.inputHint(
+                context,
+              ).copyWith(color: AppColors.hint(context), fontSize: 12),
+              filled: true,
+              fillColor: AppColors.surfaceCard(context),
+              contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                16,
+                16,
+                16,
+                60,
               ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: AppColors.border(context),
-                width: 0.5,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: AppColors.border(context),
+                  width: 0.5,
+                ),
               ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: AppColors.fieldFocusBorder(context),
-                width: 0.5,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: AppColors.border(context),
+                  width: 0.5,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: AppColors.fieldFocusBorder(context),
+                  width: 0.5,
+                ),
               ),
             ),
           ),
