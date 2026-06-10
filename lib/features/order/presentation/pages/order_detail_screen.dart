@@ -213,7 +213,7 @@ class _OrderDetailsConfig {
         shortStatusLabel: l10n.orderDeliveredShort,
         statusLabel: l10n.orderDelivered,
         statusColor: const Color(0xFFA7A7A7),
-        statusIconAsset: AppAssets.orderDeliveredIcon,
+        statusIconAsset: AppAssets.orderDeliveredStatus,
         showEta: false,
         progressStep: null,
         showCourierSection: true,

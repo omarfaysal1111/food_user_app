@@ -74,6 +74,8 @@ class AppAssets {
       'assets/images/icons/orders/order_courier_on_way.png';
   static const orderDeliveredIcon =
       'assets/images/icons/orders/order_delivered.png';
+  static const orderDeliveredStatus =
+      'assets/images/order_delivered_status.png';
   static const orderProductImage = 'assets/images/orders/order_product.png';
   static const orderCourierAvatar =
       'assets/images/orders/order_courier_avatar.png';
