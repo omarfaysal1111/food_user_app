@@ -7,6 +7,7 @@ import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
+import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
 import 'package:food_user_app/features/checkout/presentation/widgets/checkout_payment_sheets.dart';
 import 'package:food_user_app/features/checkout/presentation/widgets/payment_options_section.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
@@ -20,6 +21,7 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   CheckoutPaymentOption _paymentOption = CheckoutPaymentOption.cash;
+  MapPickerResult? _selectedAddress;
 
   static const _subtotal = 400;
   static const _delivery = 20;
@@ -52,9 +54,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       _CurrentAddressCard(
-                        address: l10n.deliveryAddress,
-                        onChange: () =>
-                            context.push(RouteNames.addressSelection),
+                        address:
+                            _selectedAddress?.address ?? l10n.deliveryAddress,
+                        onChange: _changeAddress,
                       ),
                       const SizedBox(height: 16),
                       PaymentOptionsSection(
@@ -111,6 +113,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     if (!mounted || confirmed != true) return;
 
     context.pop(true);
+  }
+
+  Future<void> _changeAddress() async {
+    final result = await context.push<Object?>(RouteNames.addressSelection);
+    if (!mounted) return;
+    if (result is MapPickerResult) {
+      setState(() => _selectedAddress = result);
+    }
   }
 }
 

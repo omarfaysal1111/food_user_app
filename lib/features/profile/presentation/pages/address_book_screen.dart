@@ -6,6 +6,7 @@ import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class AddressBookScreen extends StatelessWidget {
@@ -61,7 +62,17 @@ class AddressBookScreen extends StatelessWidget {
             _BottomActionBar(
               label: l10n.addNewAddress,
               iconAsset: AppAssets.addressPlusIcon,
-              onTap: () => context.push(RouteNames.addressBookAddMap),
+              onTap: () async {
+                final result = await context.push<MapPickerResult>(
+                  RouteNames.mapPicker,
+                  extra: const MapPickerArgs(mode: MapPickerMode.add),
+                );
+                if (result == null || !context.mounted) return;
+                await context.push(
+                  RouteNames.addressBookAddDetails,
+                  extra: result,
+                );
+              },
             ),
             // TODO: Replace static addresses with saved-addresses API data.
           ],
@@ -78,11 +89,15 @@ class AddressBookScreen extends StatelessWidget {
         title: l10n.apartmentAddressTitle,
         details: l10n.sampleAddressMeta,
         location: l10n.deliveryAddress,
+        latitude: 30.0444,
+        longitude: 31.2357,
       ),
       _SavedAddress(
         title: l10n.apartmentAddressTitle,
         details: l10n.sampleAddressMeta,
         location: l10n.deliveryAddress,
+        latitude: 30.0444,
+        longitude: 31.2357,
       ),
     ];
   }
@@ -93,11 +108,15 @@ class _SavedAddress {
     required this.title,
     required this.details,
     required this.location,
+    required this.latitude,
+    required this.longitude,
   });
 
   final String title;
   final String details;
   final String location;
+  final double latitude;
+  final double longitude;
 }
 
 class _AddressHeader extends StatelessWidget {
@@ -240,7 +259,22 @@ class _SavedAddressCard extends StatelessWidget {
                   iconAsset: AppAssets.addressEditIcon,
                   foreground: AppColors.success,
                   background: AppColors.success.withValues(alpha: 0.10),
-                  onTap: () => context.push(RouteNames.addressBookEditMap),
+                  onTap: () async {
+                    final result = await context.push<MapPickerResult>(
+                      RouteNames.mapPicker,
+                      extra: MapPickerArgs(
+                        initialLatitude: address.latitude,
+                        initialLongitude: address.longitude,
+                        initialAddress: address.location,
+                        mode: MapPickerMode.edit,
+                      ),
+                    );
+                    if (result == null || !context.mounted) return;
+                    await context.push(
+                      RouteNames.addressBookEditDetails,
+                      extra: result,
+                    );
+                  },
                 ),
               ),
               const SizedBox(width: 12),

@@ -6,10 +6,13 @@ import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
+import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class AddEditAddressScreen extends StatelessWidget {
-  const AddEditAddressScreen({super.key});
+  const AddEditAddressScreen({super.key, this.mapResult});
+
+  final MapPickerResult? mapResult;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +42,9 @@ class AddEditAddressScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _CurrentAddressPreview(address: l10n.deliveryAddress),
+                      _CurrentAddressPreview(
+                        address: mapResult?.address ?? l10n.deliveryAddress,
+                      ),
                       const SizedBox(height: 16),
                       _AddressInputField(hint: l10n.building),
                       const SizedBox(height: 16),
@@ -63,7 +68,7 @@ class AddEditAddressScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(l10n.addressSavedDesignOnly)),
                   );
-                  context.pop(true);
+                  context.pop(mapResult ?? true);
                 },
               ),
             ],

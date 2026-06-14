@@ -23,6 +23,7 @@ import '../../features/cart/domain/entities/cart_item.dart';
 import '../../features/cart/presentation/pages/cart_screen.dart';
 import '../../features/product/presentation/pages/product_details_screen.dart';
 import '../../features/checkout/presentation/pages/checkout_screen.dart';
+import '../../features/checkout/domain/entities/map_picker_result.dart';
 import '../../features/checkout/presentation/pages/address_selection_screen.dart';
 import '../../features/checkout/presentation/pages/add_edit_address_screen.dart';
 import '../../features/checkout/presentation/pages/map_picker_screen.dart';
@@ -158,11 +159,21 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.addEditAddress,
-        builder: (c, s) => const AddEditAddressScreen(),
+        builder: (c, s) {
+          final result = s.extra is MapPickerResult
+              ? s.extra as MapPickerResult
+              : null;
+          return AddEditAddressScreen(mapResult: result);
+        },
       ),
       GoRoute(
         path: RouteNames.mapPicker,
-        builder: (c, s) => const MapPickerScreen(),
+        builder: (c, s) {
+          final args = s.extra is MapPickerArgs
+              ? s.extra as MapPickerArgs
+              : const MapPickerArgs();
+          return MapPickerScreen.fromArgs(args);
+        },
       ),
       GoRoute(
         path: RouteNames.paymentMethod,
@@ -218,27 +229,40 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.addressBookAddMap,
-        builder: (c, s) => const profile_address.AddressMapSelectionScreen(
-          mode: profile_address.AddressFlowMode.add,
-        ),
+        builder: (c, s) => const MapPickerScreen(mode: MapPickerMode.add),
       ),
       GoRoute(
         path: RouteNames.addressBookAddDetails,
-        builder: (c, s) => const profile_address.AddressDetailsScreen(
-          mode: profile_address.AddressFlowMode.add,
-        ),
+        builder: (c, s) {
+          final result = s.extra is MapPickerResult
+              ? s.extra as MapPickerResult
+              : null;
+          return profile_address.AddressDetailsScreen(
+            mode: profile_address.AddressFlowMode.add,
+            mapResult: result,
+          );
+        },
       ),
       GoRoute(
         path: RouteNames.addressBookEditMap,
-        builder: (c, s) => const profile_address.AddressMapSelectionScreen(
-          mode: profile_address.AddressFlowMode.edit,
-        ),
+        builder: (c, s) {
+          final args = s.extra is MapPickerArgs
+              ? s.extra as MapPickerArgs
+              : const MapPickerArgs(mode: MapPickerMode.edit);
+          return MapPickerScreen.fromArgs(args);
+        },
       ),
       GoRoute(
         path: RouteNames.addressBookEditDetails,
-        builder: (c, s) => const profile_address.AddressDetailsScreen(
-          mode: profile_address.AddressFlowMode.edit,
-        ),
+        builder: (c, s) {
+          final result = s.extra is MapPickerResult
+              ? s.extra as MapPickerResult
+              : null;
+          return profile_address.AddressDetailsScreen(
+            mode: profile_address.AddressFlowMode.edit,
+            mapResult: result,
+          );
+        },
       ),
       GoRoute(
         path: RouteNames.favourites,

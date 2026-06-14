@@ -7,6 +7,7 @@ import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
+import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class AddressSelectionScreen extends StatelessWidget {
@@ -65,10 +66,19 @@ class AddressSelectionScreen extends StatelessWidget {
               _AddressBottomBar(
                 label: l10n.addNewAddress,
                 onTap: () async {
-                  final updated = await context.push<bool>(
+                  final mapResult = await context.push<MapPickerResult>(
                     RouteNames.mapPicker,
+                    extra: const MapPickerArgs(mode: MapPickerMode.add),
                   );
-                  if (updated == true && context.mounted) {
+                  if (mapResult == null || !context.mounted) return;
+                  final updated = await context.push<Object?>(
+                    RouteNames.addEditAddress,
+                    extra: mapResult,
+                  );
+                  if (!context.mounted) return;
+                  if (updated is MapPickerResult) {
+                    context.pop(updated);
+                  } else if (updated == true) {
                     context.pop(true);
                   }
                 },

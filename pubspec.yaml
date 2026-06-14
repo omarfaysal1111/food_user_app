@@ -47,6 +47,7 @@ dependencies:
 
   # ── Networking ────────────────────────────────────────────────────────────
   dio: ^5.8.0+1               # HTTP client
+  http: ^1.2.2                # Google Maps web service calls
   connectivity_plus: ^6.1.4   # network connectivity check
 
   # ── Functional Programming ────────────────────────────────────────────────

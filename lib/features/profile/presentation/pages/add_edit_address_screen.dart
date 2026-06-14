@@ -6,6 +6,7 @@ import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 enum AddressFlowMode { add, edit }
@@ -75,9 +76,10 @@ class AddressMapSelectionScreen extends StatelessWidget {
 }
 
 class AddressDetailsScreen extends StatelessWidget {
-  const AddressDetailsScreen({super.key, required this.mode});
+  const AddressDetailsScreen({super.key, required this.mode, this.mapResult});
 
   final AddressFlowMode mode;
+  final MapPickerResult? mapResult;
 
   static const _screenPadding = 16.0;
   static const _topInset = 20.0;
@@ -116,7 +118,9 @@ class AddressDetailsScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _CurrentAddressPreview(address: l10n.deliveryAddress),
+                    _CurrentAddressPreview(
+                      address: mapResult?.address ?? l10n.deliveryAddress,
+                    ),
                     const SizedBox(height: 16),
                     _AddressInputField(
                       hint: l10n.building,
