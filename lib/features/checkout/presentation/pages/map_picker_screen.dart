@@ -50,6 +50,114 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   static const _failedAddress = 'تعذر تحديد العنوان';
   static const _googleWebServicesApiKey =
       'AIzaSyDyHQEAjWa8vsCZa6Fe71DG2ej8x6sjPaE';
+  static const _darkMapStyle = '''
+[
+  {
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#212121"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#212121"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#2c2c2c"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#8a8a8a"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#3c3c3c"
+      }
+    ]
+  },
+  {
+    "featureType": "transit",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#3d3d3d"
+      }
+    ]
+  }
+]
+''';
 
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
@@ -87,6 +195,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final addressText = _isResolvingAddress
         ? _loadingAddress
         : _selectedAddress;
@@ -132,6 +241,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                         onMapCreated: _onMapCreated,
                         onCameraMove: _onCameraMove,
                         onCameraIdle: _onCameraIdle,
+                        mapStyle: isDarkMode ? _darkMapStyle : null,
                       ),
                       const SizedBox(height: 16),
                       _SelectedLocationRow(text: addressText),
@@ -692,12 +802,14 @@ class _MapPreview extends StatelessWidget {
     required this.onMapCreated,
     required this.onCameraMove,
     required this.onCameraIdle,
+    required this.mapStyle,
   });
 
   final LatLng initialLatLng;
   final ValueChanged<GoogleMapController> onMapCreated;
   final CameraPositionCallback onCameraMove;
   final VoidCallback onCameraIdle;
+  final String? mapStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -719,6 +831,7 @@ class _MapPreview extends StatelessWidget {
               onCameraIdle: onCameraIdle,
               myLocationButtonEnabled: false,
               zoomControlsEnabled: false,
+              style: mapStyle,
             ),
             IgnorePointer(
               child: SvgPicture.asset(
