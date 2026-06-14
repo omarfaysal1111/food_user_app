@@ -1,6 +1,5 @@
 import 'package:food_user_app/features/profile/domain/entities/profile.dart';
 
-
 class ProfileModel extends Profile {
   const ProfileModel() : super();
 

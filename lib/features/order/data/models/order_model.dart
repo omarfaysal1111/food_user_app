@@ -1,6 +1,5 @@
 import 'package:food_user_app/features/order/domain/entities/order.dart';
 
-
 class OrderModel extends Order {
   const OrderModel() : super();
 

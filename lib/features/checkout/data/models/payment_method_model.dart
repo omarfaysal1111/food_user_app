@@ -1,6 +1,5 @@
 import 'package:food_user_app/features/checkout/domain/entities/payment_method.dart';
 
-
 class PaymentMethodModel extends PaymentMethod {
   const PaymentMethodModel() : super();
 

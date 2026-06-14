@@ -1,6 +1,5 @@
 import 'package:food_user_app/features/checkout/domain/entities/promo.dart';
 
-
 class PromoModel extends Promo {
   const PromoModel() : super();
 

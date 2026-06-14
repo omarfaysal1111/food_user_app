@@ -1,11 +1,122 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-class SplashScreen extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:food_user_app/core/constants/app_assets.dart';
+import 'package:food_user_app/core/router/route_names.dart';
+import 'package:food_user_app/core/theme/app_colors.dart';
+import 'package:food_user_app/core/widgets/app_media.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
+
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  static const _minSplashDuration = Duration(milliseconds: 900);
+
+  bool _navigated = false;
+  bool _minDelayElapsed = false;
+  AuthState? _pendingAuthState;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<AuthBloc>().add(const AuthCheckRequested());
+    });
+    Timer(_minSplashDuration, () {
+      if (!mounted) return;
+      setState(() => _minDelayElapsed = true);
+      _maybeNavigate();
+    });
+  }
+
+  void _maybeNavigate() {
+    if (_navigated || !_minDelayElapsed) return;
+    final state = _pendingAuthState;
+    if (state is Authenticated) {
+      _navigated = true;
+      context.go(RouteNames.home);
+    } else if (state is Unauthenticated) {
+      _navigated = true;
+      context.go(RouteNames.authEntry);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // TODO: implement
-    throw UnimplementedError();
+    return BlocListener<AuthBloc, AuthState>(
+      listenWhen: (prev, curr) =>
+          curr is Authenticated || curr is Unauthenticated,
+      listener: (context, state) {
+        _pendingAuthState = state;
+        _maybeNavigate();
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.primary,
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            final height = constraints.maxHeight;
+
+            return Stack(
+              clipBehavior: Clip.hardEdge,
+              children: [
+                Positioned(
+                  left: (width - 142) / 2,
+                  top: height * 0.43,
+                  child: const AppRasterImage.asset(
+                    AppAssets.splashObjects,
+                    width: 142,
+                    height: 114,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                PositionedDirectional(
+                  start: 0,
+                  end: 0,
+                  bottom: 0,
+                  child: const _SplashStripes(),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _SplashStripes extends StatelessWidget {
+  const _SplashStripes();
+
+  static const _stripeHeight = 20.0;
+  static const _stripeGap = 6.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(3, (index) {
+        return Padding(
+          padding: EdgeInsets.only(top: index == 0 ? 0 : _stripeGap),
+          child: const AppRasterImage.asset(
+            AppAssets.splashBottomStripe,
+            height: _stripeHeight,
+            width: double.infinity,
+            fit: BoxFit.fill,
+          ),
+        );
+      }),
+    );
   }
 }

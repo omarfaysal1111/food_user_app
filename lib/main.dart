@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
-import 'core/di/injection_container.dart' as di;
-import 'app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:food_user_app/app.dart';
+import 'package:food_user_app/core/di/injection_container.dart' as di;
+import 'package:food_user_app/core/localization/locale_controller.dart';
+import 'package:food_user_app/core/theme/theme_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await di.init();
-  runApp(const App());
+  final prefs = await SharedPreferences.getInstance();
+  await di.init(prefs: prefs);
+  final localeController = LocaleController(prefs);
+  localeController.hydrate();
+  final themeController = ThemeController(prefs);
+  themeController.hydrate();
+  runApp(
+    App(localeController: localeController, themeController: themeController),
+  );
 }

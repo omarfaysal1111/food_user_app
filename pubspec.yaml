@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   cupertino_icons: ^1.0.8
 
@@ -93,11 +95,49 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
 
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/images/icons/main/
+    - assets/images/icons/settings/
+    - assets/images/icons/general_settings/
+    - assets/images/icons/notifications/
+    - assets/images/cart/
+    - assets/images/icons/cart/
+    - assets/images/products/
+    - assets/images/icons/products/
+    - assets/images/orders/
+    - assets/images/icons/orders/
+    - assets/images/favorites/
+    - assets/images/icons/favorites/
+    - assets/images/address/
+    - assets/images/icons/address/
+    - assets/images/icons/profile/
+    - assets/images/payment/
+    - assets/images/icons/payment/
+    - assets/images/support/
+    - assets/images/icons/support/
+    - assets/images/onboarding_collage/
+    - assets/images/onboarding_collage/2.0x/
+    - assets/images/onboarding_collage/3.0x/
+    - assets/images/onboarding_collage-dark/
+    - assets/images/onboarding_collage-dark/2.0x/
+    - assets/images/onboarding_collage-dark/3.0x/
+
+  fonts:
+    - family: ExpoArabic
+      fonts:
+        - asset: assets/fonts/ExpoArabic-Book.ttf
+          weight: 400
+
+        - asset: assets/fonts/ExpoArabic-Medium.ttf
+          weight: 500
+
+        - asset: assets/fonts/ExpoArabic-SemiBold.ttf
+          weight: 600
 
   # To add assets to your application, add an assets section, like this:
   # assets:
