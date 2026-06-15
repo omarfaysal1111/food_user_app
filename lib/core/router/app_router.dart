@@ -84,7 +84,10 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.completeProfile,
-        builder: (c, s) => const CompleteProfileScreen(),
+        builder: (c, s) {
+          final phone = s.extra is String ? s.extra as String : '';
+          return CompleteProfileScreen(phone: phone);
+        },
       ),
       GoRoute(path: RouteNames.login, builder: (c, s) => const LoginScreen()),
       GoRoute(

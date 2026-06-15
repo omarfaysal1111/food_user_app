@@ -48,12 +48,12 @@ class VerifyOtpResponseModel {
   /// Maps to the shared auth envelope for token/user persistence.
   AuthResponseModel toAuthResponseModel() {
     return AuthResponseModel(
-      accessToken: accessToken ?? '',
+      accessToken: accessToken,
       refreshToken: refreshToken,
       tokenType: tokenType,
       userId: userId ?? '',
-      email: email ?? '',
-      name: name ?? '',
+      email: email,
+      fullName: name,
       role: role,
     );
   }

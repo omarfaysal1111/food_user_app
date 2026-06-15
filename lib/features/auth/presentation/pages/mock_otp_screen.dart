@@ -2,11 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/auth/presentation/pages/phone_auth_screen.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
@@ -21,7 +25,7 @@ class MockOtpScreen extends StatefulWidget {
 }
 
 class _MockOtpScreenState extends State<MockOtpScreen> {
-  final _controller = TextEditingController(text: '7');
+  final _controller = TextEditingController();
   final _focusNode = FocusNode();
   Timer? _timer;
   int _seconds = 59;
@@ -49,17 +53,29 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
 
   void _verify() {
     FocusManager.instance.primaryFocus?.unfocus();
-    // TODO(auth-api): Verify OTP with backend. This is intentionally local for
-    // the new UI flow preview.
-    if (widget.args.mockNewUser) {
-      context.push(RouteNames.completeProfile);
-    } else {
-      context.go(RouteNames.home);
-    }
+    final otp = _controller.text.trim();
+    if (otp.length < 6) return;
+    // Verify with backend; navigation happens in the BlocListener.
+    context.read<AuthBloc>().add(
+      PhoneOtpVerifySubmitted(phone: widget.args.phoneNumber, otp: otp),
+    );
   }
 
   void _resend() {
+    if (_seconds > 0) return;
     setState(() => _seconds = 59);
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      if (_seconds <= 0) {
+        timer.cancel();
+        return;
+      }
+      setState(() => _seconds--);
+    });
+    context.read<AuthBloc>().add(
+      PhoneOtpRequested(phone: widget.args.phoneNumber),
+    );
   }
 
   @override
@@ -69,46 +85,82 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
       body: SafeArea(
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 40),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: IconButton(
-                    onPressed: () => context.pop(),
-                    padding: EdgeInsets.zero,
-                    icon: Icon(
-                      Icons.chevron_left_rounded,
-                      size: 28,
-                      color: AppColors.onSurface(context),
-                    ),
+        child: BlocListener<AuthBloc, AuthState>(
+          listenWhen: (prev, curr) =>
+              curr is PhoneOtpNewUser ||
+              curr is PhoneOtpLoginSuccess ||
+              curr is PhoneOtpVerifyFailure,
+          listener: (context, state) {
+            if (state is PhoneOtpNewUser) {
+              context.push(RouteNames.completeProfile, extra: state.phone);
+            } else if (state is PhoneOtpLoginSuccess) {
+              context.go(RouteNames.home);
+            } else if (state is PhoneOtpVerifyFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    state.message,
+                    style: AppTextStyles.snackBarMessage(context),
                   ),
                 ),
-                const SizedBox(height: 32),
-                Text(
-                  l10n.otpTitle,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.screenTitle(context),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  l10n.authOtpSubtitle,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.subtitle(context),
-                ),
-                const SizedBox(height: 32),
-                _OtpBoxes(controller: _controller, focusNode: _focusNode),
-                const SizedBox(height: 20),
-                AuthPrimaryButton(label: l10n.otpVerify, onPressed: _verify),
-                const SizedBox(height: 24),
-                _ResendRow(seconds: _seconds, onResend: _resend),
-              ],
+              );
+            }
+          },
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: IconButton(
+                      onPressed: () => context.pop(),
+                      padding: EdgeInsets.zero,
+                      icon: Icon(
+                        Icons.chevron_left_rounded,
+                        size: 28,
+                        color: AppColors.onSurface(context),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  Text(
+                    l10n.otpTitle,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.screenTitle(context),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.authOtpSubtitle,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.subtitle(context),
+                  ),
+                  const SizedBox(height: 32),
+                  _OtpBoxes(controller: _controller, focusNode: _focusNode),
+                  const SizedBox(height: 20),
+                  BlocBuilder<AuthBloc, AuthState>(
+                    buildWhen: (prev, curr) =>
+                        curr is PhoneOtpVerifyInProgress ||
+                        curr is PhoneOtpNewUser ||
+                        curr is PhoneOtpLoginSuccess ||
+                        curr is PhoneOtpVerifyFailure ||
+                        curr is AuthStateInitial,
+                    builder: (context, state) {
+                      final isLoading = state is PhoneOtpVerifyInProgress;
+                      return AuthPrimaryButton(
+                        label: l10n.otpVerify,
+                        onPressed: isLoading ? null : _verify,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  _ResendRow(seconds: _seconds, onResend: _resend),
+                ],
+              ),
             ),
           ),
         ),

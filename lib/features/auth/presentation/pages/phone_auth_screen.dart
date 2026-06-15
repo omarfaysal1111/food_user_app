@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
@@ -8,6 +9,9 @@ import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/auth/presentation/pages/auth_entry_screen.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/app_language_picker_modal.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_language_chip.dart';
@@ -34,15 +38,10 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
 
   void _submit() {
     FocusManager.instance.primaryFocus?.unfocus();
-    // TODO(auth-api): Send phone number to backend and navigate only after
-    // the OTP request succeeds.
-    context.push(
-      RouteNames.mockOtp,
-      extra: MockOtpArgs(
-        phoneNumber: _phoneController.text.trim(),
-        mockNewUser: widget.args.mockNewUser,
-      ),
-    );
+    final phone = _phoneController.text.trim();
+    if (phone.isEmpty) return;
+    // Sends the OTP; navigation happens in the BlocListener once it succeeds.
+    context.read<AuthBloc>().add(PhoneOtpRequested(phone: phone));
   }
 
   @override
@@ -52,39 +51,76 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
       body: SafeArea(
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 40),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _AuthTopBar(onBack: () => context.pop()),
-                const SizedBox(height: 32),
-                Text(
-                  l10n.authPhoneTitle,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.screenTitle(context),
+        child: BlocListener<AuthBloc, AuthState>(
+          listenWhen: (prev, curr) =>
+              curr is PhoneOtpSent || curr is PhoneOtpSendFailure,
+          listener: (context, state) {
+            if (state is PhoneOtpSent) {
+              context.push(
+                RouteNames.mockOtp,
+                extra: MockOtpArgs(
+                  phoneNumber: state.phone,
+                  mockNewUser: !state.isExistingUser,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  l10n.authPhoneSubtitle,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.subtitle(context),
+              );
+            } else if (state is PhoneOtpSendFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    state.message,
+                    style: AppTextStyles.snackBarMessage(context),
+                  ),
                 ),
-                const SizedBox(height: 32),
-                Text(
-                  l10n.registerPhoneLabel,
-                  textAlign: TextAlign.start,
-                  style: AppTextStyles.fieldLabel(context),
-                ),
-                const SizedBox(height: 8),
-                _PhoneNumberField(controller: _phoneController, l10n: l10n),
-                const SizedBox(height: 20),
-                AuthPrimaryButton(label: l10n.confirmOtp, onPressed: _submit),
-              ],
+              );
+            }
+          },
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _AuthTopBar(onBack: () => context.pop()),
+                  const SizedBox(height: 32),
+                  Text(
+                    l10n.authPhoneTitle,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.screenTitle(context),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.authPhoneSubtitle,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.subtitle(context),
+                  ),
+                  const SizedBox(height: 32),
+                  Text(
+                    l10n.registerPhoneLabel,
+                    textAlign: TextAlign.start,
+                    style: AppTextStyles.fieldLabel(context),
+                  ),
+                  const SizedBox(height: 8),
+                  _PhoneNumberField(controller: _phoneController, l10n: l10n),
+                  const SizedBox(height: 20),
+                  BlocBuilder<AuthBloc, AuthState>(
+                    buildWhen: (prev, curr) =>
+                        curr is PhoneOtpSendInProgress ||
+                        curr is PhoneOtpSent ||
+                        curr is PhoneOtpSendFailure ||
+                        curr is AuthStateInitial,
+                    builder: (context, state) {
+                      final isLoading = state is PhoneOtpSendInProgress;
+                      return AuthPrimaryButton(
+                        label: l10n.confirmOtp,
+                        onPressed: isLoading ? null : _submit,
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

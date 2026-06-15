@@ -21,6 +21,9 @@ import 'package:food_user_app/features/auth/domain/usecases/logout_usecase.dart'
 import 'package:food_user_app/features/auth/domain/usecases/register_usecase.dart';
 import 'package:food_user_app/features/auth/domain/usecases/set_password_usecase.dart';
 import 'package:food_user_app/features/auth/domain/usecases/verify_otp_usecase.dart';
+import 'package:food_user_app/features/auth/domain/usecases/send_phone_otp_usecase.dart';
+import 'package:food_user_app/features/auth/domain/usecases/verify_phone_otp_usecase.dart';
+import 'package:food_user_app/features/auth/domain/usecases/complete_registration_usecase.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 
 final sl = GetIt.instance;
@@ -96,6 +99,12 @@ Future<void> init({SharedPreferences? prefs}) async {
   sl.registerLazySingleton(() => ForgotPasswordUseCase(sl<AuthRepository>()));
   sl.registerLazySingleton(() => VerifyOtpUseCase(sl<AuthRepository>()));
   sl.registerLazySingleton(() => SetPasswordUseCase(sl<AuthRepository>()));
+  // Unified phone login/register (API v2)
+  sl.registerLazySingleton(() => SendPhoneOtpUseCase(sl<AuthRepository>()));
+  sl.registerLazySingleton(() => VerifyPhoneOtpUseCase(sl<AuthRepository>()));
+  sl.registerLazySingleton(
+    () => CompleteRegistrationUseCase(sl<AuthRepository>()),
+  );
 
   // Single AuthBloc shared across splash/login/register so the cached
   // session state is consistent. Provided globally in `app.dart`.
@@ -107,6 +116,9 @@ Future<void> init({SharedPreferences? prefs}) async {
       forgotPasswordUseCase: sl<ForgotPasswordUseCase>(),
       verifyOtpUseCase: sl<VerifyOtpUseCase>(),
       setPasswordUseCase: sl<SetPasswordUseCase>(),
+      sendPhoneOtpUseCase: sl<SendPhoneOtpUseCase>(),
+      verifyPhoneOtpUseCase: sl<VerifyPhoneOtpUseCase>(),
+      completeRegistrationUseCase: sl<CompleteRegistrationUseCase>(),
       authRepository: sl<AuthRepository>(),
     ),
   );
