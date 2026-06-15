@@ -17,6 +17,8 @@ class RouteNames {
   static const searchResults = '/search-results';
   static const restaurantList = '/restaurants';
   static const restaurantDetail = '/restaurant/:id';
+  static const restaurantRate = '/restaurant/:id/rate';
+  static const restaurantSearch = '/restaurant/:id/search';
   static const menuItemDetail = '/menu-item/:id';
   static const cart = '/cart';
   static const productDetails = '/cart/product-details';

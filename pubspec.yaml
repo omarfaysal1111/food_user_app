@@ -102,6 +102,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/home/
     - assets/images/icons/main/
     - assets/images/icons/settings/
     - assets/images/icons/general_settings/

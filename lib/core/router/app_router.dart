@@ -18,6 +18,8 @@ import '../../features/home/presentation/pages/search_screen.dart';
 import '../../features/home/presentation/pages/search_results_screen.dart';
 import '../../features/restaurant/presentation/pages/restaurant_list_screen.dart';
 import '../../features/restaurant/presentation/pages/restaurant_detail_screen.dart';
+import '../../features/restaurant/presentation/pages/restaurant_rate_screen.dart';
+import '../../features/restaurant/presentation/pages/restaurant_search_screen.dart';
 import '../../features/restaurant/presentation/pages/menu_item_detail_screen.dart';
 import '../../features/cart/domain/entities/cart_item.dart';
 import '../../features/cart/presentation/pages/cart_screen.dart';
@@ -126,7 +128,21 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.restaurantDetail,
-        builder: (c, s) => const RestaurantDetailScreen(),
+        builder: (c, s) => RestaurantDetailScreen(
+          restaurantId: s.pathParameters['id'] ?? 'az-al-sham',
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.restaurantRate,
+        builder: (c, s) => RestaurantRateScreen(
+          restaurantId: s.pathParameters['id'] ?? 'az-al-sham',
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.restaurantSearch,
+        builder: (c, s) => RestaurantSearchScreen(
+          restaurantId: s.pathParameters['id'] ?? 'az-al-sham',
+        ),
       ),
       GoRoute(
         path: RouteNames.menuItemDetail,

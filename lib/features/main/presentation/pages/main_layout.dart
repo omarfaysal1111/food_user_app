@@ -43,7 +43,11 @@ class _MainLayoutState extends State<MainLayout> {
         );
 
         return Scaffold(
-          body: SafeArea(top: _selectedIndex != 3, bottom: false, child: body),
+          body: SafeArea(
+            top: _selectedIndex != 0 && _selectedIndex != 3,
+            bottom: false,
+            child: body,
+          ),
           bottomNavigationBar: _BottomTabBar(
             selectedIndex: _selectedIndex,
             tabs: tabs,

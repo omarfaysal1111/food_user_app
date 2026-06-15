@@ -151,4 +151,42 @@ class AppAssets {
       'assets/images/onboarding_collage-dark/onboarding_collage-dark.png';
   static const onboardingScooter = 'assets/images/onboarding_scooter.svg';
   static const onboardingArrow = 'assets/images/onboarding_arrow.svg';
+
+  // ── Home ──────────────────────────────────────────────────────────────────
+  static const homeHeaderDecoration =
+      'assets/images/home/home_header_pattern.png';
+  static const homeHeaderDecorationIcons =
+      'assets/images/home/home_header_decoration_icons.png';
+  static const homeHeaderDecorativeGroup =
+      'assets/images/home/home_header_decorative_group.png';
+  static const homeWaveDivider = 'assets/images/home/home_wave_divider.png';
+  static const homeCategoryRestaurants =
+      'assets/images/home/home_category_restaurants.png';
+  static const homeCategoryGrocery =
+      'assets/images/home/home_category_grocery.png';
+  static const homeCategoryStore = 'assets/images/home/home_category_store.png';
+  static const homeCategoryPickup =
+      'assets/images/home/home_category_pickup.png';
+  static const homeCategoryStrokeTop =
+      'assets/images/home/home_category_stroke_top.png';
+  static const homeCategoryStrokeBottom =
+      'assets/images/home/home_category_stroke_bottom.png';
+  static const homePromoBanner = 'assets/images/home/home_promo_banner.png';
+  static const homeOfferProduct = 'assets/images/home/home_offer_product.png';
+  static const homeRestaurantCover =
+      'assets/images/home/home_restaurant_cover.png';
+  static const homeRestaurantLogo =
+      'assets/images/home/home_restaurant_logo.png';
+
+  // ── Home SVG Icons ────────────────────────────────────────────────────────
+  static const homeNavUser = 'assets/images/home/home_nav_user.svg';
+  static const homeNavOrders = 'assets/images/home/home_nav_orders.svg';
+  static const homeNavCart = 'assets/images/home/home_nav_cart.svg';
+  static const homeNavHome = 'assets/images/home/home_nav_home.svg';
+  static const homeSearchIcon = 'assets/images/home/home_search_icon.svg';
+  static const homeBackIcon = 'assets/images/home/home_back_icon.svg';
+  static const homeLocationIcon = 'assets/images/home/home_location_icon.svg';
+  static const homeStarIcon = 'assets/images/home/home_star_icon.svg';
+  static const homeTimeIcon = 'assets/images/home/home_time_icon.svg';
+  static const homeFavouriteIcon = 'assets/images/home/home_favourite_icon.svg';
 }
