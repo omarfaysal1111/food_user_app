@@ -1,12 +1,16 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../constants/api_endpoints.dart';
+
 /// Debug-only request/response logger.
 ///
 /// Sensitive data is redacted:
 ///   - `Authorization` header is never printed.
 ///   - `password` / `newPassword` / `confirmPassword` fields are masked.
 class LoggingInterceptor extends Interceptor {
+  static const _maxResponseBodyLogLength = 4000;
+
   static const _sensitiveBodyKeys = {
     'password',
     'newPassword',
@@ -36,6 +40,9 @@ class LoggingInterceptor extends Interceptor {
         '[HTTP ←] ${response.statusCode} ${response.requestOptions.method} '
         '${response.requestOptions.uri}',
       );
+      if (_shouldLogAuthOtpResponseBody(response.requestOptions)) {
+        debugPrint('[HTTP ← body] ${_stringifyResponseBody(response.data)}');
+      }
     }
     super.onResponse(response, handler);
   }
@@ -50,6 +57,24 @@ class LoggingInterceptor extends Interceptor {
       );
     }
     super.onError(err, handler);
+  }
+
+  bool _shouldLogAuthOtpResponseBody(RequestOptions options) {
+    if (options.method.toUpperCase() != 'POST') {
+      return false;
+    }
+    final path = options.uri.path;
+    return path.endsWith(ApiEndpoints.sendOtp) ||
+        path.endsWith(ApiEndpoints.verifyOtp);
+  }
+
+  String _stringifyResponseBody(dynamic data) {
+    final text = data.toString();
+    if (text.length <= _maxResponseBodyLogLength) {
+      return text;
+    }
+    return '${text.substring(0, _maxResponseBodyLogLength)}... '
+        '[truncated ${text.length - _maxResponseBodyLogLength} chars]';
   }
 
   Object? _redactBody(dynamic data) {
