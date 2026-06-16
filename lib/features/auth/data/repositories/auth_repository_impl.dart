@@ -171,13 +171,81 @@ class AuthRepositoryImpl implements AuthRepository {
     return const Right(unit);
   }
 
+  // ── Unified phone login/register (API v2) ──────────────────────────────────
+
+  @override
+  Future<Either<Failure, bool>> sendPhoneOtp({required String phone}) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure('No internet connection'));
+    }
+    try {
+      final res = await remoteDataSource.sendPhoneOtp(phone: phone);
+      return Right(res.isExistingUser ?? false);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, PhoneVerifyResult>> verifyPhoneOtp({
+    required String phone,
+    required String otp,
+  }) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure('No internet connection'));
+    }
+    try {
+      final auth = await remoteDataSource.verifyPhoneOtp(
+        phone: phone,
+        otp: otp,
+      );
+      if (auth.newUser || !auth.hasAccessToken) {
+        // New phone: nothing to persist yet — caller goes to complete-profile.
+        return Right(PhoneVerifyResult(newUser: true, phone: phone));
+      }
+      await _persistSession(auth);
+      return Right(
+        PhoneVerifyResult(newUser: false, phone: phone, user: auth.user),
+      );
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> completeRegistration({
+    required String phone,
+    required String firstName,
+    required String lastName,
+    String? email,
+  }) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure('No internet connection'));
+    }
+    try {
+      final auth = await remoteDataSource.completeRegistration(
+        phone: phone,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+      );
+      await _persistSession(auth);
+      return Right(auth.user);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
   Future<void> _clearLocalSession() async {
     await localDataSource.clearTokens();
     await localDataSource.clearCachedUser();
   }
 
   Future<void> _persistSession(AuthResponseModel auth) async {
-    await localDataSource.cacheAccessToken(auth.accessToken);
+    final access = auth.accessToken;
+    if (access != null && access.isNotEmpty) {
+      await localDataSource.cacheAccessToken(access);
+    }
     final refresh = auth.refreshToken;
     if (refresh != null && refresh.isNotEmpty) {
       await localDataSource.cacheRefreshToken(refresh);
