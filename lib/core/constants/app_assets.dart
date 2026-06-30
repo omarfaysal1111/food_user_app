@@ -98,6 +98,39 @@ class AppAssets {
   static const favoriteTimeIcon = 'assets/images/icons/favorites/time.svg';
   static const favoriteStarIcon = 'assets/images/icons/favorites/star.svg';
 
+  // ── Restaurant Detail ────────────────────────────────────────────────────
+  static const restaurantHeroFries = 'assets/images/restaurant/hero_fries.png';
+  static const restaurantHeroBurger =
+      'assets/images/restaurant/hero_burger.png';
+  static const restaurantAzAlShamLogo =
+      'assets/images/restaurant/az_al_sham_logo.png';
+  static const restaurantMenuBurgerFries1 =
+      'assets/images/restaurant/menu_burger_fries_1.png';
+  static const restaurantMenuBurgerFries2 =
+      'assets/images/restaurant/menu_burger_fries_2.png';
+  static const restaurantMenuBurgerFries3 =
+      'assets/images/restaurant/menu_burger_fries_3.png';
+  static const restaurantSearchIcon = 'assets/icons/restaurant/search.png';
+  static const restaurantFavoriteIcon = 'assets/icons/restaurant/favorite.png';
+  static const restaurantHeaderBackIcon =
+      'assets/icons/restaurant/header_back.png';
+  static const restaurantCardBackIcon = 'assets/icons/restaurant/card_back.png';
+  static const restaurantInfoBackIcon =
+      'assets/icons/restaurant/restaurant_info_back.png';
+  static const restaurantProductCardArrowIcon =
+      'assets/icons/restaurant/product_card_arrow.png';
+  static const restaurantDeliveryScooterIcon =
+      'assets/icons/restaurant/delivery_scooter.png';
+  static const restaurantWallClockIcon =
+      'assets/icons/restaurant/wall_clock.png';
+  static const restaurantCouponIcon = 'assets/icons/restaurant/coupon.png';
+  static const restaurantPaymentGreenIcon =
+      'assets/icons/restaurant/payment_green.png';
+  static const restaurantPaymentRedIcon =
+      'assets/icons/restaurant/payment_red.png';
+  static const restaurantPaymentYellowIcon =
+      'assets/icons/restaurant/payment_yellow.png';
+
   static const addressMapPreview = 'assets/images/address/map_preview.png';
   static const addressBackIcon = 'assets/images/icons/address/back.svg';
   static const addressPlusIcon = 'assets/images/icons/address/plus.svg';

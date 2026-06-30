@@ -1,16 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/features/restaurant/presentation/mock/restaurant_mock_data.dart';
 
-class RestaurantRateScreen extends StatelessWidget {
+class RestaurantRateScreen extends StatefulWidget {
   const RestaurantRateScreen({this.restaurantId = 'az-al-sham', super.key});
 
   final String restaurantId;
+
+  @override
+  State<RestaurantRateScreen> createState() => _RestaurantRateScreenState();
+}
+
+class _RestaurantRateScreenState extends State<RestaurantRateScreen> {
+  final _feedbackController = TextEditingController();
+  int _selectedRating = 0;
+
+  @override
+  void dispose() {
+    _feedbackController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,39 +36,72 @@ class RestaurantRateScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
-      body: SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsetsDirectional.fromSTEB(
-                AppSpacing.md,
-                20,
-                AppSpacing.md,
-                28,
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: SafeArea(
+          bottom: false,
+          child: CustomScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  AppSpacing.md,
+                  18,
+                  AppSpacing.md,
+                  28,
+                ),
+                sliver: SliverList.list(
+                  children: [
+                    _RateHeader(title: restaurant.name(locale)),
+                    const SizedBox(height: 24),
+                    _RatingSummary(
+                      rating: restaurant.rating,
+                      ratingCount: restaurant.ratingCount,
+                      copy: copy,
+                    ),
+                    const SizedBox(height: 18),
+                    _SectionHeader(title: copy.customerReviews),
+                    const SizedBox(height: 12),
+                    ...restaurant.reviews
+                        .take(3)
+                        .map(
+                          (review) =>
+                              _ReviewTile(review: review, locale: locale),
+                        ),
+                    const SizedBox(height: 18),
+                    _SectionHeader(title: copy.moreDetails),
+                    const SizedBox(height: 14),
+                    _RestaurantFacts(
+                      restaurant: restaurant,
+                      locale: locale,
+                      copy: copy,
+                    ),
+                    const SizedBox(height: 24),
+                    _SectionHeader(title: copy.yourRating),
+                    const SizedBox(height: 12),
+                    _RatingComposer(
+                      copy: copy,
+                      controller: _feedbackController,
+                      selectedRating: _selectedRating,
+                      onRatingChanged: (value) =>
+                          setState(() => _selectedRating = value),
+                      onSubmit: () => _submitRating(context, copy),
+                    ),
+                  ],
+                ),
               ),
-              sliver: SliverList.list(
-                children: [
-                  _RateHeader(title: copy.title),
-                  const SizedBox(height: 20),
-                  _RatingSummary(
-                    rating: restaurant.rating,
-                    ratingCount: restaurant.ratingCount,
-                    copy: copy,
-                  ),
-                  const SizedBox(height: 16),
-                  _SectionHeader(title: copy.customerReviews),
-                  const SizedBox(height: 12),
-                  ...restaurant.reviews.map(
-                    (review) => _ReviewTile(review: review, locale: locale),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _submitRating(BuildContext context, _RateCopy copy) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(copy.submitted)));
   }
 }
 
@@ -63,26 +112,61 @@ class _RateHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        IconButton(
-          onPressed: () => context.pop(),
-          style: IconButton.styleFrom(
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            minimumSize: const Size(28, 28),
-            padding: EdgeInsets.zero,
-          ),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-        ),
-        const SizedBox(width: AppSpacing.xs),
-        Text(
-          title,
-          style: AppTextStyles.heading4(
-            context,
-          ).copyWith(fontSize: 16, height: 1.4),
-        ),
-      ],
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
+    return Align(
+      alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        textDirection: TextDirection.ltr,
+        children: isArabic
+            ? [
+                Text(
+                  title,
+                  style: AppTextStyles.heading4(
+                    context,
+                  ).copyWith(fontSize: 16, height: 1.4),
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                _HeaderBackButton(
+                  icon: Icons.chevron_left_rounded,
+                  onPressed: () => context.pop(),
+                ),
+              ]
+            : [
+                _HeaderBackButton(
+                  icon: Icons.chevron_left_rounded,
+                  onPressed: () => context.pop(),
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Text(
+                  title,
+                  style: AppTextStyles.heading4(
+                    context,
+                  ).copyWith(fontSize: 16, height: 1.4),
+                ),
+              ],
+      ),
+    );
+  }
+}
+
+class _HeaderBackButton extends StatelessWidget {
+  const _HeaderBackButton({required this.icon, required this.onPressed});
+
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: onPressed,
+      style: IconButton.styleFrom(
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        minimumSize: const Size(28, 28),
+        padding: EdgeInsets.zero,
+      ),
+      icon: Icon(icon, size: 28),
     );
   }
 }
@@ -100,8 +184,38 @@ class _RatingSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final scoreSummary = SizedBox(
+      width: 152,
+      child: Column(
+        children: [
+          Text(
+            rating.toStringAsFixed(1),
+            style: AppTextStyles.heading1(
+              context,
+            ).copyWith(fontSize: 20, height: 1.4),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          const _Stars(size: 24),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            '($ratingCount ${copy.ratingsLabel})',
+            style: AppTextStyles.caption(
+              context,
+            ).copyWith(fontSize: 12, height: 1.3),
+          ),
+        ],
+      ),
+    );
+    final divider = Container(
+      width: 1,
+      height: 40,
+      color: AppColors.border(context),
+    );
+    final bars = _RatingBars(isArabic: isArabic);
+
     return Container(
-      padding: const EdgeInsetsDirectional.all(12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.scaffoldBackground(context),
         borderRadius: const BorderRadius.all(AppRadius.md),
@@ -109,52 +223,35 @@ class _RatingSummary extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            width: 152,
-            child: Column(
-              children: [
-                Text(
-                  rating.toStringAsFixed(1),
-                  style: AppTextStyles.heading1(
-                    context,
-                  ).copyWith(fontSize: 20, height: 1.4),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                const _Stars(size: 24),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  '($ratingCount ${copy.ratingsLabel})',
-                  style: AppTextStyles.caption(
-                    context,
-                  ).copyWith(fontSize: 12, height: 1.3),
-                ),
-              ],
-            ),
-          ),
-          Container(width: 1, height: 40, color: AppColors.border(context)),
-          const _RatingBars(),
-        ],
+        textDirection: TextDirection.ltr,
+        children: isArabic
+            ? [scoreSummary, divider, bars]
+            : [bars, divider, scoreSummary],
       ),
     );
   }
 }
 
 class _Stars extends StatelessWidget {
-  const _Stars({required this.size, this.count = 5});
+  const _Stars({required this.size, this.count = 5, this.selectedCount});
 
   final double size;
   final int count;
+  final int? selectedCount;
 
   @override
   Widget build(BuildContext context) {
+    final selected = selectedCount ?? count;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(
         count,
-        (_) => Icon(
+        (index) => Icon(
           Icons.star_rounded,
-          color: const Color(0xFFFFB800),
+          color: index < selected
+              ? const Color(0xFFFFB800)
+              : AppColors.paragraph(context).withValues(alpha: 0.35),
           size: size,
         ),
       ),
@@ -163,7 +260,9 @@ class _Stars extends StatelessWidget {
 }
 
 class _RatingBars extends StatelessWidget {
-  const _RatingBars();
+  const _RatingBars({required this.isArabic});
+
+  final bool isArabic;
 
   static const _values = [0.94, 0.64, 0.54, 0.82, 0.19];
 
@@ -174,32 +273,61 @@ class _RatingBars extends StatelessWidget {
         final value = _values[index];
         final score = 5 - index;
         return Padding(
-          padding: const EdgeInsetsDirectional.symmetric(vertical: 3),
+          padding: const EdgeInsets.symmetric(vertical: 3),
           child: Row(
-            children: [
-              SizedBox(
-                width: 122,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(AppRadius.full),
-                  child: LinearProgressIndicator(
-                    minHeight: 3,
-                    value: value,
-                    backgroundColor: const Color(0xFFB6B6B6),
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 5),
-              Text(
-                '$score',
-                style: AppTextStyles.caption(
-                  context,
-                ).copyWith(fontSize: 12, color: AppColors.onSurface(context)),
-              ),
-            ],
+            textDirection: TextDirection.ltr,
+            children: isArabic
+                ? [
+                    _RatingBar(value: value),
+                    const SizedBox(width: 5),
+                    _RatingScore(score: score),
+                  ]
+                : [
+                    _RatingScore(score: score),
+                    const SizedBox(width: 5),
+                    _RatingBar(value: value),
+                  ],
           ),
         );
       }),
+    );
+  }
+}
+
+class _RatingBar extends StatelessWidget {
+  const _RatingBar({required this.value});
+
+  final double value;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 122,
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(AppRadius.full),
+        child: LinearProgressIndicator(
+          minHeight: 3,
+          value: value,
+          backgroundColor: const Color(0xFFB6B6B6),
+          color: AppColors.primary,
+        ),
+      ),
+    );
+  }
+}
+
+class _RatingScore extends StatelessWidget {
+  const _RatingScore({required this.score});
+
+  final int score;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      '$score',
+      style: AppTextStyles.caption(
+        context,
+      ).copyWith(fontSize: 12, color: AppColors.onSurface(context)),
     );
   }
 }
@@ -211,10 +339,13 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
     return Align(
-      alignment: AlignmentDirectional.centerStart,
+      alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
       child: Text(
         title,
+        textAlign: isArabic ? TextAlign.end : TextAlign.start,
         style: AppTextStyles.heading4(
           context,
         ).copyWith(fontSize: 15, height: 1.4),
@@ -231,51 +362,67 @@ class _ReviewTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = locale.languageCode == 'ar';
+
     return Container(
-      padding: const EdgeInsetsDirectional.only(bottom: 12),
-      margin: const EdgeInsetsDirectional.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: AppColors.border(context), width: 0.5),
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                review.date,
-                style: AppTextStyles.caption(
-                  context,
-                ).copyWith(fontSize: 10, height: 1.25),
-              ),
-              Text(
-                review.name(locale),
-                style: AppTextStyles.body(
-                  context,
-                ).copyWith(fontSize: 12, height: 1.3),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [_Stars(size: 12, count: review.rating)],
+            textDirection: TextDirection.ltr,
+            children: isArabic
+                ? [
+                    Text(
+                      review.date,
+                      style: AppTextStyles.caption(
+                        context,
+                      ).copyWith(fontSize: 10, height: 1.25),
+                    ),
+                    Text(
+                      review.name(locale),
+                      style: AppTextStyles.body(
+                        context,
+                      ).copyWith(fontSize: 12, height: 1.3),
+                    ),
+                  ]
+                : [
+                    Text(
+                      review.name(locale),
+                      style: AppTextStyles.body(
+                        context,
+                      ).copyWith(fontSize: 12, height: 1.3),
+                    ),
+                    Text(
+                      review.date,
+                      style: AppTextStyles.caption(
+                        context,
+                      ).copyWith(fontSize: 10, height: 1.25),
+                    ),
+                  ],
           ),
           const SizedBox(height: AppSpacing.sm),
           Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: Text(
-              review.comment(locale),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.end,
-              style: AppTextStyles.caption(
-                context,
-              ).copyWith(fontSize: 12, height: 1.3),
-            ),
+            alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
+            child: _Stars(size: 12, count: 5, selectedCount: review.rating),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            review.comment(locale),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: isArabic ? TextAlign.right : TextAlign.left,
+            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+            style: AppTextStyles.caption(
+              context,
+            ).copyWith(fontSize: 12, height: 1.3),
           ),
         ],
       ),
@@ -283,16 +430,252 @@ class _ReviewTile extends StatelessWidget {
   }
 }
 
-class _RateCopy {
-  const _RateCopy({
-    required this.title,
-    required this.customerReviews,
-    required this.ratingsLabel,
+class _RestaurantFacts extends StatelessWidget {
+  const _RestaurantFacts({
+    required this.restaurant,
+    required this.locale,
+    required this.copy,
   });
 
-  final String title;
+  final MockRestaurant restaurant;
+  final Locale locale;
+  final _RateCopy copy;
+
+  @override
+  Widget build(BuildContext context) {
+    final facts = [
+      (copy.deliveryPrice, restaurant.deliveryFee(locale)),
+      (copy.minimumOrder, restaurant.minimumOrder(locale)),
+      (copy.deliveryTime, restaurant.deliveryTime(locale)),
+      (copy.address, restaurant.address(locale)),
+      (copy.previousOrders, restaurant.previousOrders(locale)),
+    ];
+
+    return Column(
+      children: [
+        for (final fact in facts) _FactRow(label: fact.$1, value: fact.$2),
+        _PaymentRow(label: copy.paymentMethod),
+      ],
+    );
+  }
+}
+
+class _FactRow extends StatelessWidget {
+  const _FactRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final isArabic = Directionality.of(context) == TextDirection.rtl;
+    final valueText = Flexible(
+      child: Text(
+        value,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: isArabic ? TextAlign.start : TextAlign.end,
+        style: AppTextStyles.caption(context).copyWith(
+          color: AppColors.onSurface(context),
+          fontSize: 12,
+          height: 1.3,
+        ),
+      ),
+    );
+    final labelText = Text(
+      label,
+      style: AppTextStyles.body(context).copyWith(
+        color: AppColors.paragraph(context),
+        fontSize: 12,
+        height: 1.3,
+      ),
+    );
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: AppColors.border(context), width: 0.5),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        textDirection: TextDirection.ltr,
+        children: isArabic
+            ? [valueText, const SizedBox(width: 12), labelText]
+            : [labelText, const SizedBox(width: 12), valueText],
+      ),
+    );
+  }
+}
+
+class _PaymentRow extends StatelessWidget {
+  const _PaymentRow({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final isArabic = Directionality.of(context) == TextDirection.rtl;
+    const icons = Row(
+      children: [
+        AppRasterImage.asset(
+          AppAssets.restaurantPaymentGreenIcon,
+          width: 16,
+          height: 16,
+        ),
+        SizedBox(width: 12),
+        AppRasterImage.asset(
+          AppAssets.restaurantPaymentRedIcon,
+          width: 16,
+          height: 16,
+        ),
+        SizedBox(width: 12),
+        AppRasterImage.asset(
+          AppAssets.restaurantPaymentYellowIcon,
+          width: 16,
+          height: 16,
+        ),
+      ],
+    );
+    final labelText = Text(
+      label,
+      style: AppTextStyles.body(context).copyWith(
+        color: AppColors.paragraph(context),
+        fontSize: 12,
+        height: 1.3,
+      ),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        textDirection: TextDirection.ltr,
+        children: isArabic ? [icons, labelText] : [labelText, icons],
+      ),
+    );
+  }
+}
+
+class _RatingComposer extends StatelessWidget {
+  const _RatingComposer({
+    required this.copy,
+    required this.controller,
+    required this.selectedRating,
+    required this.onRatingChanged,
+    required this.onSubmit,
+  });
+
+  final _RateCopy copy;
+  final TextEditingController controller;
+  final int selectedRating;
+  final ValueChanged<int> onRatingChanged;
+  final VoidCallback onSubmit;
+
+  @override
+  Widget build(BuildContext context) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(5, (index) {
+              final value = index + 1;
+              return IconButton(
+                onPressed: () => onRatingChanged(value),
+                visualDensity: VisualDensity.compact,
+                icon: Icon(
+                  Icons.star_rounded,
+                  color: value <= selectedRating
+                      ? const Color(0xFFFFB800)
+                      : AppColors.paragraph(context).withValues(alpha: 0.35),
+                  size: 32,
+                ),
+              );
+            }),
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: controller,
+          minLines: 4,
+          maxLines: 4,
+          textAlign: isArabic ? TextAlign.right : TextAlign.left,
+          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+          style: AppTextStyles.inputText(context),
+          decoration: InputDecoration(
+            hintText: copy.feedbackHint,
+            hintStyle: AppTextStyles.inputHint(context),
+            filled: true,
+            fillColor: AppColors.surfaceCard(context),
+            contentPadding: const EdgeInsets.all(12),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(AppRadius.md),
+              borderSide: BorderSide(color: AppColors.border(context)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(AppRadius.md),
+              borderSide: const BorderSide(color: AppColors.primary),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          height: 48,
+          child: FilledButton(
+            onPressed: selectedRating == 0 ? null : onSubmit,
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              disabledBackgroundColor: AppColors.primary.withValues(
+                alpha: 0.45,
+              ),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(AppRadius.md),
+              ),
+            ),
+            child: Text(copy.submit, style: AppTextStyles.primaryButtonLabel),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _RateCopy {
+  const _RateCopy({
+    required this.customerReviews,
+    required this.ratingsLabel,
+    required this.moreDetails,
+    required this.deliveryPrice,
+    required this.minimumOrder,
+    required this.deliveryTime,
+    required this.address,
+    required this.previousOrders,
+    required this.paymentMethod,
+    required this.yourRating,
+    required this.feedbackHint,
+    required this.submit,
+    required this.submitted,
+  });
+
   final String customerReviews;
   final String ratingsLabel;
+  final String moreDetails;
+  final String deliveryPrice;
+  final String minimumOrder;
+  final String deliveryTime;
+  final String address;
+  final String previousOrders;
+  final String paymentMethod;
+  final String yourRating;
+  final String feedbackHint;
+  final String submit;
+  final String submitted;
 
   static _RateCopy of(BuildContext context) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
@@ -300,14 +683,34 @@ class _RateCopy {
   }
 
   static const _arabic = _RateCopy(
-    title: 'التقييم',
-    customerReviews: 'أراء العملاء',
+    customerReviews: 'اراء العملاء :',
     ratingsLabel: 'التقييمات',
+    moreDetails: 'تفاصيل اكثر عنا :',
+    deliveryPrice: 'سعر التوصيل',
+    minimumOrder: 'الحد الادنى للطلب',
+    deliveryTime: 'وقت التوصيل',
+    address: 'العنوان',
+    previousOrders: 'طلبات مسبقة',
+    paymentMethod: 'طريقة الدفع',
+    yourRating: 'قيم تجربتك :',
+    feedbackHint: 'اكتب رأيك عن المطعم',
+    submit: 'ارسال التقييم',
+    submitted: 'تم إرسال التقييم',
   );
 
   static const _english = _RateCopy(
-    title: 'Rating',
-    customerReviews: 'Customer reviews',
+    customerReviews: 'Customer reviews:',
     ratingsLabel: 'ratings',
+    moreDetails: 'More details:',
+    deliveryPrice: 'Delivery price',
+    minimumOrder: 'Minimum order',
+    deliveryTime: 'Delivery time',
+    address: 'Address',
+    previousOrders: 'Previous orders',
+    paymentMethod: 'Payment method',
+    yourRating: 'Rate your experience:',
+    feedbackHint: 'Write your feedback about the restaurant',
+    submit: 'Submit rating',
+    submitted: 'Rating submitted',
   );
 }

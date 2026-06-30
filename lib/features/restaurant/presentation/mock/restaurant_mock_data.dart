@@ -13,6 +13,12 @@ class MockRestaurant {
     required this.deliveryTimeEn,
     required this.deliveryFeeAr,
     required this.deliveryFeeEn,
+    required this.minimumOrderAr,
+    required this.minimumOrderEn,
+    required this.addressAr,
+    required this.addressEn,
+    required this.previousOrdersAr,
+    required this.previousOrdersEn,
     required this.rating,
     required this.ratingCount,
     required this.logoAsset,
@@ -32,6 +38,12 @@ class MockRestaurant {
   final String deliveryTimeEn;
   final String deliveryFeeAr;
   final String deliveryFeeEn;
+  final String minimumOrderAr;
+  final String minimumOrderEn;
+  final String addressAr;
+  final String addressEn;
+  final String previousOrdersAr;
+  final String previousOrdersEn;
   final double rating;
   final String ratingCount;
   final String logoAsset;
@@ -48,6 +60,12 @@ class MockRestaurant {
       locale.languageCode == 'ar' ? deliveryTimeAr : deliveryTimeEn;
   String deliveryFee(Locale locale) =>
       locale.languageCode == 'ar' ? deliveryFeeAr : deliveryFeeEn;
+  String minimumOrder(Locale locale) =>
+      locale.languageCode == 'ar' ? minimumOrderAr : minimumOrderEn;
+  String address(Locale locale) =>
+      locale.languageCode == 'ar' ? addressAr : addressEn;
+  String previousOrders(Locale locale) =>
+      locale.languageCode == 'ar' ? previousOrdersAr : previousOrdersEn;
   List<String> categories(Locale locale) =>
       locale.languageCode == 'ar' ? categoriesAr : categoriesEn;
 }
@@ -120,10 +138,16 @@ const mockRestaurant = MockRestaurant(
   deliveryTimeEn: '30-45 min',
   deliveryFeeAr: '20 ج.م',
   deliveryFeeEn: 'EGP 20',
+  minimumOrderAr: '170 ج.م',
+  minimumOrderEn: 'EGP 170',
+  addressAr: 'مدينتي ، حي الزهور',
+  addressEn: 'Madinaty, Al Zohour District',
+  previousOrdersAr: 'لم تقم',
+  previousOrdersEn: 'No previous orders',
   rating: 4.5,
   ratingCount: '+1K',
-  logoAsset: AppAssets.orderRestaurantAvatar,
-  coverAsset: AppAssets.productBurgerCombo,
+  logoAsset: AppAssets.restaurantAzAlShamLogo,
+  coverAsset: AppAssets.restaurantHeroBurger,
   categoriesAr: ['كل الوجبات', 'بيتزا', 'سندوتشات', 'الشاورما', 'مشويات'],
   categoriesEn: ['All meals', 'Pizza', 'Sandwiches', 'Shawarma', 'Grills'],
   menu: [
@@ -136,7 +160,7 @@ const mockRestaurant = MockRestaurant(
       price: 190,
       priceAr: '190 ج.م',
       priceEn: 'EGP 190',
-      imageAsset: AppAssets.productBurgerCombo,
+      imageAsset: AppAssets.restaurantMenuBurgerFries1,
       keywordsAr: ['برجر', 'فرايز', 'عرض', 'سندوتشات'],
       keywordsEn: ['burger', 'fries', 'offer', 'sandwiches'],
     ),
@@ -149,7 +173,7 @@ const mockRestaurant = MockRestaurant(
       price: 190,
       priceAr: '190 ج.م',
       priceEn: 'EGP 190',
-      imageAsset: AppAssets.cartProductImage,
+      imageAsset: AppAssets.restaurantMenuBurgerFries2,
       keywordsAr: ['برجر', 'مشروب', 'وجبات'],
       keywordsEn: ['burger', 'drink', 'meals'],
     ),
@@ -162,7 +186,7 @@ const mockRestaurant = MockRestaurant(
       price: 120,
       priceAr: '120 ج.م',
       priceEn: 'EGP 120',
-      imageAsset: AppAssets.orderProductImage,
+      imageAsset: AppAssets.restaurantMenuBurgerFries3,
       keywordsAr: ['شاورما', 'دجاج', 'سندوتشات'],
       keywordsEn: ['shawarma', 'chicken', 'sandwiches'],
     ),
@@ -175,7 +199,7 @@ const mockRestaurant = MockRestaurant(
       price: 260,
       priceAr: '260 ج.م',
       priceEn: 'EGP 260',
-      imageAsset: AppAssets.favoriteRestaurantAzAlSham,
+      imageAsset: AppAssets.restaurantMenuBurgerFries1,
       keywordsAr: ['مشويات', 'وجبة', 'شرقي'],
       keywordsEn: ['grills', 'meal', 'oriental'],
     ),

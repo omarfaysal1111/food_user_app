@@ -115,6 +115,12 @@ flutter:
     - assets/images/icons/orders/
     - assets/images/favorites/
     - assets/images/icons/favorites/
+    - assets/images/restaurant/
+    - assets/images/restaurant/2.0x/
+    - assets/images/restaurant/3.0x/
+    - assets/icons/restaurant/
+    - assets/icons/restaurant/2.0x/
+    - assets/icons/restaurant/3.0x/
     - assets/images/address/
     - assets/images/icons/address/
     - assets/images/icons/profile/
