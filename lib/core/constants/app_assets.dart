@@ -112,6 +112,8 @@ class AppAssets {
       'assets/images/restaurant/menu_burger_fries_3.png';
   static const restaurantSearchIcon = 'assets/icons/restaurant/search.png';
   static const restaurantFavoriteIcon = 'assets/icons/restaurant/favorite.png';
+  static const restaurantFavoriteActiveIcon =
+      'assets/icons/restaurant/favorite_active.png';
   static const restaurantHeaderBackIcon =
       'assets/icons/restaurant/header_back.png';
   static const restaurantCardBackIcon = 'assets/icons/restaurant/card_back.png';

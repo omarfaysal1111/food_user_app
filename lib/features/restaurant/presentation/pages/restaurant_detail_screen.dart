@@ -11,10 +11,39 @@ import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
 import 'package:food_user_app/features/restaurant/presentation/mock/restaurant_mock_data.dart';
 
-class RestaurantDetailScreen extends StatelessWidget {
+class RestaurantDetailScreen extends StatefulWidget {
   const RestaurantDetailScreen({this.restaurantId = 'az-al-sham', super.key});
 
   final String restaurantId;
+
+  @override
+  State<RestaurantDetailScreen> createState() => _RestaurantDetailScreenState();
+}
+
+class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
+  final _scrollController = ScrollController();
+  late final List<GlobalKey> _sectionKeys;
+  int _selectedCategoryIndex = 0;
+  bool _isFavorite = false;
+  bool _isProgrammaticScroll = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _sectionKeys = List.generate(
+      mockRestaurant.menuSections.length,
+      (_) => GlobalKey(),
+    );
+    _scrollController.addListener(_updateSelectedSectionFromScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_updateSelectedSectionFromScroll)
+      ..dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +54,15 @@ class RestaurantDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
       body: CustomScrollView(
+        controller: _scrollController,
         slivers: [
           SliverToBoxAdapter(
             child: _RestaurantTopSection(
               hero: _RestaurantHero(
                 title: copy.title,
                 restaurantId: restaurant.id,
+                isFavorite: _isFavorite,
+                onFavoriteTap: () => setState(() => _isFavorite = !_isFavorite),
               ),
               infoCard: _RestaurantInfoCard(
                 restaurant: restaurant,
@@ -50,15 +82,76 @@ class RestaurantDetailScreen extends StatelessWidget {
               children: [
                 _CouponStrip(copy: copy),
                 const SizedBox(height: 18),
-                _MenuTabs(categories: restaurant.categories(locale)),
+                _MenuTabs(
+                  categories: restaurant.categories(locale),
+                  selectedIndex: _selectedCategoryIndex,
+                  onTap: _scrollToCategory,
+                ),
                 const SizedBox(height: 20),
-                _MenuGrid(items: restaurant.menu),
+                _MenuSections(
+                  sections: restaurant.menuSections,
+                  sectionKeys: _sectionKeys,
+                ),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _scrollToCategory(int categoryIndex) async {
+    setState(() => _selectedCategoryIndex = categoryIndex);
+
+    final sectionIndex = categoryIndex;
+    final sectionContext = _sectionKeys[sectionIndex].currentContext;
+    if (sectionContext == null) return;
+
+    final renderObject = sectionContext.findRenderObject();
+    if (renderObject is! RenderBox || !_scrollController.hasClients) return;
+
+    final sectionTop = renderObject.localToGlobal(Offset.zero).dy;
+    final topInset = MediaQuery.paddingOf(context).top + 16;
+    final targetOffset = (_scrollController.offset + sectionTop - topInset)
+        .clamp(
+          _scrollController.position.minScrollExtent,
+          _scrollController.position.maxScrollExtent,
+        );
+
+    _isProgrammaticScroll = true;
+    await _scrollController.animateTo(
+      targetOffset,
+      duration: const Duration(milliseconds: 420),
+      curve: Curves.easeOutCubic,
+    );
+
+    if (!mounted) return;
+    _isProgrammaticScroll = false;
+  }
+
+  void _updateSelectedSectionFromScroll() {
+    if (_isProgrammaticScroll || !_scrollController.hasClients) return;
+
+    const detectionOffset = 120.0;
+    var activeSectionIndex = 0;
+
+    for (var i = 0; i < _sectionKeys.length; i++) {
+      final sectionContext = _sectionKeys[i].currentContext;
+      if (sectionContext == null) continue;
+
+      final renderObject = sectionContext.findRenderObject();
+      if (renderObject is! RenderBox) continue;
+
+      final top = renderObject.localToGlobal(Offset.zero).dy;
+      if (top <= detectionOffset) {
+        activeSectionIndex = i;
+      }
+    }
+
+    final nextCategoryIndex = activeSectionIndex;
+    if (nextCategoryIndex != _selectedCategoryIndex) {
+      setState(() => _selectedCategoryIndex = nextCategoryIndex);
+    }
   }
 }
 
@@ -84,10 +177,17 @@ class _RestaurantTopSection extends StatelessWidget {
 }
 
 class _RestaurantHero extends StatelessWidget {
-  const _RestaurantHero({required this.title, required this.restaurantId});
+  const _RestaurantHero({
+    required this.title,
+    required this.restaurantId,
+    required this.isFavorite,
+    required this.onFavoriteTap,
+  });
 
   final String title;
   final String restaurantId;
+  final bool isFavorite;
+  final VoidCallback onFavoriteTap;
 
   @override
   Widget build(BuildContext context) {
@@ -106,24 +206,22 @@ class _RestaurantHero extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               _GlassIconButton(
-                assetName: AppAssets.restaurantFavoriteIcon,
+                assetName: isFavorite
+                    ? AppAssets.restaurantFavoriteActiveIcon
+                    : AppAssets.restaurantFavoriteIcon,
                 iconWidth: 24,
                 iconHeight: 24,
-                onTap: () => _showDesignSnackBar(
-                  context,
-                  _RestaurantDetailCopy.of(context).favoriteTodo,
-                ),
+                onTap: onFavoriteTap,
               ),
             ]
           : [
               _GlassIconButton(
-                assetName: AppAssets.restaurantFavoriteIcon,
+                assetName: isFavorite
+                    ? AppAssets.restaurantFavoriteActiveIcon
+                    : AppAssets.restaurantFavoriteIcon,
                 iconWidth: 24,
                 iconHeight: 24,
-                onTap: () => _showDesignSnackBar(
-                  context,
-                  _RestaurantDetailCopy.of(context).favoriteTodo,
-                ),
+                onTap: onFavoriteTap,
               ),
               const SizedBox(width: 12),
               _GlassIconButton(
@@ -661,100 +759,198 @@ class _CouponCard extends StatelessWidget {
 }
 
 class _MenuTabs extends StatelessWidget {
-  const _MenuTabs({required this.categories});
+  const _MenuTabs({
+    required this.categories,
+    required this.selectedIndex,
+    required this.onTap,
+  });
 
   final List<String> categories;
+  final int selectedIndex;
+  final ValueChanged<int> onTap;
 
   @override
   Widget build(BuildContext context) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final orderedCategories = isArabic ? categories.reversed : categories;
+    final indexedCategories = List.generate(
+      categories.length,
+      (index) => (index: index, label: categories[index]),
+    );
+    final orderedCategories = indexedCategories;
 
     return Container(
+      height: 28,
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: AppColors.border(context), width: 0.5),
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Directionality(
         textDirection: TextDirection.ltr,
-        children: [
-          for (final category in orderedCategories)
-            _MenuTab(label: category, selected: category == categories.first),
-        ],
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          reverse: isArabic,
+          padding: EdgeInsets.zero,
+          itemCount: orderedCategories.length,
+          separatorBuilder: (_, _) => const SizedBox(width: 12),
+          itemBuilder: (context, itemIndex) {
+            final category = orderedCategories.elementAt(itemIndex);
+            return _MenuTab(
+              label: category.label,
+              selected: category.index == selectedIndex,
+              onTap: () => onTap(category.index),
+            );
+          },
+        ),
       ),
     );
   }
 }
 
 class _MenuTab extends StatelessWidget {
-  const _MenuTab({required this.label, required this.selected});
+  const _MenuTab({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   final String label;
   final bool selected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 60,
-      child: Column(
-        children: [
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: AppTextStyles.caption(context).copyWith(
-              fontSize: 12,
-              height: 1.3,
-              color: selected
-                  ? AppColors.onSurface(context)
-                  : AppColors.paragraph(context),
-              fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
+    return InkWell(
+      onTap: onTap,
+      child: SizedBox(
+        width: 60,
+        child: Column(
+          children: [
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.caption(context).copyWith(
+                fontSize: 12,
+                height: 1.3,
+                color: selected
+                    ? AppColors.onSurface(context)
+                    : AppColors.paragraph(context),
+                fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            height: 1.5,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: selected
-                  ? AppColors.onSurface(context)
-                  : Colors.transparent,
-              borderRadius: const BorderRadius.vertical(top: AppRadius.full),
+            const SizedBox(height: 10),
+            Container(
+              height: 1.5,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: selected
+                    ? AppColors.onSurface(context)
+                    : Colors.transparent,
+                borderRadius: const BorderRadius.vertical(top: AppRadius.full),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _MenuGrid extends StatelessWidget {
-  const _MenuGrid({required this.items});
+class _MenuSections extends StatelessWidget {
+  const _MenuSections({required this.sections, required this.sectionKeys});
+
+  final List<MockMenuSection> sections;
+  final List<GlobalKey> sectionKeys;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (var i = 0; i < sections.length; i++) ...[
+          if (i > 0) const SizedBox(height: 24),
+          _MenuSection(key: sectionKeys[i], section: sections[i]),
+        ],
+      ],
+    );
+  }
+}
+
+class _MenuSection extends StatelessWidget {
+  const _MenuSection({required this.section, super.key});
+
+  final MockMenuSection section;
+
+  @override
+  Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
+    final isArabic = locale.languageCode == 'ar';
+
+    return Column(
+      crossAxisAlignment: isArabic
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: Text(
+            section.title(locale),
+            textAlign: isArabic ? TextAlign.right : TextAlign.left,
+            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+            style: AppTextStyles.heading4(
+              context,
+            ).copyWith(fontSize: 15, height: 1.4),
+          ),
+        ),
+        const SizedBox(height: 20),
+        _SectionProductGrid(items: section.items),
+      ],
+    );
+  }
+}
+
+class _SectionProductGrid extends StatelessWidget {
+  const _SectionProductGrid({required this.items});
 
   final List<MockMenuItem> items;
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: 8,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 165.5 / 165,
+    final rows = <Widget>[];
+
+    for (var i = 0; i < items.length; i += 2) {
+      rows.add(
+        Row(
+          textDirection: TextDirection.ltr,
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: 164,
+                child: _MenuItemCard(item: items[i]),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: i + 1 < items.length
+                  ? SizedBox(
+                      height: 164,
+                      child: _MenuItemCard(item: items[i + 1]),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
         ),
-        itemBuilder: (context, index) {
-          final item = items[index % items.length];
-          return _MenuItemCard(item: item);
-        },
-      ),
+      );
+    }
+
+    return Column(
+      children: [
+        for (var i = 0; i < rows.length; i++) ...[
+          if (i > 0) const SizedBox(height: 12),
+          rows[i],
+        ],
+      ],
     );
   }
 }
@@ -891,26 +1087,18 @@ void _openProductDetails(
 
 String _routeWithId(String route, String id) => route.replaceFirst(':id', id);
 
-void _showDesignSnackBar(BuildContext context, String message) {
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(content: Text(message)));
-}
-
 class _RestaurantDetailCopy {
   const _RestaurantDetailCopy({
     required this.title,
     required this.available,
     required this.discountSubtitle,
     required this.viewProducts,
-    required this.favoriteTodo,
   });
 
   final String title;
   final String available;
   final String discountSubtitle;
   final String viewProducts;
-  final String favoriteTodo;
 
   static _RestaurantDetailCopy of(BuildContext context) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
@@ -922,7 +1110,6 @@ class _RestaurantDetailCopy {
     available: 'متاح',
     discountSubtitle: '50 %خصم على بعض المنتج',
     viewProducts: 'عرض المنتجات',
-    favoriteTodo: 'المفضلة غير متاحة حالياً',
   );
 
   static const _english = _RestaurantDetailCopy(
@@ -930,6 +1117,5 @@ class _RestaurantDetailCopy {
     available: 'Open',
     discountSubtitle: '50% off selected products',
     viewProducts: 'View products',
-    favoriteTodo: 'Favorites are not available yet',
   );
 }

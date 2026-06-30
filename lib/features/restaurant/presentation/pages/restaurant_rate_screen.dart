@@ -9,24 +9,10 @@ import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/features/restaurant/presentation/mock/restaurant_mock_data.dart';
 
-class RestaurantRateScreen extends StatefulWidget {
+class RestaurantRateScreen extends StatelessWidget {
   const RestaurantRateScreen({this.restaurantId = 'az-al-sham', super.key});
 
   final String restaurantId;
-
-  @override
-  State<RestaurantRateScreen> createState() => _RestaurantRateScreenState();
-}
-
-class _RestaurantRateScreenState extends State<RestaurantRateScreen> {
-  final _feedbackController = TextEditingController();
-  int _selectedRating = 0;
-
-  @override
-  void dispose() {
-    _feedbackController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,72 +22,49 @@ class _RestaurantRateScreenState extends State<RestaurantRateScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: SafeArea(
-          bottom: false,
-          child: CustomScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            slivers: [
-              SliverPadding(
-                padding: const EdgeInsetsDirectional.fromSTEB(
-                  AppSpacing.md,
-                  18,
-                  AppSpacing.md,
-                  28,
-                ),
-                sliver: SliverList.list(
-                  children: [
-                    _RateHeader(title: restaurant.name(locale)),
-                    const SizedBox(height: 24),
-                    _RatingSummary(
-                      rating: restaurant.rating,
-                      ratingCount: restaurant.ratingCount,
-                      copy: copy,
-                    ),
-                    const SizedBox(height: 18),
-                    _SectionHeader(title: copy.customerReviews),
-                    const SizedBox(height: 12),
-                    ...restaurant.reviews
-                        .take(3)
-                        .map(
-                          (review) =>
-                              _ReviewTile(review: review, locale: locale),
-                        ),
-                    const SizedBox(height: 18),
-                    _SectionHeader(title: copy.moreDetails),
-                    const SizedBox(height: 14),
-                    _RestaurantFacts(
-                      restaurant: restaurant,
-                      locale: locale,
-                      copy: copy,
-                    ),
-                    const SizedBox(height: 24),
-                    _SectionHeader(title: copy.yourRating),
-                    const SizedBox(height: 12),
-                    _RatingComposer(
-                      copy: copy,
-                      controller: _feedbackController,
-                      selectedRating: _selectedRating,
-                      onRatingChanged: (value) =>
-                          setState(() => _selectedRating = value),
-                      onSubmit: () => _submitRating(context, copy),
-                    ),
-                  ],
-                ),
+      body: SafeArea(
+        bottom: false,
+        child: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                AppSpacing.md,
+                18,
+                AppSpacing.md,
+                28,
               ),
-            ],
-          ),
+              sliver: SliverList.list(
+                children: [
+                  _RateHeader(title: restaurant.name(locale)),
+                  const SizedBox(height: 24),
+                  _RatingSummary(
+                    rating: restaurant.rating,
+                    ratingCount: restaurant.ratingCount,
+                    copy: copy,
+                  ),
+                  const SizedBox(height: 18),
+                  _SectionHeader(title: copy.customerReviews),
+                  const SizedBox(height: 12),
+                  ...restaurant.reviews
+                      .take(3)
+                      .map(
+                        (review) => _ReviewTile(review: review, locale: locale),
+                      ),
+                  const SizedBox(height: 18),
+                  _SectionHeader(title: copy.moreDetails),
+                  const SizedBox(height: 14),
+                  _RestaurantFacts(
+                    restaurant: restaurant,
+                    locale: locale,
+                    copy: copy,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
-  }
-
-  void _submitRating(BuildContext context, _RateCopy copy) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(copy.submitted)));
   }
 }
 
@@ -518,6 +481,7 @@ class _PaymentRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final isArabic = Directionality.of(context) == TextDirection.rtl;
     const icons = Row(
+      textDirection: TextDirection.ltr,
       children: [
         AppRasterImage.asset(
           AppAssets.restaurantPaymentGreenIcon,
@@ -558,94 +522,6 @@ class _PaymentRow extends StatelessWidget {
   }
 }
 
-class _RatingComposer extends StatelessWidget {
-  const _RatingComposer({
-    required this.copy,
-    required this.controller,
-    required this.selectedRating,
-    required this.onRatingChanged,
-    required this.onSubmit,
-  });
-
-  final _RateCopy copy;
-  final TextEditingController controller;
-  final int selectedRating;
-  final ValueChanged<int> onRatingChanged;
-  final VoidCallback onSubmit;
-
-  @override
-  Widget build(BuildContext context) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Align(
-          alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(5, (index) {
-              final value = index + 1;
-              return IconButton(
-                onPressed: () => onRatingChanged(value),
-                visualDensity: VisualDensity.compact,
-                icon: Icon(
-                  Icons.star_rounded,
-                  color: value <= selectedRating
-                      ? const Color(0xFFFFB800)
-                      : AppColors.paragraph(context).withValues(alpha: 0.35),
-                  size: 32,
-                ),
-              );
-            }),
-          ),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: controller,
-          minLines: 4,
-          maxLines: 4,
-          textAlign: isArabic ? TextAlign.right : TextAlign.left,
-          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-          style: AppTextStyles.inputText(context),
-          decoration: InputDecoration(
-            hintText: copy.feedbackHint,
-            hintStyle: AppTextStyles.inputHint(context),
-            filled: true,
-            fillColor: AppColors.surfaceCard(context),
-            contentPadding: const EdgeInsets.all(12),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(AppRadius.md),
-              borderSide: BorderSide(color: AppColors.border(context)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(AppRadius.md),
-              borderSide: const BorderSide(color: AppColors.primary),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        SizedBox(
-          height: 48,
-          child: FilledButton(
-            onPressed: selectedRating == 0 ? null : onSubmit,
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              disabledBackgroundColor: AppColors.primary.withValues(
-                alpha: 0.45,
-              ),
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(AppRadius.md),
-              ),
-            ),
-            child: Text(copy.submit, style: AppTextStyles.primaryButtonLabel),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _RateCopy {
   const _RateCopy({
     required this.customerReviews,
@@ -657,10 +533,6 @@ class _RateCopy {
     required this.address,
     required this.previousOrders,
     required this.paymentMethod,
-    required this.yourRating,
-    required this.feedbackHint,
-    required this.submit,
-    required this.submitted,
   });
 
   final String customerReviews;
@@ -672,10 +544,6 @@ class _RateCopy {
   final String address;
   final String previousOrders;
   final String paymentMethod;
-  final String yourRating;
-  final String feedbackHint;
-  final String submit;
-  final String submitted;
 
   static _RateCopy of(BuildContext context) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
@@ -692,10 +560,6 @@ class _RateCopy {
     address: 'العنوان',
     previousOrders: 'طلبات مسبقة',
     paymentMethod: 'طريقة الدفع',
-    yourRating: 'قيم تجربتك :',
-    feedbackHint: 'اكتب رأيك عن المطعم',
-    submit: 'ارسال التقييم',
-    submitted: 'تم إرسال التقييم',
   );
 
   static const _english = _RateCopy(
@@ -708,9 +572,5 @@ class _RateCopy {
     address: 'Address',
     previousOrders: 'Previous orders',
     paymentMethod: 'Payment method',
-    yourRating: 'Rate your experience:',
-    feedbackHint: 'Write your feedback about the restaurant',
-    submit: 'Submit rating',
-    submitted: 'Rating submitted',
   );
 }
