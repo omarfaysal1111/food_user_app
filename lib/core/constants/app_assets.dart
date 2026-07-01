@@ -92,6 +92,12 @@ class AppAssets {
 
   static const favoriteRestaurantAzAlSham =
       'assets/images/favorites/az_al_sham.jpg';
+  static const favoriteRestaurantAzAlShamAvailable =
+      'assets/images/favorites/az_al_sham_available.jpg';
+  static const favoriteRestaurantAzAlShamBusy =
+      'assets/images/favorites/az_al_sham_busy.jpg';
+  static const favoriteRestaurantAzAlShamClosed =
+      'assets/images/favorites/az_al_sham_closed.jpg';
   static const favoriteBackIcon = 'assets/images/icons/favorites/back.svg';
   static const favoriteHeartIcon =
       'assets/images/icons/favorites/favourite.svg';

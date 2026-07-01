@@ -22,6 +22,7 @@ class RestaurantDetailArgs {
     required this.logoAsset,
     required this.coverAsset,
     this.deliveryFee,
+    this.initialFavorite = false,
   });
 
   final String id;
@@ -32,6 +33,7 @@ class RestaurantDetailArgs {
   final String logoAsset;
   final String coverAsset;
   final String? deliveryFee;
+  final bool initialFavorite;
 
   MockRestaurant toRestaurant() {
     return MockRestaurant(
@@ -88,6 +90,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   void initState() {
     super.initState();
     final restaurant = widget.restaurant?.toRestaurant() ?? mockRestaurant;
+    _isFavorite = widget.restaurant?.initialFavorite ?? false;
     _sectionKeys = List.generate(
       restaurant.menuSections.length,
       (_) => GlobalKey(),

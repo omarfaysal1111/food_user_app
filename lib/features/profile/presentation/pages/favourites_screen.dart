@@ -3,11 +3,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
+import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/features/restaurant/presentation/pages/restaurant_detail_screen.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
-class FavouritesScreen extends StatelessWidget {
+class FavouritesScreen extends StatefulWidget {
   const FavouritesScreen({super.key});
 
   static const _successColor = Color(0xFF0C9D61);
@@ -20,39 +22,37 @@ class FavouritesScreen extends StatelessWidget {
   static const _headerGap = 4.0;
   static const _headerHeight = 28.0;
   static const _contentTopGap = 20.0;
-  static const _cardHeight = 62.0;
+  static const _cardHeight = 56.0;
   static const _cardRadius = 10.0;
   static const _cardGap = 12.0;
   static const _favoriteButtonSize = 22.0;
   static const _favoriteIconSize = 14.0;
   static const _metaIconSize = 14.0;
+  static const _cardArrowSize = 20.0;
+  static const _imageRadius = 12.0;
+
+  @override
+  State<FavouritesScreen> createState() => _FavouritesScreenState();
+}
+
+class _FavouritesScreenState extends State<FavouritesScreen> {
+  final _favoriteStatuses = <_FavoriteStatusKind>[
+    _FavoriteStatusKind.available,
+    _FavoriteStatusKind.busy,
+    _FavoriteStatusKind.closed,
+  ];
 
   List<_FavoriteRestaurant> _items(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
     return [
-      _FavoriteRestaurant(
-        name: l10n.favoriteRestaurantAzAlSham,
-        status: l10n.favoriteStatusAvailable,
-        statusColor: _successColor,
-        deliveryTime: l10n.favoriteDeliveryTimeRange,
-        rating: '4.5',
-      ),
-      _FavoriteRestaurant(
-        name: l10n.favoriteRestaurantAzAlSham,
-        status: l10n.favoriteStatusBusy,
-        statusColor: _warningColor,
-        deliveryTime: l10n.favoriteDeliveryTimeRange,
-        rating: '4.5',
-      ),
-      _FavoriteRestaurant(
-        name: l10n.favoriteRestaurantAzAlSham,
-        status: l10n.favoriteStatusClosed,
-        statusColor: _closedColor,
-        deliveryTime: l10n.favoriteDeliveryTimeRange,
-        rating: '4.5',
-      ),
+      for (final status in _favoriteStatuses)
+        _FavoriteRestaurant.fromStatus(l10n: l10n, statusKind: status),
     ];
+  }
+
+  void _removeFavorite(int index) {
+    setState(() => _favoriteStatuses.removeAt(index));
   }
 
   @override
@@ -64,26 +64,32 @@ class FavouritesScreen extends StatelessWidget {
       body: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.only(
-            left: _screenPadding,
-            top: _topInset,
-            right: _screenPadding,
+          padding: const EdgeInsetsDirectional.only(
+            start: FavouritesScreen._screenPadding,
+            top: FavouritesScreen._topInset,
+            end: FavouritesScreen._screenPadding,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const _FavoritesHeader(),
-              const SizedBox(height: _contentTopGap),
+              const SizedBox(height: FavouritesScreen._contentTopGap),
               Expanded(
-                child: ListView.separated(
-                  padding: EdgeInsets.zero,
-                  physics: const ClampingScrollPhysics(),
-                  itemCount: items.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: _cardGap),
-                  itemBuilder: (context, index) {
-                    return _FavoriteRestaurantCard(item: items[index]);
-                  },
-                ),
+                child: items.isEmpty
+                    ? const _EmptyFavoritesState()
+                    : ListView.separated(
+                        padding: EdgeInsets.zero,
+                        physics: const ClampingScrollPhysics(),
+                        itemCount: items.length,
+                        separatorBuilder: (_, _) =>
+                            const SizedBox(height: FavouritesScreen._cardGap),
+                        itemBuilder: (context, index) {
+                          return _FavoriteRestaurantCard(
+                            item: items[index],
+                            onRemove: () => _removeFavorite(index),
+                          );
+                        },
+                      ),
               ),
               // TODO: Replace static favorites with the real favorites API.
             ],
@@ -94,20 +100,66 @@ class FavouritesScreen extends StatelessWidget {
   }
 }
 
+enum _FavoriteStatusKind { available, busy, closed }
+
 class _FavoriteRestaurant {
   const _FavoriteRestaurant({
+    required this.detailId,
     required this.name,
+    required this.description,
     required this.status,
     required this.statusColor,
     required this.deliveryTime,
     required this.rating,
+    required this.imageAsset,
   });
 
+  factory _FavoriteRestaurant.fromStatus({
+    required AppLocalizations l10n,
+    required _FavoriteStatusKind statusKind,
+  }) {
+    return switch (statusKind) {
+      _FavoriteStatusKind.available => _FavoriteRestaurant(
+        detailId: 'az-al-sham',
+        name: l10n.favoriteRestaurantAzAlSham,
+        description: l10n.serviceRestaurantDescription,
+        status: l10n.favoriteStatusAvailable,
+        statusColor: FavouritesScreen._successColor,
+        deliveryTime: l10n.favoriteDeliveryTimeRange,
+        rating: '4.5',
+        imageAsset: AppAssets.favoriteRestaurantAzAlShamAvailable,
+      ),
+      _FavoriteStatusKind.busy => _FavoriteRestaurant(
+        detailId: 'az-al-sham',
+        name: l10n.favoriteRestaurantAzAlSham,
+        description: l10n.serviceRestaurantDescription,
+        status: l10n.favoriteStatusBusy,
+        statusColor: FavouritesScreen._warningColor,
+        deliveryTime: l10n.favoriteDeliveryTimeRange,
+        rating: '4.5',
+        imageAsset: AppAssets.favoriteRestaurantAzAlShamBusy,
+      ),
+      _FavoriteStatusKind.closed => _FavoriteRestaurant(
+        detailId: 'az-al-sham',
+        name: l10n.favoriteRestaurantAzAlSham,
+        description: l10n.serviceRestaurantDescription,
+        status: l10n.favoriteStatusClosed,
+        statusColor: FavouritesScreen._closedColor,
+        deliveryTime: l10n.favoriteDeliveryTimeRange,
+        rating: '4.5',
+        imageAsset: AppAssets.favoriteRestaurantAzAlShamClosed,
+      ),
+    };
+  }
+
+  final String detailId;
   final String name;
+  final String description;
   final String status;
   final Color statusColor;
   final String deliveryTime;
   final String rating;
+  final String imageAsset;
 }
 
 class _FavoritesHeader extends StatelessWidget {
@@ -159,57 +211,133 @@ class _FavoritesHeader extends StatelessWidget {
 }
 
 class _FavoriteRestaurantCard extends StatelessWidget {
-  const _FavoriteRestaurantCard({required this.item});
+  const _FavoriteRestaurantCard({required this.item, required this.onRemove});
 
   final _FavoriteRestaurant item;
+  final VoidCallback onRemove;
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () {},
+      onTap: () => _openDetails(context),
       child: Container(
         height: FavouritesScreen._cardHeight,
         decoration: BoxDecoration(
-          color: AppColors.surfaceCard(context),
           borderRadius: BorderRadius.circular(FavouritesScreen._cardRadius),
-          border: Border.all(color: AppColors.border(context), width: 0.5),
         ),
-        clipBehavior: Clip.antiAlias,
         child: Row(
-          children: [
-            const _RestaurantImage(),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsetsDirectional.only(start: 8, end: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(child: _FavoriteRestaurantDetails(item: item)),
-                    const SizedBox(width: 8),
-                    const _RemoveFavoriteButton(),
-                  ],
-                ),
-              ),
-            ),
-          ],
+          textDirection: TextDirection.ltr,
+          children: isRtl
+              ? [
+                  const SizedBox(width: 12),
+                  const _CardArrow(),
+                  Expanded(child: _FavoriteRestaurantContent(item: item)),
+                  _RestaurantImage(item: item, onRemove: onRemove),
+                ]
+              : [
+                  _RestaurantImage(item: item, onRemove: onRemove),
+                  Expanded(child: _FavoriteRestaurantContent(item: item)),
+                  const _CardArrow(),
+                  const SizedBox(width: 12),
+                ],
         ),
+      ),
+    );
+  }
+
+  void _openDetails(BuildContext context) {
+    context.push(
+      RouteNames.restaurantDetail.replaceFirst(':id', item.detailId),
+      extra: RestaurantDetailArgs(
+        id: item.detailId,
+        name: item.name,
+        description: item.description,
+        deliveryTime: item.deliveryTime,
+        rating: double.tryParse(item.rating) ?? 4.5,
+        logoAsset: item.imageAsset,
+        coverAsset: item.imageAsset,
+        initialFavorite: true,
       ),
     );
   }
 }
 
 class _RestaurantImage extends StatelessWidget {
-  const _RestaurantImage();
+  const _RestaurantImage({required this.item, required this.onRemove});
+
+  final _FavoriteRestaurant item;
+  final VoidCallback onRemove;
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
+    return SizedBox(
       width: FavouritesScreen._cardHeight,
       height: FavouritesScreen._cardHeight,
-      child: Image(
-        image: AssetImage(AppAssets.favoriteRestaurantAzAlSham),
-        fit: BoxFit.cover,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(
+                FavouritesScreen._imageRadius,
+              ),
+              child: Image.asset(item.imageAsset, fit: BoxFit.cover),
+            ),
+          ),
+          Positioned(
+            top: 6,
+            left: 6,
+            child: _RemoveFavoriteButton(onTap: onRemove),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FavoriteRestaurantContent extends StatelessWidget {
+  const _FavoriteRestaurantContent({required this.item});
+
+  final _FavoriteRestaurant item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(start: 8, end: 8),
+      child: Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: _FavoriteRestaurantDetails(item: item),
+      ),
+    );
+  }
+}
+
+class _CardArrow extends StatelessWidget {
+  const _CardArrow();
+
+  @override
+  Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+
+    return SizedBox(
+      width: FavouritesScreen._cardArrowSize,
+      height: FavouritesScreen._cardArrowSize,
+      child: Center(
+        child: Transform.scale(
+          scaleX: isRtl ? -1 : 1,
+          child: SvgPicture.asset(
+            AppAssets.favoriteBackIcon,
+            width: 7,
+            height: 12,
+            colorFilter: ColorFilter.mode(
+              AppColors.onSurface(context),
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -221,8 +349,6 @@ class _FavoriteRestaurantDetails extends StatelessWidget {
   final _FavoriteRestaurant item;
 
   Widget _buildNameStatusLine(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
-
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -230,10 +356,9 @@ class _FavoriteRestaurantDetails extends StatelessWidget {
           fit: FlexFit.loose,
           child: Text(
             item.name.trim(),
-            textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            textAlign: isRtl ? TextAlign.right : TextAlign.left,
+            textAlign: TextAlign.start,
             style: AppTextStyles.body(context).copyWith(
               color: AppColors.onSurface(context),
               fontSize: 12,
@@ -243,13 +368,17 @@ class _FavoriteRestaurantDetails extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 4),
-        _StatusChip(item: item),
+        Flexible(child: _StatusChip(item: item)),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final rating = _RatingBadge(rating: item.rating);
+    final time = _DeliveryTimeLabel(deliveryTime: item.deliveryTime);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,12 +386,9 @@ class _FavoriteRestaurantDetails extends StatelessWidget {
         _buildNameStatusLine(context),
         const SizedBox(height: 4),
         Row(
+          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
           mainAxisSize: MainAxisSize.min,
-          children: [
-            _RatingBadge(rating: item.rating),
-            const SizedBox(width: 12),
-            _DeliveryTimeLabel(deliveryTime: item.deliveryTime),
-          ],
+          children: [rating, const SizedBox(width: 12), time],
         ),
       ],
     );
@@ -276,31 +402,32 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final dot = Container(
+      width: 4,
+      height: 4,
+      decoration: BoxDecoration(
+        color: item.statusColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
+    final label = Text(
+      item.status,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.start,
+      style: AppTextStyles.caption(context).copyWith(
+        color: item.statusColor,
+        fontSize: 10,
+        fontWeight: FontWeight.w400,
+        height: 1.25,
+      ),
+    );
+
     return Row(
+      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
       mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 4,
-          height: 4,
-          decoration: BoxDecoration(
-            color: item.statusColor,
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        const SizedBox(width: 2),
-        Text(
-          item.status,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.start,
-          style: AppTextStyles.caption(context).copyWith(
-            color: item.statusColor,
-            fontSize: 10,
-            fontWeight: FontWeight.w400,
-            height: 1.25,
-          ),
-        ),
-      ],
+      children: [dot, const SizedBox(width: 2), label],
     );
   }
 }
@@ -312,32 +439,33 @@ class _DeliveryTimeLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final icon = SvgPicture.asset(
+      AppAssets.favoriteTimeIcon,
+      width: FavouritesScreen._metaIconSize,
+      height: FavouritesScreen._metaIconSize,
+      colorFilter: ColorFilter.mode(
+        AppColors.onSurface(context),
+        BlendMode.srcIn,
+      ),
+    );
+    final label = Text(
+      deliveryTime,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.start,
+      style: AppTextStyles.caption(context).copyWith(
+        color: AppColors.onSurface(context),
+        fontSize: 10,
+        fontWeight: FontWeight.w400,
+        height: 1.25,
+      ),
+    );
+
     return Row(
+      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
       mainAxisSize: MainAxisSize.min,
-      children: [
-        SvgPicture.asset(
-          AppAssets.favoriteTimeIcon,
-          width: FavouritesScreen._metaIconSize,
-          height: FavouritesScreen._metaIconSize,
-          colorFilter: ColorFilter.mode(
-            AppColors.onSurface(context),
-            BlendMode.srcIn,
-          ),
-        ),
-        const SizedBox(width: 4),
-        Text(
-          deliveryTime,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.start,
-          style: AppTextStyles.caption(context).copyWith(
-            color: AppColors.onSurface(context),
-            fontSize: 10,
-            fontWeight: FontWeight.w400,
-            height: 1.25,
-          ),
-        ),
-      ],
+      children: [icon, const SizedBox(width: 4), label],
     );
   }
 }
@@ -349,6 +477,24 @@ class _RatingBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final icon = SvgPicture.asset(
+      AppAssets.favoriteStarIcon,
+      width: FavouritesScreen._metaIconSize,
+      height: FavouritesScreen._metaIconSize,
+    );
+    final label = Text(
+      rating,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: AppTextStyles.caption(context).copyWith(
+        color: AppColors.onSurface(context),
+        fontSize: 10,
+        fontWeight: FontWeight.w500,
+        height: 1.25,
+      ),
+    );
+
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -356,33 +502,18 @@ class _RatingBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
       ),
       child: Row(
+        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
         mainAxisSize: MainAxisSize.min,
-        children: [
-          SvgPicture.asset(
-            AppAssets.favoriteStarIcon,
-            width: FavouritesScreen._metaIconSize,
-            height: FavouritesScreen._metaIconSize,
-          ),
-          const SizedBox(width: 2),
-          Text(
-            rating,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.caption(context).copyWith(
-              color: AppColors.onSurface(context),
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-              height: 1.25,
-            ),
-          ),
-        ],
+        children: [icon, const SizedBox(width: 2), label],
       ),
     );
   }
 }
 
 class _RemoveFavoriteButton extends StatelessWidget {
-  const _RemoveFavoriteButton();
+  const _RemoveFavoriteButton({required this.onTap});
+
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -390,9 +521,7 @@ class _RemoveFavoriteButton extends StatelessWidget {
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () {
-        // TODO: Remove item from favorites through the real favorites API.
-      },
+      onTap: onTap,
       child: Semantics(
         label: l10n.removeFromFavorites,
         button: true,
@@ -401,14 +530,61 @@ class _RemoveFavoriteButton extends StatelessWidget {
           height: FavouritesScreen._favoriteButtonSize,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: AppColors.scaffoldBackground(context),
+            color: AppColors.surfaceCard(context),
             shape: BoxShape.circle,
           ),
           child: SvgPicture.asset(
             AppAssets.favoriteHeartIcon,
             width: FavouritesScreen._favoriteIconSize,
             height: FavouritesScreen._favoriteIconSize,
+            colorFilter: const ColorFilter.mode(
+              AppColors.primary,
+              BlendMode.srcIn,
+            ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyFavoritesState extends StatelessWidget {
+  const _EmptyFavoritesState();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.favorite_border_rounded,
+              color: AppColors.paragraph(context),
+              size: 40,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              l10n.favoritesEmptyTitle,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.heading4(context).copyWith(
+                color: AppColors.onSurface(context),
+                fontSize: 15,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.favoritesEmptyMessage,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.caption(
+                context,
+              ).copyWith(color: AppColors.paragraph(context), height: 1.4),
+            ),
+          ],
         ),
       ),
     );
