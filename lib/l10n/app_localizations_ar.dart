@@ -318,6 +318,126 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mainTabAccount => 'حسابي';
 
   @override
+  String get homeCategoryRestaurants => 'المطاعم';
+
+  @override
+  String get homeCategoryGrocery => 'البقالة';
+
+  @override
+  String get homeCategoryStores => 'المتاجر';
+
+  @override
+  String get homeCategoryPickup => 'استلم بنفسك';
+
+  @override
+  String get serviceSearchHint => 'إبحث عن ما تحب';
+
+  @override
+  String get serviceAvailable => 'متاح';
+
+  @override
+  String get serviceClosed => 'مغلق';
+
+  @override
+  String get serviceListingRestaurantsTitle => 'المطاعم';
+
+  @override
+  String get serviceListingGroceryTitle => 'البقالة';
+
+  @override
+  String get serviceListingStoresTitle => 'المتاجر';
+
+  @override
+  String get serviceListingPickupTitle => 'استلم بنفسك';
+
+  @override
+  String get serviceCategoryDesserts => 'الحلويات';
+
+  @override
+  String get serviceCategoryGrills => 'المشويات';
+
+  @override
+  String get serviceCategoryPizza => 'البيتزا';
+
+  @override
+  String get serviceCategoryFastFood => 'وجبات سريعة';
+
+  @override
+  String get serviceCategoryBurger => 'برجر';
+
+  @override
+  String get serviceCategoryShawarma => 'شاورما';
+
+  @override
+  String get serviceCategoryRoasters => 'محمصات';
+
+  @override
+  String get serviceCategoryFruitsVegetables => 'فاكهة وخضار';
+
+  @override
+  String get serviceCategoryDairy => 'الألبان';
+
+  @override
+  String get serviceCategorySnacks => 'تسالي';
+
+  @override
+  String get serviceCategorySupermarket => 'سوبر ماركت';
+
+  @override
+  String get serviceCategoryFlowers => 'الورود';
+
+  @override
+  String get serviceCategoryPerfumeBeauty => 'عطور و تجميل';
+
+  @override
+  String get serviceLargeStores => 'المتاجر الكبرى';
+
+  @override
+  String get serviceAllPlaces => 'كل الاماكن';
+
+  @override
+  String get serviceFilterTopRated => 'الأعلى تقييماً';
+
+  @override
+  String get serviceFilterOffers => 'العروض';
+
+  @override
+  String get serviceDeliveryTimeRange => '45-30 دقيقة';
+
+  @override
+  String get serviceRestaurantKira => 'مطعم الكيرة';
+
+  @override
+  String get serviceRestaurantAzAlSham => 'مطعم عز الشام';
+
+  @override
+  String get serviceRestaurantDescription => 'شاورما، بيتزا، وجبات شرقي';
+
+  @override
+  String get serviceStoreFathallah => 'فتح الله';
+
+  @override
+  String get serviceStoreCaptain => 'الكابتن';
+
+  @override
+  String get serviceStoreRimasLand => 'ريماس لاند';
+
+  @override
+  String get serviceStoreTaheraFry => 'مقلة الطاهرة';
+
+  @override
+  String get serviceStoreFamilyMarket => 'ماركت فاميلي';
+
+  @override
+  String get serviceCaptainMarket => 'ماركت الكابتن';
+
+  @override
+  String get serviceEmptyTitle => 'لا توجد أماكن حالياً';
+
+  @override
+  String get serviceEmptyMessage => 'ستظهر هنا الأماكن المطابقة قريباً.';
+
+  @override
   String get cartTitle => 'سلة المشتريات';
 
   @override

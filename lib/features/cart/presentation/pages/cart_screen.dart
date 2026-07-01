@@ -260,7 +260,6 @@ class _CartHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               l10n.cartTitle,
@@ -271,9 +270,6 @@ class _CartHeader extends StatelessWidget {
                 fontWeight: FontWeight.w600,
                 height: 1.4,
               ),
-            ),
-            _NotificationButton(
-              onTap: () => context.push(RouteNames.notifications),
             ),
           ],
         ),
@@ -289,39 +285,6 @@ class _CartHeader extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _NotificationButton extends StatelessWidget {
-  const _NotificationButton({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Container(
-        width: 36,
-        height: 36,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: AppColors.surfaceCard(context),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.border(context), width: 0.5),
-        ),
-        child: SvgPicture.asset(
-          AppAssets.mainNotification,
-          width: 24,
-          height: 24,
-          colorFilter: const ColorFilter.mode(
-            AppColors.primary,
-            BlendMode.srcIn,
-          ),
-        ),
-      ),
     );
   }
 }

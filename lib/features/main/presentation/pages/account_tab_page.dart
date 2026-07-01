@@ -11,6 +11,7 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/widgets/liquid_glass_button.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
@@ -157,41 +158,17 @@ class _AccountHeaderBar extends StatelessWidget {
                       height: 1.4,
                     ),
                   ),
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
+                  LiquidGlassButton(
                     onTap: () => context.push(RouteNames.notifications),
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.24),
-                          width: 0.5,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.08),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                          BoxShadow(
-                            color: Colors.white.withValues(alpha: 0.10),
-                            blurRadius: 2,
-                            offset: const Offset(0, -1),
-                          ),
-                        ],
-                      ),
-                      alignment: Alignment.center,
-                      child: SvgPicture.asset(
-                        AppAssets.mainNotification,
-                        width: 24,
-                        height: 24,
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.text,
-                          BlendMode.srcIn,
-                        ),
+                    size: 36,
+                    borderRadius: BorderRadius.circular(10),
+                    child: SvgPicture.asset(
+                      AppAssets.mainNotification,
+                      width: 24,
+                      height: 24,
+                      colorFilter: const ColorFilter.mode(
+                        AppColors.text,
+                        BlendMode.srcIn,
                       ),
                     ),
                   ),

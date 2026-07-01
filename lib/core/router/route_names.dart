@@ -15,6 +15,7 @@ class RouteNames {
   static const home = '/home';
   static const search = '/search';
   static const searchResults = '/search-results';
+  static const serviceListing = '/service-listing/:type';
   static const restaurantList = '/restaurants';
   static const restaurantDetail = '/restaurant/:id';
   static const restaurantRate = '/restaurant/:id/rate';
@@ -47,4 +48,6 @@ class RouteNames {
   static const settings = '/settings';
   static const helpSupport = '/help';
   static const about = '/about';
+
+  static String serviceListingFor(String type) => '/service-listing/$type';
 }

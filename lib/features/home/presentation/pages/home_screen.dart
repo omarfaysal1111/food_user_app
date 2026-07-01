@@ -8,6 +8,8 @@ import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
+import 'package:food_user_app/features/service_listing/presentation/models/service_listing_type.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -256,64 +258,73 @@ class _CategoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 72,
-          height: 72,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            color: AppColors.surfaceCard(context),
-            borderRadius: const BorderRadius.all(Radius.circular(12)),
-            border: Border.all(color: AppColors.border(context), width: 0.5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              const PositionedDirectional(
-                top: 1,
-                start: 0,
-                end: 0,
-                child: AppRasterImage.asset(
-                  AppAssets.homeCategoryStrokeTop,
-                  height: 3,
-                  fit: BoxFit.fill,
+    return InkWell(
+      onTap: () =>
+          context.push(RouteNames.serviceListingFor(category.type.pathSegment)),
+      borderRadius: const BorderRadius.all(Radius.circular(12)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 72,
+            height: 72,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceCard(context),
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+              border: Border.all(color: AppColors.border(context), width: 0.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
-              ),
-              const PositionedDirectional(
-                bottom: 0,
-                start: 0,
-                end: 0,
-                child: AppRasterImage.asset(
-                  AppAssets.homeCategoryStrokeBottom,
-                  height: 2,
-                  fit: BoxFit.fill,
+              ],
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                const PositionedDirectional(
+                  top: 1,
+                  start: 0,
+                  end: 0,
+                  child: AppRasterImage.asset(
+                    AppAssets.homeCategoryStrokeTop,
+                    height: 3,
+                    fit: BoxFit.fill,
+                  ),
                 ),
-              ),
-              AppRasterImage.asset(category.imageAsset, width: 56, height: 56),
-            ],
+                const PositionedDirectional(
+                  bottom: 0,
+                  start: 0,
+                  end: 0,
+                  child: AppRasterImage.asset(
+                    AppAssets.homeCategoryStrokeBottom,
+                    height: 2,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                AppRasterImage.asset(
+                  category.imageAsset,
+                  width: 56,
+                  height: 56,
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Text(
-          category.label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.body(context).copyWith(
-            fontSize: 12,
-            height: 1.3,
-            color: AppColors.onSurface(context),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            category.label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.body(context).copyWith(
+              fontSize: 12,
+              height: 1.3,
+              color: AppColors.onSurface(context),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -828,7 +839,47 @@ class _HomeCopy {
 
   static _HomeCopy of(BuildContext context) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    return isArabic ? _arabic : _english;
+    final l10n = AppLocalizations.of(context)!;
+    return (isArabic ? _arabic : _english)._withCategories([
+      _HomeCategory(
+        label: l10n.homeCategoryRestaurants,
+        imageAsset: AppAssets.homeCategoryRestaurants,
+        type: ServiceListingType.restaurants,
+      ),
+      _HomeCategory(
+        label: l10n.homeCategoryGrocery,
+        imageAsset: AppAssets.homeCategoryGrocery,
+        type: ServiceListingType.grocery,
+      ),
+      _HomeCategory(
+        label: l10n.homeCategoryStores,
+        imageAsset: AppAssets.homeCategoryStore,
+        type: ServiceListingType.stores,
+      ),
+      _HomeCategory(
+        label: l10n.homeCategoryPickup,
+        imageAsset: AppAssets.homeCategoryPickup,
+        type: ServiceListingType.pickup,
+      ),
+    ]);
+  }
+
+  _HomeCopy _withCategories(List<_HomeCategory> categories) {
+    return _HomeCopy(
+      deliveryTo: deliveryTo,
+      address: address,
+      searchHint: searchHint,
+      bannerEyebrow: bannerEyebrow,
+      bannerTitle: bannerTitle,
+      orderNow: orderNow,
+      missedOffersTitle: missedOffersTitle,
+      mostOrderedTitle: mostOrderedTitle,
+      available: available,
+      closed: closed,
+      categories: categories,
+      offers: offers,
+      restaurants: restaurants,
+    );
   }
 
   static const _arabic = _HomeCopy(
@@ -846,15 +897,22 @@ class _HomeCopy {
       _HomeCategory(
         label: 'المطاعم',
         imageAsset: AppAssets.homeCategoryRestaurants,
+        type: ServiceListingType.restaurants,
       ),
       _HomeCategory(
         label: 'البقالة',
         imageAsset: AppAssets.homeCategoryGrocery,
+        type: ServiceListingType.grocery,
       ),
-      _HomeCategory(label: 'المتجر', imageAsset: AppAssets.homeCategoryStore),
+      _HomeCategory(
+        label: 'المتاجر',
+        imageAsset: AppAssets.homeCategoryStore,
+        type: ServiceListingType.stores,
+      ),
       _HomeCategory(
         label: 'استلم بنفسك',
         imageAsset: AppAssets.homeCategoryPickup,
+        type: ServiceListingType.pickup,
       ),
     ],
     offers: [
@@ -929,13 +987,23 @@ class _HomeCopy {
       _HomeCategory(
         label: 'Restaurants',
         imageAsset: AppAssets.homeCategoryRestaurants,
+        type: ServiceListingType.restaurants,
       ),
       _HomeCategory(
         label: 'Grocery',
         imageAsset: AppAssets.homeCategoryGrocery,
+        type: ServiceListingType.grocery,
       ),
-      _HomeCategory(label: 'Stores', imageAsset: AppAssets.homeCategoryStore),
-      _HomeCategory(label: 'Pickup', imageAsset: AppAssets.homeCategoryPickup),
+      _HomeCategory(
+        label: 'Stores',
+        imageAsset: AppAssets.homeCategoryStore,
+        type: ServiceListingType.stores,
+      ),
+      _HomeCategory(
+        label: 'Pickup',
+        imageAsset: AppAssets.homeCategoryPickup,
+        type: ServiceListingType.pickup,
+      ),
     ],
     offers: [
       _HomeOffer(
@@ -996,10 +1064,15 @@ class _HomeCopy {
 }
 
 class _HomeCategory {
-  const _HomeCategory({required this.label, required this.imageAsset});
+  const _HomeCategory({
+    required this.label,
+    required this.imageAsset,
+    required this.type,
+  });
 
   final String label;
   final String imageAsset;
+  final ServiceListingType type;
 }
 
 class _HomeOffer {

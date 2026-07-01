@@ -224,4 +224,51 @@ class AppAssets {
   static const homeStarIcon = 'assets/images/home/home_star_icon.svg';
   static const homeTimeIcon = 'assets/images/home/home_time_icon.svg';
   static const homeFavouriteIcon = 'assets/images/home/home_favourite_icon.svg';
+
+  // ── Shared Service Listing ───────────────────────────────────────────────
+  static const serviceGroceryRoasters =
+      'assets/images/service_listing/grocery_roasters.png';
+  static const serviceRestaurantDesserts =
+      'assets/images/service_listing/restaurant_desserts.png';
+  static const serviceRestaurantGrills =
+      'assets/images/service_listing/restaurant_grills.png';
+  static const serviceRestaurantPizza =
+      'assets/images/service_listing/restaurant_pizza.png';
+  static const serviceRestaurantFastFood =
+      'assets/images/service_listing/restaurant_fast_food.png';
+  static const serviceRestaurantBurger =
+      'assets/images/service_listing/restaurant_burger.png';
+  static const serviceRestaurantShawarma =
+      'assets/images/service_listing/restaurant_shawarma.png';
+  static const serviceGroceryFruitsVegetables =
+      'assets/images/service_listing/grocery_fruits_vegetables.png';
+  static const serviceGroceryDairy =
+      'assets/images/service_listing/grocery_dairy.png';
+  static const serviceGrocerySnacks =
+      'assets/images/service_listing/grocery_snacks.png';
+  static const serviceGrocerySupermarket =
+      'assets/images/service_listing/grocery_supermarket.png';
+  static const serviceGroceryFathallah =
+      'assets/images/service_listing/grocery_fathallah.png';
+  static const serviceGroceryCaptain =
+      'assets/images/service_listing/grocery_captain.png';
+  static const serviceStoresFlowers =
+      'assets/images/service_listing/stores_flowers.png';
+  static const serviceStoresBeauty =
+      'assets/images/service_listing/stores_beauty.png';
+  static const servicePickupRimas =
+      'assets/images/service_listing/pickup_rimas.png';
+  static const servicePickupTahera =
+      'assets/images/service_listing/pickup_tahera.png';
+  static const servicePickupFamily =
+      'assets/images/service_listing/pickup_family.png';
+  static const servicePickupCaptain =
+      'assets/images/service_listing/pickup_captain.png';
+  static const serviceSearchIcon =
+      'assets/images/service_listing/icon_search.svg';
+  static const serviceBackIcon = 'assets/images/service_listing/icon_back.svg';
+  static const serviceTimeIcon = 'assets/images/service_listing/icon_time.svg';
+  static const serviceStarIcon = 'assets/images/service_listing/icon_star.svg';
+  static const serviceFavouriteIcon =
+      'assets/images/service_listing/icon_favourite.svg';
 }

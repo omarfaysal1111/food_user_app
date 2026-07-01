@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/router/route_names.dart';
-import 'package:food_user_app/features/order/presentation/pages/order_detail_screen.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/features/order/presentation/pages/order_detail_screen.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class OrderHistoryScreen extends StatelessWidget {
@@ -64,52 +63,20 @@ class _OrdersHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 36,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.start,
-              style: AppTextStyles.heading4(context).copyWith(
-                color: AppColors.onSurface(context),
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                height: 1.4,
-              ),
-            ),
+      child: Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.start,
+          style: AppTextStyles.heading4(context).copyWith(
+            color: AppColors.onSurface(context),
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            height: 1.4,
           ),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              // TODO: Open notifications from Orders once tab-level actions are finalized.
-            },
-            child: Container(
-              width: 36,
-              height: 36,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppColors.surfaceCard(context),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: AppColors.border(context),
-                  width: 0.5,
-                ),
-              ),
-              child: SvgPicture.asset(
-                AppAssets.mainNotification,
-                width: 24,
-                height: 24,
-                colorFilter: const ColorFilter.mode(
-                  AppColors.primary,
-                  BlendMode.srcIn,
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

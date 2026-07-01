@@ -8,6 +8,7 @@ import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
+import 'package:food_user_app/core/widgets/liquid_glass_button.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
 import 'package:food_user_app/features/restaurant/presentation/mock/restaurant_mock_data.dart';
 
@@ -638,25 +639,15 @@ class _GlassIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white.withValues(alpha: 0.1),
-      borderRadius: const BorderRadius.all(AppRadius.sm),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: const BorderRadius.all(AppRadius.sm),
-        child: SizedBox(
-          width: size,
-          height: size,
-          child: Center(
-            child: Transform.scale(
-              scaleX: mirrorAsset ? -1 : 1,
-              child: AppRasterImage.asset(
-                assetName,
-                width: iconWidth,
-                height: iconHeight,
-              ),
-            ),
-          ),
+    return LiquidGlassButton(
+      onTap: onTap,
+      size: size,
+      child: Transform.scale(
+        scaleX: mirrorAsset ? -1 : 1,
+        child: AppRasterImage.asset(
+          assetName,
+          width: iconWidth,
+          height: iconHeight,
         ),
       ),
     );

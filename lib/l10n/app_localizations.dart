@@ -692,6 +692,246 @@ abstract class AppLocalizations {
   /// **'Account'**
   String get mainTabAccount;
 
+  /// No description provided for @homeCategoryRestaurants.
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurants'**
+  String get homeCategoryRestaurants;
+
+  /// No description provided for @homeCategoryGrocery.
+  ///
+  /// In en, this message translates to:
+  /// **'Grocery'**
+  String get homeCategoryGrocery;
+
+  /// No description provided for @homeCategoryStores.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores'**
+  String get homeCategoryStores;
+
+  /// No description provided for @homeCategoryPickup.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup'**
+  String get homeCategoryPickup;
+
+  /// No description provided for @serviceSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for what you love'**
+  String get serviceSearchHint;
+
+  /// No description provided for @serviceAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get serviceAvailable;
+
+  /// No description provided for @serviceClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get serviceClosed;
+
+  /// No description provided for @serviceListingRestaurantsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurants'**
+  String get serviceListingRestaurantsTitle;
+
+  /// No description provided for @serviceListingGroceryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Grocery'**
+  String get serviceListingGroceryTitle;
+
+  /// No description provided for @serviceListingStoresTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores'**
+  String get serviceListingStoresTitle;
+
+  /// No description provided for @serviceListingPickupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup'**
+  String get serviceListingPickupTitle;
+
+  /// No description provided for @serviceCategoryDesserts.
+  ///
+  /// In en, this message translates to:
+  /// **'Desserts'**
+  String get serviceCategoryDesserts;
+
+  /// No description provided for @serviceCategoryGrills.
+  ///
+  /// In en, this message translates to:
+  /// **'Grills'**
+  String get serviceCategoryGrills;
+
+  /// No description provided for @serviceCategoryPizza.
+  ///
+  /// In en, this message translates to:
+  /// **'Pizza'**
+  String get serviceCategoryPizza;
+
+  /// No description provided for @serviceCategoryFastFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast food'**
+  String get serviceCategoryFastFood;
+
+  /// No description provided for @serviceCategoryBurger.
+  ///
+  /// In en, this message translates to:
+  /// **'Burger'**
+  String get serviceCategoryBurger;
+
+  /// No description provided for @serviceCategoryShawarma.
+  ///
+  /// In en, this message translates to:
+  /// **'Shawarma'**
+  String get serviceCategoryShawarma;
+
+  /// No description provided for @serviceCategoryRoasters.
+  ///
+  /// In en, this message translates to:
+  /// **'Roasters'**
+  String get serviceCategoryRoasters;
+
+  /// No description provided for @serviceCategoryFruitsVegetables.
+  ///
+  /// In en, this message translates to:
+  /// **'Fruits & vegetables'**
+  String get serviceCategoryFruitsVegetables;
+
+  /// No description provided for @serviceCategoryDairy.
+  ///
+  /// In en, this message translates to:
+  /// **'Dairy'**
+  String get serviceCategoryDairy;
+
+  /// No description provided for @serviceCategorySnacks.
+  ///
+  /// In en, this message translates to:
+  /// **'Snacks'**
+  String get serviceCategorySnacks;
+
+  /// No description provided for @serviceCategorySupermarket.
+  ///
+  /// In en, this message translates to:
+  /// **'Supermarket'**
+  String get serviceCategorySupermarket;
+
+  /// No description provided for @serviceCategoryFlowers.
+  ///
+  /// In en, this message translates to:
+  /// **'Flowers'**
+  String get serviceCategoryFlowers;
+
+  /// No description provided for @serviceCategoryPerfumeBeauty.
+  ///
+  /// In en, this message translates to:
+  /// **'Perfume & beauty'**
+  String get serviceCategoryPerfumeBeauty;
+
+  /// No description provided for @serviceLargeStores.
+  ///
+  /// In en, this message translates to:
+  /// **'Large stores'**
+  String get serviceLargeStores;
+
+  /// No description provided for @serviceAllPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'All places'**
+  String get serviceAllPlaces;
+
+  /// No description provided for @serviceFilterTopRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Top rated'**
+  String get serviceFilterTopRated;
+
+  /// No description provided for @serviceFilterOffers.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers'**
+  String get serviceFilterOffers;
+
+  /// No description provided for @serviceDeliveryTimeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'30-45 min'**
+  String get serviceDeliveryTimeRange;
+
+  /// No description provided for @serviceRestaurantKira.
+  ///
+  /// In en, this message translates to:
+  /// **'Al Kira Restaurant'**
+  String get serviceRestaurantKira;
+
+  /// No description provided for @serviceRestaurantAzAlSham.
+  ///
+  /// In en, this message translates to:
+  /// **'Az Al Sham Restaurant'**
+  String get serviceRestaurantAzAlSham;
+
+  /// No description provided for @serviceRestaurantDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Shawarma, pizza, oriental meals'**
+  String get serviceRestaurantDescription;
+
+  /// No description provided for @serviceStoreFathallah.
+  ///
+  /// In en, this message translates to:
+  /// **'Fathallah'**
+  String get serviceStoreFathallah;
+
+  /// No description provided for @serviceStoreCaptain.
+  ///
+  /// In en, this message translates to:
+  /// **'Al Captain'**
+  String get serviceStoreCaptain;
+
+  /// No description provided for @serviceStoreRimasLand.
+  ///
+  /// In en, this message translates to:
+  /// **'Rimas Land'**
+  String get serviceStoreRimasLand;
+
+  /// No description provided for @serviceStoreTaheraFry.
+  ///
+  /// In en, this message translates to:
+  /// **'Al Tahera Fry'**
+  String get serviceStoreTaheraFry;
+
+  /// No description provided for @serviceStoreFamilyMarket.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Market'**
+  String get serviceStoreFamilyMarket;
+
+  /// No description provided for @serviceCaptainMarket.
+  ///
+  /// In en, this message translates to:
+  /// **'Captain Market'**
+  String get serviceCaptainMarket;
+
+  /// No description provided for @serviceEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No places yet'**
+  String get serviceEmptyTitle;
+
+  /// No description provided for @serviceEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Matching places will appear here soon.'**
+  String get serviceEmptyMessage;
+
   /// No description provided for @cartTitle.
   ///
   /// In en, this message translates to:

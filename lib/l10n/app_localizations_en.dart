@@ -324,6 +324,126 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mainTabAccount => 'Account';
 
   @override
+  String get homeCategoryRestaurants => 'Restaurants';
+
+  @override
+  String get homeCategoryGrocery => 'Grocery';
+
+  @override
+  String get homeCategoryStores => 'Stores';
+
+  @override
+  String get homeCategoryPickup => 'Pickup';
+
+  @override
+  String get serviceSearchHint => 'Search for what you love';
+
+  @override
+  String get serviceAvailable => 'Open';
+
+  @override
+  String get serviceClosed => 'Closed';
+
+  @override
+  String get serviceListingRestaurantsTitle => 'Restaurants';
+
+  @override
+  String get serviceListingGroceryTitle => 'Grocery';
+
+  @override
+  String get serviceListingStoresTitle => 'Stores';
+
+  @override
+  String get serviceListingPickupTitle => 'Pickup';
+
+  @override
+  String get serviceCategoryDesserts => 'Desserts';
+
+  @override
+  String get serviceCategoryGrills => 'Grills';
+
+  @override
+  String get serviceCategoryPizza => 'Pizza';
+
+  @override
+  String get serviceCategoryFastFood => 'Fast food';
+
+  @override
+  String get serviceCategoryBurger => 'Burger';
+
+  @override
+  String get serviceCategoryShawarma => 'Shawarma';
+
+  @override
+  String get serviceCategoryRoasters => 'Roasters';
+
+  @override
+  String get serviceCategoryFruitsVegetables => 'Fruits & vegetables';
+
+  @override
+  String get serviceCategoryDairy => 'Dairy';
+
+  @override
+  String get serviceCategorySnacks => 'Snacks';
+
+  @override
+  String get serviceCategorySupermarket => 'Supermarket';
+
+  @override
+  String get serviceCategoryFlowers => 'Flowers';
+
+  @override
+  String get serviceCategoryPerfumeBeauty => 'Perfume & beauty';
+
+  @override
+  String get serviceLargeStores => 'Large stores';
+
+  @override
+  String get serviceAllPlaces => 'All places';
+
+  @override
+  String get serviceFilterTopRated => 'Top rated';
+
+  @override
+  String get serviceFilterOffers => 'Offers';
+
+  @override
+  String get serviceDeliveryTimeRange => '30-45 min';
+
+  @override
+  String get serviceRestaurantKira => 'Al Kira Restaurant';
+
+  @override
+  String get serviceRestaurantAzAlSham => 'Az Al Sham Restaurant';
+
+  @override
+  String get serviceRestaurantDescription => 'Shawarma, pizza, oriental meals';
+
+  @override
+  String get serviceStoreFathallah => 'Fathallah';
+
+  @override
+  String get serviceStoreCaptain => 'Al Captain';
+
+  @override
+  String get serviceStoreRimasLand => 'Rimas Land';
+
+  @override
+  String get serviceStoreTaheraFry => 'Al Tahera Fry';
+
+  @override
+  String get serviceStoreFamilyMarket => 'Family Market';
+
+  @override
+  String get serviceCaptainMarket => 'Captain Market';
+
+  @override
+  String get serviceEmptyTitle => 'No places yet';
+
+  @override
+  String get serviceEmptyMessage => 'Matching places will appear here soon.';
+
+  @override
   String get cartTitle => 'Cart';
 
   @override

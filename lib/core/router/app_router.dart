@@ -16,7 +16,6 @@ import '../../features/auth/presentation/pages/terms_and_conditions_screen.dart'
 import '../../features/main/presentation/pages/main_layout.dart';
 import '../../features/home/presentation/pages/search_screen.dart';
 import '../../features/home/presentation/pages/search_results_screen.dart';
-import '../../features/restaurant/presentation/pages/restaurant_list_screen.dart';
 import '../../features/restaurant/presentation/pages/restaurant_detail_screen.dart';
 import '../../features/restaurant/presentation/pages/restaurant_rate_screen.dart';
 import '../../features/restaurant/presentation/pages/restaurant_search_screen.dart';
@@ -48,6 +47,8 @@ import '../../features/notifications/presentation/pages/notifications_screen.dar
 import '../../features/profile/presentation/pages/settings_screen.dart';
 import '../../features/support/presentation/pages/help_support_screen.dart';
 import '../../features/support/presentation/pages/about_screen.dart';
+import '../../features/service_listing/presentation/models/service_listing_type.dart';
+import '../../features/service_listing/presentation/pages/service_listing_screen.dart';
 
 class AppRouter {
   AppRouter._();
@@ -126,8 +127,15 @@ class AppRouter {
         builder: (c, s) => const SearchResultsScreen(),
       ),
       GoRoute(
+        path: RouteNames.serviceListing,
+        builder: (c, s) => ServiceListingScreen(
+          type: ServiceListingType.fromPathSegment(s.pathParameters['type']),
+        ),
+      ),
+      GoRoute(
         path: RouteNames.restaurantList,
-        builder: (c, s) => const RestaurantListScreen(),
+        builder: (c, s) =>
+            const ServiceListingScreen(type: ServiceListingType.restaurants),
       ),
       GoRoute(
         path: RouteNames.restaurantDetail,
