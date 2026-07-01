@@ -7,9 +7,18 @@ import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
+import 'package:food_user_app/features/profile/domain/models/saved_address.dart';
+import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 enum AddressFlowMode { add, edit }
+
+class ProfileAddressDetailsArgs {
+  const ProfileAddressDetailsArgs({this.addressId, this.mapResult});
+
+  final String? addressId;
+  final MapPickerResult? mapResult;
+}
 
 class AddressMapSelectionScreen extends StatelessWidget {
   const AddressMapSelectionScreen({super.key, required this.mode});
@@ -76,9 +85,15 @@ class AddressMapSelectionScreen extends StatelessWidget {
 }
 
 class AddressDetailsScreen extends StatelessWidget {
-  const AddressDetailsScreen({super.key, required this.mode, this.mapResult});
+  const AddressDetailsScreen({
+    super.key,
+    required this.mode,
+    this.addressId,
+    this.mapResult,
+  });
 
   final AddressFlowMode mode;
+  final String? addressId;
   final MapPickerResult? mapResult;
 
   static const _screenPadding = 16.0;
@@ -94,6 +109,14 @@ class AddressDetailsScreen extends StatelessWidget {
     final snackMessage = isEdit
         ? l10n.addressUpdatedDesignOnly
         : l10n.addressSavedDesignOnly;
+    final addressesController = SavedAddressesScope.of(context);
+    final editedAddress = addressId == null
+        ? addressesController.selectedAddress
+        : addressesController.addressById(addressId!);
+    final previewAddress =
+        mapResult?.address ??
+        editedAddress?.location(Localizations.localeOf(context)) ??
+        l10n.deliveryAddress;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
@@ -118,9 +141,7 @@ class AddressDetailsScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _CurrentAddressPreview(
-                      address: mapResult?.address ?? l10n.deliveryAddress,
-                    ),
+                    _CurrentAddressPreview(address: previewAddress),
                     const SizedBox(height: 16),
                     _AddressInputField(
                       hint: l10n.building,
@@ -154,6 +175,12 @@ class AddressDetailsScreen extends StatelessWidget {
             _AddressBottomBar(
               label: buttonLabel,
               onTap: () {
+                _submitAddress(
+                  context: context,
+                  mode: mode,
+                  existingAddress: editedAddress,
+                  mapResult: mapResult,
+                );
                 ScaffoldMessenger.of(
                   context,
                 ).showSnackBar(SnackBar(content: Text(snackMessage)));
@@ -165,6 +192,51 @@ class AddressDetailsScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _submitAddress({
+    required BuildContext context,
+    required AddressFlowMode mode,
+    required SavedAddress? existingAddress,
+    required MapPickerResult? mapResult,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = SavedAddressesScope.of(context);
+    final locale = Localizations.localeOf(context);
+    final location =
+        mapResult?.address ??
+        existingAddress?.location(locale) ??
+        l10n.deliveryAddress;
+    final latitude =
+        mapResult?.latitude ?? existingAddress?.latitude ?? 30.0444;
+    final longitude =
+        mapResult?.longitude ?? existingAddress?.longitude ?? 31.2357;
+
+    if (mode == AddressFlowMode.edit && existingAddress != null) {
+      controller.updateAddress(
+        existingAddress.copyWith(
+          locationAr: location,
+          locationEn: location,
+          latitude: latitude,
+          longitude: longitude,
+        ),
+      );
+      return;
+    }
+
+    controller.addAddress(
+      SavedAddress(
+        id: 'address-${DateTime.now().microsecondsSinceEpoch}',
+        titleAr: l10n.apartmentAddressTitle,
+        titleEn: 'Apartment',
+        detailsAr: l10n.sampleAddressMeta,
+        detailsEn: 'Building details',
+        locationAr: location,
+        locationEn: location,
+        latitude: latitude,
+        longitude: longitude,
       ),
     );
   }

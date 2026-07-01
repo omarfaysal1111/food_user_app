@@ -1814,6 +1814,12 @@ abstract class AppLocalizations {
   /// **'Your current address'**
   String get selectedLocation;
 
+  /// No description provided for @selectDeliveryAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Select delivery address'**
+  String get selectDeliveryAddress;
+
   /// No description provided for @searchForAddress.
   ///
   /// In en, this message translates to:

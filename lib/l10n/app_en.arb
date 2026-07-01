@@ -327,6 +327,7 @@
   "addressUpdatedDesignOnly": "Address updated for design preview",
   "chooseLocation": "Select Location",
   "selectedLocation": "Your current address",
+  "selectDeliveryAddress": "Select delivery address",
   "searchForAddress": "Search for your location",
   "currentLocation": "Current location",
   "deliveryAddress": "New Cairo, Madinaty, Al Zuhour District",

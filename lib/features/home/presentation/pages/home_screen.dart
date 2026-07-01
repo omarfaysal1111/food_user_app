@@ -8,6 +8,7 @@ import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
+import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_type.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
@@ -132,51 +133,56 @@ class _LocationRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          copy.deliveryTo,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.left,
-          style: AppTextStyles.caption(context).copyWith(
-            color: Colors.white.withValues(alpha: 0.72),
-            fontSize: 10,
-            height: 1.25,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => context.push(RouteNames.addressBook),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            copy.deliveryTo,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.start,
+            style: AppTextStyles.caption(context).copyWith(
+              color: Colors.white.withValues(alpha: 0.72),
+              fontSize: 10,
+              height: 1.25,
+            ),
           ),
-        ),
-        const SizedBox(height: 4),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          textDirection: TextDirection.rtl,
-          children: [
-            const Icon(
-              Icons.location_on_rounded,
-              size: 16,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              copy.address,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.right,
-              style: AppTextStyles.body(
-                context,
-              ).copyWith(color: Colors.white, fontSize: 12, height: 1.3),
-            ),
-            const SizedBox(width: 4),
-            const Icon(
-              Icons.keyboard_arrow_down_rounded,
-              size: 16,
-              color: Colors.white,
-            ),
-          ],
-        ),
-      ],
+          const SizedBox(height: 4),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.location_on_rounded,
+                size: 16,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  copy.address,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.start,
+                  style: AppTextStyles.body(
+                    context,
+                  ).copyWith(color: Colors.white, fontSize: 12, height: 1.3),
+                ),
+              ),
+              const SizedBox(width: 4),
+              const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: 16,
+                color: Colors.white,
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -839,7 +845,11 @@ class _HomeCopy {
 
   static _HomeCopy of(BuildContext context) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final locale = Localizations.localeOf(context);
     final l10n = AppLocalizations.of(context)!;
+    final selectedAddress = SavedAddressesScope.of(
+      context,
+    ).selectedAddress?.shortLocation(locale);
     return (isArabic ? _arabic : _english)._withCategories([
       _HomeCategory(
         label: l10n.homeCategoryRestaurants,
@@ -861,10 +871,13 @@ class _HomeCopy {
         imageAsset: AppAssets.homeCategoryPickup,
         type: ServiceListingType.pickup,
       ),
-    ]);
+    ], address: selectedAddress ?? l10n.selectDeliveryAddress);
   }
 
-  _HomeCopy _withCategories(List<_HomeCategory> categories) {
+  _HomeCopy _withCategories(
+    List<_HomeCategory> categories, {
+    required String address,
+  }) {
     return _HomeCopy(
       deliveryTo: deliveryTo,
       address: address,
@@ -884,7 +897,7 @@ class _HomeCopy {
 
   static const _arabic = _HomeCopy(
     deliveryTo: 'التوصيل إلى',
-    address: 'مدينتي، حي الزهور',
+    address: '',
     searchHint: 'إبحث عن ما تحب',
     bannerEyebrow: 'فاتح اللذة',
     bannerTitle: 'برجر\nمميز',
@@ -974,7 +987,7 @@ class _HomeCopy {
 
   static const _english = _HomeCopy(
     deliveryTo: 'Deliver to',
-    address: 'Madinaty, Al Zuhour District',
+    address: '',
     searchHint: 'Search for what you love',
     bannerEyebrow: 'Taste unlocked',
     bannerTitle: 'Special\nBurger',

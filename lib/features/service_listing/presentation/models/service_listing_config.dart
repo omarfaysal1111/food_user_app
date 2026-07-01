@@ -9,7 +9,7 @@ class ServiceListingConfig {
     required this.title,
     required this.searchHint,
     required this.categories,
-    required this.sections,
+    required this.groups,
     this.filters = const [],
   });
 
@@ -18,7 +18,7 @@ class ServiceListingConfig {
   final String searchHint;
   final List<ServiceCategoryData> categories;
   final List<ServiceFilterData> filters;
-  final List<ServiceSectionData> sections;
+  final List<ServiceListingGroupData> groups;
 
   static ServiceListingConfig of(
     AppLocalizations l10n,
@@ -36,15 +36,18 @@ class ServiceListingConfig {
     final kira = ServicePlaceData.restaurant(
       name: l10n.serviceRestaurantKira,
       subtitle: l10n.serviceRestaurantDescription,
-      time: l10n.serviceDeliveryTimeRange,
+      time: _text(l10n, ar: '30-45 دقيقة', en: '30-45 min'),
       imageAsset: AppAssets.homeRestaurantCover,
+      rating: '4.6',
     );
     final azAlSham = ServicePlaceData.restaurant(
       name: l10n.serviceRestaurantAzAlSham,
       subtitle: l10n.serviceRestaurantDescription,
-      time: l10n.serviceDeliveryTimeRange,
+      time: _text(l10n, ar: '25-40 دقيقة', en: '25-40 min'),
       imageAsset: AppAssets.favoriteRestaurantAzAlSham,
+      rating: '4.8',
     );
+    final restaurantMocks = [kira, azAlSham];
 
     return ServiceListingConfig(
       type: ServiceListingType.restaurants,
@@ -77,41 +80,36 @@ class ServiceListingConfig {
           imageAsset: AppAssets.serviceRestaurantShawarma,
         ),
       ],
-      sections: [
-        ServiceSectionData(
-          title: l10n.serviceAllPlaces,
-          layout: ServiceSectionLayout.list,
-          items: [kira, azAlSham],
-        ),
-        ServiceSectionData(
+      groups: [
+        ServiceListingGroupData(
           title: l10n.serviceCategoryDesserts,
-          layout: ServiceSectionLayout.list,
-          items: [azAlSham],
+          layout: ServiceListingLayout.list,
+          items: _repeat(restaurantMocks, 5),
         ),
-        ServiceSectionData(
+        ServiceListingGroupData(
           title: l10n.serviceCategoryGrills,
-          layout: ServiceSectionLayout.list,
-          items: [kira],
+          layout: ServiceListingLayout.list,
+          items: _repeat(restaurantMocks.reversed.toList(), 5),
         ),
-        ServiceSectionData(
+        ServiceListingGroupData(
           title: l10n.serviceCategoryPizza,
-          layout: ServiceSectionLayout.list,
-          items: [azAlSham],
+          layout: ServiceListingLayout.list,
+          items: _repeat([azAlSham, kira], 4),
         ),
-        ServiceSectionData(
+        ServiceListingGroupData(
           title: l10n.serviceCategoryFastFood,
-          layout: ServiceSectionLayout.list,
-          items: [kira],
+          layout: ServiceListingLayout.list,
+          items: _repeat([kira, azAlSham], 4),
         ),
-        ServiceSectionData(
+        ServiceListingGroupData(
           title: l10n.serviceCategoryBurger,
-          layout: ServiceSectionLayout.list,
-          items: [azAlSham],
+          layout: ServiceListingLayout.list,
+          items: _repeat([azAlSham, kira], 4),
         ),
-        ServiceSectionData(
+        ServiceListingGroupData(
           title: l10n.serviceCategoryShawarma,
-          layout: ServiceSectionLayout.list,
-          items: [kira],
+          layout: ServiceListingLayout.list,
+          items: _repeat([kira, azAlSham], 4),
         ),
       ],
     );
@@ -120,14 +118,17 @@ class ServiceListingConfig {
   static ServiceListingConfig _grocery(AppLocalizations l10n) {
     final captain = ServicePlaceData.store(
       name: l10n.serviceStoreCaptain,
-      time: l10n.serviceDeliveryTimeRange,
+      time: _text(l10n, ar: '30-45 دقيقة', en: '30-45 min'),
       imageAsset: AppAssets.serviceGroceryCaptain,
+      rating: '4.5',
     );
     final fathallah = ServicePlaceData.store(
       name: l10n.serviceStoreFathallah,
-      time: l10n.serviceDeliveryTimeRange,
+      time: _text(l10n, ar: '30-45 دقيقة', en: '30-45 min'),
       imageAsset: AppAssets.serviceGroceryFathallah,
+      rating: '4.6',
     );
+    final groceryMocks = [captain, fathallah];
 
     return ServiceListingConfig(
       type: ServiceListingType.grocery,
@@ -156,36 +157,31 @@ class ServiceListingConfig {
           imageAsset: AppAssets.serviceGroceryRoasters,
         ),
       ],
-      sections: [
-        ServiceSectionData(
-          title: l10n.serviceAllPlaces,
-          layout: ServiceSectionLayout.compactGrid,
-          items: [captain, fathallah],
-        ),
-        ServiceSectionData(
+      groups: [
+        ServiceListingGroupData(
           title: l10n.serviceCategorySupermarket,
-          layout: ServiceSectionLayout.compactGrid,
-          items: [captain, fathallah],
+          layout: ServiceListingLayout.compactGrid,
+          items: _repeat(groceryMocks, 5),
         ),
-        ServiceSectionData(
+        ServiceListingGroupData(
           title: l10n.serviceCategorySnacks,
-          layout: ServiceSectionLayout.compactGrid,
-          items: [captain],
+          layout: ServiceListingLayout.compactGrid,
+          items: _repeat([captain, fathallah], 4),
         ),
-        ServiceSectionData(
+        ServiceListingGroupData(
           title: l10n.serviceCategoryDairy,
-          layout: ServiceSectionLayout.compactGrid,
-          items: [fathallah],
+          layout: ServiceListingLayout.compactGrid,
+          items: _repeat([fathallah, captain], 4),
         ),
-        ServiceSectionData(
+        ServiceListingGroupData(
           title: l10n.serviceCategoryFruitsVegetables,
-          layout: ServiceSectionLayout.compactGrid,
-          items: [captain],
+          layout: ServiceListingLayout.compactGrid,
+          items: _repeat([captain, fathallah], 4),
         ),
-        ServiceSectionData(
+        ServiceListingGroupData(
           title: l10n.serviceCategoryRoasters,
-          layout: ServiceSectionLayout.compactGrid,
-          items: [fathallah],
+          layout: ServiceListingLayout.compactGrid,
+          items: _repeat([fathallah, captain], 4),
         ),
       ],
     );
@@ -194,15 +190,16 @@ class ServiceListingConfig {
   static ServiceListingConfig _stores(AppLocalizations l10n) {
     final beauty = ServicePlaceData.store(
       name: l10n.serviceCategoryPerfumeBeauty,
-      time: l10n.serviceDeliveryTimeRange,
+      time: _text(l10n, ar: '35-50 دقيقة', en: '35-50 min'),
       imageAsset: AppAssets.serviceStoresBeauty,
+      rating: '4.5',
     );
     final flowers = ServicePlaceData.store(
       name: l10n.serviceCategoryFlowers,
-      time: l10n.serviceDeliveryTimeRange,
+      time: _text(l10n, ar: '25-40 دقيقة', en: '25-40 min'),
       imageAsset: AppAssets.serviceStoresFlowers,
+      rating: '4.7',
     );
-
     return ServiceListingConfig(
       type: ServiceListingType.stores,
       title: l10n.serviceListingStoresTitle,
@@ -218,21 +215,16 @@ class ServiceListingConfig {
           imageAsset: AppAssets.serviceStoresFlowers,
         ),
       ],
-      sections: [
-        ServiceSectionData(
-          title: l10n.serviceAllPlaces,
-          layout: ServiceSectionLayout.list,
-          items: [beauty, flowers],
-        ),
-        ServiceSectionData(
+      groups: [
+        ServiceListingGroupData(
           title: l10n.serviceCategoryPerfumeBeauty,
-          layout: ServiceSectionLayout.list,
-          items: [beauty],
+          layout: ServiceListingLayout.list,
+          items: _repeat([beauty, flowers], 10),
         ),
-        ServiceSectionData(
+        ServiceListingGroupData(
           title: l10n.serviceCategoryFlowers,
-          layout: ServiceSectionLayout.list,
-          items: [flowers],
+          layout: ServiceListingLayout.list,
+          items: _repeat([flowers, beauty], 10),
         ),
       ],
     );
@@ -256,43 +248,62 @@ class ServiceListingConfig {
           selected: true,
         ),
       ],
-      sections: [
-        ServiceSectionData(
+      groups: [
+        ServiceListingGroupData(
           title: l10n.serviceAllPlaces,
-          layout: ServiceSectionLayout.list,
+          layout: ServiceListingLayout.list,
           items: [
             ServicePlaceData.pickup(
               name: l10n.serviceStoreRimasLand,
-              time: l10n.serviceDeliveryTimeRange,
+              time: _text(l10n, ar: '30-45 دقيقة', en: '30-45 min'),
               imageAsset: AppAssets.servicePickupRimas,
+              rating: '4.5',
               hasOffer: true,
               topRated: true,
             ),
             ServicePlaceData.pickup(
               name: l10n.serviceStoreTaheraFry,
-              time: l10n.serviceDeliveryTimeRange,
+              time: _text(l10n, ar: '30-45 دقيقة', en: '30-45 min'),
               imageAsset: AppAssets.servicePickupTahera,
-              hasOffer: false,
+              rating: '4.5',
+              hasOffer: true,
               topRated: true,
             ),
             ServicePlaceData.pickup(
               name: l10n.serviceStoreFamilyMarket,
-              time: l10n.serviceDeliveryTimeRange,
+              time: _text(l10n, ar: '30-45 دقيقة', en: '30-45 min'),
               imageAsset: AppAssets.servicePickupFamily,
+              rating: '4.5',
               hasOffer: true,
-              topRated: false,
+              topRated: true,
             ),
             ServicePlaceData.pickup(
               name: l10n.serviceCaptainMarket,
-              time: l10n.serviceDeliveryTimeRange,
+              time: _text(l10n, ar: '30-45 دقيقة', en: '30-45 min'),
               imageAsset: AppAssets.servicePickupCaptain,
-              hasOffer: false,
-              topRated: false,
+              rating: '4.5',
+              hasOffer: true,
+              topRated: true,
             ),
           ],
         ),
       ],
     );
+  }
+
+  static String _text(
+    AppLocalizations l10n, {
+    required String ar,
+    required String en,
+  }) {
+    return l10n.localeName.startsWith('ar') ? ar : en;
+  }
+
+  static List<ServicePlaceData> _repeat(
+    List<ServicePlaceData> items,
+    int count,
+  ) {
+    return List.generate(count, (index) => items[index % items.length]);
   }
 }
 
@@ -326,19 +337,19 @@ class ServiceFilterData {
 
 enum ServiceFilterId { offers, topRated }
 
-class ServiceSectionData {
-  const ServiceSectionData({
+class ServiceListingGroupData {
+  const ServiceListingGroupData({
     required this.title,
     required this.layout,
     required this.items,
   });
 
   final String title;
-  final ServiceSectionLayout layout;
+  final ServiceListingLayout layout;
   final List<ServicePlaceData> items;
 }
 
-enum ServiceSectionLayout { list, compactGrid }
+enum ServiceListingLayout { list, compactGrid }
 
 enum ServicePlaceKind { restaurant, store, pickup }
 
@@ -348,8 +359,10 @@ class ServicePlaceData {
     required this.name,
     required this.time,
     required this.imageAsset,
+    required this.rating,
     this.hasOffer = false,
     this.topRated = true,
+    this.showFavourite = false,
     this.subtitle,
   });
 
@@ -358,6 +371,7 @@ class ServicePlaceData {
     required String subtitle,
     required String time,
     required String imageAsset,
+    required String rating,
   }) {
     return ServicePlaceData._(
       kind: ServicePlaceKind.restaurant,
@@ -365,6 +379,7 @@ class ServicePlaceData {
       subtitle: subtitle,
       time: time,
       imageAsset: imageAsset,
+      rating: rating,
     );
   }
 
@@ -372,12 +387,16 @@ class ServicePlaceData {
     required String name,
     required String time,
     required String imageAsset,
+    required String rating,
+    bool showFavourite = false,
   }) {
     return ServicePlaceData._(
       kind: ServicePlaceKind.store,
       name: name,
       time: time,
       imageAsset: imageAsset,
+      rating: rating,
+      showFavourite: showFavourite,
     );
   }
 
@@ -385,6 +404,7 @@ class ServicePlaceData {
     required String name,
     required String time,
     required String imageAsset,
+    required String rating,
     bool hasOffer = false,
     bool topRated = true,
   }) {
@@ -393,6 +413,7 @@ class ServicePlaceData {
       name: name,
       time: time,
       imageAsset: imageAsset,
+      rating: rating,
       hasOffer: hasOffer,
       topRated: topRated,
     );
@@ -402,7 +423,9 @@ class ServicePlaceData {
   final String name;
   final String time;
   final String imageAsset;
+  final String rating;
   final bool hasOffer;
   final bool topRated;
+  final bool showFavourite;
   final String? subtitle;
 }

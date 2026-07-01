@@ -12,10 +12,66 @@ import 'package:food_user_app/core/widgets/liquid_glass_button.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
 import 'package:food_user_app/features/restaurant/presentation/mock/restaurant_mock_data.dart';
 
+class RestaurantDetailArgs {
+  const RestaurantDetailArgs({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.deliveryTime,
+    required this.rating,
+    required this.logoAsset,
+    required this.coverAsset,
+    this.deliveryFee,
+  });
+
+  final String id;
+  final String name;
+  final String description;
+  final String deliveryTime;
+  final double rating;
+  final String logoAsset;
+  final String coverAsset;
+  final String? deliveryFee;
+
+  MockRestaurant toRestaurant() {
+    return MockRestaurant(
+      id: id,
+      nameAr: name,
+      nameEn: name,
+      descriptionAr: description,
+      descriptionEn: description,
+      deliveryTimeAr: deliveryTime,
+      deliveryTimeEn: deliveryTime,
+      deliveryFeeAr: deliveryFee ?? mockRestaurant.deliveryFeeAr,
+      deliveryFeeEn: deliveryFee ?? mockRestaurant.deliveryFeeEn,
+      minimumOrderAr: mockRestaurant.minimumOrderAr,
+      minimumOrderEn: mockRestaurant.minimumOrderEn,
+      addressAr: mockRestaurant.addressAr,
+      addressEn: mockRestaurant.addressEn,
+      previousOrdersAr: mockRestaurant.previousOrdersAr,
+      previousOrdersEn: mockRestaurant.previousOrdersEn,
+      rating: rating,
+      ratingCount: mockRestaurant.ratingCount,
+      logoAsset: logoAsset,
+      coverAsset: coverAsset,
+      categoriesAr: mockRestaurant.categoriesAr,
+      categoriesEn: mockRestaurant.categoriesEn,
+      menu: mockRestaurant.menu,
+      menuSections: mockRestaurant.menuSections,
+      reviews: mockRestaurant.reviews,
+    );
+  }
+}
+
 class RestaurantDetailScreen extends StatefulWidget {
-  const RestaurantDetailScreen({this.restaurantId = 'az-al-sham', super.key});
+  const RestaurantDetailScreen({
+    this.restaurantId = 'az-al-sham',
+    this.restaurant,
+    super.key,
+  });
 
   final String restaurantId;
+  final RestaurantDetailArgs? restaurant;
 
   @override
   State<RestaurantDetailScreen> createState() => _RestaurantDetailScreenState();
@@ -31,8 +87,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   @override
   void initState() {
     super.initState();
+    final restaurant = widget.restaurant?.toRestaurant() ?? mockRestaurant;
     _sectionKeys = List.generate(
-      mockRestaurant.menuSections.length,
+      restaurant.menuSections.length,
       (_) => GlobalKey(),
     );
     _scrollController.addListener(_updateSelectedSectionFromScroll);
@@ -50,7 +107,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context);
     final copy = _RestaurantDetailCopy.of(context);
-    final restaurant = mockRestaurant;
+    final restaurant = widget.restaurant?.toRestaurant() ?? mockRestaurant;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
@@ -60,7 +117,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
           SliverToBoxAdapter(
             child: _RestaurantTopSection(
               hero: _RestaurantHero(
-                title: copy.title,
+                title: restaurant.name(locale),
                 restaurantId: restaurant.id,
                 isFavorite: _isFavorite,
                 onFavoriteTap: () => setState(() => _isFavorite = !_isFavorite),

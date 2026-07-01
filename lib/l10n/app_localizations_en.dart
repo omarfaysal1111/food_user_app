@@ -897,6 +897,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectedLocation => 'Your current address';
 
   @override
+  String get selectDeliveryAddress => 'Select delivery address';
+
+  @override
   String get searchForAddress => 'Search for your location';
 
   @override

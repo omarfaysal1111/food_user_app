@@ -886,6 +886,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get selectedLocation => 'عنوانك الحالي';
 
   @override
+  String get selectDeliveryAddress => 'حدد عنوان التوصيل';
+
+  @override
   String get searchForAddress => 'إبحث على موقعك';
 
   @override

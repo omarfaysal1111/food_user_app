@@ -327,6 +327,7 @@
   "addressUpdatedDesignOnly": "تم تحديث العنوان لمعاينة التصميم",
   "chooseLocation": "تحديد الموقع الجغرافي",
   "selectedLocation": "عنوانك الحالي",
+  "selectDeliveryAddress": "حدد عنوان التوصيل",
   "searchForAddress": "إبحث على موقعك",
   "currentLocation": "الموقع الحالي",
   "deliveryAddress": "القاهره الجديده ، مدينتي ، حي الزهور",

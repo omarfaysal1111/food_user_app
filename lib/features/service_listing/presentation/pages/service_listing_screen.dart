@@ -8,6 +8,7 @@ import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
+import 'package:food_user_app/features/restaurant/presentation/pages/restaurant_detail_screen.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_config.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_type.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
@@ -23,23 +24,17 @@ class ServiceListingScreen extends StatefulWidget {
 
 class _ServiceListingScreenState extends State<ServiceListingScreen> {
   final _scrollController = ScrollController();
+  final _searchController = TextEditingController();
 
   var _selectedCategoryIndex = 0;
   ServiceListingType? _initializedType;
   Set<ServiceFilterId> _activeFilters = const {};
-  List<GlobalKey> _sectionKeys = const [];
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_syncSelectedCategoryWithScroll);
-  }
+  var _searchQuery = '';
 
   @override
   void dispose() {
-    _scrollController
-      ..removeListener(_syncSelectedCategoryWithScroll)
-      ..dispose();
+    _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -48,7 +43,11 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
     final l10n = AppLocalizations.of(context)!;
     final config = ServiceListingConfig.of(l10n, widget.type);
     _initializeSelection(config);
-    final sections = _visibleSections(config);
+    final pickupGroups = _visiblePickupGroups(config);
+    final usesCategoryFilters = _usesCategoryFilters(config);
+    final displayedItems = usesCategoryFilters
+        ? _filteredItems(_displayedItemsForSelectedCategory(config.groups))
+        : null;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
@@ -64,13 +63,17 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                 children: [
                   _ListingHeader(title: config.title),
                   const SizedBox(height: 24),
-                  _ListingSearchBox(hint: config.searchHint),
+                  _ListingSearchBox(
+                    controller: _searchController,
+                    hint: config.searchHint,
+                    onChanged: _onSearchChanged,
+                  ),
                   if (config.categories.isNotEmpty) ...[
                     const SizedBox(height: 16),
                     _ServiceCategoryStrip(
                       categories: config.categories,
                       selectedIndex: _selectedCategoryIndex,
-                      onSelected: _scrollToSection,
+                      onSelected: _selectCategory,
                     ),
                   ],
                   if (config.filters.isNotEmpty) ...[
@@ -81,16 +84,30 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                       onToggle: _toggleFilter,
                     ),
                   ],
-                  for (var index = 0; index < sections.length; index++) ...[
+                  if (displayedItems != null) ...[
                     const SizedBox(height: 16),
-                    _ServiceSection(
-                      key: index < _sectionKeys.length
-                          ? _sectionKeys[index]
-                          : null,
-                      section: sections[index],
+                    _SelectedCategoryTitle(
+                      title: _selectedCategoryTitle(config),
                     ),
+                    const SizedBox(height: 12),
+                    _ServicePlaceCollection(
+                      layout: _layoutForSelectedCategory(config.groups),
+                      items: displayedItems,
+                    ),
+                  ] else
+                    for (
+                      var index = 0;
+                      index < pickupGroups.length;
+                      index++
+                    ) ...[
+                      const SizedBox(height: 16),
+                      _PickupGroup(group: pickupGroups[index]),
+                    ],
+                  if (displayedItems != null && displayedItems.isEmpty) ...[
+                    const SizedBox(height: 88),
+                    _EmptyListingState(l10n: l10n),
                   ],
-                  if (sections.isEmpty) ...[
+                  if (displayedItems == null && pickupGroups.isEmpty) ...[
                     const SizedBox(height: 88),
                     _EmptyListingState(l10n: l10n),
                   ],
@@ -107,7 +124,6 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
     if (_initializedType == config.type) return;
     _initializedType = config.type;
     _selectedCategoryIndex = 0;
-    _sectionKeys = List.generate(config.sections.length, (_) => GlobalKey());
     _activeFilters = {
       for (final filter in config.filters)
         if (filter.selected) filter.id,
@@ -122,67 +138,27 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
     });
   }
 
-  Future<void> _scrollToSection(int index) async {
-    if (index >= _sectionKeys.length) return;
+  void _selectCategory(int index) {
     setState(() => _selectedCategoryIndex = index);
-
-    final sectionContext = _sectionKeys[index].currentContext;
-    if (sectionContext == null) return;
-
-    final renderObject = sectionContext.findRenderObject();
-    if (renderObject is! RenderBox) return;
-
-    final topInset = MediaQuery.paddingOf(context).top + 12;
-    final sectionTop = renderObject.localToGlobal(Offset.zero).dy;
-    final targetOffset = (_scrollController.offset + sectionTop - topInset)
-        .clamp(0.0, _scrollController.position.maxScrollExtent);
-
-    await _scrollController.animateTo(
-      targetOffset,
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOutCubic,
-    );
   }
 
-  void _syncSelectedCategoryWithScroll() {
-    if (!_scrollController.hasClients || _sectionKeys.isEmpty) return;
-
-    final threshold = MediaQuery.paddingOf(context).top + 96;
-    var visibleIndex = _selectedCategoryIndex;
-    var closestDistance = double.infinity;
-
-    for (var i = 0; i < _sectionKeys.length; i++) {
-      final sectionContext = _sectionKeys[i].currentContext;
-      if (sectionContext == null) continue;
-
-      final renderObject = sectionContext.findRenderObject();
-      if (renderObject is! RenderBox) continue;
-
-      final top = renderObject.localToGlobal(Offset.zero).dy;
-      final distance = (top - threshold).abs();
-      if (top <= threshold && distance < closestDistance) {
-        closestDistance = distance;
-        visibleIndex = i;
-      }
-    }
-
-    if (visibleIndex != _selectedCategoryIndex &&
-        visibleIndex < _sectionKeys.length) {
-      setState(() => _selectedCategoryIndex = visibleIndex);
-    }
+  void _onSearchChanged(String value) {
+    setState(() => _searchQuery = value.trim());
   }
 
-  List<ServiceSectionData> _visibleSections(ServiceListingConfig config) {
+  List<ServiceListingGroupData> _visiblePickupGroups(
+    ServiceListingConfig config,
+  ) {
     if (config.type != ServiceListingType.pickup || _activeFilters.isEmpty) {
-      return config.sections;
+      return config.groups;
     }
 
     return [
-      for (final section in config.sections)
-        ServiceSectionData(
-          title: section.title,
-          layout: section.layout,
-          items: section.items.where((item) {
+      for (final group in config.groups)
+        ServiceListingGroupData(
+          title: group.title,
+          layout: group.layout,
+          items: group.items.where((item) {
             final offerMatches =
                 !_activeFilters.contains(ServiceFilterId.offers) ||
                 item.hasOffer;
@@ -193,6 +169,63 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
           }).toList(),
         ),
     ].where((section) => section.items.isNotEmpty).toList();
+  }
+
+  bool _usesCategoryFilters(ServiceListingConfig config) {
+    return config.type != ServiceListingType.pickup &&
+        config.categories.isNotEmpty;
+  }
+
+  ServiceListingLayout _layoutForSelectedCategory(
+    List<ServiceListingGroupData> groups,
+  ) {
+    final selectedGroup = _selectedCategoryGroup(groups);
+    return selectedGroup?.layout ??
+        (groups.isNotEmpty ? groups.first.layout : ServiceListingLayout.list);
+  }
+
+  List<ServicePlaceData> _displayedItemsForSelectedCategory(
+    List<ServiceListingGroupData> groups,
+  ) {
+    if (groups.isEmpty) return const [];
+    if (_selectedCategoryIndex != 0) {
+      return _selectedCategoryGroup(groups)?.items ?? const [];
+    }
+
+    return groups.expand((group) => group.items).toList();
+  }
+
+  List<ServicePlaceData> _filteredItems(List<ServicePlaceData> items) {
+    final query = _searchQuery.toLowerCase();
+    if (query.isEmpty) return items;
+
+    return items.where((item) {
+      final searchableText = [
+        item.name,
+        item.subtitle,
+        item.time,
+        item.rating,
+      ].whereType<String>().join(' ').toLowerCase();
+      return searchableText.contains(query);
+    }).toList();
+  }
+
+  ServiceListingGroupData? _selectedCategoryGroup(
+    List<ServiceListingGroupData> groups,
+  ) {
+    final groupIndex = _selectedCategoryIndex - 1;
+    if (groupIndex < 0 || groupIndex >= groups.length) {
+      return null;
+    }
+    return groups[groupIndex];
+  }
+
+  String _selectedCategoryTitle(ServiceListingConfig config) {
+    if (_selectedCategoryIndex >= 0 &&
+        _selectedCategoryIndex < config.categories.length) {
+      return config.categories[_selectedCategoryIndex].label;
+    }
+    return config.title;
   }
 }
 
@@ -245,9 +278,15 @@ class _ListingHeader extends StatelessWidget {
 }
 
 class _ListingSearchBox extends StatelessWidget {
-  const _ListingSearchBox({required this.hint});
+  const _ListingSearchBox({
+    required this.controller,
+    required this.hint,
+    required this.onChanged,
+  });
 
+  final TextEditingController controller;
   final String hint;
+  final ValueChanged<String> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -269,19 +308,50 @@ class _ListingSearchBox extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(
-              hint,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            child: TextField(
+              controller: controller,
+              onChanged: onChanged,
               textAlign: TextAlign.start,
-              style: AppTextStyles.inputHint(context).copyWith(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                height: 1.3,
+              textInputAction: TextInputAction.search,
+              style: AppTextStyles.body(
+                context,
+              ).copyWith(fontSize: 12, height: 1.3),
+              decoration: InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
+                hintText: hint,
+                hintStyle: AppTextStyles.inputHint(context).copyWith(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  height: 1.3,
+                ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SelectedCategoryTitle extends StatelessWidget {
+  const _SelectedCategoryTitle({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: Text(
+        title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.start,
+        style: AppTextStyles.heading4(
+          context,
+        ).copyWith(fontSize: 15, height: 1.4),
       ),
     );
   }
@@ -332,9 +402,9 @@ class _ServiceCategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: const BorderRadius.all(AppRadius.full),
+      behavior: HitTestBehavior.opaque,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -360,7 +430,9 @@ class _ServiceCategoryChip extends StatelessWidget {
               child: category.imageAsset != null
                   ? AppRasterImage.asset(
                       category.imageAsset!,
-                      fit: BoxFit.cover,
+                      width: 30,
+                      height: 30,
+                      fit: BoxFit.contain,
                     )
                   : Icon(
                       category.fallbackIcon,
@@ -461,31 +533,41 @@ class _ServiceFilterChip extends StatelessWidget {
   }
 }
 
-class _ServiceSection extends StatelessWidget {
-  const _ServiceSection({required this.section, super.key});
+class _PickupGroup extends StatelessWidget {
+  const _PickupGroup({required this.group});
 
-  final ServiceSectionData section;
+  final ServiceListingGroupData group;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _ServiceSectionTitle(title: section.title),
+        _PickupGroupTitle(title: group.title),
         const SizedBox(height: 12),
-        switch (section.layout) {
-          ServiceSectionLayout.compactGrid => _CompactStoreGrid(
-            items: section.items,
-          ),
-          ServiceSectionLayout.list => _PlaceList(items: section.items),
-        },
+        _ServicePlaceCollection(layout: group.layout, items: group.items),
       ],
     );
   }
 }
 
-class _ServiceSectionTitle extends StatelessWidget {
-  const _ServiceSectionTitle({required this.title});
+class _ServicePlaceCollection extends StatelessWidget {
+  const _ServicePlaceCollection({required this.layout, required this.items});
+
+  final ServiceListingLayout layout;
+  final List<ServicePlaceData> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (layout) {
+      ServiceListingLayout.compactGrid => _CompactStoreGrid(items: items),
+      ServiceListingLayout.list => _PlaceList(items: items),
+    };
+  }
+}
+
+class _PickupGroupTitle extends StatelessWidget {
+  const _PickupGroupTitle({required this.title});
 
   final String title;
 
@@ -551,7 +633,7 @@ class _CompactStoreCard extends StatelessWidget {
               item.imageAsset,
               width: 40,
               height: 40,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
             ),
           ),
           const SizedBox(height: 8),
@@ -605,11 +687,10 @@ class _PlaceListTile extends StatelessWidget {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
 
     return InkWell(
-      onTap: item.kind == ServicePlaceKind.restaurant
-          ? () => context.push(
-              RouteNames.restaurantDetail.replaceFirst(':id', 'az-al-sham'),
-            )
-          : null,
+      onTap: () => context.push(
+        RouteNames.restaurantDetail.replaceFirst(':id', item.detailId),
+        extra: item.toRestaurantDetailArgs(),
+      ),
       borderRadius: const BorderRadius.all(AppRadius.sm),
       child: Padding(
         padding: const EdgeInsetsDirectional.symmetric(vertical: 4),
@@ -648,8 +729,6 @@ class _PlaceImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showFavourite = item.kind != ServicePlaceKind.restaurant;
-
     return SizedBox(
       width: 56,
       height: 56,
@@ -659,10 +738,15 @@ class _PlaceImage extends StatelessWidget {
           Positioned.fill(
             child: ClipRRect(
               borderRadius: const BorderRadius.all(AppRadius.md),
-              child: AppRasterImage.asset(item.imageAsset, fit: BoxFit.cover),
+              child: AppRasterImage.asset(
+                item.imageAsset,
+                width: 56,
+                height: 56,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-          if (showFavourite)
+          if (item.showFavourite)
             PositionedDirectional(
               top: 6,
               start: 6,
@@ -722,7 +806,7 @@ class _PlaceDetails extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const _RatingLabel(rating: '4.5'),
+            _RatingLabel(rating: item.rating),
             const SizedBox(width: 12),
             _TimeLabel(time: item.time),
           ],
@@ -851,5 +935,28 @@ class _EmptyListingState extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+extension _ServicePlaceDetailArgs on ServicePlaceData {
+  RestaurantDetailArgs toRestaurantDetailArgs() {
+    return RestaurantDetailArgs(
+      id: detailId,
+      name: name,
+      description: subtitle ?? name,
+      deliveryTime: time,
+      rating: double.tryParse(rating) ?? 4.5,
+      logoAsset: imageAsset,
+      coverAsset: imageAsset,
+    );
+  }
+
+  String get detailId {
+    final normalized = name
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r'\s+'), '-')
+        .replaceAll(RegExp(r'[^a-z0-9\u0600-\u06FF-]'), '');
+    return normalized.isEmpty ? 'service-place' : normalized;
   }
 }

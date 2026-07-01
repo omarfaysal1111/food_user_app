@@ -141,6 +141,9 @@ class AppRouter {
         path: RouteNames.restaurantDetail,
         builder: (c, s) => RestaurantDetailScreen(
           restaurantId: s.pathParameters['id'] ?? 'az-al-sham',
+          restaurant: s.extra is RestaurantDetailArgs
+              ? s.extra as RestaurantDetailArgs
+              : null,
         ),
       ),
       GoRoute(
@@ -261,9 +264,12 @@ class AppRouter {
       GoRoute(
         path: RouteNames.addressBookAddDetails,
         builder: (c, s) {
-          final result = s.extra is MapPickerResult
-              ? s.extra as MapPickerResult
+          final args = s.extra is profile_address.ProfileAddressDetailsArgs
+              ? s.extra as profile_address.ProfileAddressDetailsArgs
               : null;
+          final result =
+              args?.mapResult ??
+              (s.extra is MapPickerResult ? s.extra as MapPickerResult : null);
           return profile_address.AddressDetailsScreen(
             mode: profile_address.AddressFlowMode.add,
             mapResult: result,
@@ -282,11 +288,15 @@ class AppRouter {
       GoRoute(
         path: RouteNames.addressBookEditDetails,
         builder: (c, s) {
-          final result = s.extra is MapPickerResult
-              ? s.extra as MapPickerResult
+          final args = s.extra is profile_address.ProfileAddressDetailsArgs
+              ? s.extra as profile_address.ProfileAddressDetailsArgs
               : null;
+          final result =
+              args?.mapResult ??
+              (s.extra is MapPickerResult ? s.extra as MapPickerResult : null);
           return profile_address.AddressDetailsScreen(
             mode: profile_address.AddressFlowMode.edit,
+            addressId: args?.addressId,
             mapResult: result,
           );
         },

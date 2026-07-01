@@ -104,6 +104,8 @@ flutter:
     - assets/images/
     - assets/images/home/
     - assets/images/service_listing/
+    - assets/images/service_listing/2.0x/
+    - assets/images/service_listing/3.0x/
     - assets/images/icons/main/
     - assets/images/icons/settings/
     - assets/images/icons/general_settings/

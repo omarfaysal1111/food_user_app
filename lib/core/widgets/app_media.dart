@@ -78,12 +78,15 @@ class AppRasterImage extends StatelessWidget {
           error: error,
           stackTrace: stackTrace,
         );
-        return SizedBox(
+        return Container(
           width: width,
           height: height,
+          color: AppColors.surfaceCard(context),
+          alignment: Alignment.center,
           child: Icon(
-            Icons.broken_image_outlined,
-            color: AppColors.paragraph(context),
+            Icons.image_not_supported_outlined,
+            size: 20,
+            color: AppColors.hint(context),
           ),
         );
       },

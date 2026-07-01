@@ -7,6 +7,9 @@ import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
+import 'package:food_user_app/features/profile/domain/models/saved_address.dart';
+import 'package:food_user_app/features/profile/presentation/pages/add_edit_address_screen.dart';
+import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class AddressBookScreen extends StatelessWidget {
@@ -26,7 +29,8 @@ class AddressBookScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final addresses = _savedAddresses(context);
+    final addressesController = SavedAddressesScope.of(context);
+    final addresses = addressesController.addresses;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
@@ -55,7 +59,20 @@ class AddressBookScreen extends StatelessWidget {
                 itemCount: addresses.length,
                 separatorBuilder: (_, _) => const SizedBox(height: _cardGap),
                 itemBuilder: (context, index) {
-                  return _SavedAddressCard(address: addresses[index]);
+                  final address = addresses[index];
+                  return _SavedAddressCard(
+                    address: address,
+                    selected:
+                        address.id == addressesController.selectedAddressId,
+                    onSelected: () {
+                      addressesController.selectAddress(address.id);
+                      if (context.canPop()) {
+                        context.pop();
+                      }
+                    },
+                    onDelete: () =>
+                        addressesController.deleteAddress(address.id),
+                  );
                 },
               ),
             ),
@@ -80,43 +97,6 @@ class AddressBookScreen extends StatelessWidget {
       ),
     );
   }
-
-  List<_SavedAddress> _savedAddresses(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return [
-      _SavedAddress(
-        title: l10n.apartmentAddressTitle,
-        details: l10n.sampleAddressMeta,
-        location: l10n.deliveryAddress,
-        latitude: 30.0444,
-        longitude: 31.2357,
-      ),
-      _SavedAddress(
-        title: l10n.apartmentAddressTitle,
-        details: l10n.sampleAddressMeta,
-        location: l10n.deliveryAddress,
-        latitude: 30.0444,
-        longitude: 31.2357,
-      ),
-    ];
-  }
-}
-
-class _SavedAddress {
-  const _SavedAddress({
-    required this.title,
-    required this.details,
-    required this.location,
-    required this.latitude,
-    required this.longitude,
-  });
-
-  final String title;
-  final String details;
-  final String location;
-  final double latitude;
-  final double longitude;
 }
 
 class _AddressHeader extends StatelessWidget {
@@ -167,129 +147,151 @@ class _AddressHeader extends StatelessWidget {
 }
 
 class _SavedAddressCard extends StatelessWidget {
-  const _SavedAddressCard({required this.address});
+  const _SavedAddressCard({
+    required this.address,
+    required this.selected,
+    required this.onSelected,
+    required this.onDelete,
+  });
 
-  final _SavedAddress address;
+  final SavedAddress address;
+  final bool selected;
+  final VoidCallback onSelected;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context);
 
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard(context),
+    return Material(
+      color: AppColors.surfaceCard(context),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onSelected,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border(context), width: 0.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: selected ? AppColors.primary : AppColors.border(context),
+              width: selected ? 1.5 : 0.5,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SvgPicture.asset(
-                AppAssets.addressHomeIcon,
-                width: 20,
-                height: 20,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset(
+                    AppAssets.addressHomeIcon,
+                    width: 20,
+                    height: 20,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    address.title(locale),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.start,
+                    style: AppTextStyles.body(context).copyWith(
+                      color: AppColors.onSurface(context),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      height: 1.3,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 4),
+              const SizedBox(height: 8),
               Text(
-                address.title,
+                address.details(locale),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.start,
-                style: AppTextStyles.body(context).copyWith(
-                  color: AppColors.onSurface(context),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  height: 1.3,
+                style: AppTextStyles.caption(context).copyWith(
+                  color: AppColors.paragraph(context),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w400,
+                  height: 1.25,
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            address.details,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.start,
-            style: AppTextStyles.caption(context).copyWith(
-              color: AppColors.paragraph(context),
-              fontSize: 10,
-              fontWeight: FontWeight.w400,
-              height: 1.25,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              SvgPicture.asset(
-                AppAssets.addressLocationIcon,
-                width: 16,
-                height: 16,
-                colorFilter: ColorFilter.mode(
-                  AppColors.paragraph(context),
-                  BlendMode.srcIn,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  address.location,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.start,
-                  style: AppTextStyles.caption(context).copyWith(
-                    color: AppColors.onSurface(context),
-                    fontSize: 10,
-                    fontWeight: FontWeight.w400,
-                    height: 1.25,
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  SvgPicture.asset(
+                    AppAssets.addressLocationIcon,
+                    width: 16,
+                    height: 16,
+                    colorFilter: ColorFilter.mode(
+                      AppColors.paragraph(context),
+                      BlendMode.srcIn,
+                    ),
                   ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _AddressActionButton(
-                  label: l10n.editAddress,
-                  iconAsset: AppAssets.addressEditIcon,
-                  foreground: AppColors.success,
-                  background: AppColors.success.withValues(alpha: 0.10),
-                  onTap: () async {
-                    final result = await context.push<MapPickerResult>(
-                      RouteNames.mapPicker,
-                      extra: MapPickerArgs(
-                        initialLatitude: address.latitude,
-                        initialLongitude: address.longitude,
-                        initialAddress: address.location,
-                        mode: MapPickerMode.edit,
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      address.location(locale),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.start,
+                      style: AppTextStyles.caption(context).copyWith(
+                        color: AppColors.onSurface(context),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
+                        height: 1.25,
                       ),
-                    );
-                    if (result == null || !context.mounted) return;
-                    await context.push(
-                      RouteNames.addressBookEditDetails,
-                      extra: result,
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _AddressActionButton(
-                  label: l10n.deleteAddress,
-                  iconAsset: AppAssets.addressDeleteIcon,
-                  foreground: AppColors.error,
-                  background: AppColors.error.withValues(alpha: 0.10),
-                  onTap: () => _showDeleteAddressDialog(context),
-                ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _AddressActionButton(
+                      label: l10n.editAddress,
+                      iconAsset: AppAssets.addressEditIcon,
+                      foreground: AppColors.success,
+                      background: AppColors.success.withValues(alpha: 0.10),
+                      onTap: () async {
+                        final result = await context.push<MapPickerResult>(
+                          RouteNames.mapPicker,
+                          extra: MapPickerArgs(
+                            initialLatitude: address.latitude,
+                            initialLongitude: address.longitude,
+                            initialAddress: address.location(locale),
+                            mode: MapPickerMode.edit,
+                          ),
+                        );
+                        if (result == null || !context.mounted) return;
+                        await context.push(
+                          RouteNames.addressBookEditDetails,
+                          extra: ProfileAddressDetailsArgs(
+                            addressId: address.id,
+                            mapResult: result,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _AddressActionButton(
+                      label: l10n.deleteAddress,
+                      iconAsset: AppAssets.addressDeleteIcon,
+                      foreground: AppColors.error,
+                      background: AppColors.error.withValues(alpha: 0.10),
+                      onTap: () => _showDeleteAddressDialog(context),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -299,7 +301,7 @@ class _SavedAddressCard extends StatelessWidget {
       context: context,
       barrierColor: AppColors.languageModalBarrier(context),
       builder: (dialogContext) {
-        return const _DeleteAddressDialog();
+        return _DeleteAddressDialog(onDelete: onDelete);
       },
     );
   }
@@ -434,7 +436,9 @@ class _BottomActionBar extends StatelessWidget {
 }
 
 class _DeleteAddressDialog extends StatelessWidget {
-  const _DeleteAddressDialog();
+  const _DeleteAddressDialog({required this.onDelete});
+
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -499,7 +503,7 @@ class _DeleteAddressDialog extends StatelessWidget {
                     background: AppColors.transparent,
                     borderColor: AppColors.primary,
                     onTap: () {
-                      // TODO: Delete address through the real saved-addresses API.
+                      onDelete();
                       Navigator.of(context).pop();
                     },
                   ),
