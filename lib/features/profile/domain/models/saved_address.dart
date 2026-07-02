@@ -11,6 +11,15 @@ class SavedAddress {
     required this.locationEn,
     required this.latitude,
     required this.longitude,
+    this.fullAddress,
+    this.city,
+    this.neighborhood,
+    this.streetNumber,
+    this.buildingNumber,
+    this.floor,
+    this.apartment,
+    this.addressType,
+    this.isDefault = false,
   });
 
   final String id;
@@ -22,6 +31,15 @@ class SavedAddress {
   final String locationEn;
   final double latitude;
   final double longitude;
+  final String? fullAddress;
+  final String? city;
+  final String? neighborhood;
+  final String? streetNumber;
+  final String? buildingNumber;
+  final String? floor;
+  final String? apartment;
+  final String? addressType;
+  final bool isDefault;
 
   String title(Locale locale) => _localized(locale, ar: titleAr, en: titleEn);
 
@@ -54,6 +72,15 @@ class SavedAddress {
     String? locationEn,
     double? latitude,
     double? longitude,
+    String? fullAddress,
+    String? city,
+    String? neighborhood,
+    String? streetNumber,
+    String? buildingNumber,
+    String? floor,
+    String? apartment,
+    String? addressType,
+    bool? isDefault,
   }) {
     return SavedAddress(
       id: id,
@@ -65,6 +92,15 @@ class SavedAddress {
       locationEn: locationEn ?? this.locationEn,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      fullAddress: fullAddress ?? this.fullAddress,
+      city: city ?? this.city,
+      neighborhood: neighborhood ?? this.neighborhood,
+      streetNumber: streetNumber ?? this.streetNumber,
+      buildingNumber: buildingNumber ?? this.buildingNumber,
+      floor: floor ?? this.floor,
+      apartment: apartment ?? this.apartment,
+      addressType: addressType ?? this.addressType,
+      isDefault: isDefault ?? this.isDefault,
     );
   }
 

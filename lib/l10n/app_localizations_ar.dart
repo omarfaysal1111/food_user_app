@@ -820,6 +820,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get savedAddressesTitle => 'العناوين المحفوظة';
 
   @override
+  String get savedAddressesEmpty => 'لا توجد عناوين محفوظة حتى الآن';
+
+  @override
+  String get savedAddressesLoadFailed => 'تعذر تحميل العناوين المحفوظة';
+
+  @override
   String get homeAddressTitle => 'المنزل';
 
   @override

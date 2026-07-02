@@ -19,6 +19,12 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final addressesController = SavedAddressesScope.of(context);
+    if (!addressesController.hasLoaded && !addressesController.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        addressesController.loadAddressesIfNeeded();
+      });
+    }
     final copy = _HomeCopy.of(context);
 
     return Scaffold(

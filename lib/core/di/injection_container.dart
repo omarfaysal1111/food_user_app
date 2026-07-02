@@ -25,6 +25,9 @@ import 'package:food_user_app/features/auth/domain/usecases/send_phone_otp_useca
 import 'package:food_user_app/features/auth/domain/usecases/verify_phone_otp_usecase.dart';
 import 'package:food_user_app/features/auth/domain/usecases/complete_registration_usecase.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/profile/data/datasources/saved_addresses_remote_data_source.dart';
+import 'package:food_user_app/features/profile/data/repositories/saved_addresses_repository_impl.dart';
+import 'package:food_user_app/features/profile/domain/repositories/saved_addresses_repository.dart';
 
 final sl = GetIt.instance;
 
@@ -120,6 +123,19 @@ Future<void> init({SharedPreferences? prefs}) async {
       verifyPhoneOtpUseCase: sl<VerifyPhoneOtpUseCase>(),
       completeRegistrationUseCase: sl<CompleteRegistrationUseCase>(),
       authRepository: sl<AuthRepository>(),
+    ),
+  );
+
+  // ── Saved addresses ───────────────────────────────────────────────────────
+  sl.registerLazySingleton<SavedAddressesRemoteDataSource>(
+    () => SavedAddressesRemoteDataSourceImpl(
+      dio: sl<DioClient>().dio,
+      tokenStorage: sl<TokenStorage>(),
+    ),
+  );
+  sl.registerLazySingleton<SavedAddressesRepository>(
+    () => SavedAddressesRepositoryImpl(
+      remoteDataSource: sl<SavedAddressesRemoteDataSource>(),
     ),
   );
 }

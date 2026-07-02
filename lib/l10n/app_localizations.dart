@@ -1682,6 +1682,18 @@ abstract class AppLocalizations {
   /// **'Saved Addresses'**
   String get savedAddressesTitle;
 
+  /// No description provided for @savedAddressesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved addresses yet'**
+  String get savedAddressesEmpty;
+
+  /// No description provided for @savedAddressesLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load saved addresses'**
+  String get savedAddressesLoadFailed;
+
   /// No description provided for @homeAddressTitle.
   ///
   /// In en, this message translates to:

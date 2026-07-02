@@ -292,6 +292,8 @@
   "favoriteDeliveryTimeRange": "30-45 min",
   "removeFromFavorites": "Remove from favorites",
   "savedAddressesTitle": "Saved Addresses",
+  "savedAddressesEmpty": "No saved addresses yet",
+  "savedAddressesLoadFailed": "Couldn't load saved addresses",
   "homeAddressTitle": "Home",
   "workAddressTitle": "Work",
   "sampleHomeAddress": "15 Tahrir Street, Dokki, Giza",

@@ -41,8 +41,14 @@ class ApiEndpoints {
   static String v2(String path) => '$baseUrlV2$path';
 
   static const String logout = '/auth/logout';
+  static const String firebaseAuth = '/auth/firebase';
   static const String me = '/auth/me';
   static const String refreshToken = '/auth/refresh';
+
+  // ── User addresses ────────────────────────────────────────────────────────
+  static const String userAddresses = '/user/addresses';
+  static String userAddress(String id) => '$userAddresses/$id';
+  static String userAddressDefault(String id) => '$userAddresses/$id/default';
 
   /// Public auth endpoints that must NOT receive an Authorization header.
   /// `/auth/set-password` is intentionally NOT listed here.
@@ -53,6 +59,8 @@ class ApiEndpoints {
     register,
     sendOtp,
     verifyOtp,
+    firebaseAuth,
     refreshToken,
+    logout,
   };
 }

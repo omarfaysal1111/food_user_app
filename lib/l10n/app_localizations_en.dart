@@ -830,6 +830,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get savedAddressesTitle => 'Saved Addresses';
 
   @override
+  String get savedAddressesEmpty => 'No saved addresses yet';
+
+  @override
+  String get savedAddressesLoadFailed => 'Couldn\'t load saved addresses';
+
+  @override
   String get homeAddressTitle => 'Home';
 
   @override

@@ -292,6 +292,8 @@
   "favoriteDeliveryTimeRange": "30-45 دقيقة",
   "removeFromFavorites": "إزالة من المفضلة",
   "savedAddressesTitle": "العناوين المحفوظة",
+  "savedAddressesEmpty": "لا توجد عناوين محفوظة حتى الآن",
+  "savedAddressesLoadFailed": "تعذر تحميل العناوين المحفوظة",
   "homeAddressTitle": "المنزل",
   "workAddressTitle": "العمل",
   "sampleHomeAddress": "١٥ شارع التحرير، الدقي، الجيزة",

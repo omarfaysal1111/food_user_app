@@ -9,6 +9,7 @@ import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
 import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
 import 'package:food_user_app/features/profile/domain/models/saved_address.dart';
+import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_controller.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
@@ -21,7 +22,11 @@ class AddressSelectionScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context);
     final addressesController = SavedAddressesScope.of(context);
-    final addresses = addressesController.addresses;
+    if (!addressesController.hasLoaded && !addressesController.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        addressesController.loadAddressesIfNeeded();
+      });
+    }
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
@@ -36,34 +41,9 @@ class AddressSelectionScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Expanded(
-                child: ListView.separated(
-                  physics: const ClampingScrollPhysics(),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 24),
-                  itemCount: addresses.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final address = addresses[index];
-                    return _CheckoutAddressCard(
-                      address: address,
-                      selected:
-                          address.id == addressesController.selectedAddressId,
-                      onTap: () {
-                        addressesController.selectAddress(address.id);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l10n.checkoutAddressUpdated)),
-                        );
-                        context.pop(
-                          MapPickerResult(
-                            latitude: address.latitude,
-                            longitude: address.longitude,
-                            address: address.location(locale),
-                          ),
-                        );
-                      },
-                    );
-                  },
+                child: _CheckoutAddressList(
+                  controller: addressesController,
+                  locale: locale,
                 ),
               ),
               _AddressBottomBar(
@@ -75,7 +55,7 @@ class AddressSelectionScreen extends StatelessWidget {
                   );
                   if (mapResult == null || !context.mounted) return;
                   final updated = await context.push<Object?>(
-                    RouteNames.addEditAddress,
+                    RouteNames.addressBookAddDetails,
                     extra: mapResult,
                   );
                   if (!context.mounted) return;
@@ -87,6 +67,90 @@ class AddressSelectionScreen extends StatelessWidget {
                 },
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CheckoutAddressList extends StatelessWidget {
+  const _CheckoutAddressList({required this.controller, required this.locale});
+
+  final SavedAddressesController controller;
+  final Locale locale;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final addresses = controller.addresses;
+
+    if (controller.isLoading && !controller.hasLoaded) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (controller.hasError && addresses.isEmpty) {
+      return _CheckoutAddressMessage(message: l10n.savedAddressesLoadFailed);
+    }
+
+    if (addresses.isEmpty) {
+      return _CheckoutAddressMessage(message: l10n.savedAddressesEmpty);
+    }
+
+    return ListView.separated(
+      physics: const ClampingScrollPhysics(),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 24),
+      itemCount: addresses.length,
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final address = addresses[index];
+        return _CheckoutAddressCard(
+          address: address,
+          selected: address.id == controller.selectedAddressId,
+          onTap: () async {
+            final ok = await controller.selectAddress(address.id);
+            if (!context.mounted) return;
+            if (!ok) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.authErrorRequestFailed)),
+              );
+              return;
+            }
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.checkoutAddressUpdated)),
+            );
+            context.pop(
+              MapPickerResult(
+                latitude: address.latitude,
+                longitude: address.longitude,
+                address: address.location(locale),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _CheckoutAddressMessage extends StatelessWidget {
+  const _CheckoutAddressMessage({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
+        child: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: AppTextStyles.body(context).copyWith(
+            color: AppColors.paragraph(context),
+            fontSize: 14,
+            height: 1.35,
           ),
         ),
       ),

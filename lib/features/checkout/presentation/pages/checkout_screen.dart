@@ -10,6 +10,7 @@ import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
 import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
 import 'package:food_user_app/features/checkout/presentation/widgets/checkout_payment_sheets.dart';
 import 'package:food_user_app/features/checkout/presentation/widgets/payment_options_section.dart';
+import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
@@ -31,6 +32,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final addressesController = SavedAddressesScope.of(context);
+    if (!addressesController.hasLoaded && !addressesController.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        addressesController.loadAddressesIfNeeded();
+      });
+    }
+    final selectedSavedAddress = addressesController.selectedAddress?.location(
+      Localizations.localeOf(context),
+    );
     const total = _subtotal + _delivery - _discount;
 
     return Scaffold(
@@ -56,7 +66,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     children: [
                       _CurrentAddressCard(
                         address:
-                            _selectedAddress?.address ?? l10n.deliveryAddress,
+                            _selectedAddress?.address ??
+                            selectedSavedAddress ??
+                            l10n.deliveryAddress,
                         onChange: _changeAddress,
                       ),
                       const SizedBox(height: 16),

@@ -8,6 +8,7 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
 import 'package:food_user_app/features/profile/domain/models/saved_address.dart';
+import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_controller.dart';
 import 'package:food_user_app/features/profile/presentation/pages/add_edit_address_screen.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
@@ -31,7 +32,11 @@ class AddressBookScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final addressesController = SavedAddressesScope.of(context);
-    final addresses = addressesController.addresses;
+    if (!addressesController.hasLoaded && !addressesController.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        addressesController.loadAddressesIfNeeded();
+      });
+    }
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
@@ -48,35 +53,7 @@ class AddressBookScreen extends StatelessWidget {
               child: _AddressHeader(title: l10n.savedAddressesTitle),
             ),
             const SizedBox(height: _contentTopGap),
-            Expanded(
-              child: ListView.separated(
-                padding: const EdgeInsetsDirectional.fromSTEB(
-                  _screenPadding,
-                  0,
-                  _screenPadding,
-                  24,
-                ),
-                physics: const ClampingScrollPhysics(),
-                itemCount: addresses.length,
-                separatorBuilder: (_, _) => const SizedBox(height: _cardGap),
-                itemBuilder: (context, index) {
-                  final address = addresses[index];
-                  return _SavedAddressCard(
-                    address: address,
-                    selected:
-                        address.id == addressesController.selectedAddressId,
-                    onSelected: () {
-                      addressesController.selectAddress(address.id);
-                      if (context.canPop()) {
-                        context.pop();
-                      }
-                    },
-                    onDelete: () =>
-                        addressesController.deleteAddress(address.id),
-                  );
-                },
-              ),
-            ),
+            Expanded(child: _AddressBookBody(controller: addressesController)),
             _BottomActionBar(
               label: l10n.addNewAddress,
               iconAsset: AppAssets.addressPlusIcon,
@@ -92,8 +69,93 @@ class AddressBookScreen extends StatelessWidget {
                 );
               },
             ),
-            // TODO: Replace static addresses with saved-addresses API data.
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AddressBookBody extends StatelessWidget {
+  const _AddressBookBody({required this.controller});
+
+  final SavedAddressesController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final addresses = controller.addresses;
+
+    if (controller.isLoading && !controller.hasLoaded) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (controller.hasError && addresses.isEmpty) {
+      return _AddressStatusMessage(message: l10n.savedAddressesLoadFailed);
+    }
+
+    if (addresses.isEmpty) {
+      return _AddressStatusMessage(message: l10n.savedAddressesEmpty);
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AddressBookScreen._screenPadding,
+        0,
+        AddressBookScreen._screenPadding,
+        24,
+      ),
+      physics: const ClampingScrollPhysics(),
+      itemCount: addresses.length,
+      separatorBuilder: (_, _) =>
+          const SizedBox(height: AddressBookScreen._cardGap),
+      itemBuilder: (context, index) {
+        final address = addresses[index];
+        return _SavedAddressCard(
+          address: address,
+          selected: address.id == controller.selectedAddressId,
+          onSelected: () async {
+            final ok = await controller.selectAddress(address.id);
+            if (!context.mounted) return;
+            if (ok && context.canPop()) {
+              context.pop();
+            } else if (!ok) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.authErrorRequestFailed)),
+              );
+            }
+          },
+          onDelete: () async {
+            final ok = await controller.deleteAddress(address.id);
+            if (!context.mounted || ok) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.authErrorRequestFailed)),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _AddressStatusMessage extends StatelessWidget {
+  const _AddressStatusMessage({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
+        child: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: AppTextStyles.body(context).copyWith(
+            color: AppColors.paragraph(context),
+            fontSize: 14,
+            height: 1.35,
+          ),
         ),
       ),
     );

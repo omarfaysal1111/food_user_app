@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
@@ -7,6 +9,7 @@ import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
+import 'package:food_user_app/features/profile/data/models/saved_address_dto.dart';
 import 'package:food_user_app/features/profile/domain/models/saved_address.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
@@ -65,7 +68,10 @@ class AddressMapSelectionScreen extends StatelessWidget {
                   children: [
                     _SearchLocationField(label: l10n.searchForAddress),
                     const SizedBox(height: 12),
-                    const _MapPreview(height: _mapHeight),
+                    const _MapPreview(
+                      latLng: LatLng(30.0444, 31.2357),
+                      height: _mapHeight,
+                    ),
                     const SizedBox(height: 16),
                     _SelectedLocationRow(text: l10n.deliveryAddress, size: 24),
                     const SizedBox(height: 24),
@@ -85,7 +91,7 @@ class AddressMapSelectionScreen extends StatelessWidget {
   }
 }
 
-class AddressDetailsScreen extends StatelessWidget {
+class AddressDetailsScreen extends StatefulWidget {
   const AddressDetailsScreen({
     super.key,
     required this.mode,
@@ -102,22 +108,45 @@ class AddressDetailsScreen extends StatelessWidget {
   static const _contentTopGap = 20.0;
 
   @override
+  State<AddressDetailsScreen> createState() => _AddressDetailsScreenState();
+}
+
+class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
+  final _buildingController = TextEditingController();
+  final _floorController = TextEditingController();
+  final _apartmentController = TextEditingController();
+  String? _hydratedAddressId;
+
+  @override
+  void dispose() {
+    _buildingController.dispose();
+    _floorController.dispose();
+    _apartmentController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isEdit = mode == AddressFlowMode.edit;
+    final isEdit = widget.mode == AddressFlowMode.edit;
     final title = isEdit ? l10n.editAddressTitle : l10n.addAddressTitle;
     final buttonLabel = isEdit ? l10n.updateAddress : l10n.saveAddress;
     final snackMessage = isEdit
         ? l10n.addressUpdatedDesignOnly
         : l10n.addressSavedDesignOnly;
     final addressesController = SavedAddressesScope.of(context);
-    final editedAddress = addressId == null
+    final editedAddress = widget.addressId == null
         ? addressesController.selectedAddress
-        : addressesController.addressById(addressId!);
+        : addressesController.addressById(widget.addressId!);
+    _hydrateFields(editedAddress);
     final previewAddress =
-        mapResult?.address ??
+        widget.mapResult?.address ??
         editedAddress?.location(Localizations.localeOf(context)) ??
         l10n.deliveryAddress;
+    final previewLatLng = LatLng(
+      widget.mapResult?.latitude ?? editedAddress?.latitude ?? 30.0444,
+      widget.mapResult?.longitude ?? editedAddress?.longitude ?? 31.2357,
+    );
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
@@ -127,26 +156,29 @@ class AddressDetailsScreen extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsetsDirectional.only(
-                start: _screenPadding,
-                top: _topInset,
-                end: _screenPadding,
+                start: AddressDetailsScreen._screenPadding,
+                top: AddressDetailsScreen._topInset,
+                end: AddressDetailsScreen._screenPadding,
               ),
               child: _AddressFlowHeader(title: title),
             ),
-            const SizedBox(height: _contentTopGap),
+            const SizedBox(height: AddressDetailsScreen._contentTopGap),
             Expanded(
               child: SingleChildScrollView(
                 physics: const ClampingScrollPhysics(),
                 padding: const EdgeInsetsDirectional.symmetric(
-                  horizontal: _screenPadding,
+                  horizontal: AddressDetailsScreen._screenPadding,
                 ),
                 child: Column(
                   children: [
-                    _CurrentAddressPreview(address: previewAddress),
+                    _CurrentAddressPreview(
+                      address: previewAddress,
+                      latLng: previewLatLng,
+                    ),
                     const SizedBox(height: 16),
                     _AddressInputField(
                       hint: l10n.building,
-                      initialValue: isEdit ? l10n.sampleBuildingName : null,
+                      controller: _buildingController,
                     ),
                     const SizedBox(height: 16),
                     Row(
@@ -154,42 +186,48 @@ class AddressDetailsScreen extends StatelessWidget {
                         Expanded(
                           child: _AddressInputField(
                             hint: l10n.floor,
-                            initialValue: isEdit ? l10n.sampleFloorName : null,
+                            controller: _floorController,
                           ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: _AddressInputField(
                             hint: l10n.apartment,
-                            initialValue: isEdit
-                                ? l10n.sampleApartmentNumber
-                                : null,
+                            controller: _apartmentController,
                           ),
                         ),
                       ],
                     ),
-                    // TODO: Submit this form through the real create/update address API.
                   ],
                 ),
               ),
             ),
             _AddressBottomBar(
               label: buttonLabel,
-              onTap: () {
-                _submitAddress(
-                  context: context,
-                  mode: mode,
-                  existingAddress: editedAddress,
-                  mapResult: mapResult,
-                );
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(snackMessage)));
-                context.pop();
-                if (context.mounted && context.canPop()) {
-                  context.pop();
-                }
-              },
+              isLoading: addressesController.isMutating,
+              onTap: addressesController.isMutating
+                  ? null
+                  : () async {
+                      final ok = await _submitAddress(
+                        context: context,
+                        mode: widget.mode,
+                        existingAddress: editedAddress,
+                        mapResult: widget.mapResult,
+                      );
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            ok ? snackMessage : l10n.authErrorRequestFailed,
+                          ),
+                        ),
+                      );
+                      if (!ok) return;
+                      context.pop();
+                      if (context.mounted && context.canPop()) {
+                        context.pop();
+                      }
+                    },
             ),
           ],
         ),
@@ -197,7 +235,15 @@ class AddressDetailsScreen extends StatelessWidget {
     );
   }
 
-  void _submitAddress({
+  void _hydrateFields(SavedAddress? address) {
+    if (address == null || _hydratedAddressId == address.id) return;
+    _hydratedAddressId = address.id;
+    _buildingController.text = address.buildingNumber ?? '';
+    _floorController.text = address.floor ?? '';
+    _apartmentController.text = address.apartment ?? '';
+  }
+
+  Future<bool> _submitAddress({
     required BuildContext context,
     required AddressFlowMode mode,
     required SavedAddress? existingAddress,
@@ -210,36 +256,62 @@ class AddressDetailsScreen extends StatelessWidget {
         mapResult?.address ??
         existingAddress?.location(locale) ??
         l10n.deliveryAddress;
-    final latitude =
-        mapResult?.latitude ?? existingAddress?.latitude ?? 30.0444;
-    final longitude =
-        mapResult?.longitude ?? existingAddress?.longitude ?? 31.2357;
+    final selectedLatitude = mapResult?.latitude ?? existingAddress?.latitude;
+    final selectedLongitude =
+        mapResult?.longitude ?? existingAddress?.longitude;
+    final validationPassed =
+        !(mode == AddressFlowMode.add && mapResult == null) &&
+        location.trim().isNotEmpty;
 
-    if (mode == AddressFlowMode.edit && existingAddress != null) {
-      controller.updateAddress(
-        existingAddress.copyWith(
-          locationAr: location,
-          locationEn: location,
-          latitude: latitude,
-          longitude: longitude,
-        ),
-      );
-      return;
+    _logAddressDebug(
+      'ADD_ADDRESS_UI_SUBMIT '
+      'selectedLat=$selectedLatitude '
+      'selectedLng=$selectedLongitude '
+      'fullAddress="$location" '
+      'label="${existingAddress?.title(locale) ?? l10n.apartmentAddressTitle}" '
+      'addressType="${existingAddress?.addressType ?? 'APARTMENT'}" '
+      'buildingNumber="${_buildingController.text}" '
+      'floor="${_floorController.text}" '
+      'apartment="${_apartmentController.text}" '
+      'isDefault=${existingAddress?.isDefault ?? controller.addresses.isEmpty} '
+      'validationPassed=$validationPassed',
+    );
+
+    if (!validationPassed) {
+      return Future.value(false);
     }
 
-    controller.addAddress(
-      SavedAddress(
-        id: 'address-${DateTime.now().microsecondsSinceEpoch}',
-        titleAr: l10n.apartmentAddressTitle,
-        titleEn: 'Apartment',
-        detailsAr: l10n.sampleAddressMeta,
-        detailsEn: 'Building details',
-        locationAr: location,
-        locationEn: location,
-        latitude: latitude,
-        longitude: longitude,
-      ),
+    final latitude = selectedLatitude ?? 30.0444;
+    final longitude = selectedLongitude ?? 31.2357;
+
+    final request = SavedAddressRequest(
+      label:
+          existingAddress?.title(Localizations.localeOf(context)) ??
+          l10n.apartmentAddressTitle,
+      fullAddress: location,
+      lat: latitude,
+      lng: longitude,
+      city: existingAddress?.city,
+      neighborhood: existingAddress?.neighborhood,
+      streetNumber: existingAddress?.streetNumber,
+      buildingNumber: _buildingController.text,
+      floor: _floorController.text,
+      apartment: _apartmentController.text,
+      addressType: existingAddress?.addressType ?? 'APARTMENT',
+      isDefault: existingAddress?.isDefault ?? controller.addresses.isEmpty,
     );
+
+    if (mode == AddressFlowMode.edit && existingAddress != null) {
+      return controller.updateAddress(id: existingAddress.id, request: request);
+    }
+
+    return controller.addAddress(request);
+  }
+}
+
+void _logAddressDebug(String message) {
+  if (kDebugMode) {
+    debugPrint('[ADDRESS_DEBUG] $message');
   }
 }
 
@@ -338,8 +410,13 @@ class _SearchLocationField extends StatelessWidget {
 }
 
 class _MapPreview extends StatelessWidget {
-  const _MapPreview({this.height, this.compactBottomRadius = false});
+  const _MapPreview({
+    required this.latLng,
+    this.height,
+    this.compactBottomRadius = false,
+  });
 
+  final LatLng latLng;
   final double? height;
   final bool compactBottomRadius;
 
@@ -354,20 +431,12 @@ class _MapPreview extends StatelessWidget {
       child: Stack(
         children: [
           if (height == null)
-            SizedBox.expand(
-              child: Image.asset(
-                AppAssets.addressMapPreview,
-                fit: BoxFit.cover,
-              ),
-            )
+            _StaticMap(latLng: latLng)
           else
             SizedBox(
               height: height,
               width: double.infinity,
-              child: Image.asset(
-                AppAssets.addressMapPreview,
-                fit: BoxFit.cover,
-              ),
+              child: _StaticMap(latLng: latLng),
             ),
           Positioned.fill(
             child: ColoredBox(color: AppColors.black.withValues(alpha: 0.20)),
@@ -456,9 +525,10 @@ class _SelectedLocationRow extends StatelessWidget {
 }
 
 class _CurrentAddressPreview extends StatelessWidget {
-  const _CurrentAddressPreview({required this.address});
+  const _CurrentAddressPreview({required this.address, required this.latLng});
 
   final String address;
+  final LatLng latLng;
 
   @override
   Widget build(BuildContext context) {
@@ -499,25 +569,55 @@ class _CurrentAddressPreview extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          const Expanded(child: _MapPreview(compactBottomRadius: true)),
+          Expanded(
+            child: _MapPreview(latLng: latLng, compactBottomRadius: true),
+          ),
         ],
       ),
     );
   }
 }
 
+class _StaticMap extends StatelessWidget {
+  const _StaticMap({required this.latLng});
+
+  final LatLng latLng;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return GoogleMap(
+      initialCameraPosition: CameraPosition(target: latLng, zoom: 15),
+      markers: {
+        Marker(markerId: const MarkerId('selected-address'), position: latLng),
+      },
+      myLocationButtonEnabled: false,
+      zoomControlsEnabled: false,
+      rotateGesturesEnabled: false,
+      scrollGesturesEnabled: false,
+      tiltGesturesEnabled: false,
+      zoomGesturesEnabled: false,
+      mapToolbarEnabled: false,
+      liteModeEnabled: true,
+      style: isDarkMode ? AppColors.darkMapStyle : null,
+    );
+  }
+}
+
 class _AddressInputField extends StatelessWidget {
-  const _AddressInputField({required this.hint, this.initialValue});
+  const _AddressInputField({required this.hint, this.controller});
 
   final String hint;
-  final String? initialValue;
+  final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 40,
       child: TextFormField(
-        initialValue: initialValue,
+        controller: controller,
+        onTapOutside: (_) => FocusScope.of(context).unfocus(),
         textAlign: TextAlign.start,
         cursorColor: AppColors.cursor(context),
         style: AppTextStyles.inputText(
@@ -559,10 +659,15 @@ class _AddressInputField extends StatelessWidget {
 }
 
 class _AddressBottomBar extends StatelessWidget {
-  const _AddressBottomBar({required this.label, required this.onTap});
+  const _AddressBottomBar({
+    required this.label,
+    required this.onTap,
+    this.isLoading = false,
+  });
 
   final String label;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -590,14 +695,23 @@ class _AddressBottomBar extends StatelessWidget {
             color: AppColors.primary,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Text(
-            label,
-            style: AppTextStyles.primaryButtonLabel.copyWith(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              height: 1.25,
-            ),
-          ),
+          child: isLoading
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.text,
+                  ),
+                )
+              : Text(
+                  label,
+                  style: AppTextStyles.primaryButtonLabel.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    height: 1.25,
+                  ),
+                ),
         ),
       ),
     );
