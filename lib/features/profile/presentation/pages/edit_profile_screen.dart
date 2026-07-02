@@ -8,6 +8,7 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -21,14 +22,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController _emailController;
   late final TextEditingController _phoneController;
 
-  String _savedName = 'أحمد فرج';
+  String _savedName = '';
+  bool _didSetInitialProfileData = false;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: _savedName);
+    _nameController = TextEditingController();
     _emailController = TextEditingController(text: 'afarag74@gmail.com');
     _phoneController = TextEditingController(text: '01004059966');
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didSetInitialProfileData) return;
+    _savedName = AppLocalizations.of(context)!.accountPlaceholderName;
+    _nameController.text = _savedName;
+    _didSetInitialProfileData = true;
   }
 
   @override
@@ -139,7 +150,7 @@ class _ProfileHeader extends StatelessWidget {
                 width: 28,
                 height: 28,
                 child: Icon(
-                  Icons.chevron_left_rounded,
+                  AppDirectionalIcons.backChevron(context),
                   size: 28,
                   color: AppColors.onSurface(context),
                 ),

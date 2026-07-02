@@ -1,6 +1,5 @@
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 
-
 class RestaurantModel extends Restaurant {
   const RestaurantModel() : super();
 

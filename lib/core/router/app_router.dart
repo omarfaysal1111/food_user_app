@@ -16,6 +16,7 @@ import '../../features/auth/presentation/pages/terms_and_conditions_screen.dart'
 import '../../features/main/presentation/pages/main_layout.dart';
 import '../../features/home/presentation/pages/search_screen.dart';
 import '../../features/home/presentation/pages/search_results_screen.dart';
+import '../../features/restaurant/presentation/models/restaurant_detail_args.dart';
 import '../../features/restaurant/presentation/pages/restaurant_detail_screen.dart';
 import '../../features/restaurant/presentation/pages/restaurant_rate_screen.dart';
 import '../../features/restaurant/presentation/pages/restaurant_search_screen.dart';

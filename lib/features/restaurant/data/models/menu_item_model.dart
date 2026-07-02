@@ -1,6 +1,5 @@
 import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
 
-
 class MenuItemModel extends MenuItem {
   const MenuItemModel() : super();
 

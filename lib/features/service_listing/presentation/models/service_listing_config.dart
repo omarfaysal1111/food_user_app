@@ -36,14 +36,14 @@ class ServiceListingConfig {
     final kira = ServicePlaceData.restaurant(
       name: l10n.serviceRestaurantKira,
       subtitle: l10n.serviceRestaurantDescription,
-      time: _text(l10n, ar: '30-45 دقيقة', en: '30-45 min'),
+      time: l10n.serviceDeliveryTimeRange,
       imageAsset: AppAssets.homeRestaurantCover,
       rating: '4.6',
     );
     final azAlSham = ServicePlaceData.restaurant(
       name: l10n.serviceRestaurantAzAlSham,
       subtitle: l10n.serviceRestaurantDescription,
-      time: _text(l10n, ar: '25-40 دقيقة', en: '25-40 min'),
+      time: l10n.serviceDeliveryTime25To40,
       imageAsset: AppAssets.favoriteRestaurantAzAlSham,
       rating: '4.8',
     );
@@ -118,13 +118,13 @@ class ServiceListingConfig {
   static ServiceListingConfig _grocery(AppLocalizations l10n) {
     final captain = ServicePlaceData.store(
       name: l10n.serviceStoreCaptain,
-      time: _text(l10n, ar: '30-45 دقيقة', en: '30-45 min'),
+      time: l10n.serviceDeliveryTimeRange,
       imageAsset: AppAssets.serviceGroceryCaptain,
       rating: '4.5',
     );
     final fathallah = ServicePlaceData.store(
       name: l10n.serviceStoreFathallah,
-      time: _text(l10n, ar: '30-45 دقيقة', en: '30-45 min'),
+      time: l10n.serviceDeliveryTimeRange,
       imageAsset: AppAssets.serviceGroceryFathallah,
       rating: '4.6',
     );
@@ -190,13 +190,13 @@ class ServiceListingConfig {
   static ServiceListingConfig _stores(AppLocalizations l10n) {
     final beauty = ServicePlaceData.store(
       name: l10n.serviceCategoryPerfumeBeauty,
-      time: _text(l10n, ar: '35-50 دقيقة', en: '35-50 min'),
+      time: l10n.serviceDeliveryTime35To50,
       imageAsset: AppAssets.serviceStoresBeauty,
       rating: '4.5',
     );
     final flowers = ServicePlaceData.store(
       name: l10n.serviceCategoryFlowers,
-      time: _text(l10n, ar: '25-40 دقيقة', en: '25-40 min'),
+      time: l10n.serviceDeliveryTime25To40,
       imageAsset: AppAssets.serviceStoresFlowers,
       rating: '4.7',
     );
@@ -255,7 +255,7 @@ class ServiceListingConfig {
           items: [
             ServicePlaceData.pickup(
               name: l10n.serviceStoreRimasLand,
-              time: _text(l10n, ar: '30-45 دقيقة', en: '30-45 min'),
+              time: l10n.serviceDeliveryTimeRange,
               imageAsset: AppAssets.servicePickupRimas,
               rating: '4.5',
               hasOffer: true,
@@ -263,7 +263,7 @@ class ServiceListingConfig {
             ),
             ServicePlaceData.pickup(
               name: l10n.serviceStoreTaheraFry,
-              time: _text(l10n, ar: '30-45 دقيقة', en: '30-45 min'),
+              time: l10n.serviceDeliveryTimeRange,
               imageAsset: AppAssets.servicePickupTahera,
               rating: '4.5',
               hasOffer: true,
@@ -271,7 +271,7 @@ class ServiceListingConfig {
             ),
             ServicePlaceData.pickup(
               name: l10n.serviceStoreFamilyMarket,
-              time: _text(l10n, ar: '30-45 دقيقة', en: '30-45 min'),
+              time: l10n.serviceDeliveryTimeRange,
               imageAsset: AppAssets.servicePickupFamily,
               rating: '4.5',
               hasOffer: true,
@@ -279,7 +279,7 @@ class ServiceListingConfig {
             ),
             ServicePlaceData.pickup(
               name: l10n.serviceCaptainMarket,
-              time: _text(l10n, ar: '30-45 دقيقة', en: '30-45 min'),
+              time: l10n.serviceDeliveryTimeRange,
               imageAsset: AppAssets.servicePickupCaptain,
               rating: '4.5',
               hasOffer: true,
@@ -289,14 +289,6 @@ class ServiceListingConfig {
         ),
       ],
     );
-  }
-
-  static String _text(
-    AppLocalizations l10n, {
-    required String ar,
-    required String en,
-  }) {
-    return l10n.localeName.startsWith('ar') ? ar : en;
   }
 
   static List<ServicePlaceData> _repeat(

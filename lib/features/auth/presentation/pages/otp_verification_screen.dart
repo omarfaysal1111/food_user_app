@@ -14,6 +14,7 @@ import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_back_button.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_scaffold.dart';
+import 'package:food_user_app/features/auth/presentation/utils/auth_error_localizer.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
@@ -154,7 +155,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                state.message,
+                localizedAuthError(
+                  AppLocalizations.of(context)!,
+                  state.message,
+                ),
                 style: AppTextStyles.snackBarMessage(context),
               ),
             ),

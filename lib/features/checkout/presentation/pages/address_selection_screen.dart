@@ -8,7 +8,10 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
 import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
+import 'package:food_user_app/features/profile/domain/models/saved_address.dart';
+import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class AddressSelectionScreen extends StatelessWidget {
   const AddressSelectionScreen({super.key});
@@ -16,19 +19,9 @@ class AddressSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final addresses = [
-      _CheckoutAddressData(
-        title: l10n.apartmentAddressTitle,
-        details: l10n.sampleAddressMeta,
-        location: l10n.deliveryAddress,
-        selected: true,
-      ),
-      _CheckoutAddressData(
-        title: l10n.apartmentAddressTitle,
-        details: l10n.sampleAddressMeta,
-        location: l10n.deliveryAddress,
-      ),
-    ];
+    final locale = Localizations.localeOf(context);
+    final addressesController = SavedAddressesScope.of(context);
+    final addresses = addressesController.addresses;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
@@ -51,13 +44,23 @@ class AddressSelectionScreen extends StatelessWidget {
                   itemCount: addresses.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
+                    final address = addresses[index];
                     return _CheckoutAddressCard(
-                      address: addresses[index],
+                      address: address,
+                      selected:
+                          address.id == addressesController.selectedAddressId,
                       onTap: () {
+                        addressesController.selectAddress(address.id);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(l10n.checkoutAddressUpdated)),
                         );
-                        context.pop(true);
+                        context.pop(
+                          MapPickerResult(
+                            latitude: address.latitude,
+                            longitude: address.longitude,
+                            address: address.location(locale),
+                          ),
+                        );
                       },
                     );
                   },
@@ -83,27 +86,12 @@ class AddressSelectionScreen extends StatelessWidget {
                   }
                 },
               ),
-              // TODO: Replace static checkout addresses with saved-addresses API data.
             ],
           ),
         ),
       ),
     );
   }
-}
-
-class _CheckoutAddressData {
-  const _CheckoutAddressData({
-    required this.title,
-    required this.details,
-    required this.location,
-    this.selected = false,
-  });
-
-  final String title;
-  final String details;
-  final String location;
-  final bool selected;
 }
 
 class _AddressHeader extends StatelessWidget {
@@ -127,7 +115,7 @@ class _AddressHeader extends StatelessWidget {
                 width: 28,
                 height: 28,
                 child: Icon(
-                  Icons.chevron_left_rounded,
+                  AppDirectionalIcons.backChevron(context),
                   size: 28,
                   color: AppColors.onSurface(context),
                 ),
@@ -154,13 +142,20 @@ class _AddressHeader extends StatelessWidget {
 }
 
 class _CheckoutAddressCard extends StatelessWidget {
-  const _CheckoutAddressCard({required this.address, required this.onTap});
+  const _CheckoutAddressCard({
+    required this.address,
+    required this.selected,
+    required this.onTap,
+  });
 
-  final _CheckoutAddressData address;
+  final SavedAddress address;
+  final bool selected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
@@ -170,10 +165,10 @@ class _CheckoutAddressCard extends StatelessWidget {
           color: AppColors.surfaceCard(context),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: address.selected
+            color: selected
                 ? AppColors.onSurface(context)
                 : AppColors.border(context),
-            width: address.selected ? 1 : 0.5,
+            width: selected ? 1 : 0.5,
           ),
         ),
         child: Row(
@@ -197,7 +192,7 @@ class _CheckoutAddressCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Flexible(
                         child: Text(
-                          address.title,
+                          address.title(locale),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.start,
@@ -213,7 +208,7 @@ class _CheckoutAddressCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    address.details,
+                    address.details(locale),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.start,
@@ -240,7 +235,7 @@ class _CheckoutAddressCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Flexible(
                         child: Text(
-                          address.location,
+                          address.location(locale),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.start,
@@ -258,7 +253,7 @@ class _CheckoutAddressCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            _SelectionMark(selected: address.selected),
+            _SelectionMark(selected: selected),
           ],
         ),
       ),
@@ -318,7 +313,7 @@ class _AddressBottomBar extends StatelessWidget {
         color: AppColors.surfaceCard(context),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C2B2B).withValues(alpha: 0.08),
+            color: AppColors.shadow.withValues(alpha: 0.08),
             blurRadius: 4,
           ),
         ],

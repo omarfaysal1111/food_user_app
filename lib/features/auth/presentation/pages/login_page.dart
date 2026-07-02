@@ -18,15 +18,13 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isArabic = Directionality.of(context) == TextDirection.rtl;
-
     return AuthScaffold(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Align(
-            alignment: isArabic ? Alignment.centerLeft : Alignment.centerRight,
+            alignment: AlignmentDirectional.centerEnd,
             child: AuthLanguageChip(
               label: context.isArabic
                   ? l10n.languageArabic

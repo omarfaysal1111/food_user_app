@@ -13,7 +13,9 @@ import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/auth/presentation/pages/phone_auth_screen.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
+import 'package:food_user_app/features/auth/presentation/utils/auth_error_localizer.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class MockOtpScreen extends StatefulWidget {
   const MockOtpScreen({super.key, required this.args});
@@ -99,7 +101,10 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    state.message,
+                    localizedAuthError(
+                      AppLocalizations.of(context)!,
+                      state.message,
+                    ),
                     style: AppTextStyles.snackBarMessage(context),
                   ),
                 ),
@@ -121,7 +126,7 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
                       onPressed: () => context.pop(),
                       padding: EdgeInsets.zero,
                       icon: Icon(
-                        Icons.chevron_left_rounded,
+                        AppDirectionalIcons.backChevron(context),
                         size: 28,
                         color: AppColors.onSurface(context),
                       ),

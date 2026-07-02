@@ -8,7 +8,9 @@ import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
-import 'package:food_user_app/features/restaurant/presentation/pages/restaurant_detail_screen.dart';
+import 'package:food_user_app/core/widgets/app_search_field.dart';
+import 'package:food_user_app/core/widgets/app_status_dot_label.dart';
+import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_config.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_type.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
@@ -290,47 +292,14 @@ class _ListingSearchBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 40,
-      padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard(context),
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        border: Border.all(color: AppColors.border(context), width: 0.5),
-      ),
-      child: Row(
-        children: [
-          AppSvgImage.asset(
-            AppAssets.serviceSearchIcon,
-            width: 16,
-            height: 16,
-            color: AppColors.paragraph(context),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              onChanged: onChanged,
-              textAlign: TextAlign.start,
-              textInputAction: TextInputAction.search,
-              style: AppTextStyles.body(
-                context,
-              ).copyWith(fontSize: 12, height: 1.3),
-              decoration: InputDecoration(
-                isDense: true,
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.zero,
-                hintText: hint,
-                hintStyle: AppTextStyles.inputHint(context).copyWith(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  height: 1.3,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return AppSearchField(
+      controller: controller,
+      hint: hint,
+      onChanged: onChanged,
+      iconAsset: AppAssets.serviceSearchIcon,
+      textStyle: AppTextStyles.body(
+        context,
+      ).copyWith(fontSize: 12, height: 1.3),
     );
   }
 }
@@ -688,7 +657,7 @@ class _PlaceListTile extends StatelessWidget {
 
     return InkWell(
       onTap: () => context.push(
-        RouteNames.restaurantDetail.replaceFirst(':id', item.detailId),
+        RouteNames.restaurantDetailFor(item.detailId),
         extra: item.toRestaurantDetailArgs(),
       ),
       borderRadius: const BorderRadius.all(AppRadius.sm),
@@ -840,26 +809,7 @@ class _AvailabilityPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 4,
-          height: 4,
-          decoration: const BoxDecoration(
-            color: AppColors.success,
-            borderRadius: BorderRadius.all(AppRadius.full),
-          ),
-        ),
-        const SizedBox(width: 2),
-        Text(
-          label,
-          style: AppTextStyles.caption(
-            context,
-          ).copyWith(color: AppColors.success, fontSize: 10, height: 1.25),
-        ),
-      ],
-    );
+    return AppStatusDotLabel(label: label, color: AppColors.success);
   }
 }
 
@@ -873,7 +823,12 @@ class _TimeLabel extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        AppSvgImage.asset(AppAssets.serviceTimeIcon, width: 14, height: 14),
+        AppSvgImage.asset(
+          AppAssets.favoriteTimeIcon,
+          width: 14,
+          height: 14,
+          color: AppColors.onSurface(context),
+        ),
         const SizedBox(width: 4),
         Text(
           time,

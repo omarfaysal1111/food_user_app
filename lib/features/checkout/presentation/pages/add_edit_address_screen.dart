@@ -8,6 +8,7 @@ import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
 import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class AddEditAddressScreen extends StatelessWidget {
   const AddEditAddressScreen({super.key, this.mapResult});
@@ -100,7 +101,7 @@ class _DetailsHeader extends StatelessWidget {
                 width: 28,
                 height: 28,
                 child: Icon(
-                  Icons.chevron_left_rounded,
+                  AppDirectionalIcons.backChevron(context),
                   size: 28,
                   color: AppColors.onSurface(context),
                 ),
@@ -218,7 +219,7 @@ class _CompactMapPreview extends StatelessWidget {
             child: Image.asset(AppAssets.addressMapPreview, fit: BoxFit.cover),
           ),
           Positioned.fill(
-            child: ColoredBox(color: Colors.black.withValues(alpha: 0.20)),
+            child: ColoredBox(color: AppColors.black.withValues(alpha: 0.20)),
           ),
         ],
       ),
@@ -293,7 +294,7 @@ class _BottomBar extends StatelessWidget {
         color: AppColors.surfaceCard(context),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C2B2B).withValues(alpha: 0.08),
+            color: AppColors.shadow.withValues(alpha: 0.08),
             blurRadius: 4,
           ),
         ],

@@ -11,6 +11,7 @@ import 'package:food_user_app/features/checkout/domain/entities/map_picker_resul
 import 'package:food_user_app/features/checkout/presentation/widgets/checkout_payment_sheets.dart';
 import 'package:food_user_app/features/checkout/presentation/widgets/payment_options_section.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -145,7 +146,7 @@ class _CheckoutHeader extends StatelessWidget {
                 width: 28,
                 height: 28,
                 child: Icon(
-                  Icons.chevron_left_rounded,
+                  AppDirectionalIcons.backChevron(context),
                   size: 28,
                   color: AppColors.onSurface(context),
                 ),
@@ -285,7 +286,7 @@ class _MapStrip extends StatelessWidget {
           child: Image.asset(AppAssets.addressMapPreview, fit: BoxFit.cover),
         ),
         Positioned.fill(
-          child: ColoredBox(color: Colors.black.withValues(alpha: 0.20)),
+          child: ColoredBox(color: AppColors.black.withValues(alpha: 0.20)),
         ),
       ],
     );
@@ -316,7 +317,7 @@ class _CheckoutBottomBar extends StatelessWidget {
         color: AppColors.surfaceCard(context),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C2B2B).withValues(alpha: 0.08),
+            color: AppColors.shadow.withValues(alpha: 0.08),
             blurRadius: 4,
           ),
         ],

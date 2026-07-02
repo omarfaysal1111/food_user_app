@@ -15,7 +15,9 @@ import 'package:food_user_app/features/auth/presentation/widgets/app_language_pi
 import 'package:food_user_app/features/auth/presentation/widgets/auth_language_chip.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:food_user_app/features/auth/presentation/utils/auth_error_localizer.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class CompleteProfileScreen extends StatefulWidget {
   /// Phone number that was just verified via OTP (`newUser:true`). Required to
@@ -71,7 +73,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    state.message,
+                    localizedAuthError(
+                      AppLocalizations.of(context)!,
+                      state.message,
+                    ),
                     style: AppTextStyles.snackBarMessage(context),
                   ),
                 ),
@@ -135,7 +140,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         TextSpan(text: l10n.completeProfileTermsPrefix),
                         TextSpan(
                           text: l10n.registerTermsLink,
-                          style: const TextStyle(color: AppColors.primary),
+                          style: AppTextStyles.termsMuted(
+                            context,
+                          ).copyWith(color: AppColors.primary),
                         ),
                       ],
                     ),
@@ -158,6 +165,8 @@ class _ProfileTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SizedBox(
       height: 36,
       child: Stack(
@@ -167,8 +176,8 @@ class _ProfileTopBar extends StatelessWidget {
             alignment: AlignmentDirectional.centerEnd,
             child: AuthLanguageChip(
               label: context.isArabic
-                  ? AppLanguagePickerLabels.arabicOption
-                  : AppLanguagePickerLabels.englishOption,
+                  ? l10n.arabicLanguage
+                  : l10n.englishLanguage,
               flagAsset: context.isArabic
                   ? AppAssets.flagEg
                   : AppAssets.flagUsa,
@@ -189,7 +198,7 @@ class _ProfileTopBar extends StatelessWidget {
               onPressed: onBack,
               padding: EdgeInsets.zero,
               icon: Icon(
-                Icons.chevron_left_rounded,
+                AppDirectionalIcons.backChevron(context),
                 size: 28,
                 color: AppColors.onSurface(context),
               ),

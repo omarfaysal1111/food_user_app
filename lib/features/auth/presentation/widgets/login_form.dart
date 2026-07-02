@@ -9,6 +9,7 @@ import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_password_visibility_suffix.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
+import 'package:food_user_app/features/auth/presentation/utils/auth_error_localizer.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class LoginForm extends StatefulWidget {
@@ -85,7 +86,10 @@ class _LoginFormState extends State<LoginForm> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                state.message,
+                localizedAuthError(
+                  AppLocalizations.of(context)!,
+                  state.message,
+                ),
                 style: AppTextStyles.snackBarMessage(context),
               ),
             ),
@@ -135,9 +139,7 @@ class _LoginFormState extends State<LoginForm> {
               ),
               const SizedBox(height: 8),
               Align(
-                alignment: isArabic
-                    ? Alignment.centerLeft
-                    : Alignment.centerRight,
+                alignment: AlignmentDirectional.centerEnd,
                 child: TextButton(
                   onPressed: widget.onForgotPassword,
                   style: TextButton.styleFrom(

@@ -4,14 +4,6 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
-/// Fixed option labels (never translated).
-class AppLanguagePickerLabels {
-  AppLanguagePickerLabels._();
-
-  static const arabicOption = 'عربي';
-  static const englishOption = 'English';
-}
-
 Future<void> showAppLanguagePicker(BuildContext context) {
   final barrierLabel = MaterialLocalizations.of(
     context,
@@ -66,7 +58,7 @@ Future<void> showAppLanguagePicker(BuildContext context) {
                     ),
                   ),
                   _LanguagePickerOptionRow(
-                    label: AppLanguagePickerLabels.arabicOption,
+                    label: l10n.arabicLanguage,
                     selected: current == 'ar',
                     onTap: () async {
                       await controller.setLocale(const Locale('ar'));
@@ -81,7 +73,7 @@ Future<void> showAppLanguagePicker(BuildContext context) {
                     color: AppColors.languageModalDivider(dialogContext),
                   ),
                   _LanguagePickerOptionRow(
-                    label: AppLanguagePickerLabels.englishOption,
+                    label: l10n.englishLanguage,
                     selected: current == 'en',
                     onTap: () async {
                       await controller.setLocale(const Locale('en'));

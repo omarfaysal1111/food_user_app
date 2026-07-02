@@ -18,6 +18,7 @@ import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:food_user_app/features/auth/presentation/utils/auth_error_localizer.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -117,7 +118,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                state.message,
+                localizedAuthError(
+                  AppLocalizations.of(context)!,
+                  state.message,
+                ),
                 style: AppTextStyles.snackBarMessage(context),
               ),
             ),

@@ -16,7 +16,9 @@ import 'package:food_user_app/features/auth/presentation/pages/auth_entry_screen
 import 'package:food_user_app/features/auth/presentation/widgets/app_language_picker_modal.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_language_chip.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
+import 'package:food_user_app/features/auth/presentation/utils/auth_error_localizer.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class PhoneAuthScreen extends StatefulWidget {
   const PhoneAuthScreen({super.key, required this.args});
@@ -67,7 +69,10 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    state.message,
+                    localizedAuthError(
+                      AppLocalizations.of(context)!,
+                      state.message,
+                    ),
                     style: AppTextStyles.snackBarMessage(context),
                   ),
                 ),
@@ -215,6 +220,8 @@ class _AuthTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SizedBox(
       height: 36,
       child: Stack(
@@ -224,8 +231,8 @@ class _AuthTopBar extends StatelessWidget {
             alignment: AlignmentDirectional.centerEnd,
             child: AuthLanguageChip(
               label: context.isArabic
-                  ? AppLanguagePickerLabels.arabicOption
-                  : AppLanguagePickerLabels.englishOption,
+                  ? l10n.arabicLanguage
+                  : l10n.englishLanguage,
               flagAsset: context.isArabic
                   ? AppAssets.flagEg
                   : AppAssets.flagUsa,
@@ -246,7 +253,7 @@ class _AuthTopBar extends StatelessWidget {
               onPressed: onBack,
               padding: EdgeInsets.zero,
               icon: Icon(
-                Icons.chevron_left_rounded,
+                AppDirectionalIcons.backChevron(context),
                 size: 28,
                 color: AppColors.onSurface(context),
               ),

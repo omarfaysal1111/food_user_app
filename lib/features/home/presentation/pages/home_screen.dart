@@ -8,6 +8,8 @@ import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
+import 'package:food_user_app/core/widgets/app_search_field.dart';
+import 'package:food_user_app/core/widgets/app_status_dot_label.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_type.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
@@ -98,10 +100,14 @@ class _HomeHeader extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
-          Positioned(
+          PositionedDirectional(
             top: 16 + topPadding,
-            right: AppSpacing.md,
-            child: _LocationRow(copy: copy),
+            start: AppSpacing.md,
+            end: AppSpacing.md,
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: _LocationRow(copy: copy),
+            ),
           ),
           PositionedDirectional(
             start: AppSpacing.md,
@@ -146,7 +152,7 @@ class _LocationRow extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.start,
             style: AppTextStyles.caption(context).copyWith(
-              color: Colors.white.withValues(alpha: 0.72),
+              color: AppColors.text.withValues(alpha: 0.72),
               fontSize: 10,
               height: 1.25,
             ),
@@ -159,7 +165,7 @@ class _LocationRow extends StatelessWidget {
               const Icon(
                 Icons.location_on_rounded,
                 size: 16,
-                color: Colors.white,
+                color: AppColors.text,
               ),
               const SizedBox(width: 4),
               Flexible(
@@ -170,14 +176,14 @@ class _LocationRow extends StatelessWidget {
                   textAlign: TextAlign.start,
                   style: AppTextStyles.body(
                     context,
-                  ).copyWith(color: Colors.white, fontSize: 12, height: 1.3),
+                  ).copyWith(color: AppColors.text, fontSize: 12, height: 1.3),
                 ),
               ),
               const SizedBox(width: 4),
               const Icon(
                 Icons.keyboard_arrow_down_rounded,
                 size: 16,
-                color: Colors.white,
+                color: AppColors.text,
               ),
             ],
           ),
@@ -187,10 +193,29 @@ class _LocationRow extends StatelessWidget {
   }
 }
 
-class _SearchEntry extends StatelessWidget {
+class _SearchEntry extends StatefulWidget {
   const _SearchEntry({required this.copy});
 
   final _HomeCopy copy;
+
+  @override
+  State<_SearchEntry> createState() => _SearchEntryState();
+}
+
+class _SearchEntryState extends State<_SearchEntry> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,36 +225,12 @@ class _SearchEntry extends StatelessWidget {
       child: InkWell(
         borderRadius: const BorderRadius.all(Radius.circular(10)),
         onTap: () => context.push(RouteNames.search),
-        child: Container(
-          height: 40,
-          padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          child: Row(
-            textDirection: TextDirection.rtl,
-            children: [
-              const Icon(
-                Icons.search_rounded,
-                color: Color(0xFFB6B6B6),
-                size: 18,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  copy.searchHint,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.right,
-                  style: AppTextStyles.inputHint(context).copyWith(
-                    color: const Color(0xFF787878),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    height: 1.3,
-                  ),
-                ),
-              ),
-            ],
+        child: AbsorbPointer(
+          child: AppSearchField(
+            controller: _controller,
+            hint: widget.copy.searchHint,
+            height: 40,
+            hintColor: AppColors.inputHintStrong,
           ),
         ),
       ),
@@ -281,7 +282,7 @@ class _CategoryTile extends StatelessWidget {
               border: Border.all(color: AppColors.border(context), width: 0.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
+                  color: AppColors.black.withValues(alpha: 0.06),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -419,7 +420,7 @@ class _BannerIndicator extends StatelessWidget {
           _IndicatorDot(
             color: i == activePage
                 ? AppColors.primary
-                : const Color(0xFFE7E7E7),
+                : AppColors.inactiveIndicator,
             width: i == activePage ? 32 : 8,
           ),
           if (i != 3) const SizedBox(width: AppSpacing.sm),
@@ -478,7 +479,7 @@ class _OfferList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 182,
+      height: 202,
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         scrollDirection: Axis.horizontal,
@@ -513,7 +514,6 @@ class _OfferCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Row(
-            textDirection: TextDirection.rtl,
             children: [
               ClipOval(
                 child: AppRasterImage.asset(
@@ -529,6 +529,7 @@ class _OfferCard extends StatelessWidget {
                   offer.restaurant,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.start,
                   style: AppTextStyles.caption(context).copyWith(
                     fontSize: 8,
                     fontWeight: FontWeight.w500,
@@ -607,9 +608,8 @@ class _RestaurantCard extends StatelessWidget {
       borderRadius: const BorderRadius.all(AppRadius.md),
       child: InkWell(
         borderRadius: const BorderRadius.all(AppRadius.md),
-        onTap: () => context.push(
-          RouteNames.restaurantDetail.replaceFirst(':id', restaurant.id),
-        ),
+        onTap: () =>
+            context.push(RouteNames.restaurantDetailFor(restaurant.id)),
         child: Container(
           width: 223,
           decoration: BoxDecoration(
@@ -626,17 +626,16 @@ class _RestaurantCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      textDirection: TextDirection.rtl,
                       children: [
                         Expanded(
                           child: Row(
-                            textDirection: TextDirection.rtl,
                             children: [
                               Flexible(
                                 child: Text(
                                   restaurant.name,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.start,
                                   style: AppTextStyles.body(
                                     context,
                                   ).copyWith(fontSize: 12, height: 1.3),
@@ -667,26 +666,19 @@ class _RestaurantCard extends StatelessWidget {
                       ).copyWith(fontSize: 10, height: 1.25),
                     ),
                     const SizedBox(height: 8),
-                    Row(
-                      textDirection: Directionality.of(context),
-                      children: [
-                        const Icon(
-                          Icons.schedule_rounded,
-                          color: Color(0xFF666666),
-                          size: 14,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          restaurant.deliveryTime,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.caption(context).copyWith(
-                            fontSize: 10,
-                            height: 1.25,
-                            color: AppColors.onSurface(context),
-                          ),
-                        ),
-                      ],
+                    _DirectionalIconText(
+                      icon: const Icon(
+                        Icons.schedule_rounded,
+                        color: AppColors.metaIcon,
+                        size: 14,
+                      ),
+                      text: restaurant.deliveryTime,
+                      gap: 4,
+                      style: AppTextStyles.caption(context).copyWith(
+                        fontSize: 10,
+                        height: 1.25,
+                        color: AppColors.onSurface(context),
+                      ),
                     ),
                   ],
                 ),
@@ -722,8 +714,8 @@ class _RestaurantImage extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            left: 10,
+          PositionedDirectional(
+            start: 10,
             top: 10,
             child: Container(
               width: 22,
@@ -754,6 +746,17 @@ class _RatingBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final icon = const Icon(
+      Icons.star_rounded,
+      color: AppColors.ratingStar,
+      size: 14,
+    );
+    final text = Text(
+      rating,
+      style: AppTextStyles.body(context).copyWith(fontSize: 10, height: 1.25),
+    );
+
     return Container(
       padding: const EdgeInsetsDirectional.all(4),
       decoration: BoxDecoration(
@@ -762,17 +765,46 @@ class _RatingBadge extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            rating,
-            style: AppTextStyles.body(
-              context,
-            ).copyWith(fontSize: 10, height: 1.25),
-          ),
-          const SizedBox(width: 2),
-          const Icon(Icons.star_rounded, color: Color(0xFFFFB800), size: 14),
-        ],
+        children: isRtl
+            ? [text, const SizedBox(width: 2), icon]
+            : [icon, const SizedBox(width: 2), text],
       ),
+    );
+  }
+}
+
+class _DirectionalIconText extends StatelessWidget {
+  const _DirectionalIconText({
+    required this.icon,
+    required this.text,
+    required this.style,
+    this.gap = 4,
+  });
+
+  final Widget icon;
+  final String text;
+  final TextStyle style;
+  final double gap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final textWidget = Flexible(
+      child: Text(
+        text,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.start,
+        style: style,
+      ),
+    );
+    final gapWidget = SizedBox(width: gap);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: isRtl
+          ? [textWidget, gapWidget, icon]
+          : [icon, gapWidget, textWidget],
     );
   }
 }
@@ -787,28 +819,7 @@ class _AvailabilityPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = isOpen ? AppColors.success : AppColors.error;
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.caption(
-            context,
-          ).copyWith(color: color, fontSize: 10, height: 1.25),
-        ),
-        const SizedBox(width: 2),
-        Container(
-          width: 4,
-          height: 4,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: const BorderRadius.all(AppRadius.full),
-          ),
-        ),
-      ],
-    );
+    return AppStatusDotLabel(label: label, color: color);
   }
 }
 
@@ -844,236 +855,68 @@ class _HomeCopy {
   final List<_HomeRestaurant> restaurants;
 
   static _HomeCopy of(BuildContext context) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final locale = Localizations.localeOf(context);
     final l10n = AppLocalizations.of(context)!;
     final selectedAddress = SavedAddressesScope.of(
       context,
     ).selectedAddress?.shortLocation(locale);
-    return (isArabic ? _arabic : _english)._withCategories([
-      _HomeCategory(
-        label: l10n.homeCategoryRestaurants,
-        imageAsset: AppAssets.homeCategoryRestaurants,
-        type: ServiceListingType.restaurants,
-      ),
-      _HomeCategory(
-        label: l10n.homeCategoryGrocery,
-        imageAsset: AppAssets.homeCategoryGrocery,
-        type: ServiceListingType.grocery,
-      ),
-      _HomeCategory(
-        label: l10n.homeCategoryStores,
-        imageAsset: AppAssets.homeCategoryStore,
-        type: ServiceListingType.stores,
-      ),
-      _HomeCategory(
-        label: l10n.homeCategoryPickup,
-        imageAsset: AppAssets.homeCategoryPickup,
-        type: ServiceListingType.pickup,
-      ),
-    ], address: selectedAddress ?? l10n.selectDeliveryAddress);
-  }
 
-  _HomeCopy _withCategories(
-    List<_HomeCategory> categories, {
-    required String address,
-  }) {
     return _HomeCopy(
-      deliveryTo: deliveryTo,
-      address: address,
-      searchHint: searchHint,
-      bannerEyebrow: bannerEyebrow,
-      bannerTitle: bannerTitle,
-      orderNow: orderNow,
-      missedOffersTitle: missedOffersTitle,
-      mostOrderedTitle: mostOrderedTitle,
-      available: available,
-      closed: closed,
-      categories: categories,
-      offers: offers,
-      restaurants: restaurants,
+      deliveryTo: l10n.homeDeliveryTo,
+      address: selectedAddress ?? l10n.selectDeliveryAddress,
+      searchHint: l10n.serviceSearchHint,
+      bannerEyebrow: l10n.homeBannerEyebrow,
+      bannerTitle: l10n.homeBannerTitle,
+      orderNow: l10n.homeOrderNow,
+      missedOffersTitle: l10n.homeMissedOffersTitle,
+      mostOrderedTitle: l10n.homeMostOrderedTitle,
+      available: l10n.serviceAvailable,
+      closed: l10n.serviceClosed,
+      categories: [
+        _HomeCategory(
+          label: l10n.homeCategoryRestaurants,
+          imageAsset: AppAssets.homeCategoryRestaurants,
+          type: ServiceListingType.restaurants,
+        ),
+        _HomeCategory(
+          label: l10n.homeCategoryGrocery,
+          imageAsset: AppAssets.homeCategoryGrocery,
+          type: ServiceListingType.grocery,
+        ),
+        _HomeCategory(
+          label: l10n.homeCategoryStores,
+          imageAsset: AppAssets.homeCategoryStore,
+          type: ServiceListingType.stores,
+        ),
+        _HomeCategory(
+          label: l10n.homeCategoryPickup,
+          imageAsset: AppAssets.homeCategoryPickup,
+          type: ServiceListingType.pickup,
+        ),
+      ],
+      offers: [
+        for (var i = 0; i < 4; i++)
+          _HomeOffer(
+            restaurant: l10n.orderRestaurantAzAlSham,
+            title: l10n.cartProductBurgerCombo,
+            price: l10n.cartPrice(190),
+            imageAsset: AppAssets.homeOfferProduct,
+          ),
+      ],
+      restaurants: [
+        for (final open in [false, true, false])
+          _HomeRestaurant(
+            name: l10n.orderRestaurantAzAlSham,
+            description: l10n.serviceRestaurantDescription,
+            deliveryTime: l10n.serviceDeliveryTimeRange,
+            rating: l10n.orderCourierRating,
+            isOpen: open,
+            id: 'az-al-sham',
+            imageAsset: AppAssets.homeRestaurantCover,
+          ),
+      ],
     );
   }
-
-  static const _arabic = _HomeCopy(
-    deliveryTo: 'التوصيل إلى',
-    address: '',
-    searchHint: 'إبحث عن ما تحب',
-    bannerEyebrow: 'فاتح اللذة',
-    bannerTitle: 'برجر\nمميز',
-    orderNow: 'اطلب الآن',
-    missedOffersTitle: 'عروض لا تفوتها',
-    mostOrderedTitle: 'الأكثر طلباً',
-    available: 'متاح',
-    closed: 'مغلق',
-    categories: [
-      _HomeCategory(
-        label: 'المطاعم',
-        imageAsset: AppAssets.homeCategoryRestaurants,
-        type: ServiceListingType.restaurants,
-      ),
-      _HomeCategory(
-        label: 'البقالة',
-        imageAsset: AppAssets.homeCategoryGrocery,
-        type: ServiceListingType.grocery,
-      ),
-      _HomeCategory(
-        label: 'المتاجر',
-        imageAsset: AppAssets.homeCategoryStore,
-        type: ServiceListingType.stores,
-      ),
-      _HomeCategory(
-        label: 'استلم بنفسك',
-        imageAsset: AppAssets.homeCategoryPickup,
-        type: ServiceListingType.pickup,
-      ),
-    ],
-    offers: [
-      _HomeOffer(
-        restaurant: 'مطعم عز الشام',
-        title: 'عرض البرجر مع الفرايز',
-        price: '190 ج.م',
-        imageAsset: AppAssets.homeOfferProduct,
-      ),
-      _HomeOffer(
-        restaurant: 'مطعم عز الشام',
-        title: 'عرض البرجر مع الفرايز',
-        price: '190 ج.م',
-        imageAsset: AppAssets.homeOfferProduct,
-      ),
-      _HomeOffer(
-        restaurant: 'مطعم عز الشام',
-        title: 'عرض البرجر مع الفرايز',
-        price: '190 ج.م',
-        imageAsset: AppAssets.homeOfferProduct,
-      ),
-      _HomeOffer(
-        restaurant: 'مطعم عز الشام',
-        title: 'عرض البرجر مع الفرايز',
-        price: '190 ج.م',
-        imageAsset: AppAssets.homeOfferProduct,
-      ),
-    ],
-    restaurants: [
-      _HomeRestaurant(
-        name: 'مطعم عز الشام',
-        description: 'شاورما، بيتزا، وجبات شرقي',
-        deliveryTime: '45-30 دقيقة',
-        rating: '4.5',
-        isOpen: false,
-        id: 'az-al-sham',
-        imageAsset: AppAssets.homeRestaurantCover,
-      ),
-      _HomeRestaurant(
-        name: 'مطعم عز الشام',
-        description: 'شاورما، بيتزا، وجبات شرقي',
-        deliveryTime: '45-30 دقيقة',
-        rating: '4.5',
-        isOpen: true,
-        id: 'az-al-sham',
-        imageAsset: AppAssets.homeRestaurantCover,
-      ),
-      _HomeRestaurant(
-        name: 'مطعم عز الشام',
-        description: 'شاورما، بيتزا، وجبات شرقي',
-        deliveryTime: '45-30 دقيقة',
-        rating: '4.5',
-        isOpen: false,
-        id: 'az-al-sham',
-        imageAsset: AppAssets.homeRestaurantCover,
-      ),
-    ],
-  );
-
-  static const _english = _HomeCopy(
-    deliveryTo: 'Deliver to',
-    address: '',
-    searchHint: 'Search for what you love',
-    bannerEyebrow: 'Taste unlocked',
-    bannerTitle: 'Special\nBurger',
-    orderNow: 'Order now',
-    missedOffersTitle: 'Offers you cannot miss',
-    mostOrderedTitle: 'Most ordered',
-    available: 'Open',
-    closed: 'Closed',
-    categories: [
-      _HomeCategory(
-        label: 'Restaurants',
-        imageAsset: AppAssets.homeCategoryRestaurants,
-        type: ServiceListingType.restaurants,
-      ),
-      _HomeCategory(
-        label: 'Grocery',
-        imageAsset: AppAssets.homeCategoryGrocery,
-        type: ServiceListingType.grocery,
-      ),
-      _HomeCategory(
-        label: 'Stores',
-        imageAsset: AppAssets.homeCategoryStore,
-        type: ServiceListingType.stores,
-      ),
-      _HomeCategory(
-        label: 'Pickup',
-        imageAsset: AppAssets.homeCategoryPickup,
-        type: ServiceListingType.pickup,
-      ),
-    ],
-    offers: [
-      _HomeOffer(
-        restaurant: 'Az Al Sham',
-        title: 'Burger with fries offer',
-        price: 'EGP 190',
-        imageAsset: AppAssets.homeOfferProduct,
-      ),
-      _HomeOffer(
-        restaurant: 'Az Al Sham',
-        title: 'Burger with fries offer',
-        price: 'EGP 190',
-        imageAsset: AppAssets.homeOfferProduct,
-      ),
-      _HomeOffer(
-        restaurant: 'Az Al Sham',
-        title: 'Burger with fries offer',
-        price: 'EGP 190',
-        imageAsset: AppAssets.homeOfferProduct,
-      ),
-      _HomeOffer(
-        restaurant: 'Az Al Sham',
-        title: 'Burger with fries offer',
-        price: 'EGP 190',
-        imageAsset: AppAssets.homeOfferProduct,
-      ),
-    ],
-    restaurants: [
-      _HomeRestaurant(
-        name: 'Az Al Sham',
-        description: 'Shawarma, pizza, oriental meals',
-        deliveryTime: '30-45 min',
-        rating: '4.5',
-        isOpen: false,
-        id: 'az-al-sham',
-        imageAsset: AppAssets.homeRestaurantCover,
-      ),
-      _HomeRestaurant(
-        name: 'Az Al Sham',
-        description: 'Shawarma, pizza, oriental meals',
-        deliveryTime: '30-45 min',
-        rating: '4.5',
-        isOpen: true,
-        id: 'az-al-sham',
-        imageAsset: AppAssets.homeRestaurantCover,
-      ),
-      _HomeRestaurant(
-        name: 'Az Al Sham',
-        description: 'Shawarma, pizza, oriental meals',
-        deliveryTime: '30-45 min',
-        rating: '4.5',
-        isOpen: false,
-        id: 'az-al-sham',
-        imageAsset: AppAssets.homeRestaurantCover,
-      ),
-    ],
-  );
 }
 
 class _HomeCategory {

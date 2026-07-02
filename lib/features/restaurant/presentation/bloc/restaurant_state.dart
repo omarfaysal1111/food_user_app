@@ -5,4 +5,5 @@ abstract class RestaurantState {
 class RestaurantStateInitial extends RestaurantState {
   const RestaurantStateInitial();
 }
+
 // TODO: add concrete state classes

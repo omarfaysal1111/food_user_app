@@ -6,6 +6,7 @@ import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
   const PaymentMethodScreen({super.key});
@@ -329,7 +330,7 @@ class _PaymentHeader extends StatelessWidget {
                 width: _PaymentMethodScreenState._headerIconSize,
                 height: _PaymentMethodScreenState._headerIconSize,
                 child: Icon(
-                  Icons.chevron_left_rounded,
+                  AppDirectionalIcons.backChevron(context),
                   size: _PaymentMethodScreenState._headerIconSize,
                   color: AppColors.onSurface(context),
                 ),
@@ -482,7 +483,9 @@ class _PaymentCardItem extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: '${l10n.expiryDate} : ',
-                        style: TextStyle(color: AppColors.paragraph(context)),
+                        style: AppTextStyles.caption(
+                          context,
+                        ).copyWith(color: AppColors.paragraph(context)),
                       ),
                       TextSpan(text: card.expiry),
                     ],
@@ -549,7 +552,7 @@ class _CardMoreButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF373737).withValues(alpha: 0.12),
+                  color: AppColors.shadowStrong.withValues(alpha: 0.12),
                   blurRadius: 4,
                 ),
               ],
@@ -591,7 +594,7 @@ class _CardActionsMenu extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF2C2B2B).withValues(alpha: 0.08),
+              color: AppColors.shadow.withValues(alpha: 0.08),
               blurRadius: 4,
             ),
           ],
@@ -1085,7 +1088,7 @@ class _SheetBottomBar extends StatelessWidget {
         color: AppColors.surfaceCard(context),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C2B2B).withValues(alpha: 0.08),
+            color: AppColors.shadow.withValues(alpha: 0.08),
             blurRadius: 4,
           ),
         ],
@@ -1143,7 +1146,7 @@ class _PaymentBottomBar extends StatelessWidget {
         color: AppColors.surfaceCard(context),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C2B2B).withValues(alpha: 0.08),
+            color: AppColors.shadow.withValues(alpha: 0.08),
             blurRadius: 4,
           ),
         ],

@@ -11,6 +11,7 @@ import 'package:food_user_app/features/profile/domain/models/saved_address.dart'
 import 'package:food_user_app/features/profile/presentation/pages/add_edit_address_screen.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class AddressBookScreen extends StatelessWidget {
   const AddressBookScreen({super.key});
@@ -120,7 +121,7 @@ class _AddressHeader extends StatelessWidget {
                 width: AddressBookScreen._headerIconSize,
                 height: AddressBookScreen._headerIconSize,
                 child: Icon(
-                  Icons.chevron_left_rounded,
+                  AppDirectionalIcons.backChevron(context),
                   size: AddressBookScreen._headerIconSize,
                   color: AppColors.onSurface(context),
                 ),
@@ -175,7 +176,9 @@ class _SavedAddressCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: selected ? AppColors.primary : AppColors.border(context),
+              color: selected
+                  ? AppColors.activeBorder(context)
+                  : AppColors.border(context),
               width: selected ? 1.5 : 0.5,
             ),
           ),
@@ -390,7 +393,7 @@ class _BottomActionBar extends StatelessWidget {
         color: AppColors.surfaceCard(context),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C2B2B).withValues(alpha: 0.08),
+            color: AppColors.shadow.withValues(alpha: 0.08),
             blurRadius: 4,
           ),
         ],
@@ -446,7 +449,7 @@ class _DeleteAddressDialog extends StatelessWidget {
 
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 16),
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 20),

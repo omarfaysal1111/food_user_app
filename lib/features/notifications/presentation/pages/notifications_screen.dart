@@ -6,6 +6,7 @@ import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -127,7 +128,7 @@ class _NotificationsHeader extends StatelessWidget {
                 width: NotificationsScreen._headerIconSize,
                 height: NotificationsScreen._headerIconSize,
                 child: Icon(
-                  Icons.chevron_left_rounded,
+                  AppDirectionalIcons.backChevron(context),
                   size: NotificationsScreen._headerIconSize,
                   color: AppColors.onSurface(context),
                 ),

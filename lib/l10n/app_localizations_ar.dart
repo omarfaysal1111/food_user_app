@@ -1185,4 +1185,185 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get validationOtpSixDigits => 'يرجى إدخال ٦ أرقام';
+
+  @override
+  String get homeDeliveryTo => 'التوصيل إلى';
+
+  @override
+  String get homeBannerEyebrow => 'فاتح اللذة';
+
+  @override
+  String get homeBannerTitle => 'برجر\nمميز';
+
+  @override
+  String get homeOrderNow => 'اطلب الآن';
+
+  @override
+  String get homeMissedOffersTitle => 'عروض لا تفوتها';
+
+  @override
+  String get homeMostOrderedTitle => 'الأكثر طلباً';
+
+  @override
+  String get searchTitle => 'البحث';
+
+  @override
+  String get searchCravingTitle => 'نفسك في ايه';
+
+  @override
+  String get searchRecentTitle => 'بحثك الاخير';
+
+  @override
+  String get searchTopStoresTitle => 'المتاجر الكبرى';
+
+  @override
+  String get searchMostSearchedTitle => 'الاكثر بحثاً';
+
+  @override
+  String get searchResultsTitle => 'نتائج البحث';
+
+  @override
+  String get searchEmptyTitle => 'لا توجد نتائج مطابقة';
+
+  @override
+  String get searchFilterAll => 'الكل';
+
+  @override
+  String get searchCravingBreakfast => 'فطار';
+
+  @override
+  String get searchCravingDairy => 'منتجات البان';
+
+  @override
+  String get searchCravingDrinks => 'مشروبات';
+
+  @override
+  String get searchCravingSnacks => 'تسالي';
+
+  @override
+  String get searchCravingFastFood => 'وجبات سريعة';
+
+  @override
+  String get searchCravingBakery => 'مخبوزات';
+
+  @override
+  String get searchCravingDesserts => 'حلويات';
+
+  @override
+  String get searchRecentJuice => 'عصير';
+
+  @override
+  String get searchRecentPepsi => 'بيبسي';
+
+  @override
+  String get searchRecentNuts => 'مكسرات';
+
+  @override
+  String get searchRecentFalafel => 'فول فلافل';
+
+  @override
+  String get searchMostSearchedAzAlSham => 'عز الشام';
+
+  @override
+  String get searchMostSearchedGawdat => 'جودت';
+
+  @override
+  String get searchMostSearchedTeaBun => 'Tea Bun';
+
+  @override
+  String get searchMostSearchedElBashawat => 'الباشوات';
+
+  @override
+  String get searchResultBurgerFriesTitle => 'عرض البرجر مع الفرايز';
+
+  @override
+  String get searchResultFalafelTitle => 'فول وفلافل';
+
+  @override
+  String get searchResultFalafelSubtitle => 'فطار، سندوتشات، مشروبات';
+
+  @override
+  String get searchResultFalafelPrice => '45 ج.م';
+
+  @override
+  String get searchResultFalafelKeywordBeans => 'فول';
+
+  @override
+  String get mapPickerLoadingAddress => 'جاري تحديد العنوان...';
+
+  @override
+  String get mapPickerFallbackAddress => 'موقع محدد على الخريطة';
+
+  @override
+  String get mapPickerFailedAddress => 'تعذر تحديد العنوان';
+
+  @override
+  String get restaurantDetailsTitle => 'تفاصيل المطعم';
+
+  @override
+  String get restaurantDiscountSubtitle => '50 %خصم على بعض المنتج';
+
+  @override
+  String get restaurantViewProducts => 'عرض المنتجات';
+
+  @override
+  String get restaurantSearchTitle => 'بحث';
+
+  @override
+  String get restaurantSearchEmptyTitle => 'لا توجد أصناف مطابقة';
+
+  @override
+  String get restaurantRateCustomerReviews => 'اراء العملاء :';
+
+  @override
+  String get restaurantRateRatingsLabel => 'التقييمات';
+
+  @override
+  String get restaurantRateMoreDetails => 'تفاصيل اكثر عنا :';
+
+  @override
+  String get restaurantRateDeliveryPrice => 'سعر التوصيل';
+
+  @override
+  String get restaurantRateMinimumOrder => 'الحد الادنى للطلب';
+
+  @override
+  String get restaurantRateDeliveryTime => 'وقت التوصيل';
+
+  @override
+  String get restaurantRateAddress => 'العنوان';
+
+  @override
+  String get restaurantRatePreviousOrders => 'طلبات مسبقة';
+
+  @override
+  String get restaurantRatePaymentMethod => 'طريقة الدفع';
+
+  @override
+  String get serviceDeliveryTime25To40 => '25-40 دقيقة';
+
+  @override
+  String get serviceDeliveryTime35To50 => '35-50 دقيقة';
+
+  @override
+  String get authErrorNoInternet => 'لا يوجد اتصال بالإنترنت';
+
+  @override
+  String get authErrorTimeout => 'انتهت مهلة الطلب';
+
+  @override
+  String get authErrorUnauthorized => 'غير مصرح لك';
+
+  @override
+  String get authErrorUnknown => 'حدث خطأ ما';
+
+  @override
+  String get authErrorRequestFailed => 'فشل الطلب';
+
+  @override
+  String get authErrorInvalidResponse => 'استجابة غير صالحة';
+
+  @override
+  String get authErrorMissingAccessToken =>
+      'تم التحقق بنجاح ولكن لم يتم إرجاع رمز الوصول';
 }

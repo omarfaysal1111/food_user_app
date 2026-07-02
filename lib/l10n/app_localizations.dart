@@ -2401,6 +2401,366 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter 6 digits'**
   String get validationOtpSixDigits;
+
+  /// No description provided for @homeDeliveryTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Deliver to'**
+  String get homeDeliveryTo;
+
+  /// No description provided for @homeBannerEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Taste unlocked'**
+  String get homeBannerEyebrow;
+
+  /// No description provided for @homeBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Special\nBurger'**
+  String get homeBannerTitle;
+
+  /// No description provided for @homeOrderNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Order now'**
+  String get homeOrderNow;
+
+  /// No description provided for @homeMissedOffersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers you cannot miss'**
+  String get homeMissedOffersTitle;
+
+  /// No description provided for @homeMostOrderedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Most ordered'**
+  String get homeMostOrderedTitle;
+
+  /// No description provided for @searchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchTitle;
+
+  /// No description provided for @searchCravingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you craving?'**
+  String get searchCravingTitle;
+
+  /// No description provided for @searchRecentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent searches'**
+  String get searchRecentTitle;
+
+  /// No description provided for @searchTopStoresTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Top stores'**
+  String get searchTopStoresTitle;
+
+  /// No description provided for @searchMostSearchedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Most searched'**
+  String get searchMostSearchedTitle;
+
+  /// No description provided for @searchResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search results'**
+  String get searchResultsTitle;
+
+  /// No description provided for @searchEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching results'**
+  String get searchEmptyTitle;
+
+  /// No description provided for @searchFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get searchFilterAll;
+
+  /// No description provided for @searchCravingBreakfast.
+  ///
+  /// In en, this message translates to:
+  /// **'Breakfast'**
+  String get searchCravingBreakfast;
+
+  /// No description provided for @searchCravingDairy.
+  ///
+  /// In en, this message translates to:
+  /// **'Dairy'**
+  String get searchCravingDairy;
+
+  /// No description provided for @searchCravingDrinks.
+  ///
+  /// In en, this message translates to:
+  /// **'Drinks'**
+  String get searchCravingDrinks;
+
+  /// No description provided for @searchCravingSnacks.
+  ///
+  /// In en, this message translates to:
+  /// **'Snacks'**
+  String get searchCravingSnacks;
+
+  /// No description provided for @searchCravingFastFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast food'**
+  String get searchCravingFastFood;
+
+  /// No description provided for @searchCravingBakery.
+  ///
+  /// In en, this message translates to:
+  /// **'Bakery'**
+  String get searchCravingBakery;
+
+  /// No description provided for @searchCravingDesserts.
+  ///
+  /// In en, this message translates to:
+  /// **'Desserts'**
+  String get searchCravingDesserts;
+
+  /// No description provided for @searchRecentJuice.
+  ///
+  /// In en, this message translates to:
+  /// **'Juice'**
+  String get searchRecentJuice;
+
+  /// No description provided for @searchRecentPepsi.
+  ///
+  /// In en, this message translates to:
+  /// **'Pepsi'**
+  String get searchRecentPepsi;
+
+  /// No description provided for @searchRecentNuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Nuts'**
+  String get searchRecentNuts;
+
+  /// No description provided for @searchRecentFalafel.
+  ///
+  /// In en, this message translates to:
+  /// **'Falafel'**
+  String get searchRecentFalafel;
+
+  /// No description provided for @searchMostSearchedAzAlSham.
+  ///
+  /// In en, this message translates to:
+  /// **'Az Al Sham'**
+  String get searchMostSearchedAzAlSham;
+
+  /// No description provided for @searchMostSearchedGawdat.
+  ///
+  /// In en, this message translates to:
+  /// **'Gawdat'**
+  String get searchMostSearchedGawdat;
+
+  /// No description provided for @searchMostSearchedTeaBun.
+  ///
+  /// In en, this message translates to:
+  /// **'Tea Bun'**
+  String get searchMostSearchedTeaBun;
+
+  /// No description provided for @searchMostSearchedElBashawat.
+  ///
+  /// In en, this message translates to:
+  /// **'El Bashawat'**
+  String get searchMostSearchedElBashawat;
+
+  /// No description provided for @searchResultBurgerFriesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Burger with fries offer'**
+  String get searchResultBurgerFriesTitle;
+
+  /// No description provided for @searchResultFalafelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Falafel breakfast'**
+  String get searchResultFalafelTitle;
+
+  /// No description provided for @searchResultFalafelSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Breakfast, sandwiches, drinks'**
+  String get searchResultFalafelSubtitle;
+
+  /// No description provided for @searchResultFalafelPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'EGP 45'**
+  String get searchResultFalafelPrice;
+
+  /// No description provided for @searchResultFalafelKeywordBeans.
+  ///
+  /// In en, this message translates to:
+  /// **'beans'**
+  String get searchResultFalafelKeywordBeans;
+
+  /// No description provided for @mapPickerLoadingAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Locating address...'**
+  String get mapPickerLoadingAddress;
+
+  /// No description provided for @mapPickerFallbackAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected location on the map'**
+  String get mapPickerFallbackAddress;
+
+  /// No description provided for @mapPickerFailedAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to locate address'**
+  String get mapPickerFailedAddress;
+
+  /// No description provided for @restaurantDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant details'**
+  String get restaurantDetailsTitle;
+
+  /// No description provided for @restaurantDiscountSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'50% off selected products'**
+  String get restaurantDiscountSubtitle;
+
+  /// No description provided for @restaurantViewProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'View products'**
+  String get restaurantViewProducts;
+
+  /// No description provided for @restaurantSearchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get restaurantSearchTitle;
+
+  /// No description provided for @restaurantSearchEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching menu items'**
+  String get restaurantSearchEmptyTitle;
+
+  /// No description provided for @restaurantRateCustomerReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer reviews:'**
+  String get restaurantRateCustomerReviews;
+
+  /// No description provided for @restaurantRateRatingsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ratings'**
+  String get restaurantRateRatingsLabel;
+
+  /// No description provided for @restaurantRateMoreDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'More details:'**
+  String get restaurantRateMoreDetails;
+
+  /// No description provided for @restaurantRateDeliveryPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery price'**
+  String get restaurantRateDeliveryPrice;
+
+  /// No description provided for @restaurantRateMinimumOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum order'**
+  String get restaurantRateMinimumOrder;
+
+  /// No description provided for @restaurantRateDeliveryTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery time'**
+  String get restaurantRateDeliveryTime;
+
+  /// No description provided for @restaurantRateAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get restaurantRateAddress;
+
+  /// No description provided for @restaurantRatePreviousOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous orders'**
+  String get restaurantRatePreviousOrders;
+
+  /// No description provided for @restaurantRatePaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get restaurantRatePaymentMethod;
+
+  /// No description provided for @serviceDeliveryTime25To40.
+  ///
+  /// In en, this message translates to:
+  /// **'25-40 min'**
+  String get serviceDeliveryTime25To40;
+
+  /// No description provided for @serviceDeliveryTime35To50.
+  ///
+  /// In en, this message translates to:
+  /// **'35-50 min'**
+  String get serviceDeliveryTime35To50;
+
+  /// No description provided for @authErrorNoInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get authErrorNoInternet;
+
+  /// No description provided for @authErrorTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Request timed out'**
+  String get authErrorTimeout;
+
+  /// No description provided for @authErrorUnauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Unauthorized'**
+  String get authErrorUnauthorized;
+
+  /// No description provided for @authErrorUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get authErrorUnknown;
+
+  /// No description provided for @authErrorRequestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Request failed'**
+  String get authErrorRequestFailed;
+
+  /// No description provided for @authErrorInvalidResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid response'**
+  String get authErrorInvalidResponse;
+
+  /// No description provided for @authErrorMissingAccessToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification succeeded but no access token was returned'**
+  String get authErrorMissingAccessToken;
 }
 
 class _AppLocalizationsDelegate

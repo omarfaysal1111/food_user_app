@@ -111,7 +111,7 @@ class AuthEntryScreen extends StatelessWidget {
                             icon: const Icon(
                               Icons.facebook_rounded,
                               size: 20,
-                              color: Color(0xFF1877F2),
+                              color: AppColors.facebookBlue,
                             ),
                           ),
                         ],
@@ -237,7 +237,9 @@ class _AuthEntryTitle extends StatelessWidget {
             children: [
               TextSpan(
                 text: l10n.authEntryTitleAccent,
-                style: const TextStyle(color: AppColors.primary),
+                style: AppTextStyles.heading4(
+                  context,
+                ).copyWith(color: AppColors.primary, fontSize: 18, height: 1.4),
               ),
               TextSpan(text: l10n.authEntryTitleRest),
             ],

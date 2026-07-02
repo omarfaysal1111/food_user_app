@@ -51,7 +51,8 @@ class OnboardingScreen extends StatelessWidget {
                 ? availableHeight * 0.42
                 : availableHeight * 0.50;
 
-            final reservedContentH = mainGap + // top padding inside content block
+            final reservedContentH =
+                mainGap + // top padding inside content block
                 scooterHeight +
                 mainGap +
                 titleEstimate +
@@ -61,8 +62,10 @@ class OnboardingScreen extends StatelessWidget {
                 48.0 + // CTA button height
                 bottomPadding;
 
-            final computedCollageH =
-                (availableHeight - reservedContentH).clamp(minCollageH, desiredCollageH);
+            final computedCollageH = (availableHeight - reservedContentH).clamp(
+              minCollageH,
+              desiredCollageH,
+            );
 
             final enableScrollFallback = availableHeight < 650;
 
@@ -80,10 +83,7 @@ class OnboardingScreen extends StatelessWidget {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        AppRasterImage.asset(
-                          collageAsset,
-                          fit: BoxFit.cover,
-                        ),
+                        AppRasterImage.asset(collageAsset, fit: BoxFit.cover),
                         DecoratedBox(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(

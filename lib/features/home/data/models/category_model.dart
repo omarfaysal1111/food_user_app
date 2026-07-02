@@ -1,6 +1,5 @@
 import 'package:food_user_app/features/home/domain/entities/category.dart';
 
-
 class CategoryModel extends Category {
   const CategoryModel() : super();
 

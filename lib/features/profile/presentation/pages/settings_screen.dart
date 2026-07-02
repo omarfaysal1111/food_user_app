@@ -10,6 +10,7 @@ import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/app_language_picker_modal.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -172,7 +173,7 @@ class _SettingsHeader extends StatelessWidget {
 }
 
 IconData _visualBackChevronIcon(BuildContext context) {
-  return Icons.chevron_left_rounded;
+  return AppDirectionalIcons.backChevron(context);
 }
 
 class _LanguageTrailing extends StatelessWidget {
@@ -277,8 +278,8 @@ class _NotificationSwitch extends StatelessWidget {
     final trackColor = value
         ? AppColors.success
         : Theme.of(context).brightness == Brightness.dark
-        ? const Color(0xFF272727)
-        : const Color(0xFFE5E5E5);
+        ? AppColors.settingsDarkTrack
+        : AppColors.settingsLightTrack;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -309,7 +310,7 @@ class _NotificationSwitch extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.12),
+                    color: AppColors.black.withValues(alpha: 0.12),
                     blurRadius: 2,
                     offset: const Offset(0, 1),
                   ),
@@ -345,10 +346,13 @@ class _DarkModeSwitch extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.text,
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: const Color(0xFFEAEAEA), width: 0.5),
+            border: Border.all(
+              color: AppColors.settingsSwitchBorder,
+              width: 0.5,
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
+                color: AppColors.black.withValues(alpha: 0.08),
                 blurRadius: 4,
                 offset: const Offset(0, 1),
               ),
@@ -379,14 +383,14 @@ class _DarkModeSwitchKnob extends StatelessWidget {
       width: 24,
       height: 24,
       decoration: BoxDecoration(
-        color: value ? const Color(0xFF5DC76B) : const Color(0xFFE9E9E9),
+        color: value ? AppColors.darkModeKnobOn : AppColors.darkModeKnobOff,
         shape: BoxShape.circle,
       ),
       alignment: Alignment.center,
       child: Icon(
         value ? Icons.nightlight_round : Icons.wb_sunny_rounded,
         size: 16,
-        color: value ? AppColors.text : const Color(0xFFF4B23D),
+        color: value ? AppColors.text : AppColors.sunIcon,
       ),
     );
   }

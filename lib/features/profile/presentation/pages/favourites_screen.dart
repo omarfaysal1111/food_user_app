@@ -6,15 +6,17 @@ import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
-import 'package:food_user_app/features/restaurant/presentation/pages/restaurant_detail_screen.dart';
+import 'package:food_user_app/core/widgets/app_status_dot_label.dart';
+import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class FavouritesScreen extends StatefulWidget {
   const FavouritesScreen({super.key});
 
-  static const _successColor = Color(0xFF0C9D61);
-  static const _warningColor = Color(0xFFEFBE1C);
-  static const _closedColor = Color(0xFFEC2D30);
+  static const _successColor = AppColors.success;
+  static const _warningColor = AppColors.statusWarning;
+  static const _closedColor = AppColors.error;
 
   static const _screenPadding = 16.0;
   static const _topInset = 20.0;
@@ -168,7 +170,7 @@ class _FavoritesHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    const backIcon = Icons.chevron_left_rounded;
+    final backIcon = AppDirectionalIcons.backChevron(context);
 
     return SizedBox(
       height: FavouritesScreen._headerHeight,
@@ -250,7 +252,7 @@ class _FavoriteRestaurantCard extends StatelessWidget {
 
   void _openDetails(BuildContext context) {
     context.push(
-      RouteNames.restaurantDetail.replaceFirst(':id', item.detailId),
+      RouteNames.restaurantDetailFor(item.detailId),
       extra: RestaurantDetailArgs(
         id: item.detailId,
         name: item.name,
@@ -402,33 +404,7 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final dot = Container(
-      width: 4,
-      height: 4,
-      decoration: BoxDecoration(
-        color: item.statusColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
-    );
-    final label = Text(
-      item.status,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      textAlign: TextAlign.start,
-      style: AppTextStyles.caption(context).copyWith(
-        color: item.statusColor,
-        fontSize: 10,
-        fontWeight: FontWeight.w400,
-        height: 1.25,
-      ),
-    );
-
-    return Row(
-      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-      mainAxisSize: MainAxisSize.min,
-      children: [dot, const SizedBox(width: 2), label],
-    );
+    return AppStatusDotLabel(label: item.status, color: item.statusColor);
   }
 }
 

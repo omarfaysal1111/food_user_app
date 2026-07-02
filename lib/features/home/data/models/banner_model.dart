@@ -1,6 +1,5 @@
 import 'package:food_user_app/features/home/domain/entities/banner.dart';
 
-
 class BannerModel extends Banner {
   const BannerModel() : super();
 

@@ -5,4 +5,5 @@ abstract class HomeState {
 class HomeStateInitial extends HomeState {
   const HomeStateInitial();
 }
+
 // TODO: add concrete state classes

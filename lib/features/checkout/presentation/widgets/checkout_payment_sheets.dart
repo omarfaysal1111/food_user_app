@@ -373,7 +373,11 @@ class _SaveCardRow extends StatelessWidget {
               border: Border.all(color: AppColors.primary, width: 1),
             ),
             child: selected
-                ? const Icon(Icons.check_rounded, size: 18, color: Colors.white)
+                ? const Icon(
+                    Icons.check_rounded,
+                    size: 18,
+                    color: AppColors.text,
+                  )
                 : null,
           ),
           const SizedBox(width: 13),
@@ -540,10 +544,7 @@ BoxDecoration _bottomBarDecoration(BuildContext context) {
   return BoxDecoration(
     color: AppColors.surfaceCard(context),
     boxShadow: [
-      BoxShadow(
-        color: const Color(0xFF2C2B2B).withValues(alpha: 0.08),
-        blurRadius: 4,
-      ),
+      BoxShadow(color: AppColors.shadow.withValues(alpha: 0.08), blurRadius: 4),
     ],
   );
 }

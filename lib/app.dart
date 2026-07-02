@@ -40,7 +40,8 @@ class App extends StatelessWidget {
                 final locale = localeController.locale;
                 final code = locale.languageCode;
                 return MaterialApp.router(
-                  title: 'Food User App',
+                  onGenerateTitle: (context) =>
+                      AppLocalizations.of(context)!.appTitle,
                   locale: locale,
                   supportedLocales: AppLocalizations.supportedLocales,
                   localizationsDelegates:

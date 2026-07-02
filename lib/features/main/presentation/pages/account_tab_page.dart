@@ -34,7 +34,7 @@ class AccountTabPage extends StatelessWidget {
   static const _avatarSize = 40.0;
   static const _menuIconCircleSize = 32.0;
   static const _arrowSize = 24.0;
-  static const _shadowColor = Color(0x142C2B2B);
+  static const _shadowColor = AppColors.accountShadow;
 
   @override
   Widget build(BuildContext context) {
@@ -175,6 +175,7 @@ class _AccountProfileCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final chevronIcon = _detailsChevronIcon(context);
+    final placeholderName = l10n.accountPlaceholderName;
 
     return PositionedDirectional(
       top: top,
@@ -198,7 +199,7 @@ class _AccountProfileCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              _Avatar(letter: isRtl ? 'أ' : 'A'),
+              _Avatar(letter: placeholderName.characters.first),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -207,7 +208,7 @@ class _AccountProfileCard extends StatelessWidget {
                   children: [
                     // TODO: Replace placeholder account data with real user data.
                     Text(
-                      l10n.accountPlaceholderName,
+                      placeholderName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.start,
@@ -260,7 +261,7 @@ class _Avatar extends StatelessWidget {
       width: AccountTabPage._avatarSize,
       height: AccountTabPage._avatarSize,
       decoration: const BoxDecoration(
-        color: Color(0x1AEC2D30),
+        color: AppColors.errorTint,
         shape: BoxShape.circle,
       ),
       alignment: Alignment.center,

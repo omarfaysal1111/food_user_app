@@ -823,9 +823,7 @@ class _AddonCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(
-                            0xFF2C2B2B,
-                          ).withValues(alpha: 0.08),
+                          color: AppColors.shadow.withValues(alpha: 0.08),
                           blurRadius: 4,
                         ),
                       ],
@@ -923,7 +921,7 @@ class _ProductBottomBar extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: enabled
                           ? AppColors.primary
-                          : const Color(0xFFE7E7E7),
+                          : AppColors.inactiveIndicator,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Row(

@@ -11,6 +11,7 @@ import 'package:food_user_app/features/auth/presentation/widgets/auth_back_butto
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_scaffold.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:food_user_app/features/auth/presentation/utils/auth_error_localizer.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -70,7 +71,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                state.message,
+                localizedAuthError(
+                  AppLocalizations.of(context)!,
+                  state.message,
+                ),
                 style: AppTextStyles.snackBarMessage(context),
               ),
             ),

@@ -8,6 +8,7 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 enum OrderDetailsStatus {
   waitingAcceptance,
@@ -171,7 +172,7 @@ class _OrderDetailsConfig {
       OrderDetailsStatus.waitingAcceptance => _OrderDetailsConfig(
         shortStatusLabel: l10n.orderWaitingAcceptanceShort,
         statusLabel: l10n.orderWaitingAcceptance,
-        statusColor: const Color(0xFFEFBE1C),
+        statusColor: AppColors.statusWarning,
         statusIconAsset: AppAssets.orderReceiptRollIcon,
         showEta: true,
         progressStep: 0,
@@ -185,7 +186,7 @@ class _OrderDetailsConfig {
       OrderDetailsStatus.preparing => _OrderDetailsConfig(
         shortStatusLabel: l10n.orderAcceptedShort,
         statusLabel: l10n.orderPreparing,
-        statusColor: const Color(0xFF0C9D61),
+        statusColor: AppColors.success,
         statusIconAsset: AppAssets.orderAcceptedIcon,
         showEta: true,
         progressStep: 1,
@@ -213,7 +214,7 @@ class _OrderDetailsConfig {
       OrderDetailsStatus.delivered => _OrderDetailsConfig(
         shortStatusLabel: l10n.orderDeliveredShort,
         statusLabel: l10n.orderDelivered,
-        statusColor: const Color(0xFFA7A7A7),
+        statusColor: AppColors.statusClosed,
         statusIconAsset: AppAssets.orderDeliveredStatus,
         showEta: false,
         progressStep: null,
@@ -265,7 +266,7 @@ class _OrderDetailsHeader extends StatelessWidget {
             width: 28,
             height: 28,
             child: Icon(
-              Icons.chevron_left_rounded,
+              AppDirectionalIcons.backChevron(context),
               size: 28,
               color: AppColors.onSurface(context),
             ),
@@ -980,7 +981,7 @@ class _BottomCancelBar extends StatelessWidget {
         color: AppColors.surfaceCard(context),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C2B2B).withValues(alpha: 0.08),
+            color: AppColors.shadow.withValues(alpha: 0.08),
             blurRadius: 4,
           ),
         ],
@@ -1199,7 +1200,7 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet> {
               color: AppColors.surfaceCard(context),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF2C2B2B).withValues(alpha: 0.08),
+                  color: AppColors.shadow.withValues(alpha: 0.08),
                   blurRadius: 4,
                 ),
               ],

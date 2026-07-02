@@ -1202,4 +1202,185 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get validationOtpSixDigits => 'Please enter 6 digits';
+
+  @override
+  String get homeDeliveryTo => 'Deliver to';
+
+  @override
+  String get homeBannerEyebrow => 'Taste unlocked';
+
+  @override
+  String get homeBannerTitle => 'Special\nBurger';
+
+  @override
+  String get homeOrderNow => 'Order now';
+
+  @override
+  String get homeMissedOffersTitle => 'Offers you cannot miss';
+
+  @override
+  String get homeMostOrderedTitle => 'Most ordered';
+
+  @override
+  String get searchTitle => 'Search';
+
+  @override
+  String get searchCravingTitle => 'What are you craving?';
+
+  @override
+  String get searchRecentTitle => 'Recent searches';
+
+  @override
+  String get searchTopStoresTitle => 'Top stores';
+
+  @override
+  String get searchMostSearchedTitle => 'Most searched';
+
+  @override
+  String get searchResultsTitle => 'Search results';
+
+  @override
+  String get searchEmptyTitle => 'No matching results';
+
+  @override
+  String get searchFilterAll => 'All';
+
+  @override
+  String get searchCravingBreakfast => 'Breakfast';
+
+  @override
+  String get searchCravingDairy => 'Dairy';
+
+  @override
+  String get searchCravingDrinks => 'Drinks';
+
+  @override
+  String get searchCravingSnacks => 'Snacks';
+
+  @override
+  String get searchCravingFastFood => 'Fast food';
+
+  @override
+  String get searchCravingBakery => 'Bakery';
+
+  @override
+  String get searchCravingDesserts => 'Desserts';
+
+  @override
+  String get searchRecentJuice => 'Juice';
+
+  @override
+  String get searchRecentPepsi => 'Pepsi';
+
+  @override
+  String get searchRecentNuts => 'Nuts';
+
+  @override
+  String get searchRecentFalafel => 'Falafel';
+
+  @override
+  String get searchMostSearchedAzAlSham => 'Az Al Sham';
+
+  @override
+  String get searchMostSearchedGawdat => 'Gawdat';
+
+  @override
+  String get searchMostSearchedTeaBun => 'Tea Bun';
+
+  @override
+  String get searchMostSearchedElBashawat => 'El Bashawat';
+
+  @override
+  String get searchResultBurgerFriesTitle => 'Burger with fries offer';
+
+  @override
+  String get searchResultFalafelTitle => 'Falafel breakfast';
+
+  @override
+  String get searchResultFalafelSubtitle => 'Breakfast, sandwiches, drinks';
+
+  @override
+  String get searchResultFalafelPrice => 'EGP 45';
+
+  @override
+  String get searchResultFalafelKeywordBeans => 'beans';
+
+  @override
+  String get mapPickerLoadingAddress => 'Locating address...';
+
+  @override
+  String get mapPickerFallbackAddress => 'Selected location on the map';
+
+  @override
+  String get mapPickerFailedAddress => 'Unable to locate address';
+
+  @override
+  String get restaurantDetailsTitle => 'Restaurant details';
+
+  @override
+  String get restaurantDiscountSubtitle => '50% off selected products';
+
+  @override
+  String get restaurantViewProducts => 'View products';
+
+  @override
+  String get restaurantSearchTitle => 'Search';
+
+  @override
+  String get restaurantSearchEmptyTitle => 'No matching menu items';
+
+  @override
+  String get restaurantRateCustomerReviews => 'Customer reviews:';
+
+  @override
+  String get restaurantRateRatingsLabel => 'ratings';
+
+  @override
+  String get restaurantRateMoreDetails => 'More details:';
+
+  @override
+  String get restaurantRateDeliveryPrice => 'Delivery price';
+
+  @override
+  String get restaurantRateMinimumOrder => 'Minimum order';
+
+  @override
+  String get restaurantRateDeliveryTime => 'Delivery time';
+
+  @override
+  String get restaurantRateAddress => 'Address';
+
+  @override
+  String get restaurantRatePreviousOrders => 'Previous orders';
+
+  @override
+  String get restaurantRatePaymentMethod => 'Payment method';
+
+  @override
+  String get serviceDeliveryTime25To40 => '25-40 min';
+
+  @override
+  String get serviceDeliveryTime35To50 => '35-50 min';
+
+  @override
+  String get authErrorNoInternet => 'No internet connection';
+
+  @override
+  String get authErrorTimeout => 'Request timed out';
+
+  @override
+  String get authErrorUnauthorized => 'Unauthorized';
+
+  @override
+  String get authErrorUnknown => 'Something went wrong';
+
+  @override
+  String get authErrorRequestFailed => 'Request failed';
+
+  @override
+  String get authErrorInvalidResponse => 'Invalid response';
+
+  @override
+  String get authErrorMissingAccessToken =>
+      'Verification succeeded but no access token was returned';
 }

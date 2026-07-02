@@ -1,6 +1,5 @@
 import 'package:food_user_app/features/restaurant/domain/entities/modifier.dart';
 
-
 class ModifierModel extends Modifier {
   const ModifierModel() : super();
 

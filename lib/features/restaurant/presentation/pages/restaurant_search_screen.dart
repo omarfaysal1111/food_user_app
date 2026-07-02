@@ -8,7 +8,9 @@ import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
-import 'package:food_user_app/features/restaurant/presentation/mock/restaurant_mock_data.dart';
+import 'package:food_user_app/features/restaurant/data/mock/restaurant_mock_data.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class RestaurantSearchScreen extends StatefulWidget {
   const RestaurantSearchScreen({this.restaurantId = 'az-al-sham', super.key});
@@ -115,7 +117,7 @@ class _SearchHeader extends StatelessWidget {
             minimumSize: const Size(28, 28),
             padding: EdgeInsets.zero,
           ),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          icon: Icon(AppDirectionalIcons.backArrow(context), size: 20),
         ),
         const SizedBox(width: AppSpacing.xs),
         Text(
@@ -361,19 +363,11 @@ class _RestaurantSearchCopy {
   final String emptyTitle;
 
   static _RestaurantSearchCopy of(BuildContext context) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    return isArabic ? _arabic : _english;
+    final l10n = AppLocalizations.of(context)!;
+    return _RestaurantSearchCopy(
+      title: l10n.restaurantSearchTitle,
+      hint: l10n.serviceSearchHint,
+      emptyTitle: l10n.restaurantSearchEmptyTitle,
+    );
   }
-
-  static const _arabic = _RestaurantSearchCopy(
-    title: 'بحث',
-    hint: 'إبحث عن ما تحب',
-    emptyTitle: 'لا توجد أصناف مطابقة',
-  );
-
-  static const _english = _RestaurantSearchCopy(
-    title: 'Search',
-    hint: 'Search for what you love',
-    emptyTitle: 'No matching menu items',
-  );
 }

@@ -134,7 +134,7 @@ class _OrderCard extends StatelessWidget {
 
   void _openOrderDetails(BuildContext context) {
     context.push(
-      RouteNames.orderDetail.replaceFirst(':id', 'design'),
+      RouteNames.orderDetailFor('design'),
       extra: order.detailsStatus,
     );
   }
@@ -458,7 +458,7 @@ class _OrderCardData {
         shortStatusLabel: l10n.orderWaitingAcceptanceShort,
         statusLabel: l10n.orderWaitingAcceptance,
         badgeLabel: l10n.reorder,
-        statusColor: const Color(0xFFEFBE1C),
+        statusColor: AppColors.statusWarning,
         isClosed: false,
         detailsStatus: OrderDetailsStatus.waitingAcceptance,
         progressStep: 0,
@@ -500,7 +500,7 @@ class _OrderCardData {
         shortStatusLabel: l10n.orderDeliveredShort,
         statusLabel: l10n.orderDelivered,
         badgeLabel: l10n.orderDeliveredShort,
-        statusColor: const Color(0xFFA7A7A7),
+        statusColor: AppColors.statusClosed,
         isClosed: true,
         detailsStatus: OrderDetailsStatus.delivered,
       ),

@@ -1,13 +1,12 @@
 import 'package:food_user_app/features/notifications/domain/entities/notification.dart';
 
-
 class NotificationModel extends AppNotification {
   const NotificationModel({
-    required String id,
-    required String title,
-    required String body,
-    required bool isRead,
-  }) : super(id: id, title: title, body: body, isRead: isRead);
+    required super.id,
+    required super.title,
+    required super.body,
+    required super.isRead,
+  });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     // TODO: implement

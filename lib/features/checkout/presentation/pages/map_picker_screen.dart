@@ -12,9 +12,11 @@ import 'package:http/http.dart' as http;
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/widgets/app_search_field.dart';
 import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
 import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class MapPickerScreen extends StatefulWidget {
   const MapPickerScreen({
@@ -45,119 +47,8 @@ class MapPickerScreen extends StatefulWidget {
 
 class _MapPickerScreenState extends State<MapPickerScreen> {
   static const _fallbackLatLng = LatLng(30.0444, 31.2357);
-  static const _loadingAddress = 'جاري تحديد العنوان...';
-  static const _fallbackAddress = 'موقع محدد على الخريطة';
-  static const _failedAddress = 'تعذر تحديد العنوان';
   static const _googleWebServicesApiKey =
       'AIzaSyDyHQEAjWa8vsCZa6Fe71DG2ej8x6sjPaE';
-  static const _darkMapStyle = '''
-[
-  {
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#212121"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.icon",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#212121"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "color": "#2c2c2c"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#8a8a8a"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#3c3c3c"
-      }
-    ]
-  },
-  {
-    "featureType": "transit",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#000000"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#3d3d3d"
-      }
-    ]
-  }
-]
-''';
 
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
@@ -165,10 +56,12 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   GoogleMapController? _mapController;
   Timer? _searchDebounce;
   LatLng _selectedLatLng = _fallbackLatLng;
-  String _selectedAddress = _loadingAddress;
+  String _selectedAddress = '';
   bool _isResolvingAddress = false;
   bool _isSearching = false;
   List<_PlacePrediction> _predictions = const [];
+  bool _didSetInitialAddress = false;
+  bool _didStartLocationInitialization = false;
 
   @override
   void initState() {
@@ -177,10 +70,21 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         (widget.initialLatitude != null && widget.initialLongitude != null)
         ? LatLng(widget.initialLatitude!, widget.initialLongitude!)
         : _fallbackLatLng;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didSetInitialAddress) return;
+    final l10n = AppLocalizations.of(context)!;
     _selectedAddress = widget.initialAddress?.trim().isNotEmpty == true
         ? widget.initialAddress!.trim()
-        : _loadingAddress;
-    unawaited(_initializeCurrentLocation());
+        : l10n.mapPickerLoadingAddress;
+    _didSetInitialAddress = true;
+    if (!_didStartLocationInitialization) {
+      _didStartLocationInitialization = true;
+      unawaited(_initializeCurrentLocation());
+    }
   }
 
   @override
@@ -197,7 +101,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     final l10n = AppLocalizations.of(context)!;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final addressText = _isResolvingAddress
-        ? _loadingAddress
+        ? l10n.mapPickerLoadingAddress
         : _selectedAddress;
 
     return Scaffold(
@@ -241,7 +145,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                         onMapCreated: _onMapCreated,
                         onCameraMove: _onCameraMove,
                         onCameraIdle: _onCameraIdle,
-                        mapStyle: isDarkMode ? _darkMapStyle : null,
+                        mapStyle: isDarkMode ? AppColors.darkMapStyle : null,
                       ),
                       const SizedBox(height: 16),
                       _SelectedLocationRow(text: addressText),
@@ -280,9 +184,10 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     }
 
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _selectedLatLng = _fallbackLatLng;
-      _selectedAddress = _loadingAddress;
+      _selectedAddress = l10n.mapPickerLoadingAddress;
       _isResolvingAddress = true;
     });
 
@@ -511,6 +416,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   Future<void> _reverseGeocodeSelectedLocation() async {
     final latLng = _selectedLatLng;
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isResolvingAddress = true);
 
     try {
@@ -531,7 +437,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
           httpStatusCode: response.statusCode,
         );
         setState(() {
-          _selectedAddress = _failedAddress;
+          _selectedAddress = l10n.mapPickerFailedAddress;
           _isResolvingAddress = false;
         });
         return;
@@ -547,7 +453,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
           httpStatusCode: response.statusCode,
         );
         setState(() {
-          _selectedAddress = _failedAddress;
+          _selectedAddress = l10n.mapPickerFailedAddress;
           _isResolvingAddress = false;
         });
         return;
@@ -565,13 +471,13 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       setState(() {
         _selectedAddress = address?.trim().isNotEmpty == true
             ? address!.trim()
-            : _fallbackAddress;
+            : l10n.mapPickerFallbackAddress;
         _isResolvingAddress = false;
       });
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _selectedAddress = _failedAddress;
+        _selectedAddress = l10n.mapPickerFailedAddress;
         _isResolvingAddress = false;
       });
     }
@@ -591,11 +497,14 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   }
 
   void _confirmLocation() {
+    final l10n = AppLocalizations.of(context)!;
     context.pop(
       MapPickerResult(
         latitude: _selectedLatLng.latitude,
         longitude: _selectedLatLng.longitude,
-        address: _selectedAddress.isEmpty ? _fallbackAddress : _selectedAddress,
+        address: _selectedAddress.isEmpty
+            ? l10n.mapPickerFallbackAddress
+            : _selectedAddress,
       ),
     );
   }
@@ -636,7 +545,7 @@ class _MapHeader extends StatelessWidget {
                 width: 28,
                 height: 28,
                 child: Icon(
-                  Icons.chevron_left_rounded,
+                  AppDirectionalIcons.backChevron(context),
                   size: 28,
                   color: AppColors.onSurface(context),
                 ),
@@ -679,62 +588,17 @@ class _SearchLocationField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 40,
-      padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard(context),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border(context), width: 0.5),
-      ),
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            AppAssets.addressSearchIcon,
-            width: 16,
-            height: 16,
-            colorFilter: ColorFilter.mode(
-              AppColors.paragraph(context),
-              BlendMode.srcIn,
-            ),
-          ),
-          const SizedBox(width: 4),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              onChanged: onChanged,
-              textAlign: TextAlign.start,
-              textInputAction: TextInputAction.search,
-              cursorColor: AppColors.cursor(context),
-              style: AppTextStyles.inputText(
-                context,
-              ).copyWith(fontSize: 12, height: 1.3),
-              decoration: InputDecoration(
-                hintText: label,
-                hintStyle: AppTextStyles.caption(context).copyWith(
-                  color: AppColors.paragraph(context),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  height: 1.3,
-                ),
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsetsDirectional.zero,
-              ),
-            ),
-          ),
-          if (isLoading)
-            SizedBox(
-              width: 14,
-              height: 14,
-              child: CircularProgressIndicator(
-                strokeWidth: 1.5,
-                color: AppColors.paragraph(context),
-              ),
-            ),
-        ],
-      ),
+    return AppSearchField(
+      controller: controller,
+      focusNode: focusNode,
+      hint: label,
+      onChanged: onChanged,
+      isLoading: isLoading,
+      iconAsset: AppAssets.addressSearchIcon,
+      iconGap: 4,
+      loadingSize: 14,
+      loadingStrokeWidth: 1.5,
+      hintColor: AppColors.paragraph(context),
     );
   }
 }

@@ -9,6 +9,7 @@ import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 enum SupportMessageType { text, image, video }
 
@@ -224,12 +225,12 @@ class _SupportChatHeader extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         children: [
           Container(color: AppColors.primary),
-Positioned.fill(
-  child: Image.asset(
-    AppAssets.supportHeaderPattern,
-    fit: BoxFit.fill,
-  ),
-),
+          Positioned.fill(
+            child: Image.asset(
+              AppAssets.supportHeaderPattern,
+              fit: BoxFit.fill,
+            ),
+          ),
           PositionedDirectional(
             start: 16,
             end: 16,
@@ -243,11 +244,11 @@ Positioned.fill(
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () => context.pop(),
-                    child: const SizedBox(
+                    child: SizedBox(
                       width: 28,
                       height: 28,
                       child: Icon(
-                        Icons.chevron_left_rounded,
+                        AppDirectionalIcons.backChevron(context),
                         color: AppColors.text,
                         size: 28,
                       ),
@@ -579,7 +580,7 @@ class _SupportComposer extends StatelessWidget {
         color: AppColors.surfaceCard(context),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C2B2B).withValues(alpha: 0.08),
+            color: AppColors.shadow.withValues(alpha: 0.08),
             blurRadius: 4,
           ),
         ],

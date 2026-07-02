@@ -10,6 +10,7 @@ import 'package:food_user_app/features/checkout/domain/entities/map_picker_resul
 import 'package:food_user_app/features/profile/domain/models/saved_address.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 enum AddressFlowMode { add, edit }
 
@@ -263,7 +264,7 @@ class _AddressFlowHeader extends StatelessWidget {
                 width: 28,
                 height: 28,
                 child: Icon(
-                  Icons.chevron_left_rounded,
+                  AppDirectionalIcons.backChevron(context),
                   size: 28,
                   color: AppColors.onSurface(context),
                 ),
@@ -369,7 +370,7 @@ class _MapPreview extends StatelessWidget {
               ),
             ),
           Positioned.fill(
-            child: ColoredBox(color: Colors.black.withValues(alpha: 0.20)),
+            child: ColoredBox(color: AppColors.black.withValues(alpha: 0.20)),
           ),
           if (!compactBottomRadius)
             PositionedDirectional(
@@ -574,7 +575,7 @@ class _AddressBottomBar extends StatelessWidget {
         color: AppColors.surfaceCard(context),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C2B2B).withValues(alpha: 0.08),
+            color: AppColors.shadow.withValues(alpha: 0.08),
             blurRadius: 4,
           ),
         ],

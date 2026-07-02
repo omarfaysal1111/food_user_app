@@ -8,62 +8,12 @@ import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
+import 'package:food_user_app/core/widgets/app_status_dot_label.dart';
 import 'package:food_user_app/core/widgets/liquid_glass_button.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
-import 'package:food_user_app/features/restaurant/presentation/mock/restaurant_mock_data.dart';
-
-class RestaurantDetailArgs {
-  const RestaurantDetailArgs({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.deliveryTime,
-    required this.rating,
-    required this.logoAsset,
-    required this.coverAsset,
-    this.deliveryFee,
-    this.initialFavorite = false,
-  });
-
-  final String id;
-  final String name;
-  final String description;
-  final String deliveryTime;
-  final double rating;
-  final String logoAsset;
-  final String coverAsset;
-  final String? deliveryFee;
-  final bool initialFavorite;
-
-  MockRestaurant toRestaurant() {
-    return MockRestaurant(
-      id: id,
-      nameAr: name,
-      nameEn: name,
-      descriptionAr: description,
-      descriptionEn: description,
-      deliveryTimeAr: deliveryTime,
-      deliveryTimeEn: deliveryTime,
-      deliveryFeeAr: deliveryFee ?? mockRestaurant.deliveryFeeAr,
-      deliveryFeeEn: deliveryFee ?? mockRestaurant.deliveryFeeEn,
-      minimumOrderAr: mockRestaurant.minimumOrderAr,
-      minimumOrderEn: mockRestaurant.minimumOrderEn,
-      addressAr: mockRestaurant.addressAr,
-      addressEn: mockRestaurant.addressEn,
-      previousOrdersAr: mockRestaurant.previousOrdersAr,
-      previousOrdersEn: mockRestaurant.previousOrdersEn,
-      rating: rating,
-      ratingCount: mockRestaurant.ratingCount,
-      logoAsset: logoAsset,
-      coverAsset: coverAsset,
-      categoriesAr: mockRestaurant.categoriesAr,
-      categoriesEn: mockRestaurant.categoriesEn,
-      menu: mockRestaurant.menu,
-      menuSections: mockRestaurant.menuSections,
-      reviews: mockRestaurant.reviews,
-    );
-  }
-}
+import 'package:food_user_app/features/restaurant/data/mock/restaurant_mock_data.dart';
+import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
   const RestaurantDetailScreen({
@@ -261,9 +211,8 @@ class _RestaurantHero extends StatelessWidget {
                 assetName: AppAssets.restaurantSearchIcon,
                 iconWidth: 24,
                 iconHeight: 24,
-                onTap: () => context.push(
-                  _routeWithId(RouteNames.restaurantSearch, restaurantId),
-                ),
+                onTap: () =>
+                    context.push(RouteNames.restaurantSearchFor(restaurantId)),
               ),
               const SizedBox(width: 12),
               _GlassIconButton(
@@ -289,9 +238,8 @@ class _RestaurantHero extends StatelessWidget {
                 assetName: AppAssets.restaurantSearchIcon,
                 iconWidth: 24,
                 iconHeight: 24,
-                onTap: () => context.push(
-                  _routeWithId(RouteNames.restaurantSearch, restaurantId),
-                ),
+                onTap: () =>
+                    context.push(RouteNames.restaurantSearchFor(restaurantId)),
               ),
             ],
     );
@@ -299,7 +247,7 @@ class _RestaurantHero extends StatelessWidget {
       title,
       style: AppTextStyles.heading4(
         context,
-      ).copyWith(color: Colors.white, fontSize: 16, height: 1.4),
+      ).copyWith(color: AppColors.text, fontSize: 16, height: 1.4),
     );
     final heroBackButton = _GlassIconButton(
       assetName: AppAssets.restaurantHeaderBackIcon,
@@ -341,7 +289,7 @@ class _RestaurantHero extends StatelessWidget {
               fit: BoxFit.contain,
             ),
           ),
-          Container(color: Colors.black.withValues(alpha: 0.2)),
+          Container(color: AppColors.black.withValues(alpha: 0.2)),
           SafeArea(
             bottom: false,
             child: Padding(
@@ -456,7 +404,10 @@ class _RestaurantInfoCard extends StatelessWidget {
         color: AppColors.surfaceCard(context),
         borderRadius: const BorderRadius.all(Radius.circular(16)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 2),
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: 0.08),
+            blurRadius: 2,
+          ),
         ],
       ),
       child: Column(
@@ -535,26 +486,7 @@ class _StatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          label,
-          style: AppTextStyles.caption(
-            context,
-          ).copyWith(color: AppColors.success, fontSize: 10, height: 1.25),
-        ),
-        const SizedBox(width: 4),
-        Container(
-          width: 4,
-          height: 4,
-          decoration: const BoxDecoration(
-            color: AppColors.success,
-            shape: BoxShape.circle,
-          ),
-        ),
-      ],
-    );
+    return AppStatusDotLabel(label: label, color: AppColors.success, gap: 4);
   }
 }
 
@@ -658,9 +590,7 @@ class _RatingMetric extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: InkWell(
-        onTap: () => context.push(
-          _routeWithId(RouteNames.restaurantRate, restaurant.id),
-        ),
+        onTap: () => context.push(RouteNames.restaurantRateFor(restaurant.id)),
         borderRadius: const BorderRadius.all(AppRadius.sm),
         child: _InfoMetric(
           assetName: AppAssets.favoriteStarIcon,
@@ -724,7 +654,7 @@ class _CouponStrip extends StatelessWidget {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return SizedBox(
-      height: 42,
+      height: 54,
       child: Directionality(
         textDirection: TextDirection.ltr,
         child: ListView.separated(
@@ -753,16 +683,21 @@ class _CouponCard extends StatelessWidget {
       height: 20,
     );
     final divider = _DashedVerticalDivider(color: AppColors.primary);
-    final discountText = Text(
-      copy.discountSubtitle,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      textAlign: isArabic ? TextAlign.right : TextAlign.left,
-      textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-      style: AppTextStyles.caption(context).copyWith(
-        color: AppColors.onSurface(context),
-        fontSize: 10,
-        height: 1.25,
+    final maxCouponWidth =
+        MediaQuery.sizeOf(context).width - (AppSpacing.md * 2);
+    final discountText = ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxCouponWidth * 0.48),
+      child: Text(
+        copy.discountSubtitle,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        textAlign: isArabic ? TextAlign.right : TextAlign.left,
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+        style: AppTextStyles.caption(context).copyWith(
+          color: AppColors.onSurface(context),
+          fontSize: 10,
+          height: 1.25,
+        ),
       ),
     );
     final viewProducts = Text(
@@ -775,35 +710,38 @@ class _CouponCard extends StatelessWidget {
       ),
     );
 
-    return Container(
-      width: 272,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard(context),
-        borderRadius: const BorderRadius.all(AppRadius.sm),
-        border: Border.all(color: AppColors.primary, width: 0.5),
-      ),
-      child: Row(
-        textDirection: TextDirection.ltr,
-        children: isArabic
-            ? [
-                viewProducts,
-                const SizedBox(width: 18),
-                Expanded(child: discountText),
-                const SizedBox(width: AppSpacing.sm),
-                divider,
-                const SizedBox(width: AppSpacing.sm),
-                icon,
-              ]
-            : [
-                icon,
-                const SizedBox(width: AppSpacing.sm),
-                divider,
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(child: discountText),
-                const SizedBox(width: 18),
-                viewProducts,
-              ],
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxCouponWidth),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceCard(context),
+          borderRadius: const BorderRadius.all(AppRadius.sm),
+          border: Border.all(color: AppColors.primary, width: 0.5),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          textDirection: TextDirection.ltr,
+          children: isArabic
+              ? [
+                  viewProducts,
+                  const SizedBox(width: AppSpacing.sm),
+                  discountText,
+                  const SizedBox(width: AppSpacing.sm),
+                  divider,
+                  const SizedBox(width: AppSpacing.sm),
+                  icon,
+                ]
+              : [
+                  icon,
+                  const SizedBox(width: AppSpacing.sm),
+                  divider,
+                  const SizedBox(width: AppSpacing.sm),
+                  discountText,
+                  const SizedBox(width: AppSpacing.sm),
+                  viewProducts,
+                ],
+        ),
       ),
     );
   }
@@ -830,7 +768,7 @@ class _MenuTabs extends StatelessWidget {
     final orderedCategories = indexedCategories;
 
     return Container(
-      height: 28,
+      height: 34,
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: AppColors.border(context), width: 0.5),
@@ -873,36 +811,45 @@ class _MenuTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      child: SizedBox(
-        width: 60,
-        child: Column(
-          children: [
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.caption(context).copyWith(
-                fontSize: 12,
-                height: 1.3,
-                color: selected
-                    ? AppColors.onSurface(context)
-                    : AppColors.paragraph(context),
-                fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
-              ),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 8),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 60),
+          child: IntrinsicWidth(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.caption(context).copyWith(
+                    fontSize: 12,
+                    height: 1.3,
+                    color: selected
+                        ? AppColors.onSurface(context)
+                        : AppColors.paragraph(context),
+                    fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  height: 1.5,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? AppColors.onSurface(context)
+                        : AppColors.transparent,
+                    borderRadius: const BorderRadius.vertical(
+                      top: AppRadius.full,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            Container(
-              height: 1.5,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: selected
-                    ? AppColors.onSurface(context)
-                    : Colors.transparent,
-                borderRadius: const BorderRadius.vertical(top: AppRadius.full),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -1057,19 +1004,16 @@ class _MenuItemCard extends StatelessWidget {
                           borderRadius: const BorderRadius.all(AppRadius.sm),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.08),
+                              color: AppColors.black.withValues(alpha: 0.08),
                               blurRadius: 2,
                             ),
                           ],
                         ),
                         child: Center(
-                          child: Transform.scale(
-                            scaleX: isArabic ? 1 : -1,
-                            child: const AppRasterImage.asset(
-                              AppAssets.restaurantProductCardArrowIcon,
-                              width: 9,
-                              height: 16,
-                            ),
+                          child: Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 16,
+                            color: AppColors.onSurface(context),
                           ),
                         ),
                       ),
@@ -1136,8 +1080,6 @@ void _openProductDetails(
   );
 }
 
-String _routeWithId(String route, String id) => route.replaceFirst(':id', id);
-
 class _RestaurantDetailCopy {
   const _RestaurantDetailCopy({
     required this.title,
@@ -1152,21 +1094,12 @@ class _RestaurantDetailCopy {
   final String viewProducts;
 
   static _RestaurantDetailCopy of(BuildContext context) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    return isArabic ? _arabic : _english;
+    final l10n = AppLocalizations.of(context)!;
+    return _RestaurantDetailCopy(
+      title: l10n.restaurantDetailsTitle,
+      available: l10n.serviceAvailable,
+      discountSubtitle: l10n.restaurantDiscountSubtitle,
+      viewProducts: l10n.restaurantViewProducts,
+    );
   }
-
-  static const _arabic = _RestaurantDetailCopy(
-    title: 'تفاصيل المطعم',
-    available: 'متاح',
-    discountSubtitle: '50 %خصم على بعض المنتج',
-    viewProducts: 'عرض المنتجات',
-  );
-
-  static const _english = _RestaurantDetailCopy(
-    title: 'Restaurant details',
-    available: 'Open',
-    discountSubtitle: '50% off selected products',
-    viewProducts: 'View products',
-  );
 }

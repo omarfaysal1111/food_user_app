@@ -3,7 +3,8 @@ import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dar
 import '../../../../core/errors/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 
-class GetRestaurantsByCategoryUseCase extends UseCase<List<Restaurant>, NoParams> {
+class GetRestaurantsByCategoryUseCase
+    extends UseCase<List<Restaurant>, NoParams> {
   // TODO: inject repository
 
   @override

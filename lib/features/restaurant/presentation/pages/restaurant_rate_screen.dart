@@ -7,7 +7,9 @@ import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
-import 'package:food_user_app/features/restaurant/presentation/mock/restaurant_mock_data.dart';
+import 'package:food_user_app/features/restaurant/data/mock/restaurant_mock_data.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class RestaurantRateScreen extends StatelessWidget {
   const RestaurantRateScreen({this.restaurantId = 'az-al-sham', super.key});
@@ -92,13 +94,13 @@ class _RateHeader extends StatelessWidget {
                 ),
                 const SizedBox(width: AppSpacing.xs),
                 _HeaderBackButton(
-                  icon: Icons.chevron_left_rounded,
+                  icon: AppDirectionalIcons.backChevron(context),
                   onPressed: () => context.pop(),
                 ),
               ]
             : [
                 _HeaderBackButton(
-                  icon: Icons.chevron_left_rounded,
+                  icon: AppDirectionalIcons.backChevron(context),
                   onPressed: () => context.pop(),
                 ),
                 const SizedBox(width: AppSpacing.xs),
@@ -213,7 +215,7 @@ class _Stars extends StatelessWidget {
         (index) => Icon(
           Icons.star_rounded,
           color: index < selected
-              ? const Color(0xFFFFB800)
+              ? AppColors.ratingStar
               : AppColors.paragraph(context).withValues(alpha: 0.35),
           size: size,
         ),
@@ -271,7 +273,7 @@ class _RatingBar extends StatelessWidget {
         child: LinearProgressIndicator(
           minHeight: 3,
           value: value,
-          backgroundColor: const Color(0xFFB6B6B6),
+          backgroundColor: AppColors.mutedControl,
           color: AppColors.primary,
         ),
       ),
@@ -302,13 +304,11 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-
     return Align(
-      alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: AlignmentDirectional.centerStart,
       child: Text(
         title,
-        textAlign: isArabic ? TextAlign.end : TextAlign.start,
+        textAlign: TextAlign.start,
         style: AppTextStyles.heading4(
           context,
         ).copyWith(fontSize: 15, height: 1.4),
@@ -546,31 +546,17 @@ class _RateCopy {
   final String paymentMethod;
 
   static _RateCopy of(BuildContext context) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    return isArabic ? _arabic : _english;
+    final l10n = AppLocalizations.of(context)!;
+    return _RateCopy(
+      customerReviews: l10n.restaurantRateCustomerReviews,
+      ratingsLabel: l10n.restaurantRateRatingsLabel,
+      moreDetails: l10n.restaurantRateMoreDetails,
+      deliveryPrice: l10n.restaurantRateDeliveryPrice,
+      minimumOrder: l10n.restaurantRateMinimumOrder,
+      deliveryTime: l10n.restaurantRateDeliveryTime,
+      address: l10n.restaurantRateAddress,
+      previousOrders: l10n.restaurantRatePreviousOrders,
+      paymentMethod: l10n.restaurantRatePaymentMethod,
+    );
   }
-
-  static const _arabic = _RateCopy(
-    customerReviews: 'اراء العملاء :',
-    ratingsLabel: 'التقييمات',
-    moreDetails: 'تفاصيل اكثر عنا :',
-    deliveryPrice: 'سعر التوصيل',
-    minimumOrder: 'الحد الادنى للطلب',
-    deliveryTime: 'وقت التوصيل',
-    address: 'العنوان',
-    previousOrders: 'طلبات مسبقة',
-    paymentMethod: 'طريقة الدفع',
-  );
-
-  static const _english = _RateCopy(
-    customerReviews: 'Customer reviews:',
-    ratingsLabel: 'ratings',
-    moreDetails: 'More details:',
-    deliveryPrice: 'Delivery price',
-    minimumOrder: 'Minimum order',
-    deliveryTime: 'Delivery time',
-    address: 'Address',
-    previousOrders: 'Previous orders',
-    paymentMethod: 'Payment method',
-  );
 }

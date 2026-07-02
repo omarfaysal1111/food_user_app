@@ -9,6 +9,7 @@ import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class VerifyPhoneOtpScreen extends StatefulWidget {
   const VerifyPhoneOtpScreen({super.key, required this.phoneNumber});
@@ -223,7 +224,7 @@ class _OtpBackHeader extends StatelessWidget {
             width: 28,
             height: 28,
             child: Icon(
-              Icons.chevron_left_rounded,
+              AppDirectionalIcons.backChevron(context),
               size: 28,
               color: AppColors.onSurface(context),
             ),
@@ -473,7 +474,7 @@ class _PhoneChangedSuccessDialog extends StatelessWidget {
 
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 16),
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 20),

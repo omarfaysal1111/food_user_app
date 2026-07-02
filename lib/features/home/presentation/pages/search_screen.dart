@@ -8,7 +8,10 @@ import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
+import 'package:food_user_app/core/widgets/app_search_field.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
+import 'package:food_user_app/core/widgets/app_directional_icons.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -116,7 +119,7 @@ class _SearchHeader extends StatelessWidget {
             minimumSize: const Size(28, 28),
             padding: EdgeInsets.zero,
           ),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          icon: Icon(AppDirectionalIcons.backArrow(context), size: 20),
         ),
         const SizedBox(width: AppSpacing.xs),
         Text(
@@ -147,54 +150,13 @@ class _SearchInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasText = controller.text.isNotEmpty;
-
-    return Container(
+    return AppSearchField(
+      controller: controller,
+      focusNode: focusNode,
+      hint: hint,
       height: 42,
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard(context),
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        border: Border.all(color: AppColors.border(context), width: 0.5),
-      ),
-      child: Row(
-        children: [
-          const SizedBox(width: 12),
-          Icon(Icons.search_rounded, color: AppColors.hint(context), size: 20),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              textInputAction: TextInputAction.search,
-              style: AppTextStyles.inputText(context).copyWith(fontSize: 12),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-                hintText: hint,
-                hintStyle: AppTextStyles.inputHint(
-                  context,
-                ).copyWith(fontSize: 12),
-              ),
-            ),
-          ),
-          if (hasText)
-            IconButton(
-              onPressed: onClear,
-              style: IconButton.styleFrom(
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                minimumSize: const Size(36, 36),
-                padding: EdgeInsets.zero,
-              ),
-              icon: Icon(
-                Icons.close_rounded,
-                size: 18,
-                color: AppColors.paragraph(context),
-              ),
-            )
-          else
-            const SizedBox(width: 12),
-        ],
-      ),
+      onClear: onClear,
+      showClearButton: true,
     );
   }
 }
@@ -237,7 +199,10 @@ class _FilterChipButton extends StatelessWidget {
             ? Border.all(color: AppColors.primary, width: 0.5)
             : null,
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 2),
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: 0.08),
+            blurRadius: 2,
+          ),
         ],
       ),
       child: Row(
@@ -409,7 +374,10 @@ class _SearchToken extends StatelessWidget {
         color: AppColors.surfaceCard(context),
         borderRadius: const BorderRadius.all(AppRadius.sm),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 2),
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: 0.08),
+            blurRadius: 2,
+          ),
         ],
       ),
       child: Row(
@@ -463,7 +431,10 @@ class _TopStoreCard extends StatelessWidget {
         color: AppColors.surfaceCard(context),
         borderRadius: const BorderRadius.all(Radius.circular(10)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 2),
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: 0.08),
+            blurRadius: 2,
+          ),
         ],
       ),
       child: Column(
@@ -641,7 +612,7 @@ class _ResultCard extends StatelessWidget {
                       children: [
                         const Icon(
                           Icons.star_rounded,
-                          color: Color(0xFFFFB800),
+                          color: AppColors.ratingStar,
                           size: 14,
                         ),
                         const SizedBox(width: 2),
@@ -688,7 +659,7 @@ class _ResultCard extends StatelessWidget {
 
 void _openSearchResult(BuildContext context, _SearchResult result) {
   if (result.isRestaurant) {
-    context.push(RouteNames.restaurantDetail.replaceFirst(':id', result.id));
+    context.push(RouteNames.restaurantDetailFor(result.id));
     return;
   }
 
@@ -749,251 +720,153 @@ class _SearchCopy {
   }
 
   static _SearchCopy of(BuildContext context) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    return isArabic ? _arabic : _english;
+    final l10n = AppLocalizations.of(context)!;
+    return _SearchCopy(
+      title: l10n.searchTitle,
+      searchHint: l10n.serviceSearchHint,
+      cravingTitle: l10n.searchCravingTitle,
+      recentTitle: l10n.searchRecentTitle,
+      topStoresTitle: l10n.searchTopStoresTitle,
+      mostSearchedTitle: l10n.searchMostSearchedTitle,
+      resultsTitle: l10n.searchResultsTitle,
+      emptyTitle: l10n.searchEmptyTitle,
+      typeFilters: [
+        _SearchFilter(
+          label: l10n.searchFilterAll,
+          icon: Icons.grid_view_rounded,
+          color: AppColors.primary,
+          selected: true,
+        ),
+        _SearchFilter(
+          label: l10n.homeCategoryRestaurants,
+          icon: Icons.ramen_dining_rounded,
+          color: AppColors.cravingBrown,
+        ),
+        _SearchFilter(
+          label: l10n.homeCategoryGrocery,
+          icon: Icons.ramen_dining_rounded,
+          color: AppColors.cravingBrown,
+        ),
+        _SearchFilter(
+          label: l10n.homeCategoryStores,
+          icon: Icons.ramen_dining_rounded,
+          color: AppColors.cravingBrown,
+        ),
+      ],
+      cravings: [
+        _CravingItem(
+          label: l10n.searchCravingBreakfast,
+          icon: Icons.breakfast_dining,
+          color: AppColors.primary,
+        ),
+        _CravingItem(
+          label: l10n.searchCravingDairy,
+          icon: Icons.local_pizza,
+          color: AppColors.cravingYellow,
+        ),
+        _CravingItem(
+          label: l10n.searchCravingDrinks,
+          icon: Icons.local_drink,
+          color: AppColors.cravingPink,
+        ),
+        _CravingItem(
+          label: l10n.searchCravingSnacks,
+          icon: Icons.icecream,
+          color: AppColors.cravingBrown,
+        ),
+        _CravingItem(
+          label: l10n.searchCravingFastFood,
+          icon: Icons.lunch_dining,
+          color: AppColors.cravingGreen,
+        ),
+        _CravingItem(
+          label: l10n.searchCravingBakery,
+          icon: Icons.bakery_dining,
+          color: AppColors.cravingBakery,
+        ),
+        _CravingItem(
+          label: l10n.searchCravingDesserts,
+          icon: Icons.cake,
+          color: AppColors.cravingDessert,
+        ),
+      ],
+      recentSearches: [
+        l10n.searchRecentJuice,
+        l10n.searchRecentPepsi,
+        l10n.searchRecentNuts,
+        l10n.searchRecentFalafel,
+      ],
+      topStores: [
+        _TopStore(
+          name: l10n.serviceStoreCaptain,
+          deliveryTime: l10n.serviceDeliveryTimeRange,
+          imageAsset: AppAssets.favoriteRestaurantAzAlSham,
+        ),
+        _TopStore(
+          name: l10n.serviceStoreFathallah,
+          deliveryTime: l10n.serviceDeliveryTimeRange,
+          imageAsset: AppAssets.orderRestaurantAvatar,
+        ),
+      ],
+      mostSearched: [
+        l10n.searchMostSearchedAzAlSham,
+        l10n.searchMostSearchedGawdat,
+        l10n.searchMostSearchedTeaBun,
+        l10n.searchMostSearchedElBashawat,
+      ],
+      allResults: [
+        _SearchResult(
+          id: 'az-al-sham',
+          title: l10n.serviceRestaurantAzAlSham,
+          subtitle: l10n.serviceRestaurantDescription,
+          rating: l10n.orderCourierRating,
+          deliveryTime: l10n.serviceDeliveryTimeRange,
+          price: l10n.cartPrice(190),
+          priceValue: 190,
+          imageAsset: AppAssets.favoriteRestaurantAzAlSham,
+          isRestaurant: true,
+          keywords: [
+            l10n.searchMostSearchedAzAlSham,
+            l10n.serviceCategoryShawarma,
+            l10n.serviceCategoryPizza,
+            l10n.homeCategoryRestaurants,
+          ],
+        ),
+        _SearchResult(
+          id: 'burger-fries',
+          title: l10n.searchResultBurgerFriesTitle,
+          subtitle: l10n.serviceRestaurantAzAlSham,
+          rating: l10n.orderCourierRating,
+          deliveryTime: l10n.serviceDeliveryTimeRange,
+          price: l10n.cartPrice(190),
+          priceValue: 190,
+          imageAsset: AppAssets.productBurgerCombo,
+          isRestaurant: false,
+          keywords: [
+            l10n.serviceCategoryBurger,
+            l10n.searchResultBurgerFriesTitle,
+            l10n.serviceFilterOffers,
+          ],
+        ),
+        _SearchResult(
+          id: 'falafel-breakfast',
+          title: l10n.searchResultFalafelTitle,
+          subtitle: l10n.searchResultFalafelSubtitle,
+          rating: '4.3',
+          deliveryTime: l10n.favoriteDeliveryTime,
+          price: l10n.searchResultFalafelPrice,
+          priceValue: 45,
+          imageAsset: AppAssets.cartProductImage,
+          isRestaurant: false,
+          keywords: [
+            l10n.searchResultFalafelKeywordBeans,
+            l10n.searchRecentFalafel,
+            l10n.searchCravingBreakfast,
+          ],
+        ),
+      ],
+    );
   }
-
-  static const _arabic = _SearchCopy(
-    title: 'البحث',
-    searchHint: 'إبحث عن ما تحب',
-    cravingTitle: 'نفسك في ايه',
-    recentTitle: 'بحثك الاخير',
-    topStoresTitle: 'المتاجر الكبرى',
-    mostSearchedTitle: 'الاكثر بحثاً',
-    resultsTitle: 'نتائج البحث',
-    emptyTitle: 'لا توجد نتائج مطابقة',
-    typeFilters: [
-      _SearchFilter(
-        label: 'الكل',
-        icon: Icons.grid_view_rounded,
-        color: AppColors.primary,
-        selected: true,
-      ),
-      _SearchFilter(
-        label: 'المطاعم',
-        icon: Icons.ramen_dining_rounded,
-        color: Color(0xFFC4823B),
-      ),
-      _SearchFilter(
-        label: 'البقالة',
-        icon: Icons.ramen_dining_rounded,
-        color: Color(0xFFC4823B),
-      ),
-      _SearchFilter(
-        label: 'المتاجر',
-        icon: Icons.ramen_dining_rounded,
-        color: Color(0xFFC4823B),
-      ),
-    ],
-    cravings: [
-      _CravingItem(
-        label: 'فطار',
-        icon: Icons.breakfast_dining,
-        color: AppColors.primary,
-      ),
-      _CravingItem(
-        label: 'منتجات البان',
-        icon: Icons.local_pizza,
-        color: Color(0xFFF2A91B),
-      ),
-      _CravingItem(
-        label: 'مشروبات',
-        icon: Icons.local_drink,
-        color: Color(0xFFE15B94),
-      ),
-      _CravingItem(
-        label: 'تسالي',
-        icon: Icons.icecream,
-        color: Color(0xFFC4823B),
-      ),
-      _CravingItem(
-        label: 'وجبات سريعة',
-        icon: Icons.lunch_dining,
-        color: Color(0xFF54A75C),
-      ),
-      _CravingItem(
-        label: 'مخبوزات',
-        icon: Icons.bakery_dining,
-        color: Color(0xFFD58B3A),
-      ),
-      _CravingItem(label: 'حلويات', icon: Icons.cake, color: Color(0xFFE15B4F)),
-    ],
-    recentSearches: ['عصير', 'بيبسي', 'مكسرات', 'فول فلافل'],
-    topStores: [
-      _TopStore(
-        name: 'الكابتن',
-        deliveryTime: '45-30 دقيقة',
-        imageAsset: AppAssets.favoriteRestaurantAzAlSham,
-      ),
-      _TopStore(
-        name: 'فتح الله',
-        deliveryTime: '45-30 دقيقة',
-        imageAsset: AppAssets.orderRestaurantAvatar,
-      ),
-    ],
-    mostSearched: ['عز الشام', 'جودت', 'Tea Bun', 'الباشوات'],
-    allResults: [
-      _SearchResult(
-        id: 'az-al-sham',
-        title: 'مطعم عز الشام',
-        subtitle: 'شاورما، بيتزا، وجبات شرقي',
-        rating: '4.5',
-        deliveryTime: '45-30 دقيقة',
-        price: '190 ج.م',
-        priceValue: 190,
-        imageAsset: AppAssets.favoriteRestaurantAzAlSham,
-        isRestaurant: true,
-        keywords: ['عز الشام', 'شاورما', 'بيتزا', 'مطعم'],
-      ),
-      _SearchResult(
-        id: 'burger-fries',
-        title: 'عرض البرجر مع الفرايز',
-        subtitle: 'مطعم عز الشام',
-        rating: '4.5',
-        deliveryTime: '45-30 دقيقة',
-        price: '190 ج.م',
-        priceValue: 190,
-        imageAsset: AppAssets.productBurgerCombo,
-        isRestaurant: false,
-        keywords: ['برجر', 'فرايز', 'عرض'],
-      ),
-      _SearchResult(
-        id: 'falafel-breakfast',
-        title: 'فول وفلافل',
-        subtitle: 'فطار، سندوتشات، مشروبات',
-        rating: '4.3',
-        deliveryTime: '30-25 دقيقة',
-        price: '45 ج.م',
-        priceValue: 45,
-        imageAsset: AppAssets.cartProductImage,
-        isRestaurant: false,
-        keywords: ['فول', 'فلافل', 'فطار'],
-      ),
-    ],
-  );
-
-  static const _english = _SearchCopy(
-    title: 'Search',
-    searchHint: 'Search for what you love',
-    cravingTitle: 'What are you craving?',
-    recentTitle: 'Recent searches',
-    topStoresTitle: 'Top stores',
-    mostSearchedTitle: 'Most searched',
-    resultsTitle: 'Search results',
-    emptyTitle: 'No matching results',
-    typeFilters: [
-      _SearchFilter(
-        label: 'All',
-        icon: Icons.grid_view_rounded,
-        color: AppColors.primary,
-        selected: true,
-      ),
-      _SearchFilter(
-        label: 'Restaurants',
-        icon: Icons.ramen_dining_rounded,
-        color: Color(0xFFC4823B),
-      ),
-      _SearchFilter(
-        label: 'Grocery',
-        icon: Icons.ramen_dining_rounded,
-        color: Color(0xFFC4823B),
-      ),
-      _SearchFilter(
-        label: 'Stores',
-        icon: Icons.ramen_dining_rounded,
-        color: Color(0xFFC4823B),
-      ),
-    ],
-    cravings: [
-      _CravingItem(
-        label: 'Breakfast',
-        icon: Icons.breakfast_dining,
-        color: AppColors.primary,
-      ),
-      _CravingItem(
-        label: 'Dairy',
-        icon: Icons.local_pizza,
-        color: Color(0xFFF2A91B),
-      ),
-      _CravingItem(
-        label: 'Drinks',
-        icon: Icons.local_drink,
-        color: Color(0xFFE15B94),
-      ),
-      _CravingItem(
-        label: 'Snacks',
-        icon: Icons.icecream,
-        color: Color(0xFFC4823B),
-      ),
-      _CravingItem(
-        label: 'Fast food',
-        icon: Icons.lunch_dining,
-        color: Color(0xFF54A75C),
-      ),
-      _CravingItem(
-        label: 'Bakery',
-        icon: Icons.bakery_dining,
-        color: Color(0xFFD58B3A),
-      ),
-      _CravingItem(
-        label: 'Desserts',
-        icon: Icons.cake,
-        color: Color(0xFFE15B4F),
-      ),
-    ],
-    recentSearches: ['Juice', 'Pepsi', 'Nuts', 'Falafel'],
-    topStores: [
-      _TopStore(
-        name: 'El Captain',
-        deliveryTime: '30-45 min',
-        imageAsset: AppAssets.favoriteRestaurantAzAlSham,
-      ),
-      _TopStore(
-        name: 'Fathallah',
-        deliveryTime: '30-45 min',
-        imageAsset: AppAssets.orderRestaurantAvatar,
-      ),
-    ],
-    mostSearched: ['Az Al Sham', 'Gawdat', 'Tea Bun', 'El Bashawat'],
-    allResults: [
-      _SearchResult(
-        id: 'az-al-sham',
-        title: 'Az Al Sham Restaurant',
-        subtitle: 'Shawarma, pizza, oriental meals',
-        rating: '4.5',
-        deliveryTime: '30-45 min',
-        price: 'EGP 190',
-        priceValue: 190,
-        imageAsset: AppAssets.favoriteRestaurantAzAlSham,
-        isRestaurant: true,
-        keywords: ['az al sham', 'shawarma', 'pizza', 'restaurant'],
-      ),
-      _SearchResult(
-        id: 'burger-fries',
-        title: 'Burger with fries offer',
-        subtitle: 'Az Al Sham Restaurant',
-        rating: '4.5',
-        deliveryTime: '30-45 min',
-        price: 'EGP 190',
-        priceValue: 190,
-        imageAsset: AppAssets.productBurgerCombo,
-        isRestaurant: false,
-        keywords: ['burger', 'fries', 'offer'],
-      ),
-      _SearchResult(
-        id: 'falafel-breakfast',
-        title: 'Falafel breakfast',
-        subtitle: 'Breakfast, sandwiches, drinks',
-        rating: '4.3',
-        deliveryTime: '25-30 min',
-        price: 'EGP 45',
-        priceValue: 45,
-        imageAsset: AppAssets.cartProductImage,
-        isRestaurant: false,
-        keywords: ['falafel', 'breakfast', 'beans'],
-      ),
-    ],
-  );
 }
 
 class _SearchFilter {
