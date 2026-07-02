@@ -216,6 +216,10 @@ class AppAssets {
   static const homeOfferProduct = 'assets/images/home/home_offer_product.png';
   static const homeRestaurantCover =
       'assets/images/home/home_restaurant_cover.png';
+  static const homeMostOrderedRestaurant1 =
+      'assets/images/home/home_most_ordered_restaurant_1.jpg';
+  static const homeMostOrderedRestaurant2 =
+      'assets/images/home/home_most_ordered_restaurant_2.jpg';
   static const homeRestaurantLogo =
       'assets/images/home/home_restaurant_logo.png';
 

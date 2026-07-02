@@ -57,12 +57,16 @@ class AppRasterImage extends StatelessWidget {
     this.width,
     this.height,
     this.fit = BoxFit.contain,
+    this.color,
+    this.colorBlendMode,
   });
 
   final String assetName;
   final double? width;
   final double? height;
   final BoxFit fit;
+  final Color? color;
+  final BlendMode? colorBlendMode;
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +75,8 @@ class AppRasterImage extends StatelessWidget {
       width: width,
       height: height,
       fit: fit,
+      color: color,
+      colorBlendMode: colorBlendMode,
       errorBuilder: (context, error, stackTrace) {
         developer.log(
           'AppRasterImage failed to load asset path=$assetName error=$error',

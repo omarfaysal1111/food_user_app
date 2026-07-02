@@ -124,6 +124,8 @@ class _HomeHeader extends StatelessWidget {
               height: 10,
               width: double.infinity,
               fit: BoxFit.fill,
+              color: AppColors.scaffoldBackground(context),
+              colorBlendMode: BlendMode.srcIn,
             ),
           ),
         ],
@@ -292,12 +294,12 @@ class _CategoryTile extends StatelessWidget {
               alignment: Alignment.center,
               children: [
                 const PositionedDirectional(
-                  top: 1,
+                  top: 0,
                   start: 0,
                   end: 0,
                   child: AppRasterImage.asset(
                     AppAssets.homeCategoryStrokeTop,
-                    height: 3,
+                    height: 2,
                     fit: BoxFit.fill,
                   ),
                 ),
@@ -698,6 +700,8 @@ class _RestaurantImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
     return SizedBox(
       height: 124,
       child: Stack(
@@ -714,8 +718,9 @@ class _RestaurantImage extends StatelessWidget {
               ),
             ),
           ),
-          PositionedDirectional(
-            start: 10,
+          Positioned(
+            left: isArabic ? 10 : null,
+            right: isArabic ? null : 10,
             top: 10,
             child: Container(
               width: 22,
@@ -904,16 +909,33 @@ class _HomeCopy {
           ),
       ],
       restaurants: [
-        for (final open in [false, true, false])
-          _HomeRestaurant(
-            name: l10n.orderRestaurantAzAlSham,
-            description: l10n.serviceRestaurantDescription,
-            deliveryTime: l10n.serviceDeliveryTimeRange,
-            rating: l10n.orderCourierRating,
-            isOpen: open,
-            id: 'az-al-sham',
-            imageAsset: AppAssets.homeRestaurantCover,
-          ),
+        _HomeRestaurant(
+          name: l10n.orderRestaurantAzAlSham,
+          description: l10n.serviceRestaurantDescription,
+          deliveryTime: l10n.serviceDeliveryTimeRange,
+          rating: l10n.orderCourierRating,
+          isOpen: false,
+          id: 'az-al-sham',
+          imageAsset: AppAssets.homeMostOrderedRestaurant1,
+        ),
+        _HomeRestaurant(
+          name: l10n.orderRestaurantAzAlSham,
+          description: l10n.serviceRestaurantDescription,
+          deliveryTime: l10n.serviceDeliveryTimeRange,
+          rating: l10n.orderCourierRating,
+          isOpen: true,
+          id: 'az-al-sham',
+          imageAsset: AppAssets.homeMostOrderedRestaurant2,
+        ),
+        _HomeRestaurant(
+          name: l10n.orderRestaurantAzAlSham,
+          description: l10n.serviceRestaurantDescription,
+          deliveryTime: l10n.serviceDeliveryTimeRange,
+          rating: l10n.orderCourierRating,
+          isOpen: false,
+          id: 'az-al-sham',
+          imageAsset: AppAssets.homeMostOrderedRestaurant1,
+        ),
       ],
     );
   }
