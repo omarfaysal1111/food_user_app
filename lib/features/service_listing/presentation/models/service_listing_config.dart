@@ -20,6 +20,32 @@ class ServiceListingConfig {
   final List<ServiceFilterData> filters;
   final List<ServiceListingGroupData> groups;
 
+  static List<ServiceFilterData> topFilters(AppLocalizations l10n) {
+    return [
+      ServiceFilterData(
+        id: ServiceFilterId.offers,
+        label: l10n.serviceFilterOffers,
+      ),
+      ServiceFilterData(
+        id: ServiceFilterId.fastDelivery,
+        label: l10n.serviceFilterFastDelivery,
+      ),
+      ServiceFilterData(
+        id: ServiceFilterId.topRated,
+        label: l10n.serviceFilterTopRated,
+      ),
+    ];
+  }
+
+  static List<ServiceCategoryData> allServiceCategories(AppLocalizations l10n) {
+    return _uniqueCategories([
+      ..._restaurantCategories(l10n),
+      ..._groceryCategories(l10n),
+      ..._storeCategories(l10n),
+      ..._pickupCategories(l10n),
+    ]);
+  }
+
   static ServiceListingConfig of(
     AppLocalizations l10n,
     ServiceListingType type,
@@ -39,6 +65,7 @@ class ServiceListingConfig {
       time: l10n.serviceDeliveryTimeRange,
       imageAsset: AppAssets.homeRestaurantCover,
       rating: '4.6',
+      hasOffer: true,
     );
     final azAlSham = ServicePlaceData.restaurant(
       name: l10n.serviceRestaurantAzAlSham,
@@ -46,6 +73,7 @@ class ServiceListingConfig {
       time: l10n.serviceDeliveryTime25To40,
       imageAsset: AppAssets.favoriteRestaurantAzAlSham,
       rating: '4.8',
+      fastDelivery: true,
     );
     final restaurantMocks = [kira, azAlSham];
 
@@ -53,62 +81,31 @@ class ServiceListingConfig {
       type: ServiceListingType.restaurants,
       title: l10n.serviceListingRestaurantsTitle,
       searchHint: l10n.serviceSearchHint,
-      categories: [
-        ServiceCategoryData.all(label: l10n.serviceAllPlaces),
-        ServiceCategoryData(
-          label: l10n.serviceCategoryDesserts,
-          imageAsset: AppAssets.serviceRestaurantDesserts,
-        ),
-        ServiceCategoryData(
-          label: l10n.serviceCategoryGrills,
-          imageAsset: AppAssets.serviceRestaurantGrills,
-        ),
-        ServiceCategoryData(
-          label: l10n.serviceCategoryPizza,
-          imageAsset: AppAssets.serviceRestaurantPizza,
-        ),
-        ServiceCategoryData(
-          label: l10n.serviceCategoryFastFood,
-          imageAsset: AppAssets.serviceRestaurantFastFood,
-        ),
-        ServiceCategoryData(
-          label: l10n.serviceCategoryBurger,
-          imageAsset: AppAssets.serviceRestaurantBurger,
-        ),
-        ServiceCategoryData(
-          label: l10n.serviceCategoryShawarma,
-          imageAsset: AppAssets.serviceRestaurantShawarma,
-        ),
-      ],
+      filters: topFilters(l10n),
+      categories: _restaurantCategories(l10n),
       groups: [
         ServiceListingGroupData(
           title: l10n.serviceCategoryDesserts,
-          layout: ServiceListingLayout.list,
           items: _repeat(restaurantMocks, 5),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategoryGrills,
-          layout: ServiceListingLayout.list,
           items: _repeat(restaurantMocks.reversed.toList(), 5),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategoryPizza,
-          layout: ServiceListingLayout.list,
           items: _repeat([azAlSham, kira], 4),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategoryFastFood,
-          layout: ServiceListingLayout.list,
           items: _repeat([kira, azAlSham], 4),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategoryBurger,
-          layout: ServiceListingLayout.list,
           items: _repeat([azAlSham, kira], 4),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategoryShawarma,
-          layout: ServiceListingLayout.list,
           items: _repeat([kira, azAlSham], 4),
         ),
       ],
@@ -121,12 +118,15 @@ class ServiceListingConfig {
       time: l10n.serviceDeliveryTimeRange,
       imageAsset: AppAssets.serviceGroceryCaptain,
       rating: '4.5',
+      hasOffer: true,
+      topRated: false,
     );
     final fathallah = ServicePlaceData.store(
       name: l10n.serviceStoreFathallah,
       time: l10n.serviceDeliveryTimeRange,
       imageAsset: AppAssets.serviceGroceryFathallah,
       rating: '4.6',
+      fastDelivery: true,
     );
     final groceryMocks = [captain, fathallah];
 
@@ -134,53 +134,30 @@ class ServiceListingConfig {
       type: ServiceListingType.grocery,
       title: l10n.serviceListingGroceryTitle,
       searchHint: l10n.serviceSearchHint,
-      categories: [
-        ServiceCategoryData.all(label: l10n.serviceAllPlaces),
-        ServiceCategoryData(
-          label: l10n.serviceCategorySupermarket,
-          imageAsset: AppAssets.serviceGrocerySupermarket,
-        ),
-        ServiceCategoryData(
-          label: l10n.serviceCategorySnacks,
-          imageAsset: AppAssets.serviceGrocerySnacks,
-        ),
-        ServiceCategoryData(
-          label: l10n.serviceCategoryDairy,
-          imageAsset: AppAssets.serviceGroceryDairy,
-        ),
-        ServiceCategoryData(
-          label: l10n.serviceCategoryFruitsVegetables,
-          imageAsset: AppAssets.serviceGroceryFruitsVegetables,
-        ),
-        ServiceCategoryData(
-          label: l10n.serviceCategoryRoasters,
-          imageAsset: AppAssets.serviceGroceryRoasters,
-        ),
-      ],
+      filters: topFilters(l10n),
+      categories: _groceryCategories(l10n),
       groups: [
         ServiceListingGroupData(
           title: l10n.serviceCategorySupermarket,
-          layout: ServiceListingLayout.compactGrid,
+          largeItems: groceryMocks,
           items: _repeat(groceryMocks, 5),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategorySnacks,
-          layout: ServiceListingLayout.compactGrid,
           items: _repeat([captain, fathallah], 4),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategoryDairy,
-          layout: ServiceListingLayout.compactGrid,
+          largeItems: [fathallah],
           items: _repeat([fathallah, captain], 4),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategoryFruitsVegetables,
-          layout: ServiceListingLayout.compactGrid,
+          largeItems: groceryMocks,
           items: _repeat([captain, fathallah], 4),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategoryRoasters,
-          layout: ServiceListingLayout.compactGrid,
           items: _repeat([fathallah, captain], 4),
         ),
       ],
@@ -193,37 +170,29 @@ class ServiceListingConfig {
       time: l10n.serviceDeliveryTime35To50,
       imageAsset: AppAssets.serviceStoresBeauty,
       rating: '4.5',
+      hasOffer: true,
+      topRated: false,
     );
     final flowers = ServicePlaceData.store(
       name: l10n.serviceCategoryFlowers,
       time: l10n.serviceDeliveryTime25To40,
       imageAsset: AppAssets.serviceStoresFlowers,
       rating: '4.7',
+      fastDelivery: true,
     );
     return ServiceListingConfig(
       type: ServiceListingType.stores,
       title: l10n.serviceListingStoresTitle,
       searchHint: l10n.serviceSearchHint,
-      categories: [
-        ServiceCategoryData.all(label: l10n.serviceAllPlaces),
-        ServiceCategoryData(
-          label: l10n.serviceCategoryPerfumeBeauty,
-          imageAsset: AppAssets.serviceStoresBeauty,
-        ),
-        ServiceCategoryData(
-          label: l10n.serviceCategoryFlowers,
-          imageAsset: AppAssets.serviceStoresFlowers,
-        ),
-      ],
+      filters: topFilters(l10n),
+      categories: _storeCategories(l10n),
       groups: [
         ServiceListingGroupData(
           title: l10n.serviceCategoryPerfumeBeauty,
-          layout: ServiceListingLayout.list,
           items: _repeat([beauty, flowers], 10),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategoryFlowers,
-          layout: ServiceListingLayout.list,
           items: _repeat([flowers, beauty], 10),
         ),
       ],
@@ -231,64 +200,177 @@ class ServiceListingConfig {
   }
 
   static ServiceListingConfig _pickup(AppLocalizations l10n) {
+    final rimasLand = ServicePlaceData.pickup(
+      name: l10n.serviceStoreRimasLand,
+      time: l10n.serviceDeliveryTimeRange,
+      imageAsset: AppAssets.servicePickupRimas,
+      rating: '4.5',
+      hasOffer: true,
+      topRated: true,
+      fastDelivery: false,
+    );
+    final taheraFry = ServicePlaceData.pickup(
+      name: l10n.serviceStoreTaheraFry,
+      time: l10n.serviceDeliveryTimeRange,
+      imageAsset: AppAssets.servicePickupTahera,
+      rating: '4.5',
+      hasOffer: true,
+      topRated: true,
+      fastDelivery: true,
+    );
+    final familyMarket = ServicePlaceData.pickup(
+      name: l10n.serviceStoreFamilyMarket,
+      time: l10n.serviceDeliveryTimeRange,
+      imageAsset: AppAssets.servicePickupFamily,
+      rating: '4.5',
+      hasOffer: false,
+      topRated: true,
+      fastDelivery: false,
+    );
+    final captainMarket = ServicePlaceData.pickup(
+      name: l10n.serviceCaptainMarket,
+      time: l10n.serviceDeliveryTimeRange,
+      imageAsset: AppAssets.servicePickupCaptain,
+      rating: '4.5',
+      hasOffer: false,
+      topRated: false,
+      fastDelivery: true,
+    );
+    final pickupItems = [rimasLand, taheraFry, familyMarket, captainMarket];
+
     return ServiceListingConfig(
       type: ServiceListingType.pickup,
       title: l10n.serviceListingPickupTitle,
       searchHint: l10n.serviceSearchHint,
-      categories: const [],
-      filters: [
-        ServiceFilterData(
-          id: ServiceFilterId.offers,
-          label: l10n.serviceFilterOffers,
-          selected: false,
-        ),
-        ServiceFilterData(
-          id: ServiceFilterId.topRated,
-          label: l10n.serviceFilterTopRated,
-          selected: true,
-        ),
-      ],
+      categories: allServiceCategories(l10n),
+      filters: topFilters(l10n),
       groups: [
         ServiceListingGroupData(
           title: l10n.serviceAllPlaces,
-          layout: ServiceListingLayout.list,
-          items: [
-            ServicePlaceData.pickup(
-              name: l10n.serviceStoreRimasLand,
-              time: l10n.serviceDeliveryTimeRange,
-              imageAsset: AppAssets.servicePickupRimas,
-              rating: '4.5',
-              hasOffer: true,
-              topRated: true,
-            ),
-            ServicePlaceData.pickup(
-              name: l10n.serviceStoreTaheraFry,
-              time: l10n.serviceDeliveryTimeRange,
-              imageAsset: AppAssets.servicePickupTahera,
-              rating: '4.5',
-              hasOffer: true,
-              topRated: true,
-            ),
-            ServicePlaceData.pickup(
-              name: l10n.serviceStoreFamilyMarket,
-              time: l10n.serviceDeliveryTimeRange,
-              imageAsset: AppAssets.servicePickupFamily,
-              rating: '4.5',
-              hasOffer: true,
-              topRated: true,
-            ),
-            ServicePlaceData.pickup(
-              name: l10n.serviceCaptainMarket,
-              time: l10n.serviceDeliveryTimeRange,
-              imageAsset: AppAssets.servicePickupCaptain,
-              rating: '4.5',
-              hasOffer: true,
-              topRated: true,
-            ),
-          ],
+          items: pickupItems,
+        ),
+        ServiceListingGroupData(
+          title: l10n.serviceCategorySupermarket,
+          includeInAll: false,
+          items: [familyMarket, captainMarket],
+        ),
+        ServiceListingGroupData(
+          title: l10n.serviceCategorySnacks,
+          includeInAll: false,
+          items: [rimasLand, taheraFry],
+        ),
+        ServiceListingGroupData(
+          title: l10n.serviceCategoryFastFood,
+          includeInAll: false,
+          items: [taheraFry],
+        ),
+        ServiceListingGroupData(
+          title: l10n.serviceCategoryFlowers,
+          includeInAll: false,
+          items: [rimasLand],
         ),
       ],
     );
+  }
+
+  static List<ServiceCategoryData> _restaurantCategories(
+    AppLocalizations l10n,
+  ) {
+    return [
+      ServiceCategoryData(
+        label: l10n.serviceCategoryDesserts,
+        imageAsset: AppAssets.serviceRestaurantDesserts,
+      ),
+      ServiceCategoryData(
+        label: l10n.serviceCategoryGrills,
+        imageAsset: AppAssets.serviceRestaurantGrills,
+      ),
+      ServiceCategoryData(
+        label: l10n.serviceCategoryPizza,
+        imageAsset: AppAssets.serviceRestaurantPizza,
+      ),
+      ServiceCategoryData(
+        label: l10n.serviceCategoryFastFood,
+        imageAsset: AppAssets.serviceRestaurantFastFood,
+      ),
+      ServiceCategoryData(
+        label: l10n.serviceCategoryBurger,
+        imageAsset: AppAssets.serviceRestaurantBurger,
+      ),
+      ServiceCategoryData(
+        label: l10n.serviceCategoryShawarma,
+        imageAsset: AppAssets.serviceRestaurantShawarma,
+      ),
+    ];
+  }
+
+  static List<ServiceCategoryData> _groceryCategories(AppLocalizations l10n) {
+    return [
+      ServiceCategoryData(
+        label: l10n.serviceCategorySupermarket,
+        imageAsset: AppAssets.serviceGrocerySupermarket,
+      ),
+      ServiceCategoryData(
+        label: l10n.serviceCategorySnacks,
+        imageAsset: AppAssets.serviceGrocerySnacks,
+      ),
+      ServiceCategoryData(
+        label: l10n.serviceCategoryDairy,
+        imageAsset: AppAssets.serviceGroceryDairy,
+      ),
+      ServiceCategoryData(
+        label: l10n.serviceCategoryFruitsVegetables,
+        imageAsset: AppAssets.serviceGroceryFruitsVegetables,
+      ),
+      ServiceCategoryData(
+        label: l10n.serviceCategoryRoasters,
+        imageAsset: AppAssets.serviceGroceryRoasters,
+      ),
+    ];
+  }
+
+  static List<ServiceCategoryData> _storeCategories(AppLocalizations l10n) {
+    return [
+      ServiceCategoryData(
+        label: l10n.serviceCategoryPerfumeBeauty,
+        imageAsset: AppAssets.serviceStoresBeauty,
+      ),
+      ServiceCategoryData(
+        label: l10n.serviceCategoryFlowers,
+        imageAsset: AppAssets.serviceStoresFlowers,
+      ),
+    ];
+  }
+
+  static List<ServiceCategoryData> _pickupCategories(AppLocalizations l10n) {
+    return [
+      ServiceCategoryData(
+        label: l10n.serviceCategorySupermarket,
+        imageAsset: AppAssets.serviceGrocerySupermarket,
+      ),
+      ServiceCategoryData(
+        label: l10n.serviceCategorySnacks,
+        imageAsset: AppAssets.serviceGrocerySnacks,
+      ),
+      ServiceCategoryData(
+        label: l10n.serviceCategoryFastFood,
+        imageAsset: AppAssets.serviceRestaurantFastFood,
+      ),
+      ServiceCategoryData(
+        label: l10n.serviceCategoryFlowers,
+        imageAsset: AppAssets.serviceStoresFlowers,
+      ),
+    ];
+  }
+
+  static List<ServiceCategoryData> _uniqueCategories(
+    List<ServiceCategoryData> categories,
+  ) {
+    final labels = <String>{};
+    return [
+      for (final category in categories)
+        if (labels.add(category.label)) category,
+    ];
   }
 
   static List<ServicePlaceData> _repeat(
@@ -306,42 +388,33 @@ class ServiceCategoryData {
     this.fallbackIcon = Icons.storefront_outlined,
   });
 
-  const ServiceCategoryData.all({required this.label})
-    : imageAsset = null,
-      fallbackIcon = Icons.apps_rounded;
-
   final String label;
   final String? imageAsset;
   final IconData fallbackIcon;
 }
 
 class ServiceFilterData {
-  const ServiceFilterData({
-    required this.id,
-    required this.label,
-    this.selected = false,
-  });
+  const ServiceFilterData({required this.id, required this.label});
 
   final ServiceFilterId id;
   final String label;
-  final bool selected;
 }
 
-enum ServiceFilterId { offers, topRated }
+enum ServiceFilterId { offers, fastDelivery, topRated }
 
 class ServiceListingGroupData {
   const ServiceListingGroupData({
     required this.title,
-    required this.layout,
     required this.items,
+    this.largeItems = const [],
+    this.includeInAll = true,
   });
 
   final String title;
-  final ServiceListingLayout layout;
   final List<ServicePlaceData> items;
+  final List<ServicePlaceData> largeItems;
+  final bool includeInAll;
 }
-
-enum ServiceListingLayout { list, compactGrid }
 
 enum ServicePlaceKind { restaurant, store, pickup }
 
@@ -353,6 +426,7 @@ class ServicePlaceData {
     required this.imageAsset,
     required this.rating,
     this.hasOffer = false,
+    this.fastDelivery = false,
     this.topRated = true,
     this.showFavourite = false,
     this.subtitle,
@@ -364,6 +438,9 @@ class ServicePlaceData {
     required String time,
     required String imageAsset,
     required String rating,
+    bool hasOffer = false,
+    bool fastDelivery = false,
+    bool topRated = true,
   }) {
     return ServicePlaceData._(
       kind: ServicePlaceKind.restaurant,
@@ -372,6 +449,9 @@ class ServicePlaceData {
       time: time,
       imageAsset: imageAsset,
       rating: rating,
+      hasOffer: hasOffer,
+      fastDelivery: fastDelivery,
+      topRated: topRated,
     );
   }
 
@@ -380,6 +460,9 @@ class ServicePlaceData {
     required String time,
     required String imageAsset,
     required String rating,
+    bool hasOffer = false,
+    bool fastDelivery = false,
+    bool topRated = true,
     bool showFavourite = false,
   }) {
     return ServicePlaceData._(
@@ -388,6 +471,9 @@ class ServicePlaceData {
       time: time,
       imageAsset: imageAsset,
       rating: rating,
+      hasOffer: hasOffer,
+      fastDelivery: fastDelivery,
+      topRated: topRated,
       showFavourite: showFavourite,
     );
   }
@@ -398,6 +484,7 @@ class ServicePlaceData {
     required String imageAsset,
     required String rating,
     bool hasOffer = false,
+    bool fastDelivery = false,
     bool topRated = true,
   }) {
     return ServicePlaceData._(
@@ -407,6 +494,7 @@ class ServicePlaceData {
       imageAsset: imageAsset,
       rating: rating,
       hasOffer: hasOffer,
+      fastDelivery: fastDelivery,
       topRated: topRated,
     );
   }
@@ -417,6 +505,7 @@ class ServicePlaceData {
   final String imageAsset;
   final String rating;
   final bool hasOffer;
+  final bool fastDelivery;
   final bool topRated;
   final bool showFavourite;
   final String? subtitle;

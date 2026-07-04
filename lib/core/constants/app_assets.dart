@@ -10,6 +10,8 @@ class AppAssets {
   static const authPhoneIcon = 'assets/images/auth_phone_icon.png';
   static const authHeaderLogo = 'assets/images/auth_header_logo.png';
   static const authEntryStripe = 'assets/images/auth_entry_stripe.png';
+  static const authEntryStripeDark =
+      'assets/images/auth_entry_stripe_dark.png';
   static const loginLogo = 'assets/images/login_logo.svg';
   static const flagEg = 'assets/images/flag_eg.svg';
   static const flagUsa = 'assets/images/flag_usa.svg';
@@ -274,6 +276,8 @@ class AppAssets {
       'assets/images/service_listing/pickup_family.png';
   static const servicePickupCaptain =
       'assets/images/service_listing/pickup_captain.png';
+  static const serviceNotFoundFolder =
+      'assets/images/service_listing/not_found_folder.png';
   static const serviceSearchIcon =
       'assets/images/service_listing/icon_search.svg';
   static const serviceBackIcon = 'assets/images/service_listing/icon_back.svg';

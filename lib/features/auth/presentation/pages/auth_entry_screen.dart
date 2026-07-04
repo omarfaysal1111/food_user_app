@@ -186,31 +186,34 @@ class _AuthEntryStripes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final stripeAsset = isDark ? AppAssets.authEntryStripeDark : AppAssets.authEntryStripe;
+
+    return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         AppRasterImage.asset(
-          AppAssets.authEntryStripe,
+          stripeAsset,
           height: _stripeHeight,
           width: double.infinity,
           fit: BoxFit.fill,
         ),
-        ColoredBox(
+        const ColoredBox(
           color: AppColors.primary,
           child: SizedBox(height: _stripeGap, width: double.infinity),
         ),
         AppRasterImage.asset(
-          AppAssets.authEntryStripe,
+          stripeAsset,
           height: _stripeHeight,
           width: double.infinity,
           fit: BoxFit.fill,
         ),
-        ColoredBox(
+        const ColoredBox(
           color: AppColors.primary,
           child: SizedBox(height: _stripeGap, width: double.infinity),
         ),
         AppRasterImage.asset(
-          AppAssets.authEntryStripe,
+          stripeAsset,
           height: _stripeHeight,
           width: double.infinity,
           fit: BoxFit.fill,

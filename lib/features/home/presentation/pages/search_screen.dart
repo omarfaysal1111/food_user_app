@@ -12,6 +12,7 @@ import 'package:food_user_app/core/widgets/app_search_field.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/empty_state_widget.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -527,29 +528,15 @@ class _EmptyResults extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsetsDirectional.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.xl,
-      ),
       decoration: BoxDecoration(
         color: AppColors.surfaceCard(context),
         borderRadius: const BorderRadius.all(AppRadius.md),
         border: Border.all(color: AppColors.border(context), width: 0.5),
       ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.search_off_rounded,
-            color: AppColors.hint(context),
-            size: 34,
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: AppTextStyles.body(context).copyWith(fontSize: 13),
-          ),
-        ],
+      child: EmptyStateWidget(
+        message: title,
+        imageWidth: 80,
+        imageHeight: 80,
       ),
     );
   }

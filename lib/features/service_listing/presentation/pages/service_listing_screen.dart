@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_radius.dart';
-import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/core/widgets/app_search_field.dart';
 import 'package:food_user_app/core/widgets/app_status_dot_label.dart';
 import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
+import 'package:food_user_app/features/service_listing/presentation/bloc/service_listing_cubit.dart';
+import 'package:food_user_app/features/service_listing/presentation/bloc/service_listing_state.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_config.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_type.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/empty_state_widget.dart';
 
 class ServiceListingScreen extends StatefulWidget {
   const ServiceListingScreen({required this.type, super.key});
@@ -28,11 +31,6 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
 
-  var _selectedCategoryIndex = 0;
-  ServiceListingType? _initializedType;
-  Set<ServiceFilterId> _activeFilters = const {};
-  var _searchQuery = '';
-
   @override
   void dispose() {
     _searchController.dispose();
@@ -44,190 +42,85 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final config = ServiceListingConfig.of(l10n, widget.type);
-    _initializeSelection(config);
-    final pickupGroups = _visiblePickupGroups(config);
-    final usesCategoryFilters = _usesCategoryFilters(config);
-    final displayedItems = usesCategoryFilters
-        ? _filteredItems(_displayedItemsForSelectedCategory(config.groups))
-        : null;
 
-    return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground(context),
-      body: SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          controller: _scrollController,
-          physics: const ClampingScrollPhysics(),
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 24),
-              sliver: SliverList.list(
-                children: [
-                  _ListingHeader(title: config.title),
-                  const SizedBox(height: 24),
-                  _ListingSearchBox(
-                    controller: _searchController,
-                    hint: config.searchHint,
-                    onChanged: _onSearchChanged,
+    return BlocProvider(
+      key: ValueKey(widget.type),
+      create: (_) => ServiceListingCubit(config: config),
+      child: Scaffold(
+        backgroundColor: AppColors.scaffoldBackground(context),
+        body: SafeArea(
+          bottom: false,
+          child: BlocBuilder<ServiceListingCubit, ServiceListingState>(
+            builder: (context, state) {
+              final largeStores = state.largeStores;
+              final stores = state.filteredStores;
+
+              return CustomScrollView(
+                controller: _scrollController,
+                physics: const ClampingScrollPhysics(),
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      16,
+                      20,
+                      16,
+                      24,
+                    ),
+                    sliver: SliverList.list(
+                      children: [
+                        _ListingHeader(title: state.config.title),
+                        const SizedBox(height: 24),
+                        _ListingSearchBox(
+                          controller: _searchController,
+                          hint: state.config.searchHint,
+                          onChanged: context
+                              .read<ServiceListingCubit>()
+                              .searchChanged,
+                        ),
+                        if (state.categories.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          _ServiceCategoryStrip(
+                            categories: state.categories,
+                            selectedCategory: state.selectedCategory,
+                            onSelected: context
+                                .read<ServiceListingCubit>()
+                                .toggleCategory,
+                          ),
+                        ],
+                        if (state.config.filters.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          _ServiceFilterStrip(
+                            filters: state.config.filters,
+                            selectedFilters: state.selectedTopFilters,
+                            onToggle: context
+                                .read<ServiceListingCubit>()
+                                .toggleTopFilter,
+                          ),
+                        ],
+                        if (largeStores.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          _SectionTitle(title: l10n.serviceLargeStores),
+                          const SizedBox(height: 12),
+                          _LargeStoreRow(items: largeStores),
+                        ],
+                        const SizedBox(height: 16),
+                        _SectionTitle(title: l10n.serviceAllPlaces),
+                        const SizedBox(height: 12),
+                        _ServicePlaceCollection(items: stores),
+                        if (stores.isEmpty) ...[
+                          const SizedBox(height: 88),
+                          _EmptyListingState(l10n: l10n),
+                        ],
+                      ],
+                    ),
                   ),
-                  if (config.categories.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    _ServiceCategoryStrip(
-                      categories: config.categories,
-                      selectedIndex: _selectedCategoryIndex,
-                      onSelected: _selectCategory,
-                    ),
-                  ],
-                  if (config.filters.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    _ServiceFilterStrip(
-                      filters: config.filters,
-                      activeFilters: _activeFilters,
-                      onToggle: _toggleFilter,
-                    ),
-                  ],
-                  if (displayedItems != null) ...[
-                    const SizedBox(height: 16),
-                    _SelectedCategoryTitle(
-                      title: _selectedCategoryTitle(config),
-                    ),
-                    const SizedBox(height: 12),
-                    _ServicePlaceCollection(
-                      layout: _layoutForSelectedCategory(config.groups),
-                      items: displayedItems,
-                    ),
-                  ] else
-                    for (
-                      var index = 0;
-                      index < pickupGroups.length;
-                      index++
-                    ) ...[
-                      const SizedBox(height: 16),
-                      _PickupGroup(group: pickupGroups[index]),
-                    ],
-                  if (displayedItems != null && displayedItems.isEmpty) ...[
-                    const SizedBox(height: 88),
-                    _EmptyListingState(l10n: l10n),
-                  ],
-                  if (displayedItems == null && pickupGroups.isEmpty) ...[
-                    const SizedBox(height: 88),
-                    _EmptyListingState(l10n: l10n),
-                  ],
                 ],
-              ),
-            ),
-          ],
+              );
+            },
+          ),
         ),
       ),
     );
-  }
-
-  void _initializeSelection(ServiceListingConfig config) {
-    if (_initializedType == config.type) return;
-    _initializedType = config.type;
-    _selectedCategoryIndex = 0;
-    _activeFilters = {
-      for (final filter in config.filters)
-        if (filter.selected) filter.id,
-    };
-  }
-
-  void _toggleFilter(ServiceFilterId id) {
-    setState(() {
-      final next = Set<ServiceFilterId>.from(_activeFilters);
-      next.contains(id) ? next.remove(id) : next.add(id);
-      _activeFilters = next;
-    });
-  }
-
-  void _selectCategory(int index) {
-    setState(() => _selectedCategoryIndex = index);
-  }
-
-  void _onSearchChanged(String value) {
-    setState(() => _searchQuery = value.trim());
-  }
-
-  List<ServiceListingGroupData> _visiblePickupGroups(
-    ServiceListingConfig config,
-  ) {
-    if (config.type != ServiceListingType.pickup || _activeFilters.isEmpty) {
-      return config.groups;
-    }
-
-    return [
-      for (final group in config.groups)
-        ServiceListingGroupData(
-          title: group.title,
-          layout: group.layout,
-          items: group.items.where((item) {
-            final offerMatches =
-                !_activeFilters.contains(ServiceFilterId.offers) ||
-                item.hasOffer;
-            final ratedMatches =
-                !_activeFilters.contains(ServiceFilterId.topRated) ||
-                item.topRated;
-            return offerMatches && ratedMatches;
-          }).toList(),
-        ),
-    ].where((section) => section.items.isNotEmpty).toList();
-  }
-
-  bool _usesCategoryFilters(ServiceListingConfig config) {
-    return config.type != ServiceListingType.pickup &&
-        config.categories.isNotEmpty;
-  }
-
-  ServiceListingLayout _layoutForSelectedCategory(
-    List<ServiceListingGroupData> groups,
-  ) {
-    final selectedGroup = _selectedCategoryGroup(groups);
-    return selectedGroup?.layout ??
-        (groups.isNotEmpty ? groups.first.layout : ServiceListingLayout.list);
-  }
-
-  List<ServicePlaceData> _displayedItemsForSelectedCategory(
-    List<ServiceListingGroupData> groups,
-  ) {
-    if (groups.isEmpty) return const [];
-    if (_selectedCategoryIndex != 0) {
-      return _selectedCategoryGroup(groups)?.items ?? const [];
-    }
-
-    return groups.expand((group) => group.items).toList();
-  }
-
-  List<ServicePlaceData> _filteredItems(List<ServicePlaceData> items) {
-    final query = _searchQuery.toLowerCase();
-    if (query.isEmpty) return items;
-
-    return items.where((item) {
-      final searchableText = [
-        item.name,
-        item.subtitle,
-        item.time,
-        item.rating,
-      ].whereType<String>().join(' ').toLowerCase();
-      return searchableText.contains(query);
-    }).toList();
-  }
-
-  ServiceListingGroupData? _selectedCategoryGroup(
-    List<ServiceListingGroupData> groups,
-  ) {
-    final groupIndex = _selectedCategoryIndex - 1;
-    if (groupIndex < 0 || groupIndex >= groups.length) {
-      return null;
-    }
-    return groups[groupIndex];
-  }
-
-  String _selectedCategoryTitle(ServiceListingConfig config) {
-    if (_selectedCategoryIndex >= 0 &&
-        _selectedCategoryIndex < config.categories.length) {
-      return config.categories[_selectedCategoryIndex].label;
-    }
-    return config.title;
   }
 }
 
@@ -304,8 +197,8 @@ class _ListingSearchBox extends StatelessWidget {
   }
 }
 
-class _SelectedCategoryTitle extends StatelessWidget {
-  const _SelectedCategoryTitle({required this.title});
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.title});
 
   final String title;
 
@@ -329,13 +222,13 @@ class _SelectedCategoryTitle extends StatelessWidget {
 class _ServiceCategoryStrip extends StatelessWidget {
   const _ServiceCategoryStrip({
     required this.categories,
-    required this.selectedIndex,
+    required this.selectedCategory,
     required this.onSelected,
   });
 
   final List<ServiceCategoryData> categories;
-  final int selectedIndex;
-  final ValueChanged<int> onSelected;
+  final ServiceCategoryData? selectedCategory;
+  final ValueChanged<ServiceCategoryData> onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -349,8 +242,8 @@ class _ServiceCategoryStrip extends StatelessWidget {
         itemBuilder: (context, index) {
           return _ServiceCategoryChip(
             category: categories[index],
-            selected: selectedIndex == index,
-            onTap: () => onSelected(index),
+            selected: selectedCategory == categories[index],
+            onTap: () => onSelected(categories[index]),
           );
         },
       ),
@@ -430,12 +323,12 @@ class _ServiceCategoryChip extends StatelessWidget {
 class _ServiceFilterStrip extends StatelessWidget {
   const _ServiceFilterStrip({
     required this.filters,
-    required this.activeFilters,
+    required this.selectedFilters,
     required this.onToggle,
   });
 
   final List<ServiceFilterData> filters;
-  final Set<ServiceFilterId> activeFilters;
+  final Set<ServiceFilterId> selectedFilters;
   final ValueChanged<ServiceFilterId> onToggle;
 
   @override
@@ -448,7 +341,7 @@ class _ServiceFilterStrip extends StatelessWidget {
           for (var index = 0; index < filters.length; index++) ...[
             _ServiceFilterChip(
               filter: filters[index],
-              selected: activeFilters.contains(filters[index].id),
+              selected: selectedFilters.contains(filters[index].id),
               onTap: () => onToggle(filters[index].id),
             ),
             if (index != filters.length - 1) const SizedBox(width: 8),
@@ -502,74 +395,34 @@ class _ServiceFilterChip extends StatelessWidget {
   }
 }
 
-class _PickupGroup extends StatelessWidget {
-  const _PickupGroup({required this.group});
-
-  final ServiceListingGroupData group;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _PickupGroupTitle(title: group.title),
-        const SizedBox(height: 12),
-        _ServicePlaceCollection(layout: group.layout, items: group.items),
-      ],
-    );
-  }
-}
-
 class _ServicePlaceCollection extends StatelessWidget {
-  const _ServicePlaceCollection({required this.layout, required this.items});
-
-  final ServiceListingLayout layout;
-  final List<ServicePlaceData> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return switch (layout) {
-      ServiceListingLayout.compactGrid => _CompactStoreGrid(items: items),
-      ServiceListingLayout.list => _PlaceList(items: items),
-    };
-  }
-}
-
-class _PickupGroupTitle extends StatelessWidget {
-  const _PickupGroupTitle({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: AlignmentDirectional.centerStart,
-      child: Text(
-        title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.start,
-        style: AppTextStyles.heading4(
-          context,
-        ).copyWith(fontSize: 15, height: 1.4),
-      ),
-    );
-  }
-}
-
-class _CompactStoreGrid extends StatelessWidget {
-  const _CompactStoreGrid({required this.items});
+  const _ServicePlaceCollection({required this.items});
 
   final List<ServicePlaceData> items;
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: AlignmentDirectional.centerStart,
-      child: Wrap(
-        spacing: 12,
-        runSpacing: 12,
-        children: [for (final item in items) _CompactStoreCard(item: item)],
+    return _PlaceList(items: items);
+  }
+}
+
+class _LargeStoreRow extends StatelessWidget {
+  const _LargeStoreRow({required this.items});
+
+  final List<ServicePlaceData> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 112,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.zero,
+        itemCount: items.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 12),
+        itemBuilder: (context, index) {
+          return _CompactStoreCard(item: items[index]);
+        },
       ),
     );
   }
@@ -875,20 +728,9 @@ class _EmptyListingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          l10n.serviceEmptyTitle,
-          textAlign: TextAlign.center,
-          style: AppTextStyles.heading4(context).copyWith(fontSize: 15),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Text(
-          l10n.serviceEmptyMessage,
-          textAlign: TextAlign.center,
-          style: AppTextStyles.caption(context).copyWith(fontSize: 12),
-        ),
-      ],
+    return const EmptyStateWidget(
+      imageWidth: 100,
+      imageHeight: 100,
     );
   }
 }

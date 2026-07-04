@@ -402,6 +402,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get serviceFilterOffers => 'العروض';
 
   @override
+  String get serviceFilterFastDelivery => 'توصيل سريع';
+
+  @override
   String get serviceDeliveryTimeRange => '45-30 دقيقة';
 
   @override
@@ -436,6 +439,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get serviceEmptyMessage => 'ستظهر هنا الأماكن المطابقة قريباً.';
+
+  @override
+  String get serviceNoResultsAvailable => 'لا يوجد نتائج متاحه';
 
   @override
   String get cartTitle => 'سلة المشتريات';

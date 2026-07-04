@@ -408,6 +408,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serviceFilterOffers => 'Offers';
 
   @override
+  String get serviceFilterFastDelivery => 'Fast Delivery';
+
+  @override
   String get serviceDeliveryTimeRange => '30-45 min';
 
   @override
@@ -442,6 +445,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get serviceEmptyMessage => 'Matching places will appear here soon.';
+
+  @override
+  String get serviceNoResultsAvailable => 'No results available';
 
   @override
   String get cartTitle => 'Cart';

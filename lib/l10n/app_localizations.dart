@@ -860,6 +860,12 @@ abstract class AppLocalizations {
   /// **'Offers'**
   String get serviceFilterOffers;
 
+  /// No description provided for @serviceFilterFastDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast Delivery'**
+  String get serviceFilterFastDelivery;
+
   /// No description provided for @serviceDeliveryTimeRange.
   ///
   /// In en, this message translates to:
@@ -931,6 +937,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Matching places will appear here soon.'**
   String get serviceEmptyMessage;
+
+  /// No description provided for @serviceNoResultsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No results available'**
+  String get serviceNoResultsAvailable;
 
   /// No description provided for @cartTitle.
   ///
