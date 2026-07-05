@@ -27,7 +27,8 @@ class EmptyStateWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final displayMessage = message ?? l10n?.serviceNoResultsAvailable ?? 'No results available';
+    final displayMessage =
+        message ?? l10n?.serviceNoResultsAvailable ?? 'No results available';
 
     return LayoutBuilder(
       builder: (context, constraints) {

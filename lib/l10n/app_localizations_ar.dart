@@ -1378,4 +1378,28 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get authErrorMissingAccessToken =>
       'تم التحقق بنجاح ولكن لم يتم إرجاع رمز الوصول';
+
+  @override
+  String get searchChangeLocation => 'تغيير الموقع الجغرافي';
+
+  @override
+  String get searchMostSearchedDesserts => 'حلويات';
+
+  @override
+  String get searchMostSearchedFalafel => 'فول فلافل';
+
+  @override
+  String get searchMostSearchedPizza => 'بيتزا';
+
+  @override
+  String get searchMostSearchedNuts => 'مكسرات';
+
+  @override
+  String get searchMostSearchedPepsi => 'بيبسي';
+
+  @override
+  String get searchMostSearchedJuice => 'عصير';
+
+  @override
+  String get searchMostSearchedCheese => 'جبنة';
 }

@@ -482,5 +482,13 @@
   "authErrorUnknown": "حدث خطأ ما",
   "authErrorRequestFailed": "فشل الطلب",
   "authErrorInvalidResponse": "استجابة غير صالحة",
-  "authErrorMissingAccessToken": "تم التحقق بنجاح ولكن لم يتم إرجاع رمز الوصول"
+  "authErrorMissingAccessToken": "تم التحقق بنجاح ولكن لم يتم إرجاع رمز الوصول",
+  "searchChangeLocation": "تغيير الموقع الجغرافي",
+  "searchMostSearchedDesserts": "حلويات",
+  "searchMostSearchedFalafel": "فول فلافل",
+  "searchMostSearchedPizza": "بيتزا",
+  "searchMostSearchedNuts": "مكسرات",
+  "searchMostSearchedPepsi": "بيبسي",
+  "searchMostSearchedJuice": "عصير",
+  "searchMostSearchedCheese": "جبنة"
 }

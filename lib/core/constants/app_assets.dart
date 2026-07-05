@@ -10,8 +10,7 @@ class AppAssets {
   static const authPhoneIcon = 'assets/images/auth_phone_icon.png';
   static const authHeaderLogo = 'assets/images/auth_header_logo.png';
   static const authEntryStripe = 'assets/images/auth_entry_stripe.png';
-  static const authEntryStripeDark =
-      'assets/images/auth_entry_stripe_dark.png';
+  static const authEntryStripeDark = 'assets/images/auth_entry_stripe_dark.png';
   static const loginLogo = 'assets/images/login_logo.svg';
   static const flagEg = 'assets/images/flag_eg.svg';
   static const flagUsa = 'assets/images/flag_usa.svg';
@@ -285,4 +284,15 @@ class AppAssets {
   static const serviceStarIcon = 'assets/images/service_listing/icon_star.svg';
   static const serviceFavouriteIcon =
       'assets/images/service_listing/icon_favourite.svg';
+
+  // ── Search Screen ─────────────────────────────────────────────────────────
+  static const searchCake = 'assets/images/search/search_cake.png';
+  static const searchBread = 'assets/images/search/search_bread.png';
+  static const searchFastFood = 'assets/images/search/search_fast_food.png';
+  static const searchSnacks = 'assets/images/search/search_snacks.png';
+  static const searchDrinks = 'assets/images/search/search_drinks.png';
+  static const searchDairy = 'assets/images/search/search_dairy.png';
+  static const searchBreakfast = 'assets/images/search/search_breakfast.png';
+  static const searchFathallah = 'assets/images/search/search_fathallah.png';
+  static const searchCaptain = 'assets/images/search/search_captain.png';
 }

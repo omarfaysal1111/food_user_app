@@ -330,11 +330,7 @@ class _EmptyRestaurantSearch extends StatelessWidget {
         borderRadius: const BorderRadius.all(AppRadius.md),
         border: Border.all(color: AppColors.border(context), width: 0.5),
       ),
-      child: EmptyStateWidget(
-        message: title,
-        imageWidth: 80,
-        imageHeight: 80,
-      ),
+      child: EmptyStateWidget(message: title, imageWidth: 80, imageHeight: 80),
     );
   }
 }

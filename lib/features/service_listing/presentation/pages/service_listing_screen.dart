@@ -55,9 +55,11 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
               final largeStores = state.largeStores;
               final stores = state.filteredStores;
 
-              return CustomScrollView(
-                controller: _scrollController,
-                physics: const ClampingScrollPhysics(),
+              return GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  physics: const ClampingScrollPhysics(),
                 slivers: [
                   SliverPadding(
                     padding: const EdgeInsetsDirectional.fromSTEB(
@@ -115,6 +117,7 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                     ),
                   ),
                 ],
+              ),
               );
             },
           ),
@@ -242,7 +245,7 @@ class _ServiceCategoryStrip extends StatelessWidget {
         itemBuilder: (context, index) {
           return _ServiceCategoryChip(
             category: categories[index],
-            selected: selectedCategory == categories[index],
+            selected: selectedCategory?.label == categories[index].label,
             onTap: () => onSelected(categories[index]),
           );
         },
@@ -728,10 +731,7 @@ class _EmptyListingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const EmptyStateWidget(
-      imageWidth: 100,
-      imageHeight: 100,
-    );
+    return const EmptyStateWidget(imageWidth: 100, imageHeight: 100);
   }
 }
 

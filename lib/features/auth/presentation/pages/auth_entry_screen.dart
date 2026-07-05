@@ -187,7 +187,9 @@ class _AuthEntryStripes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final stripeAsset = isDark ? AppAssets.authEntryStripeDark : AppAssets.authEntryStripe;
+    final stripeAsset = isDark
+        ? AppAssets.authEntryStripeDark
+        : AppAssets.authEntryStripe;
 
     return Column(
       mainAxisSize: MainAxisSize.min,

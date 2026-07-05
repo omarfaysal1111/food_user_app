@@ -1395,4 +1395,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get authErrorMissingAccessToken =>
       'Verification succeeded but no access token was returned';
+
+  @override
+  String get searchChangeLocation => 'Change location';
+
+  @override
+  String get searchMostSearchedDesserts => 'Desserts';
+
+  @override
+  String get searchMostSearchedFalafel => 'Falafel';
+
+  @override
+  String get searchMostSearchedPizza => 'Pizza';
+
+  @override
+  String get searchMostSearchedNuts => 'Nuts';
+
+  @override
+  String get searchMostSearchedPepsi => 'Pepsi';
+
+  @override
+  String get searchMostSearchedJuice => 'Juice';
+
+  @override
+  String get searchMostSearchedCheese => 'Cheese';
 }

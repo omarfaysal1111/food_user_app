@@ -137,6 +137,7 @@ flutter:
     - assets/images/onboarding_collage-dark/
     - assets/images/onboarding_collage-dark/2.0x/
     - assets/images/onboarding_collage-dark/3.0x/
+    - assets/images/search/
 
   fonts:
     - family: ExpoArabic

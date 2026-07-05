@@ -9,8 +9,10 @@ import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/core/widgets/app_search_field.dart';
+import 'package:food_user_app/core/widgets/app_status_dot_label.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
-import 'package:food_user_app/core/widgets/app_directional_icons.dart';
+import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
+import 'package:food_user_app/features/service_listing/presentation/models/service_listing_config.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/empty_state_widget.dart';
 
@@ -24,6 +26,9 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   late final TextEditingController _controller;
   late final FocusNode _focusNode;
+
+  ServiceCategoryData? _selectedCategory;
+  final Set<ServiceFilterId> _selectedFilters = {};
 
   @override
   void initState() {
@@ -48,21 +53,74 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _onSearchChanged() => setState(() {});
 
+  void _onTokenTap(String token) {
+    _controller.text = token;
+    _controller.selection = TextSelection.fromPosition(
+      TextPosition(offset: token.length),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final copy = _SearchCopy.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final query = _controller.text.trim();
-    final results = query.isEmpty
+    final copy = _SearchCopy.of(context);
+
+    final categories = ServiceListingConfig.allServiceCategories(l10n);
+
+    final scope = _selectedCategory?.label;
+    List<ServicePlaceData> displayedStores;
+    List<ServicePlaceData> displayedLargeStores;
+
+    if (scope == null) {
+      displayedStores = copy.groups
+          .expand((g) => g.items)
+          .where((s) => _matchesQuery(s, query))
+          .where((s) => _matchesTopFilter(s))
+          .toList(growable: false);
+      displayedLargeStores = copy.groups
+          .expand((g) => g.largeItems)
+          .where((s) => _matchesQuery(s, query))
+          .toList(growable: false);
+    } else {
+      final matched = copy.groups
+          .where((g) => g.title == scope)
+          .toList(growable: false);
+      displayedStores = matched
+          .expand((g) => g.items)
+          .where((s) => _matchesQuery(s, query))
+          .where((s) => _matchesTopFilter(s))
+          .toList(growable: false);
+      displayedLargeStores = matched
+          .expand((g) => g.largeItems)
+          .where((s) => _matchesQuery(s, query))
+          .toList(growable: false);
+    }
+
+    final filteredProducts = query.isEmpty
         ? const <_SearchResult>[]
-        : copy.results(query);
+        : copy
+            .results(query)
+            .where(
+              (r) =>
+                  scope == null ||
+                  r.keywords.any((k) => k.contains(scope)),
+            )
+            .toList();
+
+    final showFilters = scope != null || query.isNotEmpty;
+    final noResults =
+        displayedStores.isEmpty && filteredProducts.isEmpty && showFilters;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
-      body: SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          slivers: [
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SafeArea(
+          bottom: false,
+          child: CustomScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
             SliverPadding(
               padding: const EdgeInsetsDirectional.fromSTEB(
                 AppSpacing.md,
@@ -72,26 +130,82 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               sliver: SliverList.list(
                 children: [
-                  _SearchHeader(title: copy.title),
-                  const SizedBox(height: AppSpacing.lg),
-                  _SearchInput(
+                  _SearchHeader(title: l10n.searchTitle),
+                  const SizedBox(height: 24),
+                  AppSearchField(
                     controller: _controller,
                     focusNode: _focusNode,
-                    hint: copy.searchHint,
-                    onClear: _controller.clear,
+                    hint: l10n.serviceSearchHint,
+                    iconAsset: AppAssets.serviceSearchIcon,
                   ),
-                  const SizedBox(height: AppSpacing.md),
-                  _TypeFilterRow(filters: copy.typeFilters),
-                  if (query.isEmpty) ...[
-                    const SizedBox(height: 20),
-                    _DefaultSearchContent(copy: copy),
-                  ] else ...[
-                    const SizedBox(height: 20),
-                    _SearchResultsSection(
-                      title: copy.resultsTitle,
-                      emptyTitle: copy.emptyTitle,
-                      results: results,
+                  const SizedBox(height: 16),
+                  _CategoryStrip(
+                    categories: categories,
+                    selectedCategory: _selectedCategory,
+                    onSelected: (cat) {
+                      setState(() {
+                        _selectedCategory =
+                            _selectedCategory?.label == cat.label
+                                ? null
+                                : cat;
+                      });
+                    },
+                  ),
+                  if (showFilters) ...[
+                    const SizedBox(height: 16),
+                    _FilterStrip(
+                      filters: ServiceListingConfig.topFilters(l10n),
+                      selectedFilters: _selectedFilters,
+                      onToggle: (filter) {
+                        setState(() {
+                          _selectedFilters.contains(filter)
+                              ? _selectedFilters.remove(filter)
+                              : _selectedFilters.add(filter);
+                        });
+                      },
                     ),
+                  ],
+                  if (displayedLargeStores.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    _SectionTitle(title: l10n.serviceLargeStores),
+                    const SizedBox(height: 12),
+                    _LargeStoreRow(items: displayedLargeStores),
+                  ],
+                  if (!showFilters) ...[
+                    const SizedBox(height: 22),
+                    _SectionTitle(title: l10n.searchMostSearchedTitle),
+                    const SizedBox(height: 12),
+                    _MostSearchedTokens(
+                      tokens: copy.mostSearchedTokens,
+                      onTap: _onTokenTap,
+                    ),
+                  ] else ...[
+                    if (noResults) ...[
+                      const SizedBox(height: 88),
+                      const EmptyStateWidget(
+                        imageWidth: 100,
+                        imageHeight: 100,
+                      ),
+                    ] else ...[
+                      if (displayedStores.isNotEmpty) ...[
+                        const SizedBox(height: 22),
+                        _SectionTitle(title: l10n.serviceAllPlaces),
+                        const SizedBox(height: 12),
+                        _PlaceList(items: displayedStores),
+                      ],
+                      if (filteredProducts.isNotEmpty) ...[
+                        const SizedBox(height: 22),
+                        _SectionTitle(title: l10n.searchResultsTitle),
+                        const SizedBox(height: 12),
+                        ...filteredProducts.map(
+                          (r) => Padding(
+                            padding:
+                                const EdgeInsetsDirectional.only(bottom: 12),
+                            child: _ResultCard(result: r),
+                          ),
+                        ),
+                      ],
+                    ],
                   ],
                 ],
               ),
@@ -99,6 +213,26 @@ class _SearchScreenState extends State<SearchScreen> {
           ],
         ),
       ),
+      ),
+    );
+  }
+
+  bool _matchesQuery(ServicePlaceData place, String query) {
+    if (query.isEmpty) return true;
+    final searchable =
+        '${place.name} ${place.subtitle ?? ''} ${place.time} ${place.rating}'
+            .toLowerCase();
+    return searchable.contains(query.toLowerCase());
+  }
+
+  bool _matchesTopFilter(ServicePlaceData place) {
+    if (_selectedFilters.isEmpty) return true;
+    return _selectedFilters.every(
+      (f) => switch (f) {
+        ServiceFilterId.offers => place.hasOffer,
+        ServiceFilterId.fastDelivery => place.fastDelivery,
+        ServiceFilterId.topRated => place.topRated,
+      },
     );
   }
 }
@@ -120,149 +254,28 @@ class _SearchHeader extends StatelessWidget {
             minimumSize: const Size(28, 28),
             padding: EdgeInsets.zero,
           ),
-          icon: Icon(AppDirectionalIcons.backArrow(context), size: 20),
+          icon: AppSvgImage.asset(
+            AppAssets.serviceBackIcon,
+            width: 14,
+            height: 14,
+            color: AppColors.onSurface(context),
+          ),
         ),
-        const SizedBox(width: AppSpacing.xs),
+        const SizedBox(width: 4),
         Text(
           title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.heading4(
-            context,
-          ).copyWith(fontSize: 16, height: 1.4),
+          style: AppTextStyles.heading4(context)
+              .copyWith(fontSize: 16, height: 1.4),
         ),
       ],
     );
   }
 }
 
-class _SearchInput extends StatelessWidget {
-  const _SearchInput({
-    required this.controller,
-    required this.focusNode,
-    required this.hint,
-    required this.onClear,
-  });
-
-  final TextEditingController controller;
-  final FocusNode focusNode;
-  final String hint;
-  final VoidCallback onClear;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppSearchField(
-      controller: controller,
-      focusNode: focusNode,
-      hint: hint,
-      height: 42,
-      onClear: onClear,
-      showClearButton: true,
-    );
-  }
-}
-
-class _TypeFilterRow extends StatelessWidget {
-  const _TypeFilterRow({required this.filters});
-
-  final List<_SearchFilter> filters;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 36,
-      child: ListView.separated(
-        reverse: Directionality.of(context) == TextDirection.rtl,
-        scrollDirection: Axis.horizontal,
-        itemCount: filters.length,
-        separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.sm),
-        itemBuilder: (context, index) =>
-            _FilterChipButton(filter: filters[index]),
-      ),
-    );
-  }
-}
-
-class _FilterChipButton extends StatelessWidget {
-  const _FilterChipButton({required this.filter});
-
-  final _SearchFilter filter;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 36,
-      padding: const EdgeInsetsDirectional.symmetric(horizontal: 10),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard(context),
-        borderRadius: const BorderRadius.all(AppRadius.sm),
-        border: filter.selected
-            ? Border.all(color: AppColors.primary, width: 0.5)
-            : null,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.08),
-            blurRadius: 2,
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            filter.icon,
-            size: filter.selected ? 13 : 18,
-            color: filter.color,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            filter.label,
-            style: AppTextStyles.body(context).copyWith(
-              fontSize: 12,
-              height: 1.3,
-              color: filter.selected
-                  ? AppColors.onSurface(context)
-                  : AppColors.hint(context),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DefaultSearchContent extends StatelessWidget {
-  const _DefaultSearchContent({required this.copy});
-
-  final _SearchCopy copy;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _SectionHeader(title: copy.cravingTitle),
-        const SizedBox(height: 12),
-        _CravingList(items: copy.cravings),
-        const SizedBox(height: 22),
-        _SectionHeader(title: copy.recentTitle),
-        const SizedBox(height: 12),
-        _TokenWrap(tokens: copy.recentSearches, icon: Icons.refresh_rounded),
-        const SizedBox(height: 22),
-        _SectionHeader(title: copy.topStoresTitle),
-        const SizedBox(height: 12),
-        _TopStoresRow(stores: copy.topStores),
-        const SizedBox(height: 22),
-        _SectionHeader(title: copy.mostSearchedTitle),
-        const SizedBox(height: 12),
-        _TokenWrap(tokens: copy.mostSearched, icon: Icons.trending_up_rounded),
-      ],
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title});
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.title});
 
   final String title;
 
@@ -274,57 +287,101 @@ class _SectionHeader extends StatelessWidget {
         title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: AppTextStyles.heading4(
-          context,
-        ).copyWith(fontSize: 15, height: 1.4),
+        style: AppTextStyles.heading4(context)
+            .copyWith(fontSize: 15, height: 1.4),
       ),
     );
   }
 }
 
-class _CravingList extends StatelessWidget {
-  const _CravingList({required this.items});
+class _CategoryStrip extends StatelessWidget {
+  const _CategoryStrip({
+    required this.categories,
+    required this.selectedCategory,
+    required this.onSelected,
+  });
 
-  final List<_CravingItem> items;
+  final List<ServiceCategoryData> categories;
+  final ServiceCategoryData? selectedCategory;
+  final ValueChanged<ServiceCategoryData> onSelected;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 62,
+      height: 66,
       child: ListView.separated(
-        reverse: Directionality.of(context) == TextDirection.rtl,
         scrollDirection: Axis.horizontal,
-        itemCount: items.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 12),
-        itemBuilder: (context, index) => _CravingChip(item: items[index]),
+        padding: EdgeInsets.zero,
+        itemCount: categories.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 18),
+        itemBuilder: (context, index) {
+          final cat = categories[index];
+            return _CategoryChip(
+            category: cat,
+            selected: cat.label == selectedCategory?.label,
+            onTap: () => onSelected(cat),
+          );
+        },
       ),
     );
   }
 }
 
-class _CravingChip extends StatelessWidget {
-  const _CravingChip({required this.item});
+class _CategoryChip extends StatelessWidget {
+  const _CategoryChip({
+    required this.category,
+    required this.selected,
+    required this.onTap,
+  });
 
-  final _CravingItem item;
+  final ServiceCategoryData category;
+  final bool selected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 52,
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
+            clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
-              color: AppColors.warning.withValues(alpha: 0.2),
+              color: AppColors.surfaceCard(context),
               borderRadius: const BorderRadius.all(AppRadius.full),
+              border: selected
+                  ? Border.all(color: AppColors.primary, width: 1)
+                  : null,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.onSurface(context).withValues(alpha: 0.08),
+                  blurRadius: 4,
+                ),
+              ],
             ),
-            child: Icon(item.icon, color: item.color, size: 24),
+            child: Padding(
+              padding: const EdgeInsets.all(7),
+              child: category.imageAsset != null
+                  ? AppRasterImage.asset(
+                      category.imageAsset!,
+                      width: 30,
+                      height: 30,
+                      fit: BoxFit.contain,
+                    )
+                  : Icon(
+                      category.fallbackIcon,
+                      color: AppColors.paragraph(context),
+                      size: 22,
+                    ),
+            ),
           ),
           const SizedBox(height: 4),
           Text(
-            item.label,
+            category.label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
@@ -340,100 +397,117 @@ class _CravingChip extends StatelessWidget {
   }
 }
 
-class _TokenWrap extends StatelessWidget {
-  const _TokenWrap({required this.tokens, required this.icon});
+class _FilterStrip extends StatelessWidget {
+  const _FilterStrip({
+    required this.filters,
+    required this.selectedFilters,
+    required this.onToggle,
+  });
 
-  final List<String> tokens;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: AppSpacing.sm,
-      runSpacing: AppSpacing.sm,
-      children: tokens.map((token) {
-        return _SearchToken(label: token, icon: icon);
-      }).toList(),
-    );
-  }
-}
-
-class _SearchToken extends StatelessWidget {
-  const _SearchToken({required this.label, required this.icon});
-
-  final String label;
-  final IconData icon;
+  final List<ServiceFilterData> filters;
+  final Set<ServiceFilterId> selectedFilters;
+  final ValueChanged<ServiceFilterId> onToggle;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsetsDirectional.symmetric(
-        horizontal: 12,
-        vertical: 8,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard(context),
-        borderRadius: const BorderRadius.all(AppRadius.sm),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.08),
-            blurRadius: 2,
-          ),
-        ],
-      ),
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: AppColors.paragraph(context)),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: AppTextStyles.caption(context).copyWith(
-              color: AppColors.onSurface(context),
-              fontSize: 10,
-              height: 1.25,
+          for (var i = 0; i < filters.length; i++) ...[
+            _FilterChip(
+              filter: filters[i],
+              selected: selectedFilters.contains(filters[i].id),
+              onTap: () => onToggle(filters[i].id),
             ),
-          ),
+            if (i != filters.length - 1) const SizedBox(width: 8),
+          ],
         ],
       ),
     );
   }
 }
 
-class _TopStoresRow extends StatelessWidget {
-  const _TopStoresRow({required this.stores});
+class _FilterChip extends StatelessWidget {
+  const _FilterChip({
+    required this.filter,
+    required this.selected,
+    required this.onTap,
+  });
 
-  final List<_TopStore> stores;
+  final ServiceFilterData filter;
+  final bool selected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var index = 0; index < stores.length; index++) ...[
-          _TopStoreCard(store: stores[index]),
-          if (index != stores.length - 1) const SizedBox(width: 12),
-        ],
-      ],
+    return InkWell(
+      onTap: onTap,
+      borderRadius: const BorderRadius.all(AppRadius.sm),
+      child: Container(
+        height: 32,
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary : AppColors.surfaceCard(context),
+          borderRadius: const BorderRadius.all(AppRadius.sm),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.onSurface(context).withValues(alpha: 0.08),
+              blurRadius: 2,
+            ),
+          ],
+        ),
+        child: Text(
+          filter.label,
+          style: AppTextStyles.caption(context).copyWith(
+            color: selected ? AppColors.text : AppColors.paragraph(context),
+            fontSize: 10,
+            height: 1.25,
+          ),
+        ),
+      ),
     );
   }
 }
 
-class _TopStoreCard extends StatelessWidget {
-  const _TopStoreCard({required this.store});
+class _LargeStoreRow extends StatelessWidget {
+  const _LargeStoreRow({required this.items});
 
-  final _TopStore store;
+  final List<ServicePlaceData> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 112,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.zero,
+        itemCount: items.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 12),
+        itemBuilder: (context, index) => _CompactStoreCard(item: items[index]),
+      ),
+    );
+  }
+}
+
+class _CompactStoreCard extends StatelessWidget {
+  const _CompactStoreCard({required this.item});
+
+  final ServicePlaceData item;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 92,
-      padding: const EdgeInsetsDirectional.all(AppSpacing.sm),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: AppColors.surfaceCard(context),
         borderRadius: const BorderRadius.all(Radius.circular(10)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.08),
+            color: AppColors.onSurface(context).withValues(alpha: 0.08),
             blurRadius: 2,
           ),
         ],
@@ -442,76 +516,250 @@ class _TopStoreCard extends StatelessWidget {
         children: [
           ClipOval(
             child: AppRasterImage.asset(
-              store.imageAsset,
+              item.imageAsset,
               width: 40,
               height: 40,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
             ),
           ),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: 8),
           Text(
-            store.name,
+            item.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: AppTextStyles.body(
-              context,
-            ).copyWith(fontSize: 12, height: 1.3),
+            style: AppTextStyles.body(context)
+                .copyWith(fontSize: 12, height: 1.3),
           ),
           const SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.schedule_rounded,
-                size: 14,
-                color: AppColors.paragraph(context),
-              ),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Text(
-                  store.deliveryTime,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.caption(
-                    context,
-                  ).copyWith(fontSize: 10, height: 1.25),
-                ),
-              ),
-            ],
-          ),
+          _TimeLabel(time: item.time),
         ],
       ),
     );
   }
 }
 
-class _SearchResultsSection extends StatelessWidget {
-  const _SearchResultsSection({
-    required this.title,
-    required this.emptyTitle,
-    required this.results,
-  });
+class _PlaceList extends StatelessWidget {
+  const _PlaceList({required this.items});
 
-  final String title;
-  final String emptyTitle;
-  final List<_SearchResult> results;
+  final List<ServicePlaceData> items;
 
   @override
   Widget build(BuildContext context) {
-    if (results.isEmpty) {
-      return _EmptyResults(title: emptyTitle);
-    }
+    return Column(
+      children: [
+        for (var i = 0; i < items.length; i++) ...[
+          _PlaceListTile(item: items[i]),
+          if (i != items.length - 1)
+            Divider(
+              height: 24,
+              thickness: 0.5,
+              color: AppColors.border(context),
+            ),
+        ],
+      ],
+    );
+  }
+}
+
+class _PlaceListTile extends StatelessWidget {
+  const _PlaceListTile({required this.item});
+
+  final ServicePlaceData item;
+
+  @override
+  Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+
+    return InkWell(
+      onTap: () => context.push(
+        RouteNames.restaurantDetailFor(_detailId(item.name)),
+        extra: _toRestaurantDetailArgs(item),
+      ),
+      borderRadius: const BorderRadius.all(AppRadius.sm),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            _PlaceImage(item: item),
+            const SizedBox(width: 8),
+            Expanded(child: _PlaceDetails(item: item)),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: Center(
+                child: Transform.scale(
+                  scaleX: isRtl ? -1 : 1,
+                  child: AppSvgImage.asset(
+                    AppAssets.serviceBackIcon,
+                    width: 7,
+                    height: 12,
+                    color: AppColors.onSurface(context),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PlaceImage extends StatelessWidget {
+  const _PlaceImage({required this.item});
+
+  final ServicePlaceData item;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 56,
+      height: 56,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: const BorderRadius.all(AppRadius.md),
+              child: AppRasterImage.asset(
+                item.imageAsset,
+                width: 56,
+                height: 56,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          if (item.showFavourite)
+            PositionedDirectional(
+              top: 6,
+              start: 6,
+              child: Container(
+                width: 22,
+                height: 22,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceCard(context),
+                  borderRadius: const BorderRadius.all(AppRadius.full),
+                ),
+                child: AppSvgImage.asset(
+                  AppAssets.serviceFavouriteIcon,
+                  width: 14,
+                  height: 14,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PlaceDetails extends StatelessWidget {
+  const _PlaceDetails({required this.item});
+
+  final ServicePlaceData item;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionHeader(title: title),
-        const SizedBox(height: 12),
-        ...results.map(
-          (result) => Padding(
-            padding: const EdgeInsetsDirectional.only(bottom: 12),
-            child: _ResultCard(result: result),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Flexible(
+              child: Text(
+                item.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.start,
+                style: AppTextStyles.body(context)
+                    .copyWith(fontSize: 12, height: 1.3),
+              ),
+            ),
+            const SizedBox(width: 8),
+            AppStatusDotLabel(
+              label: l10n.serviceAvailable,
+              color: AppColors.success,
+            ),
+          ],
+        ),
+        if (item.subtitle != null) ...[
+          const SizedBox(height: 4),
+          Text(
+            item.subtitle!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.start,
+            style: AppTextStyles.caption(context).copyWith(fontSize: 10),
+          ),
+        ],
+        const SizedBox(height: 6),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _RatingLabel(rating: item.rating),
+            const SizedBox(width: 12),
+            _TimeLabel(time: item.time),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _RatingLabel extends StatelessWidget {
+  const _RatingLabel({required this.rating});
+
+  final String rating;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AppSvgImage.asset(AppAssets.serviceStarIcon, width: 14, height: 14),
+        const SizedBox(width: 2),
+        Text(
+          rating,
+          style: AppTextStyles.body(context)
+              .copyWith(fontSize: 10, height: 1.25),
+        ),
+      ],
+    );
+  }
+}
+
+class _TimeLabel extends StatelessWidget {
+  const _TimeLabel({required this.time});
+
+  final String time;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AppSvgImage.asset(
+          AppAssets.favoriteTimeIcon,
+          width: 14,
+          height: 14,
+          color: AppColors.onSurface(context),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          time,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.caption(context).copyWith(
+            color: AppColors.onSurface(context),
+            fontSize: 10,
+            height: 1.25,
           ),
         ),
       ],
@@ -519,24 +767,66 @@ class _SearchResultsSection extends StatelessWidget {
   }
 }
 
-class _EmptyResults extends StatelessWidget {
-  const _EmptyResults({required this.title});
+class _MostSearchedTokens extends StatelessWidget {
+  const _MostSearchedTokens({required this.tokens, required this.onTap});
 
-  final String title;
+  final List<String> tokens;
+  final ValueChanged<String> onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard(context),
-        borderRadius: const BorderRadius.all(AppRadius.md),
-        border: Border.all(color: AppColors.border(context), width: 0.5),
-      ),
-      child: EmptyStateWidget(
-        message: title,
-        imageWidth: 80,
-        imageHeight: 80,
+    return Wrap(
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.sm,
+      children: tokens.map((token) {
+        return _SearchToken(label: token, onTap: () => onTap(token));
+      }).toList(),
+    );
+  }
+}
+
+class _SearchToken extends StatelessWidget {
+  const _SearchToken({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: const BorderRadius.all(AppRadius.sm),
+      child: Container(
+        padding: const EdgeInsetsDirectional.fromSTEB(8, 6, 10, 6),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceCard(context),
+          borderRadius: const BorderRadius.all(AppRadius.sm),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.onSurface(context).withValues(alpha: 0.08),
+              blurRadius: 2,
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.refresh_rounded,
+              size: 14,
+              color: AppColors.paragraph(context),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: AppTextStyles.caption(context).copyWith(
+                color: AppColors.onSurface(context),
+                fontSize: 12,
+                height: 1.3,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -581,48 +871,43 @@ class _ResultCard extends StatelessWidget {
                       result.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.body(
-                        context,
-                      ).copyWith(fontSize: 13, height: 1.3),
+                      style: AppTextStyles.body(context)
+                          .copyWith(fontSize: 13, height: 1.3),
                     ),
                     const SizedBox(height: 5),
                     Text(
                       result.subtitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.caption(
-                        context,
-                      ).copyWith(fontSize: 10, height: 1.25),
+                      style: AppTextStyles.caption(context)
+                          .copyWith(fontSize: 10, height: 1.25),
                     ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(
-                          Icons.star_rounded,
-                          color: AppColors.ratingStar,
-                          size: 14,
+                        AppSvgImage.asset(
+                          AppAssets.serviceStarIcon,
+                          width: 14,
+                          height: 14,
                         ),
                         const SizedBox(width: 2),
                         Text(
                           result.rating,
-                          style: AppTextStyles.caption(context).copyWith(
-                            fontSize: 10,
-                            color: AppColors.onSurface(context),
-                          ),
+                          style: AppTextStyles.caption(context)
+                              .copyWith(fontSize: 10),
                         ),
                         const SizedBox(width: 10),
-                        Icon(
-                          Icons.schedule_rounded,
-                          size: 14,
+                        AppSvgImage.asset(
+                          AppAssets.favoriteTimeIcon,
+                          width: 14,
+                          height: 14,
                           color: AppColors.paragraph(context),
                         ),
                         const SizedBox(width: 3),
                         Text(
                           result.deliveryTime,
-                          style: AppTextStyles.caption(context).copyWith(
-                            fontSize: 10,
-                            color: AppColors.onSurface(context),
-                          ),
+                          style: AppTextStyles.caption(context)
+                              .copyWith(fontSize: 10),
                         ),
                       ],
                     ),
@@ -632,9 +917,8 @@ class _ResultCard extends StatelessWidget {
               const SizedBox(width: AppSpacing.sm),
               Text(
                 result.price,
-                style: AppTextStyles.body(
-                  context,
-                ).copyWith(fontSize: 13, height: 1.25),
+                style: AppTextStyles.body(context)
+                    .copyWith(fontSize: 13, height: 1.25),
               ),
             ],
           ),
@@ -649,7 +933,6 @@ void _openSearchResult(BuildContext context, _SearchResult result) {
     context.push(RouteNames.restaurantDetailFor(result.id));
     return;
   }
-
   context.push(
     RouteNames.productDetails,
     extra: CartItem(
@@ -662,37 +945,48 @@ void _openSearchResult(BuildContext context, _SearchResult result) {
   );
 }
 
-class _SearchCopy {
-  const _SearchCopy({
+String _detailId(String name) {
+  final normalized = name
+      .trim()
+      .toLowerCase()
+      .replaceAll(RegExp(r'\s+'), '-')
+      .replaceAll(RegExp(r'[^a-z0-9\u0600-\u06FF-]'), '');
+  return normalized.isEmpty ? 'service-place' : normalized;
+}
+
+RestaurantDetailArgs _toRestaurantDetailArgs(ServicePlaceData item) {
+  return RestaurantDetailArgs(
+    id: _detailId(item.name),
+    name: item.name,
+    description: item.subtitle ?? item.name,
+    deliveryTime: item.time,
+    rating: double.tryParse(item.rating) ?? 4.5,
+    logoAsset: item.imageAsset,
+    coverAsset: item.imageAsset,
+  );
+}
+
+class _SearchGroup {
+  const _SearchGroup({
     required this.title,
-    required this.searchHint,
-    required this.cravingTitle,
-    required this.recentTitle,
-    required this.topStoresTitle,
-    required this.mostSearchedTitle,
-    required this.resultsTitle,
-    required this.emptyTitle,
-    required this.typeFilters,
-    required this.cravings,
-    required this.recentSearches,
-    required this.topStores,
-    required this.mostSearched,
-    required this.allResults,
+    this.items = const [],
+    this.largeItems = const [],
   });
 
   final String title;
-  final String searchHint;
-  final String cravingTitle;
-  final String recentTitle;
-  final String topStoresTitle;
-  final String mostSearchedTitle;
-  final String resultsTitle;
-  final String emptyTitle;
-  final List<_SearchFilter> typeFilters;
-  final List<_CravingItem> cravings;
-  final List<String> recentSearches;
-  final List<_TopStore> topStores;
-  final List<String> mostSearched;
+  final List<ServicePlaceData> items;
+  final List<ServicePlaceData> largeItems;
+}
+
+class _SearchCopy {
+  const _SearchCopy({
+    required this.groups,
+    required this.mostSearchedTokens,
+    required this.allResults,
+  });
+
+  final List<_SearchGroup> groups;
+  final List<String> mostSearchedTokens;
   final List<_SearchResult> allResults;
 
   List<_SearchResult> results(String query) {
@@ -700,106 +994,156 @@ class _SearchCopy {
     return allResults.where((result) {
       return result.title.toLowerCase().contains(normalizedQuery) ||
           result.subtitle.toLowerCase().contains(normalizedQuery) ||
-          result.keywords.any(
-            (keyword) => keyword.toLowerCase().contains(normalizedQuery),
-          );
+          result.keywords
+              .any((keyword) => keyword.toLowerCase().contains(normalizedQuery));
     }).toList();
   }
 
   static _SearchCopy of(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final kira = ServicePlaceData.restaurant(
+      name: l10n.serviceRestaurantKira,
+      subtitle: l10n.serviceRestaurantDescription,
+      time: l10n.serviceDeliveryTimeRange,
+      imageAsset: AppAssets.homeRestaurantCover,
+      rating: '4.6',
+      hasOffer: true,
+    );
+    final azAlSham = ServicePlaceData.restaurant(
+      name: l10n.serviceRestaurantAzAlSham,
+      subtitle: l10n.serviceRestaurantDescription,
+      time: l10n.serviceDeliveryTime25To40,
+      imageAsset: AppAssets.favoriteRestaurantAzAlSham,
+      rating: '4.8',
+      fastDelivery: true,
+    );
+    final captain = ServicePlaceData.store(
+      name: l10n.serviceStoreCaptain,
+      time: l10n.serviceDeliveryTimeRange,
+      imageAsset: AppAssets.searchCaptain,
+      rating: '4.5',
+      hasOffer: true,
+    );
+    final fathallah = ServicePlaceData.store(
+      name: l10n.serviceStoreFathallah,
+      time: l10n.serviceDeliveryTimeRange,
+      imageAsset: AppAssets.searchFathallah,
+      rating: '4.6',
+      fastDelivery: true,
+    );
+    final beauty = ServicePlaceData.store(
+      name: l10n.serviceCategoryPerfumeBeauty,
+      time: l10n.serviceDeliveryTime35To50,
+      imageAsset: AppAssets.serviceStoresBeauty,
+      rating: '4.5',
+      hasOffer: true,
+    );
+    final flowers = ServicePlaceData.store(
+      name: l10n.serviceCategoryFlowers,
+      time: l10n.serviceDeliveryTime25To40,
+      imageAsset: AppAssets.serviceStoresFlowers,
+      rating: '4.7',
+      fastDelivery: true,
+    );
+    final rimasLand = ServicePlaceData.pickup(
+      name: l10n.serviceStoreRimasLand,
+      time: l10n.serviceDeliveryTimeRange,
+      imageAsset: AppAssets.servicePickupRimas,
+      rating: '4.5',
+      hasOffer: true,
+      topRated: true,
+    );
+    final taheraFry = ServicePlaceData.pickup(
+      name: l10n.serviceStoreTaheraFry,
+      time: l10n.serviceDeliveryTimeRange,
+      imageAsset: AppAssets.servicePickupTahera,
+      rating: '4.5',
+      hasOffer: true,
+      topRated: true,
+      fastDelivery: true,
+    );
+    final familyMarket = ServicePlaceData.pickup(
+      name: l10n.serviceStoreFamilyMarket,
+      time: l10n.serviceDeliveryTimeRange,
+      imageAsset: AppAssets.servicePickupFamily,
+      rating: '4.5',
+      topRated: true,
+    );
+    final captainMarket = ServicePlaceData.pickup(
+      name: l10n.serviceCaptainMarket,
+      time: l10n.serviceDeliveryTimeRange,
+      imageAsset: AppAssets.servicePickupCaptain,
+      rating: '4.5',
+      fastDelivery: true,
+    );
+
     return _SearchCopy(
-      title: l10n.searchTitle,
-      searchHint: l10n.serviceSearchHint,
-      cravingTitle: l10n.searchCravingTitle,
-      recentTitle: l10n.searchRecentTitle,
-      topStoresTitle: l10n.searchTopStoresTitle,
-      mostSearchedTitle: l10n.searchMostSearchedTitle,
-      resultsTitle: l10n.searchResultsTitle,
-      emptyTitle: l10n.searchEmptyTitle,
-      typeFilters: [
-        _SearchFilter(
-          label: l10n.searchFilterAll,
-          icon: Icons.grid_view_rounded,
-          color: AppColors.primary,
-          selected: true,
+      groups: [
+        _SearchGroup(
+          title: l10n.serviceCategoryDesserts,
+          largeItems: [fathallah, kira],
+          items: [kira, azAlSham, rimasLand, kira, azAlSham],
         ),
-        _SearchFilter(
-          label: l10n.homeCategoryRestaurants,
-          icon: Icons.ramen_dining_rounded,
-          color: AppColors.cravingBrown,
+        _SearchGroup(
+          title: l10n.serviceCategoryGrills,
+          items: [azAlSham, kira, taheraFry, azAlSham, kira],
         ),
-        _SearchFilter(
-          label: l10n.homeCategoryGrocery,
-          icon: Icons.ramen_dining_rounded,
-          color: AppColors.cravingBrown,
+        _SearchGroup(
+          title: l10n.serviceCategoryPizza,
+          items: [kira, azAlSham, familyMarket, kira, azAlSham, taheraFry],
         ),
-        _SearchFilter(
-          label: l10n.homeCategoryStores,
-          icon: Icons.ramen_dining_rounded,
-          color: AppColors.cravingBrown,
+        _SearchGroup(
+          title: l10n.serviceCategoryFastFood,
+          items: [taheraFry, kira, azAlSham, captainMarket, taheraFry, kira],
         ),
-      ],
-      cravings: [
-        _CravingItem(
-          label: l10n.searchCravingBreakfast,
-          icon: Icons.breakfast_dining,
-          color: AppColors.primary,
+        _SearchGroup(
+          title: l10n.serviceCategoryBurger,
+          items: [azAlSham, kira, kira, azAlSham, familyMarket],
         ),
-        _CravingItem(
-          label: l10n.searchCravingDairy,
-          icon: Icons.local_pizza,
-          color: AppColors.cravingYellow,
+        _SearchGroup(
+          title: l10n.serviceCategoryShawarma,
+          items: [kira, azAlSham, taheraFry, kira, azAlSham],
         ),
-        _CravingItem(
-          label: l10n.searchCravingDrinks,
-          icon: Icons.local_drink,
-          color: AppColors.cravingPink,
+        _SearchGroup(
+          title: l10n.serviceCategorySupermarket,
+          largeItems: [captain, fathallah],
+          items: [captain, fathallah, familyMarket, captainMarket, captain],
         ),
-        _CravingItem(
-          label: l10n.searchCravingSnacks,
-          icon: Icons.icecream,
-          color: AppColors.cravingBrown,
+        _SearchGroup(
+          title: l10n.serviceCategorySnacks,
+          items: [captain, fathallah, rimasLand, taheraFry, captain],
         ),
-        _CravingItem(
-          label: l10n.searchCravingFastFood,
-          icon: Icons.lunch_dining,
-          color: AppColors.cravingGreen,
+        _SearchGroup(
+          title: l10n.serviceCategoryDairy,
+          largeItems: [fathallah],
+          items: [fathallah, captain, familyMarket, fathallah, captain],
         ),
-        _CravingItem(
-          label: l10n.searchCravingBakery,
-          icon: Icons.bakery_dining,
-          color: AppColors.cravingBakery,
+        _SearchGroup(
+          title: l10n.serviceCategoryFruitsVegetables,
+          largeItems: [captain, fathallah],
+          items: [captain, fathallah, captain, fathallah, familyMarket],
         ),
-        _CravingItem(
-          label: l10n.searchCravingDesserts,
-          icon: Icons.cake,
-          color: AppColors.cravingDessert,
+        _SearchGroup(
+          title: l10n.serviceCategoryRoasters,
+          items: [fathallah, captain, fathallah, captain, captainMarket],
+        ),
+        _SearchGroup(
+          title: l10n.serviceCategoryPerfumeBeauty,
+          items: [beauty, flowers, beauty, flowers, beauty],
+        ),
+        _SearchGroup(
+          title: l10n.serviceCategoryFlowers,
+          items: [flowers, beauty, rimasLand, flowers, beauty],
         ),
       ],
-      recentSearches: [
-        l10n.searchRecentJuice,
-        l10n.searchRecentPepsi,
-        l10n.searchRecentNuts,
-        l10n.searchRecentFalafel,
-      ],
-      topStores: [
-        _TopStore(
-          name: l10n.serviceStoreCaptain,
-          deliveryTime: l10n.serviceDeliveryTimeRange,
-          imageAsset: AppAssets.favoriteRestaurantAzAlSham,
-        ),
-        _TopStore(
-          name: l10n.serviceStoreFathallah,
-          deliveryTime: l10n.serviceDeliveryTimeRange,
-          imageAsset: AppAssets.orderRestaurantAvatar,
-        ),
-      ],
-      mostSearched: [
-        l10n.searchMostSearchedAzAlSham,
-        l10n.searchMostSearchedGawdat,
-        l10n.searchMostSearchedTeaBun,
-        l10n.searchMostSearchedElBashawat,
+      mostSearchedTokens: [
+        l10n.searchMostSearchedDesserts,
+        l10n.searchMostSearchedFalafel,
+        l10n.searchMostSearchedPizza,
+        l10n.searchMostSearchedNuts,
+        l10n.searchMostSearchedPepsi,
+        l10n.searchMostSearchedJuice,
+        l10n.searchMostSearchedCheese,
       ],
       allResults: [
         _SearchResult(
@@ -854,44 +1198,6 @@ class _SearchCopy {
       ],
     );
   }
-}
-
-class _SearchFilter {
-  const _SearchFilter({
-    required this.label,
-    required this.icon,
-    required this.color,
-    this.selected = false,
-  });
-
-  final String label;
-  final IconData icon;
-  final Color color;
-  final bool selected;
-}
-
-class _CravingItem {
-  const _CravingItem({
-    required this.label,
-    required this.icon,
-    required this.color,
-  });
-
-  final String label;
-  final IconData icon;
-  final Color color;
-}
-
-class _TopStore {
-  const _TopStore({
-    required this.name,
-    required this.deliveryTime,
-    required this.imageAsset,
-  });
-
-  final String name;
-  final String deliveryTime;
-  final String imageAsset;
 }
 
 class _SearchResult {

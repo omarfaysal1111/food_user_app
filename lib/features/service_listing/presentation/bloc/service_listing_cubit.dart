@@ -11,7 +11,7 @@ class ServiceListingCubit extends Cubit<ServiceListingState> {
     emit(
       state.copyWith(
         selectedCategory: category,
-        clearSelectedCategory: state.selectedCategory == category,
+        clearSelectedCategory: state.selectedCategory?.label == category.label,
       ),
     );
   }

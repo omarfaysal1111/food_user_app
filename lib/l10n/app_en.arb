@@ -482,5 +482,13 @@
   "authErrorUnknown": "Something went wrong",
   "authErrorRequestFailed": "Request failed",
   "authErrorInvalidResponse": "Invalid response",
-  "authErrorMissingAccessToken": "Verification succeeded but no access token was returned"
+  "authErrorMissingAccessToken": "Verification succeeded but no access token was returned",
+  "searchChangeLocation": "Change location",
+  "searchMostSearchedDesserts": "Desserts",
+  "searchMostSearchedFalafel": "Falafel",
+  "searchMostSearchedPizza": "Pizza",
+  "searchMostSearchedNuts": "Nuts",
+  "searchMostSearchedPepsi": "Pepsi",
+  "searchMostSearchedJuice": "Juice",
+  "searchMostSearchedCheese": "Cheese"
 }

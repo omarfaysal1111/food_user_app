@@ -2785,6 +2785,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Verification succeeded but no access token was returned'**
   String get authErrorMissingAccessToken;
+
+  /// No description provided for @searchChangeLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Change location'**
+  String get searchChangeLocation;
+
+  /// No description provided for @searchMostSearchedDesserts.
+  ///
+  /// In en, this message translates to:
+  /// **'Desserts'**
+  String get searchMostSearchedDesserts;
+
+  /// No description provided for @searchMostSearchedFalafel.
+  ///
+  /// In en, this message translates to:
+  /// **'Falafel'**
+  String get searchMostSearchedFalafel;
+
+  /// No description provided for @searchMostSearchedPizza.
+  ///
+  /// In en, this message translates to:
+  /// **'Pizza'**
+  String get searchMostSearchedPizza;
+
+  /// No description provided for @searchMostSearchedNuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Nuts'**
+  String get searchMostSearchedNuts;
+
+  /// No description provided for @searchMostSearchedPepsi.
+  ///
+  /// In en, this message translates to:
+  /// **'Pepsi'**
+  String get searchMostSearchedPepsi;
+
+  /// No description provided for @searchMostSearchedJuice.
+  ///
+  /// In en, this message translates to:
+  /// **'Juice'**
+  String get searchMostSearchedJuice;
+
+  /// No description provided for @searchMostSearchedCheese.
+  ///
+  /// In en, this message translates to:
+  /// **'Cheese'**
+  String get searchMostSearchedCheese;
 }
 
 class _AppLocalizationsDelegate
