@@ -15,6 +15,23 @@ import 'package:food_user_app/features/restaurant/data/mock/restaurant_mock_data
 import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
+// ── Layout constants ───────────────────────────────────────────────────────────────
+/// Height of the restaurant hero background section.
+const double _kHeroHeight = 180.0;
+
+/// Y-offset within the scrolling block at which the info card appears.
+/// Card overlaps the hero by `_kHeroHeight - _kInfoCardTopOffset = 52 px`.
+const double _kInfoCardTopOffset = 128.0;
+
+/// Total content height of the collapsing header (hero + card).
+/// card bottom = _kInfoCardTopOffset + 96.0 (dynamic card height) = 224.
+const double _kHeaderContentHeight = 224.0;
+
+/// Height of the sticky _MenuTabs bar.
+const double _kTabBarHeight = 34.0;
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 class RestaurantDetailScreen extends StatefulWidget {
   const RestaurantDetailScreen({
     this.restaurantId = 'az-al-sham',
@@ -61,49 +78,69 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
     final locale = Localizations.localeOf(context);
     final copy = _RestaurantDetailCopy.of(context);
     final restaurant = widget.restaurant?.toRestaurant() ?? mockRestaurant;
+    final topPadding = MediaQuery.paddingOf(context).top;
+
+    // minExtent: only the pinned AppBar row (safe area + toolbar height).
+    final minExtent = topPadding + kToolbarHeight;
+
+    // maxExtent: pinned AppBar row + hero + info card area.
+    final maxExtent = _kHeaderContentHeight;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
-          SliverToBoxAdapter(
-            child: _RestaurantTopSection(
-              hero: _RestaurantHero(
-                title: restaurant.name(locale),
-                restaurantId: restaurant.id,
-                isFavorite: _isFavorite,
-                onFavoriteTap: () => setState(() => _isFavorite = !_isFavorite),
-              ),
+          // ── 1. Collapsing hero + info-card header ──────────────────────────
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: _RestaurantHeaderDelegate(
+              minExtent: minExtent,
+              maxExtent: maxExtent,
+              hero: const _RestaurantHero(),
               infoCard: _RestaurantInfoCard(
                 restaurant: restaurant,
                 locale: locale,
                 copy: copy,
               ),
+              restaurantName: restaurant.name(locale),
+              restaurantId: restaurant.id,
+              isFavorite: _isFavorite,
+              onFavoriteTap: () => setState(() => _isFavorite = !_isFavorite),
             ),
           ),
+
+          // ── 2. Scrolling coupon strip ──────────────────────────────────────
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(vertical: 21),
+            sliver: SliverToBoxAdapter(child: _CouponStrip(copy: copy)),
+          ),
+
+          // ── 3. Sticky category tabs ────────────────────────────────────────
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: _MenuTabsDelegate(
+              minExtent: _kTabBarHeight,
+              maxExtent: _kTabBarHeight,
+              categories: restaurant.categories(locale),
+              selectedIndex: _selectedCategoryIndex,
+              onTap: _scrollToCategory,
+            ),
+          ),
+
+          // ── 4. Menu sections ───────────────────────────────────────────────
           SliverPadding(
             padding: const EdgeInsetsDirectional.fromSTEB(
               AppSpacing.md,
-              8,
+              20,
               AppSpacing.md,
-              24,
+              40,
             ),
-            sliver: SliverList.list(
-              children: [
-                _CouponStrip(copy: copy),
-                const SizedBox(height: 18),
-                _MenuTabs(
-                  categories: restaurant.categories(locale),
-                  selectedIndex: _selectedCategoryIndex,
-                  onTap: _scrollToCategory,
-                ),
-                const SizedBox(height: 20),
-                _MenuSections(
-                  sections: restaurant.menuSections,
-                  sectionKeys: _sectionKeys,
-                ),
-              ],
+            sliver: SliverToBoxAdapter(
+              child: _MenuSections(
+                sections: restaurant.menuSections,
+                sectionKeys: _sectionKeys,
+              ),
             ),
           ),
         ],
@@ -114,17 +151,21 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   Future<void> _scrollToCategory(int categoryIndex) async {
     setState(() => _selectedCategoryIndex = categoryIndex);
 
-    final sectionIndex = categoryIndex;
-    final sectionContext = _sectionKeys[sectionIndex].currentContext;
+    final sectionContext = _sectionKeys[categoryIndex].currentContext;
     if (sectionContext == null) return;
 
     final renderObject = sectionContext.findRenderObject();
     if (renderObject is! RenderBox || !_scrollController.hasClients) return;
 
     final sectionTop = renderObject.localToGlobal(Offset.zero).dy;
-    final topInset = MediaQuery.paddingOf(context).top + 16;
-    final targetOffset = (_scrollController.offset + sectionTop - topInset)
-        .clamp(
+
+    // Account for the pinned AppBar height + sticky tab bar height + 16px gap
+    // so the section header is not hidden or touching the pinned headers.
+    final topPadding = MediaQuery.paddingOf(context).top;
+    final stickyHeadersHeight =
+        topPadding + kToolbarHeight + _kTabBarHeight + 16.0;
+    final targetOffset =
+        (_scrollController.offset + sectionTop - stickyHeadersHeight).clamp(
           _scrollController.position.minScrollExtent,
           _scrollController.position.maxScrollExtent,
         );
@@ -143,7 +184,11 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   void _updateSelectedSectionFromScroll() {
     if (_isProgrammaticScroll || !_scrollController.hasClients) return;
 
-    const detectionOffset = 120.0;
+    // Detection threshold: top of viewport + pinned headers height + a small
+    // offset so the "next" section only activates once it's clearly visible.
+    final topPadding = MediaQuery.paddingOf(context).top;
+    final detectionOffset = topPadding + kToolbarHeight + _kTabBarHeight + 16.0;
+
     var activeSectionIndex = 0;
 
     for (var i = 0; i < _sectionKeys.length; i++) {
@@ -159,58 +204,93 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
       }
     }
 
-    final nextCategoryIndex = activeSectionIndex;
-    if (nextCategoryIndex != _selectedCategoryIndex) {
-      setState(() => _selectedCategoryIndex = nextCategoryIndex);
+    if (activeSectionIndex != _selectedCategoryIndex) {
+      setState(() => _selectedCategoryIndex = activeSectionIndex);
     }
   }
 }
 
-class _RestaurantTopSection extends StatelessWidget {
-  const _RestaurantTopSection({required this.hero, required this.infoCard});
+// ── Collapsing header delegate ────────────────────────────────────────────────
 
-  final Widget hero;
-  final Widget infoCard;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 244,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned.fill(bottom: 64, child: hero),
-          PositionedDirectional(top: 128, start: 16, end: 16, child: infoCard),
-        ],
-      ),
-    );
-  }
-}
-
-class _RestaurantHero extends StatelessWidget {
-  const _RestaurantHero({
-    required this.title,
+/// [SliverPersistentHeaderDelegate] that achieves a Talabat-style parallax
+/// scroll. There are two layers rendered in a [Stack]:
+///
+/// **Layer 1 — scrolling background:** The [hero] and [infoCard] sit inside a
+/// [Positioned] whose `top` is driven by `-shrinkOffset`. This makes the entire
+/// block scroll upward at exactly the same speed as the user's finger, giving a
+/// natural "content scrolls behind a window" feel. The card is never faded —
+/// it simply clips behind the pinned AppBar.
+///
+/// **Layer 2 — pinned AppBar:** A [Positioned] locked to `top: 0`. It holds
+/// the Back / Search / Favorite action buttons (always visible) plus the
+/// restaurant title that fades in once the card has scrolled away. The
+/// background of this row fades from transparent to [AppColors.primary].
+class _RestaurantHeaderDelegate extends SliverPersistentHeaderDelegate {
+  const _RestaurantHeaderDelegate({
+    required this.minExtent,
+    required this.maxExtent,
+    required this.hero,
+    required this.infoCard,
+    required this.restaurantName,
     required this.restaurantId,
     required this.isFavorite,
     required this.onFavoriteTap,
   });
 
-  final String title;
+  @override
+  final double minExtent;
+  @override
+  final double maxExtent;
+
+  final Widget hero;
+  final Widget infoCard;
+  final String restaurantName;
   final String restaurantId;
   final bool isFavorite;
   final VoidCallback onFavoriteTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    final shrinkFraction = (shrinkOffset / (maxExtent - minExtent)).clamp(
+      0.0,
+      1.0,
+    );
+
+    // AppBar background + title only appear in the last 15 % of the collapse,
+    // so the transition feels snappy and reveals only after the card is gone.
+    final appBarOpacity = shrinkFraction > 0.85
+        ? ((shrinkFraction - 0.85) / 0.15).clamp(0.0, 1.0)
+        : 0.0;
+
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final actions = Row(
+    final topPadding = MediaQuery.paddingOf(context).top;
+    final isScrolled = shrinkFraction > 0.85;
+
+    // ── Action buttons (always visible in the pinned AppBar row) ─────────────
+    final backButton = _GlassIconButton(
+      assetName: AppAssets.restaurantHeaderBackIcon,
+      mirrorAsset: !isArabic,
+      size: 28,
+      iconWidth: 9,
+      iconHeight: 16,
+      isScrolled: isScrolled,
+      onTap: () => Navigator.of(context).pop(),
+    );
+
+    final actionButtons = Row(
       textDirection: TextDirection.ltr,
+      mainAxisSize: MainAxisSize.min,
       children: isArabic
           ? [
               _GlassIconButton(
                 assetName: AppAssets.restaurantSearchIcon,
                 iconWidth: 24,
                 iconHeight: 24,
+                isScrolled: isScrolled,
                 onTap: () =>
                     context.push(RouteNames.restaurantSearchFor(restaurantId)),
               ),
@@ -221,6 +301,7 @@ class _RestaurantHero extends StatelessWidget {
                     : AppAssets.restaurantFavoriteIcon,
                 iconWidth: 24,
                 iconHeight: 24,
+                isScrolled: isScrolled,
                 onTap: onFavoriteTap,
               ),
             ]
@@ -231,6 +312,7 @@ class _RestaurantHero extends StatelessWidget {
                     : AppAssets.restaurantFavoriteIcon,
                 iconWidth: 24,
                 iconHeight: 24,
+                isScrolled: isScrolled,
                 onTap: onFavoriteTap,
               ),
               const SizedBox(width: 12),
@@ -238,74 +320,202 @@ class _RestaurantHero extends StatelessWidget {
                 assetName: AppAssets.restaurantSearchIcon,
                 iconWidth: 24,
                 iconHeight: 24,
+                isScrolled: isScrolled,
                 onTap: () =>
                     context.push(RouteNames.restaurantSearchFor(restaurantId)),
               ),
             ],
     );
-    final titleText = Text(
-      title,
-      style: AppTextStyles.heading4(
-        context,
-      ).copyWith(color: AppColors.text, fontSize: 16, height: 1.4),
-    );
-    final heroBackButton = _GlassIconButton(
-      assetName: AppAssets.restaurantHeaderBackIcon,
-      mirrorAsset: !isArabic,
-      size: 28,
-      iconWidth: 9,
-      iconHeight: 16,
-      onTap: () => context.pop(),
-    );
-    final titleAction = Row(
-      textDirection: TextDirection.ltr,
-      children: isArabic
-          ? [titleText, const SizedBox(width: AppSpacing.xs), heroBackButton]
-          : [heroBackButton, const SizedBox(width: AppSpacing.xs), titleText],
-    );
-    return SizedBox(
-      height: 180,
+
+    // 4 px fixed gap between back button and title start (SizedBox(width: 4)).
+    // A Spacer after the title pushes action buttons to the trailing edge.
+    Widget buildTitle({required bool alignEnd}) {
+      return Opacity(
+        opacity: appBarOpacity,
+        child: Text(
+          restaurantName,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: alignEnd ? TextAlign.end : TextAlign.start,
+          style: AppTextStyles.heading4(context).copyWith(
+            color: AppColors.onSurface(context),
+            fontSize: 16,
+            height: 1.4,
+          ),
+        ),
+      );
+    }
+
+    return ClipRect(
       child: Stack(
-        fit: StackFit.expand,
         children: [
-          Container(color: AppColors.primary),
-          const Positioned(
+          // ── Layer 1: scrolling hero + info-card block ───────────────────────
+          // By offsetting top by -shrinkOffset, content scrolls with the finger.
+          // Height = maxExtent (topPadding + 244). The inner content is pushed
+          // down by topPadding so the card bottom lands at exactly maxExtent,
+          // which is the boundary where the next sliver starts. This eliminates
+          // the ghost gap that appeared when height was only 244 px.
+          Positioned(
+            top: -shrinkOffset,
             left: 0,
-            bottom: -20,
-            child: AppRasterImage.asset(
-              AppAssets.restaurantHeroFries,
-              width: 171,
-              height: 162,
-              fit: BoxFit.contain,
+            right: 0,
+            height: maxExtent,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // Hero background: starts at absolute top (0) and is exactly 180 px tall.
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: _kHeroHeight,
+                  child: hero,
+                ),
+                // Info card: starts at exactly 128 px from top of the block.
+                PositionedDirectional(
+                  top: _kInfoCardTopOffset,
+                  start: AppSpacing.md,
+                  end: AppSpacing.md,
+                  child: infoCard,
+                ),
+              ],
             ),
           ),
-          const Positioned(
-            right: -14,
-            bottom: -12,
-            child: AppRasterImage.asset(
-              AppAssets.restaurantHeroBurger,
-              width: 176,
-              height: 120,
-              fit: BoxFit.contain,
-            ),
-          ),
-          Container(color: AppColors.black.withValues(alpha: 0.2)),
-          SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 18, 16, 0),
+
+          // ── Layer 2: pinned AppBar row ──────────────────────────────────────
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: minExtent,
+            child: Container(
+              // Background fades from transparent → solid AppColors.primary.
+              color: AppColors.scaffoldBackground(
+                context,
+              ).withValues(alpha: appBarOpacity),
+              padding: EdgeInsetsDirectional.fromSTEB(
+                16,
+                topPadding + 10,
+                16,
+                10,
+              ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 textDirection: TextDirection.ltr,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: isArabic
-                    ? [actions, titleAction]
-                    : [titleAction, actions],
+                    ? [
+                        // Arabic: [actions] [spacer] [title] [4px] [back]
+                        actionButtons,
+                        const Spacer(),
+                        buildTitle(alignEnd: true),
+                        const SizedBox(width: 4),
+                        backButton,
+                      ]
+                    : [
+                        // LTR: [back] [4px] [title] [spacer] [actions]
+                        backButton,
+                        const SizedBox(width: 4),
+                        buildTitle(alignEnd: false),
+                        const Spacer(),
+                        actionButtons,
+                      ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _RestaurantHeaderDelegate oldDelegate) =>
+      oldDelegate.minExtent != minExtent ||
+      oldDelegate.maxExtent != maxExtent ||
+      oldDelegate.restaurantName != restaurantName ||
+      oldDelegate.isFavorite != isFavorite;
+}
+
+// ── Sticky category tabs delegate ─────────────────────────────────────────────
+
+/// [SliverPersistentHeaderDelegate] that keeps [_MenuTabs] pinned below the
+/// collapsing hero header once the coupon strip has scrolled out of view.
+class _MenuTabsDelegate extends SliverPersistentHeaderDelegate {
+  const _MenuTabsDelegate({
+    required this.minExtent,
+    required this.maxExtent,
+    required this.categories,
+    required this.selectedIndex,
+    required this.onTap,
+  });
+
+  @override
+  final double minExtent;
+  @override
+  final double maxExtent;
+
+  final List<String> categories;
+  final int selectedIndex;
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return ColoredBox(
+      color: AppColors.scaffoldBackground(context),
+      child: _MenuTabs(
+        categories: categories,
+        selectedIndex: selectedIndex,
+        onTap: onTap,
+      ),
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _MenuTabsDelegate oldDelegate) =>
+      oldDelegate.selectedIndex != selectedIndex ||
+      oldDelegate.categories != categories;
+}
+
+// ── Sub-widgets ───────────────────────────────────────────────────────────────
+
+/// Pure visual background for the hero section.
+/// Contains ONLY the red background, decorative food images, and dark overlay.
+/// All interactive buttons live in [_RestaurantHeaderDelegate]'s pinned AppBar
+/// layer so they remain always accessible regardless of scroll position.
+class _RestaurantHero extends StatelessWidget {
+  const _RestaurantHero();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Container(color: AppColors.primary),
+        const Positioned(
+          left: 0,
+          bottom: -20,
+          child: AppRasterImage.asset(
+            AppAssets.restaurantHeroFries,
+            width: 171,
+            height: 162,
+            fit: BoxFit.contain,
+          ),
+        ),
+        const Positioned(
+          right: -14,
+          bottom: -12,
+          child: AppRasterImage.asset(
+            AppAssets.restaurantHeroBurger,
+            width: 176,
+            height: 120,
+            fit: BoxFit.contain,
+          ),
+        ),
+        Container(color: AppColors.black.withValues(alpha: 0.2)),
+      ],
     );
   }
 }
@@ -618,6 +828,7 @@ class _GlassIconButton extends StatelessWidget {
     this.size = 32,
     this.iconWidth,
     this.iconHeight,
+    this.isScrolled = false,
   });
 
   final String assetName;
@@ -627,20 +838,44 @@ class _GlassIconButton extends StatelessWidget {
   final double? iconWidth;
   final double? iconHeight;
 
+  /// When [true], the button has scrolled behind the solid AppBar.
+  /// Renders a flat transparent container with a theme-aware icon color
+  /// instead of the glass blur effect.
+  final bool isScrolled;
+
   @override
   Widget build(BuildContext context) {
-    return LiquidGlassButton(
-      onTap: onTap,
-      size: size,
-      child: Transform.scale(
-        scaleX: mirrorAsset ? -1 : 1,
-        child: AppRasterImage.asset(
-          assetName,
-          width: iconWidth,
-          height: iconHeight,
-        ),
+    final icon = Transform.scale(
+      scaleX: mirrorAsset ? -1 : 1,
+      child: AppRasterImage.asset(
+        assetName,
+        width: iconWidth,
+        height: iconHeight,
+        // In scrolled state the icon sits on a solid primary background,
+        // so we use AppColors.text (white) to keep it visible.
+        // In un-scrolled state the glass button already tints correctly.
+        color: isScrolled ? AppColors.onSurface(context) : null,
       ),
     );
+
+    if (isScrolled) {
+      return GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: size,
+          height: size,
+          decoration: ShapeDecoration(
+            color: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: Center(child: icon),
+        ),
+      );
+    }
+
+    return LiquidGlassButton(onTap: onTap, size: size, child: icon);
   }
 }
 
@@ -660,6 +895,7 @@ class _CouponStrip extends StatelessWidget {
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           reverse: isArabic,
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           itemCount: 2,
           separatorBuilder: (_, _) => const SizedBox(width: 12),
           itemBuilder: (context, index) => _CouponCard(copy: copy),
@@ -768,7 +1004,7 @@ class _MenuTabs extends StatelessWidget {
     final orderedCategories = indexedCategories;
 
     return Container(
-      height: 34,
+      height: _kTabBarHeight,
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: AppColors.border(context), width: 0.5),
@@ -779,7 +1015,7 @@ class _MenuTabs extends StatelessWidget {
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           reverse: isArabic,
-          padding: EdgeInsets.zero,
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           itemCount: orderedCategories.length,
           separatorBuilder: (_, _) => const SizedBox(width: 12),
           itemBuilder: (context, itemIndex) {
