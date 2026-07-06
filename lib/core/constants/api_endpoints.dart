@@ -50,6 +50,22 @@ class ApiEndpoints {
   static String userAddress(String id) => '$userAddresses/$id';
   static String userAddressDefault(String id) => '$userAddresses/$id/default';
 
+  // ── User Profile & Settings ───────────────────────────────────────────────
+  static const String userProfile = '/user/profile';
+  static const String userSettings = '/user/settings';
+  static const String user = '/user';
+
+  // ── Banners & Search ──────────────────────────────────────────────────────
+  static const String banners = '/banners';
+  static const String search = '/search';
+  static const String searchHistory = '/search/history';
+
+  // ── Restaurants ───────────────────────────────────────────────────────────
+  static const String restaurants = '/restaurants';
+  static String restaurantDetails(String id) => '$restaurants/$id';
+  static String restaurantBranches(String id) => '$restaurants/$id/branches';
+  static String restaurantOffers(String id) => '$restaurants/$id/offers';
+
   /// Public auth endpoints that must NOT receive an Authorization header.
   /// `/auth/set-password` is intentionally NOT listed here.
   // Note: [registerV2] shares the same path string as [register]

@@ -11,6 +11,13 @@ import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/app_language_picker_modal.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_state.dart';
+import 'package:food_user_app/features/user/data/models/update_user_settings_request.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -20,8 +27,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _notificationsEnabled = true;
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -34,68 +39,117 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ThemeMode.system => Theme.of(context).brightness == Brightness.dark,
     };
 
-    return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground(context),
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            _SettingsHeader(title: l10n.generalSettingsTitle),
-            const SizedBox(height: 28),
-            Padding(
-              padding: const EdgeInsetsDirectional.symmetric(
-                horizontal: AppSpacing.md,
-              ),
-              child: Column(
-                children: [
-                  _SettingsRow(
-                    iconAsset: AppAssets.generalSettingsLanguage,
-                    title: l10n.changeAppLanguage,
-                    trailing: _LanguageTrailing(
-                      label: locale.languageCode == 'ar'
-                          ? l10n.arabicLanguage
-                          : l10n.englishLanguage,
-                    ),
-                    onTap: () => showAppLanguagePicker(context),
-                  ),
-                  _SettingsDivider(),
-                  _SettingsRow(
-                    iconAsset: AppAssets.generalSettingsNotifications,
-                    title: l10n.notificationsControl,
-                    trailing: _NotificationSwitch(
-                      value: _notificationsEnabled,
-                      onChanged: (value) {
-                        // TODO: Connect to real notification preference/API.
-                        setState(() => _notificationsEnabled = value);
-                      },
-                    ),
-                  ),
-                  _SettingsDivider(),
-                  _SettingsRow(
-                    iconAsset: AppAssets.generalSettingsDarkMode,
-                    title: l10n.darkMode,
-                    trailing: _DarkModeSwitch(
-                      value: isDark,
-                      onChanged: (value) {
-                        themeController.setThemeMode(
-                          value ? ThemeMode.dark : ThemeMode.light,
-                        );
-                      },
-                    ),
-                  ),
-                  _SettingsDivider(),
-                  _SettingsRow(
-                    iconAsset: AppAssets.generalSettingsDeleteAccount,
-                    title: l10n.deleteAccount,
-                    titleColor: AppColors.error,
-                    onTap: () => _showDeleteAccountDialog(context),
-                  ),
-                ],
+    return BlocConsumer<ProfileBloc, ProfileState>(
+      listener: (context, state) {
+        if (state.deleteAccountSuccess) {
+          context.read<AuthBloc>().add(const LogoutRequested());
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'تم حذف الحساب بنجاح',
+                style: AppTextStyles.snackBarMessage(context),
               ),
             ),
-          ],
-        ),
-      ),
+          );
+        }
+        if (state.errorMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                state.errorMessage!,
+                style: AppTextStyles.snackBarMessage(context),
+              ),
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        final notificationsEnabled = state.settings?.pushNotifications ?? true;
+
+        return Scaffold(
+          backgroundColor: AppColors.scaffoldBackground(context),
+          body: SafeArea(
+            bottom: false,
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    _SettingsHeader(title: l10n.generalSettingsTitle),
+                    const SizedBox(height: 28),
+                    Padding(
+                      padding: const EdgeInsetsDirectional.symmetric(
+                        horizontal: AppSpacing.md,
+                      ),
+                      child: Column(
+                        children: [
+                          _SettingsRow(
+                            iconAsset: AppAssets.generalSettingsLanguage,
+                            title: l10n.changeAppLanguage,
+                            trailing: _LanguageTrailing(
+                              label: locale.languageCode == 'ar'
+                                  ? l10n.arabicLanguage
+                                  : l10n.englishLanguage,
+                            ),
+                            onTap: () => showAppLanguagePicker(context),
+                          ),
+                          _SettingsDivider(),
+                          _SettingsRow(
+                            iconAsset: AppAssets.generalSettingsNotifications,
+                            title: l10n.notificationsControl,
+                            trailing: _NotificationSwitch(
+                              value: notificationsEnabled,
+                              onChanged: (value) {
+                                context.read<ProfileBloc>().add(
+                                      UpdateSettingsEvent(
+                                        UpdateUserSettingsRequest(
+                                          pushNotifications: value,
+                                          smsNotifications: value,
+                                          emailNotifications: value,
+                                        ),
+                                      ),
+                                    );
+                              },
+                            ),
+                          ),
+                          _SettingsDivider(),
+                          _SettingsRow(
+                            iconAsset: AppAssets.generalSettingsDarkMode,
+                            title: l10n.darkMode,
+                            trailing: _DarkModeSwitch(
+                              value: isDark,
+                              onChanged: (value) {
+                                themeController.setThemeMode(
+                                  value ? ThemeMode.dark : ThemeMode.light,
+                                );
+                              },
+                            ),
+                          ),
+                          _SettingsDivider(),
+                          _SettingsRow(
+                            iconAsset: AppAssets.generalSettingsDeleteAccount,
+                            title: l10n.deleteAccount,
+                            titleColor: AppColors.error,
+                            onTap: () => _showDeleteAccountDialog(context),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                if (state.isLoading)
+                  const Positioned.fill(
+                    child: ColoredBox(
+                      color: Colors.black26,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -113,13 +167,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Text(l10n.cancel),
           ),
           TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l10n.confirm),
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              context.read<ProfileBloc>().add(const DeleteAccountEvent());
+            },
+            child: Text(
+              l10n.confirm,
+              style: const TextStyle(color: AppColors.error),
+            ),
           ),
         ],
       ),
     );
-    // TODO: Replace this design-only dialog with the real delete account flow.
   }
 }
 

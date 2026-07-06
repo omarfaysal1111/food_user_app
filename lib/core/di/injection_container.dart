@@ -25,9 +25,30 @@ import 'package:food_user_app/features/auth/domain/usecases/send_phone_otp_useca
 import 'package:food_user_app/features/auth/domain/usecases/verify_phone_otp_usecase.dart';
 import 'package:food_user_app/features/auth/domain/usecases/complete_registration_usecase.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:food_user_app/features/profile/data/datasources/saved_addresses_remote_data_source.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:food_user_app/features/profile/data/repositories/saved_addresses_repository_impl.dart';
 import 'package:food_user_app/features/profile/domain/repositories/saved_addresses_repository.dart';
+import 'package:food_user_app/features/user/data/datasources/user_remote_data_source.dart';
+import 'package:food_user_app/features/user/data/repositories/user_repository_impl.dart';
+import 'package:food_user_app/features/user/domain/repositories/user_repository.dart';
+import 'package:food_user_app/features/address/data/datasources/address_remote_data_source.dart';
+import 'package:food_user_app/features/address/data/repositories/address_repository_impl.dart';
+import 'package:food_user_app/features/address/domain/repositories/address_repository.dart';
+import 'package:food_user_app/features/home/data/datasources/banner_remote_data_source.dart';
+import 'package:food_user_app/features/home/data/repositories/banner_repository_impl.dart';
+import 'package:food_user_app/features/home/domain/repositories/banner_repository.dart';
+import 'package:food_user_app/features/home/presentation/cubit/banner_cubit.dart';
+import 'package:food_user_app/features/search/data/datasources/search_remote_data_source.dart';
+import 'package:food_user_app/features/search/data/repositories/search_repository_impl.dart';
+import 'package:food_user_app/features/search/domain/repositories/search_repository.dart';
+import 'package:food_user_app/features/search/presentation/cubit/search_cubit.dart';
+import 'package:food_user_app/features/restaurant/data/datasources/restaurant_remote_data_source.dart';
+import 'package:food_user_app/features/restaurant/data/repositories/restaurant_repository_impl.dart';
+import 'package:food_user_app/features/restaurant/domain/repositories/restaurant_repository.dart';
+import 'package:food_user_app/features/restaurant/domain/usecases/get_restaurants_by_category_usecase.dart';
+import 'package:food_user_app/features/restaurant/domain/usecases/get_restaurant_detail_usecase.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_list_cubit.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -126,16 +147,79 @@ Future<void> init({SharedPreferences? prefs}) async {
     ),
   );
 
+  sl.registerFactory<ProfileBloc>(
+    () => ProfileBloc(userRepository: sl<UserRepository>()),
+  );
+
   // ── Saved addresses ───────────────────────────────────────────────────────
-  sl.registerLazySingleton<SavedAddressesRemoteDataSource>(
-    () => SavedAddressesRemoteDataSourceImpl(
-      dio: sl<DioClient>().dio,
-      tokenStorage: sl<TokenStorage>(),
-    ),
+  sl.registerLazySingleton<AddressRemoteDataSource>(
+    () => AddressRemoteDataSourceImpl(dio: sl<DioClient>().dio),
+  );
+  sl.registerLazySingleton<AddressRepository>(
+    () => AddressRepositoryImpl(remoteDataSource: sl<AddressRemoteDataSource>()),
   );
   sl.registerLazySingleton<SavedAddressesRepository>(
     () => SavedAddressesRepositoryImpl(
-      remoteDataSource: sl<SavedAddressesRemoteDataSource>(),
+      addressRepository: sl<AddressRepository>(),
+    ),
+  );
+
+  // ── User Profile & Settings ────────────────────────────────────────────────
+  sl.registerLazySingleton<UserRemoteDataSource>(
+    () => UserRemoteDataSourceImpl(dio: sl<DioClient>().dio),
+  );
+  sl.registerLazySingleton<UserRepository>(
+    () => UserRepositoryImpl(remoteDataSource: sl<UserRemoteDataSource>()),
+  );
+
+  // ── Banners & Search ───────────────────────────────────────────────────────
+  sl.registerLazySingleton<BannerRemoteDataSource>(
+    () => BannerRemoteDataSourceImpl(dio: sl<DioClient>().dio),
+  );
+  sl.registerLazySingleton<BannerRepository>(
+    () => BannerRepositoryImpl(remoteDataSource: sl<BannerRemoteDataSource>()),
+  );
+  sl.registerFactory<BannerCubit>(
+    () => BannerCubit(bannerRepository: sl<BannerRepository>()),
+  );
+
+  sl.registerLazySingleton<SearchRemoteDataSource>(
+    () => SearchRemoteDataSourceImpl(dio: sl<DioClient>().dio),
+  );
+  sl.registerLazySingleton<SearchRepository>(
+    () => SearchRepositoryImpl(remoteDataSource: sl<SearchRemoteDataSource>()),
+  );
+  sl.registerFactory<SearchCubit>(
+    () => SearchCubit(searchRepository: sl<SearchRepository>()),
+  );
+
+  // ── Restaurants ────────────────────────────────────────────────────────────
+  sl.registerLazySingleton<RestaurantRemoteDataSource>(
+    () => RestaurantRemoteDataSourceImpl(dio: sl<DioClient>().dio),
+  );
+  sl.registerLazySingleton<RestaurantRepository>(
+    () => RestaurantRepositoryImpl(
+      remoteDataSource: sl<RestaurantRemoteDataSource>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetRestaurantsByCategoryUseCase(
+      repository: sl<RestaurantRepository>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetRestaurantDetailUseCase(
+      repository: sl<RestaurantRepository>(),
+    ),
+  );
+  sl.registerFactory<RestaurantListCubit>(
+    () => RestaurantListCubit(
+      restaurantRepository: sl<RestaurantRepository>(),
+    ),
+  );
+  sl.registerFactory<RestaurantDetailCubit>(
+    () => RestaurantDetailCubit(
+      restaurantRepository: sl<RestaurantRepository>(),
     ),
   );
 }

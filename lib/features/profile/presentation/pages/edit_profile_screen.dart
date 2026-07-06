@@ -7,8 +7,13 @@ import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
-import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_state.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/features/user/data/models/update_user_profile_request.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -22,23 +27,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController _emailController;
   late final TextEditingController _phoneController;
 
-  String _savedName = '';
   bool _didSetInitialProfileData = false;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController();
-    _emailController = TextEditingController(text: 'afarag74@gmail.com');
-    _phoneController = TextEditingController(text: '01004059966');
+    _emailController = TextEditingController();
+    _phoneController = TextEditingController();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_didSetInitialProfileData) return;
-    _savedName = AppLocalizations.of(context)!.accountPlaceholderName;
-    _nameController.text = _savedName;
+    final profile = context.read<ProfileBloc>().state.profile;
+    if (profile != null) {
+      _nameController.text = profile.fullName.isNotEmpty
+          ? profile.fullName
+          : '${profile.firstName} ${profile.lastName}';
+      _emailController.text = profile.email;
+      _phoneController.text = profile.phone;
+    } else {
+      _nameController.text = AppLocalizations.of(context)!.accountPlaceholderName;
+    }
     _didSetInitialProfileData = true;
   }
 
@@ -52,18 +64,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   void _saveProfile() {
     FocusManager.instance.primaryFocus?.unfocus();
-    setState(() => _savedName = _nameController.text.trim());
+    final fullName = _nameController.text.trim();
+    final parts = fullName.split(' ');
+    final firstName = parts.isNotEmpty ? parts.first : '';
+    final lastName = parts.length > 1 ? parts.sublist(1).join(' ') : '';
 
-    // TODO: Replace local profile update with the real update profile API.
-    final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          l10n.profileUpdatedDesignOnly,
-          style: AppTextStyles.snackBarMessage(context),
-        ),
-      ),
-    );
+    context.read<ProfileBloc>().add(
+          UpdateProfileEvent(
+            UpdateUserProfileRequest(
+              firstName: firstName,
+              lastName: lastName,
+            ),
+          ),
+        );
   }
 
   @override
@@ -72,57 +85,107 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _ProfileHeader(title: l10n.personalDataTitle),
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _ProfileField(
-                        label: l10n.email,
-                        controller: _emailController,
-                        readOnly: true,
-                        keyboardType: TextInputType.emailAddress,
-                        textDirection: TextDirection.ltr,
-                      ),
-                      const SizedBox(height: 16),
-                      _ProfileField(
-                        label: l10n.fullName,
-                        controller: _nameController,
-                        textInputAction: TextInputAction.done,
-                      ),
-                      const SizedBox(height: 16),
-                      _ProfileField(
-                        label: l10n.mobileNumber,
-                        controller: _phoneController,
-                        readOnly: true,
-                        keyboardType: TextInputType.phone,
-                        textDirection: TextDirection.ltr,
-                        trailing: _PhoneChangeAction(
-                          label: l10n.changePhone,
-                          onTap: () => context.push(RouteNames.changePhone),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      _PrimaryProfileButton(
-                        label: l10n.saveChanges,
-                        onTap: _saveProfile,
-                      ),
-                    ],
-                  ),
+      body: BlocListener<ProfileBloc, ProfileState>(
+        listener: (context, state) {
+          if (state.updateProfileSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  l10n.profileUpdatedDesignOnly,
+                  style: AppTextStyles.snackBarMessage(context),
                 ),
               ),
-            ],
+            );
+            context.pop();
+          }
+          if (state.errorMessage != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.errorMessage!,
+                  style: AppTextStyles.snackBarMessage(context),
+                ),
+              ),
+            );
+          }
+          final profile = state.profile;
+          if (profile != null) {
+            if (_nameController.text.isEmpty ||
+                _nameController.text == l10n.accountPlaceholderName) {
+              _nameController.text = profile.fullName.isNotEmpty
+                  ? profile.fullName
+                  : '${profile.firstName} ${profile.lastName}';
+            }
+            if (_emailController.text.isEmpty) {
+              _emailController.text = profile.email;
+            }
+            if (_phoneController.text.isEmpty) {
+              _phoneController.text = profile.phone;
+            }
+          }
+        },
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: SafeArea(
+            bottom: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _ProfileHeader(title: l10n.personalDataTitle),
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    padding:
+                        const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _ProfileField(
+                          label: l10n.email,
+                          controller: _emailController,
+                          readOnly: true,
+                          keyboardType: TextInputType.emailAddress,
+                          textDirection: TextDirection.ltr,
+                        ),
+                        const SizedBox(height: 16),
+                        _ProfileField(
+                          label: l10n.fullName,
+                          controller: _nameController,
+                          textInputAction: TextInputAction.done,
+                        ),
+                        const SizedBox(height: 16),
+                        _ProfileField(
+                          label: l10n.mobileNumber,
+                          controller: _phoneController,
+                          readOnly: true,
+                          keyboardType: TextInputType.phone,
+                          textDirection: TextDirection.ltr,
+                          trailing: _PhoneChangeAction(
+                            label: l10n.changePhone,
+                            onTap: () => context.push(RouteNames.changePhone),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        BlocBuilder<ProfileBloc, ProfileState>(
+                          builder: (context, state) {
+                            if (state.isLoading) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            return _PrimaryProfileButton(
+                              label: l10n.saveChanges,
+                              onTap: _saveProfile,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -309,6 +309,7 @@ class _OtpInput extends StatelessWidget {
                   child: TextField(
                     controller: controller,
                     focusNode: focusNode,
+                    autofocus: true,
                     keyboardType: TextInputType.number,
                     maxLength: 6,
                     textAlign: TextAlign.left,

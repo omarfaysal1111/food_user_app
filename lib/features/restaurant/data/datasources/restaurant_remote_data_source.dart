@@ -1,7 +1,107 @@
+import 'package:dio/dio.dart';
+import 'package:food_user_app/core/constants/api_endpoints.dart';
+import 'package:food_user_app/core/network/dio_error_mapper.dart';
+import 'package:food_user_app/features/restaurant/data/models/branch_dto.dart';
+import 'package:food_user_app/features/restaurant/data/models/offer_dto.dart';
+import 'package:food_user_app/features/restaurant/data/models/page_response_restaurant_dto.dart';
+import 'package:food_user_app/features/restaurant/data/models/restaurant_dto.dart';
+
 abstract class RestaurantRemoteDataSource {
-  // TODO: define remote data source contract
+  Future<PageResponseRestaurantDto> getRestaurants({
+    int page = 0,
+    int size = 20,
+    String? categoryId,
+  });
+
+  Future<RestaurantDto> getRestaurantDetail(String id);
+
+  Future<List<BranchDto>> getBranches(String restaurantId);
+
+  Future<List<OfferDto>> getOffers(String restaurantId);
 }
 
 class RestaurantRemoteDataSourceImpl implements RestaurantRemoteDataSource {
-  // TODO: inject DioClient and implement
+  final Dio _dio;
+
+  RestaurantRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
+
+  @override
+  Future<PageResponseRestaurantDto> getRestaurants({
+    int page = 0,
+    int size = 20,
+    String? categoryId,
+  }) async {
+    try {
+      final queryParams = <String, dynamic>{
+        'page': page,
+        'size': size,
+      };
+      if (categoryId != null && categoryId.isNotEmpty) {
+        queryParams['categoryId'] = categoryId;
+      }
+      final response = await _dio.get<dynamic>(
+        ApiEndpoints.restaurants,
+        queryParameters: queryParams,
+      );
+      final raw = response.data;
+      if (raw is! Map<String, dynamic>) {
+        throw const FormatException('Expected paginated response');
+      }
+      return PageResponseRestaurantDto.fromJson(raw);
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<RestaurantDto> getRestaurantDetail(String id) async {
+    try {
+      final response = await _dio.get<dynamic>(
+        ApiEndpoints.restaurantDetails(id),
+      );
+      final raw = response.data;
+      if (raw is! Map<String, dynamic>) {
+        throw const FormatException('Expected restaurant object');
+      }
+      return RestaurantDto.fromJson(raw);
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<List<BranchDto>> getBranches(String restaurantId) async {
+    try {
+      final response = await _dio.get<dynamic>(
+        ApiEndpoints.restaurantBranches(restaurantId),
+      );
+      final raw = response.data;
+      if (raw is! List) {
+        throw const FormatException('Expected list of branches');
+      }
+      return raw
+          .map((json) => BranchDto.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<List<OfferDto>> getOffers(String restaurantId) async {
+    try {
+      final response = await _dio.get<dynamic>(
+        ApiEndpoints.restaurantOffers(restaurantId),
+      );
+      final raw = response.data;
+      if (raw is! List) {
+        throw const FormatException('Expected list of offers');
+      }
+      return raw
+          .map((json) => OfferDto.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
 }

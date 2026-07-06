@@ -14,6 +14,8 @@ import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_state.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class AccountTabPage extends StatelessWidget {
@@ -175,77 +177,90 @@ class _AccountProfileCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final chevronIcon = _detailsChevronIcon(context);
-    final placeholderName = l10n.accountPlaceholderName;
 
-    return PositionedDirectional(
-      top: top,
-      start: AccountTabPage._horizontalPadding,
-      end: AccountTabPage._horizontalPadding,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => context.push(RouteNames.editProfile),
-        child: Container(
-          height: AccountTabPage._profileHeight,
-          padding: const EdgeInsetsDirectional.symmetric(
-            horizontal: 12,
-            vertical: 16,
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceCard(context),
-            borderRadius: const BorderRadius.all(AppRadius.md),
-            boxShadow: const [
-              BoxShadow(color: AccountTabPage._shadowColor, blurRadius: 4),
-            ],
-          ),
-          child: Row(
-            children: [
-              _Avatar(letter: placeholderName.characters.first),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // TODO: Replace placeholder account data with real user data.
-                    Text(
-                      placeholderName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.start,
-                      style: AppTextStyles.textFieldTitle(context).copyWith(
-                        color: AppColors.onSurface(context),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        height: 1.35,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.accountPlaceholderEmail,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textDirection: TextDirection.ltr,
-                      textAlign: isRtl ? TextAlign.right : TextAlign.left,
-                      style: AppTextStyles.caption(context).copyWith(
-                        color: AppColors.paragraph(context),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        height: 1.3,
-                      ),
-                    ),
-                  ],
-                ),
+    return BlocBuilder<ProfileBloc, ProfileState>(
+      builder: (context, state) {
+        final profile = state.profile;
+        final name = profile != null && profile.fullName.isNotEmpty
+            ? profile.fullName
+            : (profile != null && profile.firstName.isNotEmpty
+                ? '${profile.firstName} ${profile.lastName}'
+                : l10n.accountPlaceholderName);
+        final email = profile != null && profile.email.isNotEmpty
+            ? profile.email
+            : l10n.accountPlaceholderEmail;
+        final letter = name.isNotEmpty ? name.characters.first : 'U';
+
+        return PositionedDirectional(
+          top: top,
+          start: AccountTabPage._horizontalPadding,
+          end: AccountTabPage._horizontalPadding,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => context.push(RouteNames.editProfile),
+            child: Container(
+              height: AccountTabPage._profileHeight,
+              padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: 12,
+                vertical: 16,
               ),
-              const SizedBox(width: 12),
-              Icon(
-                chevronIcon,
-                color: AppColors.onSurface(context),
-                size: AccountTabPage._arrowSize,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceCard(context),
+                borderRadius: const BorderRadius.all(AppRadius.md),
+                boxShadow: const [
+                  BoxShadow(color: AccountTabPage._shadowColor, blurRadius: 4),
+                ],
               ),
-            ],
+              child: Row(
+                children: [
+                  _Avatar(letter: letter),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.start,
+                          style: AppTextStyles.textFieldTitle(context).copyWith(
+                            color: AppColors.onSurface(context),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            height: 1.35,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          email,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textDirection: TextDirection.ltr,
+                          textAlign: isRtl ? TextAlign.right : TextAlign.left,
+                          style: AppTextStyles.caption(context).copyWith(
+                            color: AppColors.paragraph(context),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            height: 1.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Icon(
+                    chevronIcon,
+                    color: AppColors.onSurface(context),
+                    size: AccountTabPage._arrowSize,
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

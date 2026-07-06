@@ -8,9 +8,13 @@ import 'package:food_user_app/core/theme/app_theme.dart';
 import 'package:food_user_app/core/theme/app_theme_scope.dart';
 import 'package:food_user_app/core/theme/theme_controller.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_controller.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/features/home/presentation/cubit/banner_cubit.dart';
+import 'package:food_user_app/features/search/presentation/cubit/search_cubit.dart';
 
 class App extends StatelessWidget {
   const App({
@@ -26,8 +30,21 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AuthBloc>(
-      create: (_) => sl<AuthBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>()),
+        BlocProvider<ProfileBloc>(
+          create: (_) => sl<ProfileBloc>()
+            ..add(const GetProfileEvent())
+            ..add(const GetSettingsEvent()),
+        ),
+        BlocProvider<BannerCubit>(
+          create: (_) => sl<BannerCubit>()..getActiveBanners(),
+        ),
+        BlocProvider<SearchCubit>(
+          create: (_) => sl<SearchCubit>()..getSearchHistory(),
+        ),
+      ],
       child: AppLocaleScope(
         notifier: localeController,
         child: AppThemeScope(

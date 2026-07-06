@@ -13,6 +13,10 @@ import 'package:food_user_app/core/widgets/app_status_dot_label.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_type.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/features/home/presentation/cubit/banner_cubit.dart';
+import 'package:food_user_app/features/home/presentation/cubit/banner_state.dart';
+import 'package:food_user_app/features/home/domain/entities/banner.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -369,31 +373,97 @@ class _PromoSliderState extends State<_PromoSlider> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 155,
-          child: PageView.builder(
-            controller: _controller,
-            onPageChanged: (page) => setState(() => _currentPage = page),
-            itemCount: 4,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                child: const _PromoBanner(),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 12),
-        _BannerIndicator(activePage: _currentPage),
-      ],
+    return BlocBuilder<BannerCubit, BannerState>(
+      builder: (context, state) {
+        return state.maybeWhen(
+          loaded: (banners) {
+            if (banners.isEmpty) return const SizedBox.shrink();
+
+            return Column(
+              children: [
+                SizedBox(
+                  height: 155,
+                  child: PageView.builder(
+                    controller: _controller,
+                    onPageChanged: (page) =>
+                        setState(() => _currentPage = page),
+                    itemCount: banners.length,
+                    itemBuilder: (context, index) {
+                      final banner = banners[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                        ),
+                        child: _PromoBanner(banner: banner),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _BannerIndicator(
+                  activePage: _currentPage,
+                  count: banners.length,
+                ),
+              ],
+            );
+          },
+          orElse: () {
+            return Column(
+              children: [
+                SizedBox(
+                  height: 155,
+                  child: PageView.builder(
+                    controller: _controller,
+                    onPageChanged: (page) =>
+                        setState(() => _currentPage = page),
+                    itemCount: 1,
+                    itemBuilder: (context, index) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                        ),
+                        child: _PromoBannerMock(),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const _BannerIndicator(activePage: 0, count: 1),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }
 
 class _PromoBanner extends StatelessWidget {
-  const _PromoBanner();
+  const _PromoBanner({required this.banner});
+
+  final BannerItem banner;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.all(Radius.circular(16)),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          AppNetworkImage(
+            banner.imageUrl,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PromoBannerMock extends StatelessWidget {
+  const _PromoBannerMock();
 
   @override
   Widget build(BuildContext context) {
@@ -415,23 +485,24 @@ class _PromoBanner extends StatelessWidget {
 }
 
 class _BannerIndicator extends StatelessWidget {
-  const _BannerIndicator({required this.activePage});
+  const _BannerIndicator({required this.activePage, required this.count});
 
   final int activePage;
+  final int count;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        for (var i = 0; i < 4; i++) ...[
+        for (var i = 0; i < count; i++) ...[
           _IndicatorDot(
             color: i == activePage
                 ? AppColors.primary
                 : AppColors.inactiveIndicator,
             width: i == activePage ? 32 : 8,
           ),
-          if (i != 3) const SizedBox(width: AppSpacing.sm),
+          if (i != count - 1) const SizedBox(width: AppSpacing.sm),
         ],
       ],
     );

@@ -216,6 +216,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                   child: TextField(
                                     controller: _otpController,
                                     focusNode: _otpFocusNode,
+                                    autofocus: true,
                                     keyboardType: TextInputType.number,
                                     maxLength: 6,
                                     textAlign: TextAlign.left,

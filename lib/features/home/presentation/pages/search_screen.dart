@@ -14,6 +14,13 @@ import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
 import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_config.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'dart:async';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/features/search/presentation/cubit/search_cubit.dart';
+import 'package:food_user_app/features/search/presentation/cubit/search_state.dart';
+
+import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
+import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
 import 'package:food_user_app/core/widgets/empty_state_widget.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -27,6 +34,7 @@ class _SearchScreenState extends State<SearchScreen> {
   late final TextEditingController _controller;
   late final FocusNode _focusNode;
   late final ScrollController _scrollController;
+  Timer? _debounceTimer;
 
   ServiceCategoryData? _selectedCategory;
   final Set<ServiceFilterId> _selectedFilters = {};
@@ -40,12 +48,14 @@ class _SearchScreenState extends State<SearchScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _focusNode.requestFocus();
+        context.read<SearchCubit>().getSearchHistory();
       }
     });
   }
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _controller
       ..removeListener(_onSearchChanged)
       ..dispose();
@@ -63,6 +73,12 @@ class _SearchScreenState extends State<SearchScreen> {
   void _onSearchChanged() {
     setState(() {});
     _resetScroll();
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        context.read<SearchCubit>().search(_controller.text.trim());
+      }
+    });
   }
 
   void _onTokenTap(String token) {
@@ -76,52 +92,9 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final query = _controller.text.trim();
-    final copy = _SearchCopy.of(context);
-
     final categories = ServiceListingConfig.allServiceCategories(l10n);
-
     final scope = _selectedCategory?.label;
-    List<ServicePlaceData> displayedStores;
-    List<ServicePlaceData> displayedLargeStores;
-
-    if (scope == null) {
-      displayedStores = copy.groups
-          .expand((g) => g.items)
-          .where((s) => _matchesQuery(s, query))
-          .where((s) => _matchesTopFilter(s))
-          .toList(growable: false);
-      displayedLargeStores = copy.groups
-          .expand((g) => g.largeItems)
-          .where((s) => _matchesQuery(s, query))
-          .toList(growable: false);
-    } else {
-      final matched = copy.groups
-          .where((g) => g.title == scope)
-          .toList(growable: false);
-      displayedStores = matched
-          .expand((g) => g.items)
-          .where((s) => _matchesQuery(s, query))
-          .where((s) => _matchesTopFilter(s))
-          .toList(growable: false);
-      displayedLargeStores = matched
-          .expand((g) => g.largeItems)
-          .where((s) => _matchesQuery(s, query))
-          .toList(growable: false);
-    }
-
-    final filteredProducts = query.isEmpty
-        ? const <_SearchResult>[]
-        : copy
-              .results(query)
-              .where(
-                (r) =>
-                    scope == null || r.keywords.any((k) => k.contains(scope)),
-              )
-              .toList();
-
     final showFilters = scope != null || query.isNotEmpty;
-    final noResults =
-        displayedStores.isEmpty && filteredProducts.isEmpty && showFilters;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
@@ -163,6 +136,9 @@ class _SearchScreenState extends State<SearchScreen> {
                               : cat;
                         });
                         _resetScroll();
+                        context
+                            .read<SearchCubit>()
+                            .search(_controller.text.trim());
                       },
                     ),
                     if (showFilters) ...[
@@ -186,65 +162,44 @@ class _SearchScreenState extends State<SearchScreen> {
 
               // ── Scrollable Results Section ───────────────────────────────────
               Expanded(
-                child: CustomScrollView(
-                  controller: _scrollController,
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  slivers: [
-                    SliverPadding(
-                      padding: const EdgeInsetsDirectional.fromSTEB(
-                        AppSpacing.md,
-                        0,
-                        AppSpacing.md,
-                        40,
+                child: BlocBuilder<SearchCubit, SearchState>(
+                  builder: (context, state) {
+                    return state.maybeWhen(
+                      loading: () => const Center(
+                        child: CircularProgressIndicator(),
                       ),
-                      sliver: SliverList.list(
-                        children: [
-                          if (displayedLargeStores.isNotEmpty) ...[
-                            _SectionTitle(title: l10n.serviceLargeStores),
-                            const SizedBox(height: 12),
-                            _LargeStoreRow(items: displayedLargeStores),
-                            const SizedBox(height: 22),
-                          ],
-                          if (!showFilters) ...[
-                            _SectionTitle(title: l10n.searchMostSearchedTitle),
-                            const SizedBox(height: 12),
-                            _MostSearchedTokens(
-                              tokens: copy.mostSearchedTokens,
-                              onTap: _onTokenTap,
-                            ),
-                          ] else ...[
-                            if (noResults) ...[
-                              const SizedBox(height: 48),
-                              const EmptyStateWidget(
-                                imageWidth: 100,
-                                imageHeight: 100,
-                              ),
-                            ] else ...[
-                              if (displayedStores.isNotEmpty) ...[
-                                _SectionTitle(title: l10n.serviceAllPlaces),
-                                const SizedBox(height: 12),
-                                _PlaceList(items: displayedStores),
-                                const SizedBox(height: 22),
-                              ],
-                              if (filteredProducts.isNotEmpty) ...[
-                                _SectionTitle(title: l10n.searchResultsTitle),
-                                const SizedBox(height: 12),
-                                ...filteredProducts.map(
-                                  (r) => Padding(
-                                    padding: const EdgeInsetsDirectional.only(
-                                      bottom: 12,
-                                    ),
-                                    child: _ResultCard(result: r),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ],
-                        ],
+                      error: (msg) => Center(
+                        child: Text(
+                          msg,
+                          style: AppTextStyles.body(context),
+                        ),
                       ),
-                    ),
-                  ],
+                      historyLoaded: (history) => _buildSearchResults(
+                        context,
+                        query: query,
+                        scope: scope,
+                        history: history,
+                        restaurants: const [],
+                        items: const [],
+                      ),
+                      loaded: (result) => _buildSearchResults(
+                        context,
+                        query: query,
+                        scope: scope,
+                        history: const [],
+                        restaurants: result.restaurants,
+                        items: result.items,
+                      ),
+                      orElse: () => _buildSearchResults(
+                        context,
+                        query: query,
+                        scope: scope,
+                        history: const [],
+                        restaurants: const [],
+                        items: const [],
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -254,22 +209,152 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  bool _matchesQuery(ServicePlaceData place, String query) {
-    if (query.isEmpty) return true;
-    final searchable =
-        '${place.name} ${place.subtitle ?? ''} ${place.time} ${place.rating}'
-            .toLowerCase();
-    return searchable.contains(query.toLowerCase());
+  Widget _buildSearchResults(
+    BuildContext context, {
+    required String query,
+    required String? scope,
+    required List<String> history,
+    required List<Restaurant> restaurants,
+    required List<MenuItem> items,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final copy = _SearchCopy.of(context);
+
+    // Filter and map restaurants
+    final matchedRestaurants = restaurants
+        .where((r) =>
+            scope == null ||
+            r.cuisineType.toLowerCase().contains(scope.toLowerCase()))
+        .where((r) => _matchesTopFilter(r))
+        .map(_mapToServicePlaceData)
+        .toList();
+
+    final displayedLargeStores = matchedRestaurants.take(2).toList();
+    final displayedStores = matchedRestaurants.skip(2).toList();
+
+    // Filter and map products
+    final filteredProducts = items
+        .where((item) =>
+            scope == null ||
+            item.name.toLowerCase().contains(scope.toLowerCase()))
+        .map(_mapToSearchResult)
+        .toList();
+
+    final showFilters = scope != null || query.isNotEmpty;
+    final noResults = query.isNotEmpty &&
+        displayedLargeStores.isEmpty &&
+        displayedStores.isEmpty &&
+        filteredProducts.isEmpty;
+
+    return CustomScrollView(
+      controller: _scrollController,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            AppSpacing.md,
+            0,
+            AppSpacing.md,
+            40,
+          ),
+          sliver: SliverList.list(
+            children: [
+              if (displayedLargeStores.isNotEmpty) ...[
+                _SectionTitle(title: l10n.serviceLargeStores),
+                const SizedBox(height: 12),
+                _LargeStoreRow(items: displayedLargeStores),
+                const SizedBox(height: 22),
+              ],
+              if (!showFilters) ...[
+                if (history.isNotEmpty) ...[
+                  _SectionTitle(
+                    title: isArabic ? 'سجل البحث' : 'Search History',
+                  ),
+                  const SizedBox(height: 12),
+                  _MostSearchedTokens(
+                    tokens: history,
+                    onTap: _onTokenTap,
+                  ),
+                  const SizedBox(height: 22),
+                ],
+                _SectionTitle(title: l10n.searchMostSearchedTitle),
+                const SizedBox(height: 12),
+                _MostSearchedTokens(
+                  tokens: copy.mostSearchedTokens,
+                  onTap: _onTokenTap,
+                ),
+              ] else ...[
+                if (noResults) ...[
+                  const SizedBox(height: 48),
+                  const EmptyStateWidget(
+                    imageWidth: 100,
+                    imageHeight: 100,
+                  ),
+                ] else ...[
+                  if (displayedStores.isNotEmpty) ...[
+                    _SectionTitle(title: l10n.serviceAllPlaces),
+                    const SizedBox(height: 12),
+                    _PlaceList(items: displayedStores),
+                    const SizedBox(height: 22),
+                  ],
+                  if (filteredProducts.isNotEmpty) ...[
+                    _SectionTitle(title: l10n.searchResultsTitle),
+                    const SizedBox(height: 12),
+                    ...filteredProducts.map(
+                      (r) => Padding(
+                        padding: const EdgeInsetsDirectional.only(
+                          bottom: 12,
+                        ),
+                        child: _ResultCard(result: r),
+                      ),
+                    ),
+                  ],
+                ],
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
-  bool _matchesTopFilter(ServicePlaceData place) {
+  bool _matchesTopFilter(Restaurant place) {
     if (_selectedFilters.isEmpty) return true;
     return _selectedFilters.every(
       (f) => switch (f) {
-        ServiceFilterId.offers => place.hasOffer,
-        ServiceFilterId.fastDelivery => place.fastDelivery,
-        ServiceFilterId.topRated => place.topRated,
+        ServiceFilterId.offers => false,
+        ServiceFilterId.fastDelivery => place.deliveryTimeMax <= 30,
+        ServiceFilterId.topRated => place.rating >= 4.5,
       },
+    );
+  }
+
+  _SearchResult _mapToSearchResult(MenuItem item) {
+    return _SearchResult(
+      id: item.id,
+      title: item.name,
+      subtitle: item.description,
+      rating: '4.8',
+      deliveryTime: '30 min',
+      price: '${item.price.toStringAsFixed(2)} EGP',
+      priceValue: item.price.toInt(),
+      imageAsset: item.imageUrl,
+      isRestaurant: false,
+      keywords: const [],
+    );
+  }
+
+  ServicePlaceData _mapToServicePlaceData(Restaurant restaurant) {
+    return ServicePlaceData.restaurant(
+      name: restaurant.name,
+      subtitle: restaurant.cuisineType,
+      time: '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
+      imageAsset: restaurant.coverImageUrl,
+      rating: restaurant.rating.toStringAsFixed(1),
+      hasOffer: false,
+      fastDelivery: restaurant.deliveryTimeMax <= 30,
+      topRated: restaurant.rating >= 4.5,
     );
   }
 }
@@ -556,7 +641,7 @@ class _CompactStoreCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ClipOval(
-            child: AppRasterImage.asset(
+            child: _buildImage(
               item.imageAsset,
               width: 40,
               height: 40,
@@ -670,7 +755,7 @@ class _PlaceImage extends StatelessWidget {
           Positioned.fill(
             child: ClipRRect(
               borderRadius: const BorderRadius.all(AppRadius.md),
-              child: AppRasterImage.asset(
+              child: _buildImage(
                 item.imageAsset,
                 width: 56,
                 height: 56,
@@ -913,7 +998,7 @@ class _ResultCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: const BorderRadius.all(AppRadius.sm),
-                child: AppRasterImage.asset(
+                child: _buildImage(
                   result.imageAsset,
                   width: 72,
                   height: 72,
@@ -1339,4 +1424,16 @@ class _SearchResult {
   final String imageAsset;
   final bool isRestaurant;
   final List<String> keywords;
+}
+
+Widget _buildImage(
+  String path, {
+  double? width,
+  double? height,
+  BoxFit fit = BoxFit.cover,
+}) {
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return AppNetworkImage(path, width: width, height: height, fit: fit);
+  }
+  return AppRasterImage.asset(path, width: width, height: height, fit: fit);
 }
