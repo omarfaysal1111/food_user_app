@@ -67,34 +67,59 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
       backgroundColor: AppColors.scaffoldBackground(context),
       body: SafeArea(
         bottom: false,
-        child: CustomScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsetsDirectional.fromSTEB(
-                AppSpacing.md,
-                20,
-                AppSpacing.md,
-                28,
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          behavior: HitTestBehavior.opaque,
+          child: Column(
+            children: [
+              // ── Fixed Top Search Section ─────────────────────────────────────
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  AppSpacing.md,
+                  20,
+                  AppSpacing.md,
+                  16,
+                ),
+                child: Column(
+                  children: [
+                    _SearchHeader(title: copy.title),
+                    const SizedBox(height: 20),
+                    _SearchField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      hint: copy.hint,
+                    ),
+                  ],
+                ),
               ),
-              sliver: SliverList.list(
-                children: [
-                  _SearchHeader(title: copy.title),
-                  const SizedBox(height: 20),
-                  _SearchField(
-                    controller: _controller,
-                    focusNode: _focusNode,
-                    hint: copy.hint,
-                  ),
-                  const SizedBox(height: 16),
-                  if (items.isEmpty)
-                    _EmptyRestaurantSearch(title: copy.emptyTitle)
-                  else
-                    _RestaurantSearchGrid(items: items),
-                ],
+
+              // ── Scrollable Results Section ───────────────────────────────────
+              Expanded(
+                child: CustomScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  slivers: [
+                    SliverPadding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        AppSpacing.md,
+                        0,
+                        AppSpacing.md,
+                        40,
+                      ),
+                      sliver: SliverList.list(
+                        children: [
+                          if (items.isEmpty)
+                            _EmptyRestaurantSearch(title: copy.emptyTitle)
+                          else
+                            _RestaurantSearchGrid(items: items),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

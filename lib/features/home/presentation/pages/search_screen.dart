@@ -100,13 +100,12 @@ class _SearchScreenState extends State<SearchScreen> {
     final filteredProducts = query.isEmpty
         ? const <_SearchResult>[]
         : copy
-            .results(query)
-            .where(
-              (r) =>
-                  scope == null ||
-                  r.keywords.any((k) => k.contains(scope)),
-            )
-            .toList();
+              .results(query)
+              .where(
+                (r) =>
+                    scope == null || r.keywords.any((k) => k.contains(scope)),
+              )
+              .toList();
 
     final showFilters = scope != null || query.isNotEmpty;
     final noResults =
@@ -116,103 +115,126 @@ class _SearchScreenState extends State<SearchScreen> {
       backgroundColor: AppColors.scaffoldBackground(context),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
         child: SafeArea(
           bottom: false,
-          child: CustomScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            slivers: [
-            SliverPadding(
-              padding: const EdgeInsetsDirectional.fromSTEB(
-                AppSpacing.md,
-                20,
-                AppSpacing.md,
-                28,
-              ),
-              sliver: SliverList.list(
-                children: [
-                  _SearchHeader(title: l10n.searchTitle),
-                  const SizedBox(height: 24),
-                  AppSearchField(
-                    controller: _controller,
-                    focusNode: _focusNode,
-                    hint: l10n.serviceSearchHint,
-                    iconAsset: AppAssets.serviceSearchIcon,
-                  ),
-                  const SizedBox(height: 16),
-                  _CategoryStrip(
-                    categories: categories,
-                    selectedCategory: _selectedCategory,
-                    onSelected: (cat) {
-                      setState(() {
-                        _selectedCategory =
-                            _selectedCategory?.label == cat.label
-                                ? null
-                                : cat;
-                      });
-                    },
-                  ),
-                  if (showFilters) ...[
+          child: Column(
+            children: [
+              // ── Fixed Top Controls Section ───────────────────────────────────
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  AppSpacing.md,
+                  20,
+                  AppSpacing.md,
+                  16,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _SearchHeader(title: l10n.searchTitle),
+                    const SizedBox(height: 24),
+                    AppSearchField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      hint: l10n.serviceSearchHint,
+                      iconAsset: AppAssets.serviceSearchIcon,
+                    ),
                     const SizedBox(height: 16),
-                    _FilterStrip(
-                      filters: ServiceListingConfig.topFilters(l10n),
-                      selectedFilters: _selectedFilters,
-                      onToggle: (filter) {
+                    _CategoryStrip(
+                      categories: categories,
+                      selectedCategory: _selectedCategory,
+                      onSelected: (cat) {
                         setState(() {
-                          _selectedFilters.contains(filter)
-                              ? _selectedFilters.remove(filter)
-                              : _selectedFilters.add(filter);
+                          _selectedCategory =
+                              _selectedCategory?.label == cat.label
+                              ? null
+                              : cat;
                         });
                       },
                     ),
-                  ],
-                  if (displayedLargeStores.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    _SectionTitle(title: l10n.serviceLargeStores),
-                    const SizedBox(height: 12),
-                    _LargeStoreRow(items: displayedLargeStores),
-                  ],
-                  if (!showFilters) ...[
-                    const SizedBox(height: 22),
-                    _SectionTitle(title: l10n.searchMostSearchedTitle),
-                    const SizedBox(height: 12),
-                    _MostSearchedTokens(
-                      tokens: copy.mostSearchedTokens,
-                      onTap: _onTokenTap,
-                    ),
-                  ] else ...[
-                    if (noResults) ...[
-                      const SizedBox(height: 88),
-                      const EmptyStateWidget(
-                        imageWidth: 100,
-                        imageHeight: 100,
+                    if (showFilters) ...[
+                      const SizedBox(height: 16),
+                      _FilterStrip(
+                        filters: ServiceListingConfig.topFilters(l10n),
+                        selectedFilters: _selectedFilters,
+                        onToggle: (filter) {
+                          setState(() {
+                            _selectedFilters.contains(filter)
+                                ? _selectedFilters.remove(filter)
+                                : _selectedFilters.add(filter);
+                          });
+                        },
                       ),
-                    ] else ...[
-                      if (displayedStores.isNotEmpty) ...[
-                        const SizedBox(height: 22),
-                        _SectionTitle(title: l10n.serviceAllPlaces),
-                        const SizedBox(height: 12),
-                        _PlaceList(items: displayedStores),
-                      ],
-                      if (filteredProducts.isNotEmpty) ...[
-                        const SizedBox(height: 22),
-                        _SectionTitle(title: l10n.searchResultsTitle),
-                        const SizedBox(height: 12),
-                        ...filteredProducts.map(
-                          (r) => Padding(
-                            padding:
-                                const EdgeInsetsDirectional.only(bottom: 12),
-                            child: _ResultCard(result: r),
-                          ),
-                        ),
-                      ],
                     ],
                   ],
-                ],
+                ),
               ),
-            ),
-          ],
+
+              // ── Scrollable Results Section ───────────────────────────────────
+              Expanded(
+                child: CustomScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  slivers: [
+                    SliverPadding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        AppSpacing.md,
+                        0,
+                        AppSpacing.md,
+                        40,
+                      ),
+                      sliver: SliverList.list(
+                        children: [
+                          if (displayedLargeStores.isNotEmpty) ...[
+                            _SectionTitle(title: l10n.serviceLargeStores),
+                            const SizedBox(height: 12),
+                            _LargeStoreRow(items: displayedLargeStores),
+                            const SizedBox(height: 22),
+                          ],
+                          if (!showFilters) ...[
+                            _SectionTitle(title: l10n.searchMostSearchedTitle),
+                            const SizedBox(height: 12),
+                            _MostSearchedTokens(
+                              tokens: copy.mostSearchedTokens,
+                              onTap: _onTokenTap,
+                            ),
+                          ] else ...[
+                            if (noResults) ...[
+                              const SizedBox(height: 48),
+                              const EmptyStateWidget(
+                                imageWidth: 100,
+                                imageHeight: 100,
+                              ),
+                            ] else ...[
+                              if (displayedStores.isNotEmpty) ...[
+                                _SectionTitle(title: l10n.serviceAllPlaces),
+                                const SizedBox(height: 12),
+                                _PlaceList(items: displayedStores),
+                                const SizedBox(height: 22),
+                              ],
+                              if (filteredProducts.isNotEmpty) ...[
+                                _SectionTitle(title: l10n.searchResultsTitle),
+                                const SizedBox(height: 12),
+                                ...filteredProducts.map(
+                                  (r) => Padding(
+                                    padding: const EdgeInsetsDirectional.only(
+                                      bottom: 12,
+                                    ),
+                                    child: _ResultCard(result: r),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -266,8 +288,9 @@ class _SearchHeader extends StatelessWidget {
           title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.heading4(context)
-              .copyWith(fontSize: 16, height: 1.4),
+          style: AppTextStyles.heading4(
+            context,
+          ).copyWith(fontSize: 16, height: 1.4),
         ),
       ],
     );
@@ -287,8 +310,9 @@ class _SectionTitle extends StatelessWidget {
         title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: AppTextStyles.heading4(context)
-            .copyWith(fontSize: 15, height: 1.4),
+        style: AppTextStyles.heading4(
+          context,
+        ).copyWith(fontSize: 15, height: 1.4),
       ),
     );
   }
@@ -316,7 +340,7 @@ class _CategoryStrip extends StatelessWidget {
         separatorBuilder: (_, _) => const SizedBox(width: 18),
         itemBuilder: (context, index) {
           final cat = categories[index];
-            return _CategoryChip(
+          return _CategoryChip(
             category: cat,
             selected: cat.label == selectedCategory?.label,
             onTap: () => onSelected(cat),
@@ -501,7 +525,8 @@ class _CompactStoreCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 92,
-      padding: const EdgeInsets.all(8),
+      height: 98,
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.surfaceCard(context),
         borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -513,13 +538,14 @@ class _CompactStoreCard extends StatelessWidget {
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           ClipOval(
             child: AppRasterImage.asset(
               item.imageAsset,
               width: 40,
               height: 40,
-              fit: BoxFit.contain,
+              fit: BoxFit.cover,
             ),
           ),
           const SizedBox(height: 8),
@@ -528,11 +554,17 @@ class _CompactStoreCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: AppTextStyles.body(context)
-                .copyWith(fontSize: 12, height: 1.3),
+            style: AppTextStyles.body(
+              context,
+            ).copyWith(fontSize: 12, height: 1.3),
           ),
           const SizedBox(height: 4),
-          _TimeLabel(time: item.time),
+          _TimeLabel(
+            time: item.time,
+            iconSize: 14,
+            fontSize: 10,
+            textColor: AppColors.onSurface(context),
+          ),
         ],
       ),
     );
@@ -677,8 +709,9 @@ class _PlaceDetails extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.start,
-                style: AppTextStyles.body(context)
-                    .copyWith(fontSize: 12, height: 1.3),
+                style: AppTextStyles.body(
+                  context,
+                ).copyWith(fontSize: 12, height: 1.3),
               ),
             ),
             const SizedBox(width: 8),
@@ -727,8 +760,9 @@ class _RatingLabel extends StatelessWidget {
         const SizedBox(width: 2),
         Text(
           rating,
-          style: AppTextStyles.body(context)
-              .copyWith(fontSize: 10, height: 1.25),
+          style: AppTextStyles.body(
+            context,
+          ).copyWith(fontSize: 10, height: 1.25),
         ),
       ],
     );
@@ -736,30 +770,39 @@ class _RatingLabel extends StatelessWidget {
 }
 
 class _TimeLabel extends StatelessWidget {
-  const _TimeLabel({required this.time});
+  const _TimeLabel({
+    required this.time,
+    this.iconSize = 14,
+    this.fontSize = 10,
+    this.textColor,
+  });
 
   final String time;
+  final double iconSize;
+  final double fontSize;
+  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {
+    final color = textColor ?? AppColors.onSurface(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        AppSvgImage.asset(
-          AppAssets.favoriteTimeIcon,
-          width: 14,
-          height: 14,
-          color: AppColors.onSurface(context),
+        AppRasterImage.asset(
+          AppAssets.serviceTimeIconPng,
+          width: iconSize,
+          height: iconSize,
+          color: color,
         ),
         const SizedBox(width: 4),
-        Text(
-          time,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.caption(context).copyWith(
-            color: AppColors.onSurface(context),
-            fontSize: 10,
-            height: 1.25,
+        Flexible(
+          child: Text(
+            time,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.caption(
+              context,
+            ).copyWith(color: color, fontSize: fontSize, height: 1.25),
           ),
         ),
       ],
@@ -871,16 +914,18 @@ class _ResultCard extends StatelessWidget {
                       result.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.body(context)
-                          .copyWith(fontSize: 13, height: 1.3),
+                      style: AppTextStyles.body(
+                        context,
+                      ).copyWith(fontSize: 13, height: 1.3),
                     ),
                     const SizedBox(height: 5),
                     Text(
                       result.subtitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.caption(context)
-                          .copyWith(fontSize: 10, height: 1.25),
+                      style: AppTextStyles.caption(
+                        context,
+                      ).copyWith(fontSize: 10, height: 1.25),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -893,8 +938,9 @@ class _ResultCard extends StatelessWidget {
                         const SizedBox(width: 2),
                         Text(
                           result.rating,
-                          style: AppTextStyles.caption(context)
-                              .copyWith(fontSize: 10),
+                          style: AppTextStyles.caption(
+                            context,
+                          ).copyWith(fontSize: 10),
                         ),
                         const SizedBox(width: 10),
                         AppSvgImage.asset(
@@ -906,8 +952,9 @@ class _ResultCard extends StatelessWidget {
                         const SizedBox(width: 3),
                         Text(
                           result.deliveryTime,
-                          style: AppTextStyles.caption(context)
-                              .copyWith(fontSize: 10),
+                          style: AppTextStyles.caption(
+                            context,
+                          ).copyWith(fontSize: 10),
                         ),
                       ],
                     ),
@@ -917,8 +964,9 @@ class _ResultCard extends StatelessWidget {
               const SizedBox(width: AppSpacing.sm),
               Text(
                 result.price,
-                style: AppTextStyles.body(context)
-                    .copyWith(fontSize: 13, height: 1.25),
+                style: AppTextStyles.body(
+                  context,
+                ).copyWith(fontSize: 13, height: 1.25),
               ),
             ],
           ),
@@ -994,8 +1042,9 @@ class _SearchCopy {
     return allResults.where((result) {
       return result.title.toLowerCase().contains(normalizedQuery) ||
           result.subtitle.toLowerCase().contains(normalizedQuery) ||
-          result.keywords
-              .any((keyword) => keyword.toLowerCase().contains(normalizedQuery));
+          result.keywords.any(
+            (keyword) => keyword.toLowerCase().contains(normalizedQuery),
+          );
     }).toList();
   }
 
@@ -1094,7 +1143,28 @@ class _SearchCopy {
         ),
         _SearchGroup(
           title: l10n.serviceCategoryFastFood,
-          items: [taheraFry, kira, azAlSham, captainMarket, taheraFry, kira],
+          items: [
+            taheraFry,
+            kira,
+            azAlSham,
+            captainMarket,
+            taheraFry,
+            kira,
+            taheraFry,
+            kira,
+            azAlSham,
+            captainMarket,
+            taheraFry,
+            kira,
+            taheraFry,
+            kira,
+            azAlSham,
+            captainMarket,
+            taheraFry,
+            kira,
+            taheraFry,
+            kira,
+          ],
         ),
         _SearchGroup(
           title: l10n.serviceCategoryBurger,
@@ -1106,8 +1176,38 @@ class _SearchCopy {
         ),
         _SearchGroup(
           title: l10n.serviceCategorySupermarket,
-          largeItems: [captain, fathallah],
-          items: [captain, fathallah, familyMarket, captainMarket, captain],
+          largeItems: [
+            captain,
+            fathallah,
+            captain,
+            fathallah,
+            captain,
+            fathallah,
+            captain,
+            fathallah,
+          ],
+          items: [
+            captain,
+            fathallah,
+            familyMarket,
+            captainMarket,
+            captain,
+            captain,
+            fathallah,
+            familyMarket,
+            captainMarket,
+            captain,
+            captain,
+            fathallah,
+            familyMarket,
+            captainMarket,
+            captain,
+            captain,
+            fathallah,
+            familyMarket,
+            captainMarket,
+            captain,
+          ],
         ),
         _SearchGroup(
           title: l10n.serviceCategorySnacks,

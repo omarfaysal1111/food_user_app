@@ -86,27 +86,27 @@ class ServiceListingConfig {
       groups: [
         ServiceListingGroupData(
           title: l10n.serviceCategoryDesserts,
-          items: _repeat(restaurantMocks, 5),
+          items: _repeat(restaurantMocks, 10),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategoryGrills,
-          items: _repeat(restaurantMocks.reversed.toList(), 5),
+          items: _repeat(restaurantMocks.reversed.toList(), 10),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategoryPizza,
-          items: _repeat([azAlSham, kira], 4),
+          items: _repeat([azAlSham, kira], 10),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategoryFastFood,
-          items: _repeat([kira, azAlSham], 4),
+          items: _repeat([kira, azAlSham], 10),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategoryBurger,
-          items: _repeat([azAlSham, kira], 4),
+          items: _repeat([azAlSham, kira], 10),
         ),
         ServiceListingGroupData(
           title: l10n.serviceCategoryShawarma,
-          items: _repeat([kira, azAlSham], 4),
+          items: _repeat([kira, azAlSham], 10),
         ),
       ],
     );

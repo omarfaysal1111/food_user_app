@@ -57,67 +57,89 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
 
               return GestureDetector(
                 onTap: () => FocusScope.of(context).unfocus(),
-                child: CustomScrollView(
-                  controller: _scrollController,
-                  physics: const ClampingScrollPhysics(),
-                slivers: [
-                  SliverPadding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      16,
-                      20,
-                      16,
-                      24,
-                    ),
-                    sliver: SliverList.list(
-                      children: [
-                        _ListingHeader(title: state.config.title),
-                        const SizedBox(height: 24),
-                        _ListingSearchBox(
-                          controller: _searchController,
-                          hint: state.config.searchHint,
-                          onChanged: context
-                              .read<ServiceListingCubit>()
-                              .searchChanged,
-                        ),
-                        if (state.categories.isNotEmpty) ...[
-                          const SizedBox(height: 16),
-                          _ServiceCategoryStrip(
-                            categories: state.categories,
-                            selectedCategory: state.selectedCategory,
-                            onSelected: context
+                behavior: HitTestBehavior.opaque,
+                child: Column(
+                  children: [
+                    // ── Fixed Top Header Section ─────────────────────────────────────
+                    Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        16,
+                        20,
+                        16,
+                        16,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _ListingHeader(title: state.config.title),
+                          const SizedBox(height: 24),
+                          _ListingSearchBox(
+                            controller: _searchController,
+                            hint: state.config.searchHint,
+                            onChanged: context
                                 .read<ServiceListingCubit>()
-                                .toggleCategory,
+                                .searchChanged,
+                          ),
+                          if (state.categories.isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            _ServiceCategoryStrip(
+                              categories: state.categories,
+                              selectedCategory: state.selectedCategory,
+                              onSelected: context
+                                  .read<ServiceListingCubit>()
+                                  .toggleCategory,
+                            ),
+                          ],
+                          if (state.config.filters.isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            _ServiceFilterStrip(
+                              filters: state.config.filters,
+                              selectedFilters: state.selectedTopFilters,
+                              onToggle: context
+                                  .read<ServiceListingCubit>()
+                                  .toggleTopFilter,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+
+                    // ── Scrollable Cards Section ─────────────────────────────────────
+                    Expanded(
+                      child: CustomScrollView(
+                        controller: _scrollController,
+                        physics: const ClampingScrollPhysics(),
+                        slivers: [
+                          SliverPadding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                              16,
+                              0,
+                              16,
+                              40,
+                            ),
+                            sliver: SliverList.list(
+                              children: [
+                                if (largeStores.isNotEmpty) ...[
+                                  _SectionTitle(title: l10n.serviceLargeStores),
+                                  const SizedBox(height: 12),
+                                  _LargeStoreRow(items: largeStores),
+                                  const SizedBox(height: 16),
+                                ],
+                                _SectionTitle(title: l10n.serviceAllPlaces),
+                                const SizedBox(height: 12),
+                                _ServicePlaceCollection(items: stores),
+                                if (stores.isEmpty) ...[
+                                  const SizedBox(height: 88),
+                                  _EmptyListingState(l10n: l10n),
+                                ],
+                              ],
+                            ),
                           ),
                         ],
-                        if (state.config.filters.isNotEmpty) ...[
-                          const SizedBox(height: 16),
-                          _ServiceFilterStrip(
-                            filters: state.config.filters,
-                            selectedFilters: state.selectedTopFilters,
-                            onToggle: context
-                                .read<ServiceListingCubit>()
-                                .toggleTopFilter,
-                          ),
-                        ],
-                        if (largeStores.isNotEmpty) ...[
-                          const SizedBox(height: 16),
-                          _SectionTitle(title: l10n.serviceLargeStores),
-                          const SizedBox(height: 12),
-                          _LargeStoreRow(items: largeStores),
-                        ],
-                        const SizedBox(height: 16),
-                        _SectionTitle(title: l10n.serviceAllPlaces),
-                        const SizedBox(height: 12),
-                        _ServicePlaceCollection(items: stores),
-                        if (stores.isEmpty) ...[
-                          const SizedBox(height: 88),
-                          _EmptyListingState(l10n: l10n),
-                        ],
-                      ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
               );
             },
           ),
@@ -440,7 +462,8 @@ class _CompactStoreCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 92,
-      padding: const EdgeInsets.all(8),
+      height: 98,
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.surfaceCard(context),
         borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -452,13 +475,14 @@ class _CompactStoreCard extends StatelessWidget {
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           ClipOval(
             child: AppRasterImage.asset(
               item.imageAsset,
               width: 40,
               height: 40,
-              fit: BoxFit.contain,
+              fit: BoxFit.cover,
             ),
           ),
           const SizedBox(height: 8),
@@ -472,7 +496,12 @@ class _CompactStoreCard extends StatelessWidget {
             ).copyWith(fontSize: 12, height: 1.3),
           ),
           const SizedBox(height: 4),
-          _TimeLabel(time: item.time),
+          _TimeLabel(
+            time: item.time,
+            iconSize: 14,
+            fontSize: 10,
+            textColor: AppColors.onSurface(context),
+          ),
         ],
       ),
     );
@@ -670,30 +699,39 @@ class _AvailabilityPill extends StatelessWidget {
 }
 
 class _TimeLabel extends StatelessWidget {
-  const _TimeLabel({required this.time});
+  const _TimeLabel({
+    required this.time,
+    this.iconSize = 14,
+    this.fontSize = 10,
+    this.textColor,
+  });
 
   final String time;
+  final double iconSize;
+  final double fontSize;
+  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {
+    final color = textColor ?? AppColors.onSurface(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        AppSvgImage.asset(
-          AppAssets.favoriteTimeIcon,
-          width: 14,
-          height: 14,
-          color: AppColors.onSurface(context),
+        AppRasterImage.asset(
+          AppAssets.serviceTimeIconPng,
+          width: iconSize,
+          height: iconSize,
+          color: color,
         ),
         const SizedBox(width: 4),
-        Text(
-          time,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.caption(context).copyWith(
-            color: AppColors.onSurface(context),
-            fontSize: 10,
-            height: 1.25,
+        Flexible(
+          child: Text(
+            time,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.caption(
+              context,
+            ).copyWith(color: color, fontSize: fontSize, height: 1.25),
           ),
         ),
       ],

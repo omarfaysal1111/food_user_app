@@ -281,6 +281,8 @@ class AppAssets {
       'assets/images/service_listing/icon_search.svg';
   static const serviceBackIcon = 'assets/images/service_listing/icon_back.svg';
   static const serviceTimeIcon = 'assets/images/service_listing/icon_time.svg';
+  static const serviceTimeIconPng =
+      'assets/images/service_listing/time-02.png';
   static const serviceStarIcon = 'assets/images/service_listing/icon_star.svg';
   static const serviceFavouriteIcon =
       'assets/images/service_listing/icon_favourite.svg';
