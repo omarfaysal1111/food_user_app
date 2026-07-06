@@ -38,6 +38,12 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
     super.dispose();
   }
 
+  void _resetScroll() {
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(0.0);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -76,18 +82,24 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                           _ListingSearchBox(
                             controller: _searchController,
                             hint: state.config.searchHint,
-                            onChanged: context
-                                .read<ServiceListingCubit>()
-                                .searchChanged,
+                            onChanged: (val) {
+                              context.read<ServiceListingCubit>().searchChanged(
+                                val,
+                              );
+                              _resetScroll();
+                            },
                           ),
                           if (state.categories.isNotEmpty) ...[
                             const SizedBox(height: 16),
                             _ServiceCategoryStrip(
                               categories: state.categories,
                               selectedCategory: state.selectedCategory,
-                              onSelected: context
-                                  .read<ServiceListingCubit>()
-                                  .toggleCategory,
+                              onSelected: (cat) {
+                                context
+                                    .read<ServiceListingCubit>()
+                                    .toggleCategory(cat);
+                                _resetScroll();
+                              },
                             ),
                           ],
                           if (state.config.filters.isNotEmpty) ...[
@@ -95,9 +107,12 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                             _ServiceFilterStrip(
                               filters: state.config.filters,
                               selectedFilters: state.selectedTopFilters,
-                              onToggle: context
-                                  .read<ServiceListingCubit>()
-                                  .toggleTopFilter,
+                              onToggle: (filter) {
+                                context
+                                    .read<ServiceListingCubit>()
+                                    .toggleTopFilter(filter);
+                                _resetScroll();
+                              },
                             ),
                           ],
                         ],

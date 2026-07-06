@@ -26,6 +26,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   late final TextEditingController _controller;
   late final FocusNode _focusNode;
+  late final ScrollController _scrollController;
 
   ServiceCategoryData? _selectedCategory;
   final Set<ServiceFilterId> _selectedFilters = {};
@@ -35,6 +36,7 @@ class _SearchScreenState extends State<SearchScreen> {
     super.initState();
     _controller = TextEditingController()..addListener(_onSearchChanged);
     _focusNode = FocusNode();
+    _scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _focusNode.requestFocus();
@@ -48,10 +50,20 @@ class _SearchScreenState extends State<SearchScreen> {
       ..removeListener(_onSearchChanged)
       ..dispose();
     _focusNode.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
-  void _onSearchChanged() => setState(() {});
+  void _resetScroll() {
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(0.0);
+    }
+  }
+
+  void _onSearchChanged() {
+    setState(() {});
+    _resetScroll();
+  }
 
   void _onTokenTap(String token) {
     _controller.text = token;
@@ -150,6 +162,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               ? null
                               : cat;
                         });
+                        _resetScroll();
                       },
                     ),
                     if (showFilters) ...[
@@ -163,6 +176,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ? _selectedFilters.remove(filter)
                                 : _selectedFilters.add(filter);
                           });
+                          _resetScroll();
                         },
                       ),
                     ],
@@ -173,6 +187,7 @@ class _SearchScreenState extends State<SearchScreen> {
               // ── Scrollable Results Section ───────────────────────────────────
               Expanded(
                 child: CustomScrollView(
+                  controller: _scrollController,
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [

@@ -25,12 +25,14 @@ class RestaurantSearchScreen extends StatefulWidget {
 class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
   late final TextEditingController _controller;
   late final FocusNode _focusNode;
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController()..addListener(_onChanged);
     _focusNode = FocusNode();
+    _scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _focusNode.requestFocus();
     });
@@ -42,10 +44,16 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
       ..removeListener(_onChanged)
       ..dispose();
     _focusNode.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
-  void _onChanged() => setState(() {});
+  void _onChanged() {
+    setState(() {});
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(0.0);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +104,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
               // ── Scrollable Results Section ───────────────────────────────────
               Expanded(
                 child: CustomScrollView(
+                  controller: _scrollController,
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
