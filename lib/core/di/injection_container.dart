@@ -15,12 +15,7 @@ import 'package:food_user_app/features/auth/data/datasources/auth_local_data_sou
 import 'package:food_user_app/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:food_user_app/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:food_user_app/features/auth/domain/repositories/auth_repository.dart';
-import 'package:food_user_app/features/auth/domain/usecases/forgot_password_usecase.dart';
-import 'package:food_user_app/features/auth/domain/usecases/login_usecase.dart';
 import 'package:food_user_app/features/auth/domain/usecases/logout_usecase.dart';
-import 'package:food_user_app/features/auth/domain/usecases/register_usecase.dart';
-import 'package:food_user_app/features/auth/domain/usecases/set_password_usecase.dart';
-import 'package:food_user_app/features/auth/domain/usecases/verify_otp_usecase.dart';
 import 'package:food_user_app/features/auth/domain/usecases/send_phone_otp_usecase.dart';
 import 'package:food_user_app/features/auth/domain/usecases/verify_phone_otp_usecase.dart';
 import 'package:food_user_app/features/auth/domain/usecases/complete_registration_usecase.dart';
@@ -49,6 +44,25 @@ import 'package:food_user_app/features/restaurant/domain/usecases/get_restaurant
 import 'package:food_user_app/features/restaurant/domain/usecases/get_restaurant_detail_usecase.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_list_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_cubit.dart';
+import 'package:food_user_app/features/restaurant/data/datasources/menu_remote_data_source.dart';
+import 'package:food_user_app/features/restaurant/data/repositories/menu_repository_impl.dart';
+import 'package:food_user_app/features/restaurant/domain/repositories/menu_repository.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/menu_cubit.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_filter_cubit.dart';
+import 'package:food_user_app/features/cart/data/datasources/cart_remote_data_source.dart';
+import 'package:food_user_app/features/cart/data/repositories/cart_repository_impl.dart';
+import 'package:food_user_app/features/cart/domain/repositories/cart_repository.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:food_user_app/features/payment/data/datasources/payment_remote_data_source.dart';
+import 'package:food_user_app/features/payment/data/repositories/payment_repository_impl.dart';
+import 'package:food_user_app/features/payment/domain/repositories/payment_repository.dart';
+import 'package:food_user_app/features/payment/domain/usecases/checkout_usecase.dart';
+import 'package:food_user_app/features/payment/domain/usecases/delete_card_usecase.dart';
+import 'package:food_user_app/features/payment/domain/usecases/get_saved_cards_usecase.dart';
+import 'package:food_user_app/features/payment/domain/usecases/save_card_usecase.dart';
+import 'package:food_user_app/features/payment/presentation/cubit/checkout_cubit.dart';
+import 'package:food_user_app/features/payment/presentation/cubit/payment_method_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -77,7 +91,10 @@ Future<void> init({SharedPreferences? prefs}) async {
   );
 
   sl.registerLazySingleton<AuthInterceptor>(
-    () => AuthInterceptor(sl<TokenStorage>()),
+    () => AuthInterceptor(
+      sl<TokenStorage>(),
+      getDio: () => sl<DioClient>().dio,
+    ),
   );
   sl.registerLazySingleton<LoggingInterceptor>(() => LoggingInterceptor());
 
@@ -117,12 +134,7 @@ Future<void> init({SharedPreferences? prefs}) async {
     ),
   );
 
-  sl.registerLazySingleton(() => LoginUseCase(sl<AuthRepository>()));
-  sl.registerLazySingleton(() => RegisterUseCase(sl<AuthRepository>()));
   sl.registerLazySingleton(() => LogoutUseCase(sl<AuthRepository>()));
-  sl.registerLazySingleton(() => ForgotPasswordUseCase(sl<AuthRepository>()));
-  sl.registerLazySingleton(() => VerifyOtpUseCase(sl<AuthRepository>()));
-  sl.registerLazySingleton(() => SetPasswordUseCase(sl<AuthRepository>()));
   // Unified phone login/register (API v2)
   sl.registerLazySingleton(() => SendPhoneOtpUseCase(sl<AuthRepository>()));
   sl.registerLazySingleton(() => VerifyPhoneOtpUseCase(sl<AuthRepository>()));
@@ -134,12 +146,7 @@ Future<void> init({SharedPreferences? prefs}) async {
   // session state is consistent. Provided globally in `app.dart`.
   sl.registerLazySingleton<AuthBloc>(
     () => AuthBloc(
-      loginUseCase: sl<LoginUseCase>(),
-      registerUseCase: sl<RegisterUseCase>(),
       logoutUseCase: sl<LogoutUseCase>(),
-      forgotPasswordUseCase: sl<ForgotPasswordUseCase>(),
-      verifyOtpUseCase: sl<VerifyOtpUseCase>(),
-      setPasswordUseCase: sl<SetPasswordUseCase>(),
       sendPhoneOtpUseCase: sl<SendPhoneOtpUseCase>(),
       verifyPhoneOtpUseCase: sl<VerifyPhoneOtpUseCase>(),
       completeRegistrationUseCase: sl<CompleteRegistrationUseCase>(),
@@ -156,7 +163,8 @@ Future<void> init({SharedPreferences? prefs}) async {
     () => AddressRemoteDataSourceImpl(dio: sl<DioClient>().dio),
   );
   sl.registerLazySingleton<AddressRepository>(
-    () => AddressRepositoryImpl(remoteDataSource: sl<AddressRemoteDataSource>()),
+    () =>
+        AddressRepositoryImpl(remoteDataSource: sl<AddressRemoteDataSource>()),
   );
   sl.registerLazySingleton<SavedAddressesRepository>(
     () => SavedAddressesRepositoryImpl(
@@ -203,23 +211,68 @@ Future<void> init({SharedPreferences? prefs}) async {
     ),
   );
   sl.registerLazySingleton(
-    () => GetRestaurantsByCategoryUseCase(
-      repository: sl<RestaurantRepository>(),
-    ),
+    () =>
+        GetRestaurantsByCategoryUseCase(repository: sl<RestaurantRepository>()),
   );
   sl.registerLazySingleton(
-    () => GetRestaurantDetailUseCase(
-      repository: sl<RestaurantRepository>(),
-    ),
+    () => GetRestaurantDetailUseCase(repository: sl<RestaurantRepository>()),
   );
   sl.registerFactory<RestaurantListCubit>(
-    () => RestaurantListCubit(
-      restaurantRepository: sl<RestaurantRepository>(),
-    ),
+    () => RestaurantListCubit(restaurantRepository: sl<RestaurantRepository>()),
   );
   sl.registerFactory<RestaurantDetailCubit>(
-    () => RestaurantDetailCubit(
-      restaurantRepository: sl<RestaurantRepository>(),
+    () =>
+        RestaurantDetailCubit(restaurantRepository: sl<RestaurantRepository>()),
+  );
+
+  sl.registerLazySingleton<MenuRemoteDataSource>(
+    () => MenuRemoteDataSourceImpl(dio: sl<DioClient>().dio),
+  );
+  sl.registerLazySingleton<MenuRepository>(
+    () => MenuRepositoryImpl(remoteDataSource: sl<MenuRemoteDataSource>()),
+  );
+  sl.registerFactory<MenuCubit>(
+    () => MenuCubit(menuRepository: sl<MenuRepository>()),
+  );
+
+  sl.registerFactory<FavoriteCubit>(
+    () => FavoriteCubit(restaurantRepository: sl<RestaurantRepository>()),
+  );
+  sl.registerFactory<RestaurantFilterCubit>(
+    () =>
+        RestaurantFilterCubit(restaurantRepository: sl<RestaurantRepository>()),
+  );
+
+  sl.registerLazySingleton<CartRemoteDataSource>(
+    () => CartRemoteDataSourceImpl(dio: sl<DioClient>().dio),
+  );
+  sl.registerLazySingleton<CartRepository>(
+    () => CartRepositoryImpl(remoteDataSource: sl<CartRemoteDataSource>()),
+  );
+  sl.registerFactory<CartCubit>(
+    () => CartCubit(cartRepository: sl<CartRepository>()),
+  );
+
+  // ── Payment & Checkout ────────────────────────────────────────────────────
+  sl.registerLazySingleton<PaymentRemoteDataSource>(
+    () => PaymentRemoteDataSourceImpl(sl<DioClient>().dio),
+  );
+  sl.registerLazySingleton<PaymentRepository>(
+    () => PaymentRepositoryImpl(sl<PaymentRemoteDataSource>()),
+  );
+  sl.registerLazySingleton(() => GetSavedCardsUseCase(sl<PaymentRepository>()));
+  sl.registerLazySingleton(() => SaveCardUseCase(sl<PaymentRepository>()));
+  sl.registerLazySingleton(() => DeleteCardUseCase(sl<PaymentRepository>()));
+  sl.registerLazySingleton(() => CheckoutUseCase(sl<PaymentRepository>()));
+  
+  sl.registerFactory<PaymentMethodCubit>(
+    () => PaymentMethodCubit(
+      getSavedCardsUseCase: sl<GetSavedCardsUseCase>(),
+      saveCardUseCase: sl<SaveCardUseCase>(),
+      deleteCardUseCase: sl<DeleteCardUseCase>(),
     ),
+  );
+  sl.registerFactory<CheckoutCubit>(
+    () => CheckoutCubit(checkoutUseCase: sl<CheckoutUseCase>()),
   );
 }

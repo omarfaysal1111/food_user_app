@@ -184,8 +184,8 @@ class _AccountProfileCard extends StatelessWidget {
         final name = profile != null && profile.fullName.isNotEmpty
             ? profile.fullName
             : (profile != null && profile.firstName.isNotEmpty
-                ? '${profile.firstName} ${profile.lastName}'
-                : l10n.accountPlaceholderName);
+                  ? '${profile.firstName} ${profile.lastName}'
+                  : l10n.accountPlaceholderName);
         final email = profile != null && profile.email.isNotEmpty
             ? profile.email
             : l10n.accountPlaceholderEmail;

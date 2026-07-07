@@ -9,7 +9,6 @@ import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/core/widgets/app_search_field.dart';
-import 'package:food_user_app/core/widgets/app_status_dot_label.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_type.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
@@ -17,6 +16,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/home/presentation/cubit/banner_cubit.dart';
 import 'package:food_user_app/features/home/presentation/cubit/banner_state.dart';
 import 'package:food_user_app/features/home/domain/entities/banner.dart';
+import 'package:food_user_app/features/restaurant/presentation/widgets/restaurant_card.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_filter_cubit.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_filter_state.dart';
+import 'package:food_user_app/core/di/injection_container.dart';
+import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -40,6 +44,7 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.only(top: 22, bottom: AppSpacing.lg),
             sliver: SliverList.list(
               children: [
+                // TODO: Integrate with /categories endpoint
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.md,
@@ -56,7 +61,7 @@ class HomeScreen extends StatelessWidget {
                   child: _SectionHeader(title: copy.missedOffersTitle),
                 ),
                 const SizedBox(height: 10),
-                _OfferList(copy: copy),
+                const _OfferList(),
                 const SizedBox(height: 13),
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -408,28 +413,9 @@ class _PromoSliderState extends State<_PromoSlider> {
             );
           },
           orElse: () {
-            return Column(
-              children: [
-                SizedBox(
-                  height: 155,
-                  child: PageView.builder(
-                    controller: _controller,
-                    onPageChanged: (page) =>
-                        setState(() => _currentPage = page),
-                    itemCount: 1,
-                    itemBuilder: (context, index) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: AppSpacing.md,
-                        ),
-                        child: _PromoBannerMock(),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const _BannerIndicator(activePage: 0, count: 1),
-              ],
+            return const SizedBox(
+              height: 155,
+              child: Center(child: CircularProgressIndicator()),
             );
           },
         );
@@ -452,28 +438,6 @@ class _PromoBanner extends StatelessWidget {
         children: [
           AppNetworkImage(
             banner.imageUrl,
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PromoBannerMock extends StatelessWidget {
-  const _PromoBannerMock();
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.all(Radius.circular(16)),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          const AppRasterImage.asset(
-            AppAssets.homePromoBanner,
             width: double.infinity,
             height: double.infinity,
             fit: BoxFit.cover,
@@ -551,99 +515,123 @@ class _SectionHeader extends StatelessWidget {
 }
 
 class _OfferList extends StatelessWidget {
-  const _OfferList({required this.copy});
-
-  final _HomeCopy copy;
+  const _OfferList();
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 202,
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-        scrollDirection: Axis.horizontal,
-        itemCount: copy.offers.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 12),
-        itemBuilder: (context, index) => _OfferCard(offer: copy.offers[index]),
+    return BlocProvider<RestaurantFilterCubit>(
+      create: (context) => sl<RestaurantFilterCubit>()..fetchWithOffers(),
+      child: SizedBox(
+        height: 202,
+        child: BlocBuilder<RestaurantFilterCubit, RestaurantFilterState>(
+          builder: (context, state) {
+            return state.maybeWhen(
+              loaded: (restaurants, type) {
+                if (restaurants.isEmpty) {
+                  return const Center(child: Text('No offers available'));
+                }
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: restaurants.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 12),
+                  itemBuilder: (context, index) => _OfferCard(restaurant: restaurants[index]),
+                );
+              },
+              orElse: () => const Center(child: CircularProgressIndicator()),
+            );
+          },
+        ),
       ),
     );
   }
 }
 
 class _OfferCard extends StatelessWidget {
-  const _OfferCard({required this.offer});
+  const _OfferCard({required this.restaurant});
 
-  final _HomeOffer offer;
+  final Restaurant restaurant;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 140,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(12)),
-            child: AppRasterImage.asset(
-              offer.imageAsset,
-              height: 110,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              ClipOval(
-                child: AppRasterImage.asset(
-                  AppAssets.homeRestaurantLogo,
-                  width: 12,
-                  height: 12,
-                  fit: BoxFit.cover,
-                ),
+    return GestureDetector(
+      onTap: () => context.push(
+        RouteNames.restaurantDetailFor(restaurant.id),
+      ),
+      child: SizedBox(
+        width: 140,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+              child: AppNetworkImage(
+                restaurant.coverImageUrl,
+                height: 110,
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Text(
-                  offer.restaurant,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.start,
-                  style: AppTextStyles.caption(context).copyWith(
-                    fontSize: 8,
-                    fontWeight: FontWeight.w500,
-                    height: 1.25,
-                    color: AppColors.paragraph(context),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                ClipOval(
+                  child: AppRasterImage.asset(
+                    AppAssets.homeRestaurantLogo,
+                    width: 12,
+                    height: 12,
+                    fit: BoxFit.cover,
                   ),
                 ),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    restaurant.cuisineType,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.start,
+                    style: AppTextStyles.caption(context).copyWith(
+                      fontSize: 8,
+                      fontWeight: FontWeight.w500,
+                      height: 1.25,
+                      color: AppColors.paragraph(context),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              restaurant.name,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.start,
+              style: AppTextStyles.body(context).copyWith(
+                fontSize: 12,
+                height: 1.3,
+                fontWeight: FontWeight.w400,
+                color: AppColors.onSurface(context),
               ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            offer.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.start,
-            style: AppTextStyles.body(context).copyWith(
-              fontSize: 12,
-              height: 1.3,
-              fontWeight: FontWeight.w400,
-              color: AppColors.onSurface(context),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            offer.price,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.body(context).copyWith(
-              fontSize: 14,
-              height: 1.25,
-              color: AppColors.onSurface(context),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.star, size: 14, color: Colors.orange),
+                const SizedBox(width: 4),
+                Text(
+                  restaurant.rating.toStringAsFixed(1),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.body(context).copyWith(
+                    fontSize: 14,
+                    height: 1.25,
+                    color: AppColors.onSurface(context),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -656,252 +644,42 @@ class _RestaurantList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 209,
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-        scrollDirection: Axis.horizontal,
-        itemCount: copy.restaurants.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          return _RestaurantCard(
-            restaurant: copy.restaurants[index],
-            copy: copy,
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _RestaurantCard extends StatelessWidget {
-  const _RestaurantCard({required this.restaurant, required this.copy});
-
-  final _HomeRestaurant restaurant;
-  final _HomeCopy copy;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.surfaceCard(context),
-      borderRadius: const BorderRadius.all(AppRadius.md),
-      child: InkWell(
-        borderRadius: const BorderRadius.all(AppRadius.md),
-        onTap: () =>
-            context.push(RouteNames.restaurantDetailFor(restaurant.id)),
-        child: Container(
-          width: 223,
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(12)),
-            border: Border.all(color: AppColors.border(context), width: 0.5),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _RestaurantImage(restaurant: restaurant),
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(8, 8, 8, 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  restaurant.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.start,
-                                  style: AppTextStyles.body(
-                                    context,
-                                  ).copyWith(fontSize: 12, height: 1.3),
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              _AvailabilityPill(
-                                label: restaurant.isOpen
-                                    ? copy.available
-                                    : copy.closed,
-                                isOpen: restaurant.isOpen,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        _RatingBadge(rating: restaurant.rating),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      restaurant.description,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.start,
-                      style: AppTextStyles.caption(
-                        context,
-                      ).copyWith(fontSize: 10, height: 1.25),
-                    ),
-                    const SizedBox(height: 8),
-                    _DirectionalIconText(
-                      icon: const Icon(
-                        Icons.schedule_rounded,
-                        color: AppColors.metaIcon,
-                        size: 14,
-                      ),
-                      text: restaurant.deliveryTime,
-                      gap: 4,
-                      style: AppTextStyles.caption(context).copyWith(
-                        fontSize: 10,
-                        height: 1.25,
-                        color: AppColors.onSurface(context),
-                      ),
-                    ),
-                  ],
+    return BlocProvider<RestaurantFilterCubit>(
+      create: (context) => sl<RestaurantFilterCubit>()..fetchMostOrdered(),
+      child: SizedBox(
+        height: 209,
+        child: BlocBuilder<RestaurantFilterCubit, RestaurantFilterState>(
+          builder: (context, state) {
+            return state.when(
+              initial: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (message) => Center(
+                child: Text(
+                  message,
+                  style: const TextStyle(color: AppColors.error),
                 ),
               ),
-            ],
-          ),
+              loaded: (restaurants, filterType) {
+                if (restaurants.isEmpty) {
+                  return const Center(child: Text('No restaurants found'));
+                }
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                  ),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: restaurants.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 12),
+                  itemBuilder: (context, index) {
+                    return RestaurantCard(restaurant: restaurants[index]);
+                  },
+                );
+              },
+            );
+          },
         ),
       ),
     );
-  }
-}
-
-class _RestaurantImage extends StatelessWidget {
-  const _RestaurantImage({required this.restaurant});
-
-  final _HomeRestaurant restaurant;
-
-  @override
-  Widget build(BuildContext context) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-
-    return SizedBox(
-      height: 124,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(12),
-              ),
-              child: AppRasterImage.asset(
-                restaurant.imageAsset,
-                fit: BoxFit.cover,
-                width: double.infinity,
-              ),
-            ),
-          ),
-          Positioned(
-            left: isArabic ? 10 : null,
-            right: isArabic ? null : 10,
-            top: 10,
-            child: Container(
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                color: AppColors.surfaceCard(context),
-                borderRadius: const BorderRadius.all(AppRadius.full),
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.favorite_border_rounded,
-                  size: 14,
-                  color: AppColors.primary,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RatingBadge extends StatelessWidget {
-  const _RatingBadge({required this.rating});
-
-  final String rating;
-
-  @override
-  Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final icon = const Icon(
-      Icons.star_rounded,
-      color: AppColors.ratingStar,
-      size: 14,
-    );
-    final text = Text(
-      rating,
-      style: AppTextStyles.body(context).copyWith(fontSize: 10, height: 1.25),
-    );
-
-    return Container(
-      padding: const EdgeInsetsDirectional.all(4),
-      decoration: BoxDecoration(
-        color: AppColors.scaffoldBackground(context),
-        borderRadius: const BorderRadius.all(Radius.circular(4)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: isRtl
-            ? [text, const SizedBox(width: 2), icon]
-            : [icon, const SizedBox(width: 2), text],
-      ),
-    );
-  }
-}
-
-class _DirectionalIconText extends StatelessWidget {
-  const _DirectionalIconText({
-    required this.icon,
-    required this.text,
-    required this.style,
-    this.gap = 4,
-  });
-
-  final Widget icon;
-  final String text;
-  final TextStyle style;
-  final double gap;
-
-  @override
-  Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final textWidget = Flexible(
-      child: Text(
-        text,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.start,
-        style: style,
-      ),
-    );
-    final gapWidget = SizedBox(width: gap);
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: isRtl
-          ? [textWidget, gapWidget, icon]
-          : [icon, gapWidget, textWidget],
-    );
-  }
-}
-
-class _AvailabilityPill extends StatelessWidget {
-  const _AvailabilityPill({required this.label, required this.isOpen});
-
-  final String label;
-  final bool isOpen;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = isOpen ? AppColors.success : AppColors.error;
-
-    return AppStatusDotLabel(label: label, color: color);
   }
 }
 

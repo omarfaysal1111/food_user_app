@@ -7,12 +7,29 @@ import 'package:food_user_app/features/address/data/datasources/address_remote_d
 import 'package:food_user_app/features/address/data/models/address_dto.dart';
 import 'package:food_user_app/features/address/data/models/create_address_request.dart';
 import 'package:food_user_app/features/address/domain/entities/address.dart';
+import 'package:food_user_app/features/address/domain/models/address_request.dart';
 import 'package:food_user_app/features/address/domain/repositories/address_repository.dart';
 
 class AddressRepositoryImpl implements AddressRepository {
   final AddressRemoteDataSource remoteDataSource;
 
   AddressRepositoryImpl({required this.remoteDataSource});
+
+  /// Maps a pure-domain [AddressRequest] into the data-layer DTO.
+  CreateAddressRequest _toDto(AddressRequest r) => CreateAddressRequest(
+    label: r.label,
+    fullAddress: r.fullAddress,
+    lat: r.lat,
+    lng: r.lng,
+    city: r.city,
+    neighborhood: r.neighborhood,
+    streetNumber: r.streetNumber,
+    buildingNumber: r.buildingNumber,
+    floor: r.floor,
+    apartment: r.apartment,
+    addressType: r.addressType,
+    isDefault: r.isDefault,
+  );
 
   @override
   Future<Either<Failure, List<Address>>> getAddresses() async {
@@ -26,11 +43,9 @@ class AddressRepositoryImpl implements AddressRepository {
   }
 
   @override
-  Future<Either<Failure, Address>> createAddress(
-    CreateAddressRequest request,
-  ) async {
+  Future<Either<Failure, Address>> createAddress(AddressRequest request) async {
     try {
-      final dto = await remoteDataSource.createAddress(request);
+      final dto = await remoteDataSource.createAddress(_toDto(request));
       return Right(dto.toEntity());
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
@@ -40,11 +55,13 @@ class AddressRepositoryImpl implements AddressRepository {
   @override
   Future<Either<Failure, Address>> updateAddress({
     required String id,
-    required CreateAddressRequest request,
+    required AddressRequest request,
   }) async {
     try {
-      final dto =
-          await remoteDataSource.updateAddress(id: id, request: request);
+      final dto = await remoteDataSource.updateAddress(
+        id: id,
+        request: _toDto(request),
+      );
       return Right(dto.toEntity());
     } catch (e) {
       return Left(_mapExceptionToFailure(e));

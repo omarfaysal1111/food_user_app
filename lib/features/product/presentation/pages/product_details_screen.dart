@@ -200,7 +200,19 @@ class _HeroProductImage extends StatelessWidget {
               fit: BoxFit.contain,
             ),
           ),
-          Image.asset(imageAsset, width: 233, height: 120, fit: BoxFit.contain),
+          imageAsset.startsWith('http')
+              ? Image.network(
+                  imageAsset,
+                  width: 233,
+                  height: 120,
+                  fit: BoxFit.contain,
+                )
+              : Image.asset(
+                  imageAsset,
+                  width: 233,
+                  height: 120,
+                  fit: BoxFit.contain,
+                ),
         ],
       ),
     );

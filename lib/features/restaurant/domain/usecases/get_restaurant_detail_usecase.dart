@@ -11,9 +11,7 @@ class GetRestaurantDetailUseCase
   GetRestaurantDetailUseCase({required this.repository});
 
   @override
-  Future<Either<Failure, Restaurant>> call(
-    GetRestaurantDetailParams params,
-  ) {
+  Future<Either<Failure, Restaurant>> call(GetRestaurantDetailParams params) {
     return repository.getRestaurantDetail(params.id);
   }
 }

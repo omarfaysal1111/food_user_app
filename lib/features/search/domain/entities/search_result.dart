@@ -6,10 +6,7 @@ class SearchResult extends Equatable {
   final List<Restaurant> restaurants;
   final List<MenuItem> items;
 
-  const SearchResult({
-    required this.restaurants,
-    required this.items,
-  });
+  const SearchResult({required this.restaurants, required this.items});
 
   @override
   List<Object?> get props => [restaurants, items];

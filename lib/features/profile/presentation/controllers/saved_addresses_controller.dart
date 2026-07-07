@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
-import 'package:food_user_app/features/profile/data/models/saved_address_dto.dart';
 import 'package:food_user_app/features/profile/domain/models/saved_address.dart';
+import 'package:food_user_app/features/profile/domain/models/saved_address_input.dart';
 import 'package:food_user_app/features/profile/domain/repositories/saved_addresses_repository.dart';
 
 class SavedAddressesController extends ChangeNotifier {
@@ -98,22 +98,20 @@ class SavedAddressesController extends ChangeNotifier {
     }
   }
 
-  Future<bool> addAddress(SavedAddressRequest request) async {
-    _logAddressDebug(
-      'SavedAddressesController.addAddress body=${request.toJson()}',
-    );
+  Future<bool> addAddress(SavedAddressInput input) async {
+    _logAddressDebug('SavedAddressesController.addAddress');
     return _mutate(() async {
-      await _repository.createAddress(request);
+      await _repository.createAddress(input);
       await loadAddresses();
     });
   }
 
   Future<bool> updateAddress({
     required String id,
-    required SavedAddressRequest request,
+    required SavedAddressInput input,
   }) async {
     return _mutate(() async {
-      await _repository.updateAddress(id: id, request: request);
+      await _repository.updateAddress(id: id, input: input);
       await loadAddresses();
     });
   }

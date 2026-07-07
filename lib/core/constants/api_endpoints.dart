@@ -55,6 +55,17 @@ class ApiEndpoints {
   static const String userSettings = '/user/settings';
   static const String user = '/user';
 
+  // ── Cart ──────────────────────────────────────────────────────────────────
+  static const String userCart = '/user/cart';
+  static const String userCartItems = '/user/cart/items';
+  static String userCartItem(String itemId) => '$userCartItems/$itemId';
+  static const String applyPromo = '/cart/promo';
+
+  // ── Payment & Checkout ────────────────────────────────────────────────────
+  static const String userCards = '/user/cards';
+  static String userCard(String id) => '$userCards/$id';
+  static const String checkout = '/payments/checkout';
+
   // ── Banners & Search ──────────────────────────────────────────────────────
   static const String banners = '/banners';
   static const String search = '/search';
@@ -65,6 +76,16 @@ class ApiEndpoints {
   static String restaurantDetails(String id) => '$restaurants/$id';
   static String restaurantBranches(String id) => '$restaurants/$id/branches';
   static String restaurantOffers(String id) => '$restaurants/$id/offers';
+  static String restaurantMenu(String id) => '$restaurants/$id/menu';
+  static String branchMenu(String branchId) => '/menus/branch/$branchId';
+  static String itemModifiers(String itemId) =>
+      '/menus/items/$itemId/modifiers';
+
+  static const String topRated = '/restaurants/top-rated';
+  static const String mostOrdered = '/restaurants/most-ordered';
+  static const String withOffers = '/restaurants/with-offers';
+  static const String favorites = '/restaurants/favorites';
+  static String toggleFavorite(String id) => '$restaurants/$id/favorite';
 
   /// Public auth endpoints that must NOT receive an Authorization header.
   /// `/auth/set-password` is intentionally NOT listed here.

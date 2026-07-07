@@ -6,11 +6,6 @@ class RouteNames {
   static const phoneAuth = '/auth/phone';
   static const mockOtp = '/auth/otp';
   static const completeProfile = '/auth/complete-profile';
-  static const login = '/login';
-  static const register = '/register';
-  static const otp = '/otp';
-  static const forgotPassword = '/forgot-password';
-  static const resetPassword = '/reset-password';
   static const termsAndConditions = '/terms-and-conditions';
   static const home = '/home';
   static const search = '/search';

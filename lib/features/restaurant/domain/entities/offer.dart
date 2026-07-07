@@ -23,13 +23,13 @@ class Offer extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        restaurantId,
-        title,
-        discountPercent,
-        minOrderAmount,
-        description,
-        expiresAt,
-        active,
-      ];
+    id,
+    restaurantId,
+    title,
+    discountPercent,
+    minOrderAmount,
+    description,
+    expiresAt,
+    active,
+  ];
 }

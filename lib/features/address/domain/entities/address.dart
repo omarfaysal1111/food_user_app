@@ -33,18 +33,18 @@ class Address extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        label,
-        fullAddress,
-        lat,
-        lng,
-        city,
-        neighborhood,
-        streetNumber,
-        buildingNumber,
-        floor,
-        apartment,
-        addressType,
-        isDefault,
-      ];
+    id,
+    label,
+    fullAddress,
+    lat,
+    lng,
+    city,
+    neighborhood,
+    streetNumber,
+    buildingNumber,
+    floor,
+    apartment,
+    addressType,
+    isDefault,
+  ];
 }

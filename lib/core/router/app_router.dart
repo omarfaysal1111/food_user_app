@@ -7,11 +7,6 @@ import '../../features/auth/presentation/pages/auth_entry_screen.dart';
 import '../../features/auth/presentation/pages/phone_auth_screen.dart';
 import '../../features/auth/presentation/pages/mock_otp_screen.dart';
 import '../../features/auth/presentation/pages/complete_profile_screen.dart';
-import '../../features/auth/presentation/pages/login_screen.dart';
-import '../../features/auth/presentation/pages/register_screen.dart';
-import '../../features/auth/presentation/pages/otp_verification_screen.dart';
-import '../../features/auth/presentation/pages/forgot_password_screen.dart';
-import '../../features/auth/presentation/pages/reset_password_screen.dart';
 import '../../features/auth/presentation/pages/terms_and_conditions_screen.dart';
 import '../../features/main/presentation/pages/main_layout.dart';
 import '../../features/home/presentation/pages/search_screen.dart';
@@ -21,6 +16,7 @@ import '../../features/restaurant/presentation/pages/restaurant_detail_screen.da
 import '../../features/restaurant/presentation/pages/restaurant_rate_screen.dart';
 import '../../features/restaurant/presentation/pages/restaurant_search_screen.dart';
 import '../../features/restaurant/presentation/pages/menu_item_detail_screen.dart';
+import '../../features/restaurant/domain/entities/menu_item.dart';
 import '../../features/cart/domain/entities/cart_item.dart';
 import '../../features/cart/presentation/pages/cart_screen.dart';
 import '../../features/product/presentation/pages/product_details_screen.dart';
@@ -94,29 +90,6 @@ class AppRouter {
           return CompleteProfileScreen(phone: phone);
         },
       ),
-      GoRoute(path: RouteNames.login, builder: (c, s) => const LoginScreen()),
-      GoRoute(
-        path: RouteNames.register,
-        builder: (c, s) => const RegisterScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.otp,
-        builder: (c, s) {
-          final email = s.extra is String ? s.extra as String : '';
-          return OtpVerificationScreen(email: email);
-        },
-      ),
-      GoRoute(
-        path: RouteNames.forgotPassword,
-        builder: (c, s) => const ForgotPasswordScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.resetPassword,
-        builder: (c, s) {
-          final email = s.extra is String ? s.extra as String : '';
-          return ResetPasswordScreen(email: email);
-        },
-      ),
       GoRoute(
         path: RouteNames.termsAndConditions,
         builder: (c, s) => const TermsAndConditionsScreen(),
@@ -161,7 +134,10 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.menuItemDetail,
-        builder: (c, s) => const MenuItemDetailScreen(),
+        builder: (c, s) {
+          final item = s.extra as MenuItem;
+          return MenuItemDetailScreen(item: item);
+        },
       ),
       GoRoute(path: RouteNames.cart, builder: (c, s) => const CartScreen()),
       GoRoute(

@@ -1,0 +1,34 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:food_user_app/features/restaurant/data/models/menu_item_dto.dart';
+import 'package:food_user_app/features/restaurant/domain/entities/menu_category.dart';
+
+part 'menu_category_dto.freezed.dart';
+part 'menu_category_dto.g.dart';
+
+@freezed
+abstract class MenuCategoryDto with _$MenuCategoryDto {
+  const factory MenuCategoryDto({
+    required String id,
+    required String branchId,
+    String? name,
+    @Default(0) int sortOrder,
+    @Default([]) List<MenuItemDto> items,
+    @Default(true) bool visible,
+  }) = _MenuCategoryDto;
+
+  factory MenuCategoryDto.fromJson(Map<String, dynamic> json) =>
+      _$MenuCategoryDtoFromJson(json);
+}
+
+extension MenuCategoryDtoMapper on MenuCategoryDto {
+  MenuCategory toEntity() {
+    return MenuCategory(
+      id: id,
+      branchId: branchId,
+      name: name ?? '',
+      sortOrder: sortOrder,
+      items: items.map((e) => e.toEntity()).toList(),
+      visible: visible,
+    );
+  }
+}

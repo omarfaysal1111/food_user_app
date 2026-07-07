@@ -19,11 +19,11 @@ class UserSettings extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        locale,
-        pushNotifications,
-        smsNotifications,
-        emailNotifications,
-        theme,
-      ];
+    id,
+    locale,
+    pushNotifications,
+    smsNotifications,
+    emailNotifications,
+    theme,
+  ];
 }

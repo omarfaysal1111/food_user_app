@@ -14,6 +14,7 @@ class CartSummary extends StatelessWidget {
     required this.total,
     required this.onCheckout,
     required this.onAddMore,
+    this.onApplyPromo,
     super.key,
   });
 
@@ -23,6 +24,7 @@ class CartSummary extends StatelessWidget {
   final int total;
   final VoidCallback onCheckout;
   final VoidCallback onAddMore;
+  final ValueChanged<String>? onApplyPromo;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +38,7 @@ class CartSummary extends StatelessWidget {
         children: [
           _NotesBox(hint: l10n.cartNotesHint),
           const SizedBox(height: 16),
-          _DiscountBox(l10n: l10n),
+          _DiscountBox(l10n: l10n, onApply: onApplyPromo),
           const SizedBox(height: 18),
           Text(
             l10n.paymentSummary,
@@ -132,10 +134,24 @@ class _NotesBox extends StatelessWidget {
   }
 }
 
-class _DiscountBox extends StatelessWidget {
-  const _DiscountBox({required this.l10n});
+class _DiscountBox extends StatefulWidget {
+  const _DiscountBox({required this.l10n, this.onApply});
 
   final AppLocalizations l10n;
+  final ValueChanged<String>? onApply;
+
+  @override
+  State<_DiscountBox> createState() => _DiscountBoxState();
+}
+
+class _DiscountBoxState extends State<_DiscountBox> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,6 +171,7 @@ class _DiscountBox extends StatelessWidget {
         children: [
           Expanded(
             child: TextField(
+              controller: _controller,
               textAlign: TextAlign.start,
               textInputAction: TextInputAction.done,
               cursorColor: AppColors.cursor(context),
@@ -162,7 +179,7 @@ class _DiscountBox extends StatelessWidget {
                 context,
               ).copyWith(fontSize: 12, height: 1.3),
               decoration: InputDecoration(
-                hintText: l10n.cartDiscountCode,
+                hintText: widget.l10n.cartDiscountCode,
                 hintStyle: AppTextStyles.caption(context).copyWith(
                   color: AppColors.hint(context),
                   fontSize: 12,
@@ -175,19 +192,27 @@ class _DiscountBox extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Container(
-            padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
-            decoration: BoxDecoration(
-              color: AppColors.error.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              l10n.addCard,
-              style: AppTextStyles.textLink(context).copyWith(
-                color: AppColors.primary,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                height: 1.3,
+          GestureDetector(
+            onTap: () {
+              final code = _controller.text.trim();
+              if (code.isNotEmpty && widget.onApply != null) {
+                widget.onApply!(code);
+              }
+            },
+            child: Container(
+              padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
+              decoration: BoxDecoration(
+                color: AppColors.error.withValues(alpha: 0.10),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                widget.l10n.addCard,
+                style: AppTextStyles.textLink(context).copyWith(
+                  color: AppColors.primary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  height: 1.3,
+                ),
               ),
             ),
           ),

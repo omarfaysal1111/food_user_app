@@ -13,6 +13,13 @@ import 'package:food_user_app/features/checkout/presentation/widgets/payment_opt
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
+import 'package:food_user_app/features/payment/presentation/cubit/checkout_cubit.dart';
+import 'package:food_user_app/features/payment/presentation/cubit/checkout_state.dart';
+import 'package:food_user_app/features/payment/domain/usecases/checkout_usecase.dart';
+import 'package:food_user_app/features/payment/data/models/checkout_request_dto.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -24,10 +31,6 @@ class CheckoutScreen extends StatefulWidget {
 class _CheckoutScreenState extends State<CheckoutScreen> {
   CheckoutPaymentOption _paymentOption = CheckoutPaymentOption.cash;
   MapPickerResult? _selectedAddress;
-
-  static const _subtotal = 400;
-  static const _delivery = 20;
-  static const _discount = 80;
 
   @override
   Widget build(BuildContext context) {
@@ -41,57 +44,88 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final selectedSavedAddress = addressesController.selectedAddress?.location(
       Localizations.localeOf(context),
     );
-    const total = _subtotal + _delivery - _discount;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
       body: KeyboardDismissOnTap(
         child: SafeArea(
           bottom: false,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 0),
-                child: _CheckoutHeader(title: l10n.checkoutTitle),
-              ),
-              const SizedBox(height: 20),
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _CurrentAddressCard(
-                        address:
-                            _selectedAddress?.address ??
-                            selectedSavedAddress ??
-                            l10n.deliveryAddress,
-                        onChange: _changeAddress,
-                      ),
-                      const SizedBox(height: 16),
-                      PaymentOptionsSection(
-                        selectedOption: _paymentOption,
-                        onChanged: (option) =>
-                            _handlePaymentOptionSelected(option, total),
-                      ),
-                      // TODO: Replace static checkout totals/address with cart and checkout APIs.
-                    ],
-                  ),
-                ),
-              ),
-              _CheckoutBottomBar(
-                label: l10n.checkoutConfirmOrder,
-                totalLabel: l10n.orderGrandTotal,
-                total: l10n.cartPrice(total),
-                onTap: () {
-                  // TODO: Submit order through the checkout API.
+          child: BlocListener<CheckoutCubit, CheckoutState>(
+            listener: (context, state) {
+              state.maybeWhen(
+                success: (result) {
+                  // After successful checkout, return to Cart/Home.
                   context.pop(true);
                 },
-              ),
-            ],
+                error: (message) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(message), backgroundColor: AppColors.error),
+                  );
+                },
+                orElse: () {},
+              );
+            },
+            child: BlocBuilder<CartCubit, CartState>(
+              builder: (context, cartState) {
+                final cart = cartState.maybeWhen(
+                  loaded: (c, _) => c,
+                  orElse: () => null,
+                );
+                final total = cart?.total.round() ?? 0;
+
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 0),
+                      child: _CheckoutHeader(title: l10n.checkoutTitle),
+                    ),
+                    const SizedBox(height: 20),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const ClampingScrollPhysics(),
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _CurrentAddressCard(
+                              address:
+                                  _selectedAddress?.address ??
+                                  selectedSavedAddress ??
+                                  l10n.deliveryAddress,
+                              onChange: _changeAddress,
+                            ),
+                            const SizedBox(height: 16),
+                            PaymentOptionsSection(
+                              selectedOption: _paymentOption,
+                              onChanged: (option) =>
+                                  _handlePaymentOptionSelected(option, total.round()),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    _CheckoutBottomBar(
+                      label: l10n.checkoutConfirmOrder,
+                      totalLabel: l10n.orderGrandTotal,
+                      total: l10n.cartPrice(total),
+                      onTap: () {
+                        final orderId = cart?.id ?? 'dummy_order_id';
+                        context.read<CheckoutCubit>().checkout(
+                          CheckoutParams(
+                            request: CheckoutRequestDto(
+                              orderId: orderId,
+                              paymentMethodType: _paymentOption.name,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -125,7 +159,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
     if (!mounted || confirmed != true) return;
 
-    context.pop(true);
+    // Let CheckoutCubit handle the final processing via confirm button tap
   }
 
   Future<void> _changeAddress() async {

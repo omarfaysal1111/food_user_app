@@ -36,12 +36,19 @@ class CartItemTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           clipBehavior: Clip.antiAlias,
-          child: Image.asset(
-            item.imageAsset,
-            width: 70,
-            height: 36,
-            fit: BoxFit.contain,
-          ),
+          child: item.imageAsset.startsWith('http')
+              ? Image.network(
+                  item.imageAsset,
+                  width: 70,
+                  height: 36,
+                  fit: BoxFit.contain,
+                )
+              : Image.asset(
+                  item.imageAsset.isNotEmpty ? item.imageAsset : AppAssets.cartProductImage,
+                  width: 70,
+                  height: 36,
+                  fit: BoxFit.contain,
+                ),
         ),
         const SizedBox(width: 10),
         Expanded(

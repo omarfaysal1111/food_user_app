@@ -48,9 +48,7 @@ class RestaurantRepositoryImpl implements RestaurantRepository {
   }
 
   @override
-  Future<Either<Failure, List<Branch>>> getBranches(
-    String restaurantId,
-  ) async {
+  Future<Either<Failure, List<Branch>>> getBranches(String restaurantId) async {
     try {
       final dtos = await remoteDataSource.getBranches(restaurantId);
       return Right(dtos.map((dto) => dto.toEntity()).toList());
@@ -60,12 +58,79 @@ class RestaurantRepositoryImpl implements RestaurantRepository {
   }
 
   @override
-  Future<Either<Failure, List<Offer>>> getOffers(
-    String restaurantId,
-  ) async {
+  Future<Either<Failure, List<Offer>>> getOffers(String restaurantId) async {
     try {
       final dtos = await remoteDataSource.getOffers(restaurantId);
       return Right(dtos.map((dto) => dto.toEntity()).toList());
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, PageResponseRestaurant>> getTopRated({
+    int page = 0,
+    int size = 20,
+  }) async {
+    try {
+      final dto = await remoteDataSource.getTopRated(page: page, size: size);
+      return Right(dto.toEntity());
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, PageResponseRestaurant>> getMostOrdered({
+    int page = 0,
+    int size = 20,
+  }) async {
+    try {
+      final dto = await remoteDataSource.getMostOrdered(page: page, size: size);
+      return Right(dto.toEntity());
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, PageResponseRestaurant>> getWithOffers({
+    int page = 0,
+    int size = 20,
+  }) async {
+    try {
+      final dto = await remoteDataSource.getWithOffers(page: page, size: size);
+      return Right(dto.toEntity());
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Restaurant>>> getFavorites() async {
+    try {
+      final dtos = await remoteDataSource.getFavorites();
+      return Right(dtos.map((dto) => dto.toEntity()).toList());
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> addFavorite(String id) async {
+    try {
+      await remoteDataSource.addFavorite(id);
+      return const Right(unit);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> removeFavorite(String id) async {
+    try {
+      await remoteDataSource.removeFavorite(id);
+      return const Right(unit);
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
     }

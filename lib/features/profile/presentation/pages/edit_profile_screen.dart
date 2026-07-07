@@ -13,7 +13,7 @@ import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.da
 import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_state.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
-import 'package:food_user_app/features/user/data/models/update_user_profile_request.dart';
+import 'package:food_user_app/features/user/domain/models/update_profile_request.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -49,7 +49,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _emailController.text = profile.email;
       _phoneController.text = profile.phone;
     } else {
-      _nameController.text = AppLocalizations.of(context)!.accountPlaceholderName;
+      _nameController.text = AppLocalizations.of(
+        context,
+      )!.accountPlaceholderName;
     }
     _didSetInitialProfileData = true;
   }
@@ -70,13 +72,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final lastName = parts.length > 1 ? parts.sublist(1).join(' ') : '';
 
     context.read<ProfileBloc>().add(
-          UpdateProfileEvent(
-            UpdateUserProfileRequest(
-              firstName: firstName,
-              lastName: lastName,
-            ),
-          ),
-        );
+      UpdateProfileEvent(
+        UpdateProfileRequest(firstName: firstName, lastName: lastName),
+      ),
+    );
   }
 
   @override
@@ -136,8 +135,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const ClampingScrollPhysics(),
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 24),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      16,
+                      20,
+                      16,
+                      24,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [

@@ -6,7 +6,7 @@ class BannerCubit extends Cubit<BannerState> {
   final BannerRepository bannerRepository;
 
   BannerCubit({required this.bannerRepository})
-      : super(const BannerState.initial());
+    : super(const BannerState.initial());
 
   Future<void> getActiveBanners() async {
     emit(const BannerState.loading());

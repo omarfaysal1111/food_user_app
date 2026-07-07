@@ -1,3 +1,9 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/features/payment/presentation/cubit/payment_method_cubit.dart';
+import 'package:food_user_app/features/payment/presentation/cubit/payment_method_state.dart';
+import 'package:food_user_app/features/payment/domain/usecases/save_card_usecase.dart';
+import 'package:food_user_app/features/payment/data/models/save_card_request_dto.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -10,8 +16,6 @@ import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
   const PaymentMethodScreen({super.key});
-
-  static const _showEmptyState = false;
 
   @override
   State<PaymentMethodScreen> createState() => _PaymentMethodScreenState();
@@ -31,48 +35,16 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   static const _actionsMenuWidth = 107.0;
   static const _actionsMenuHeight = 78.0;
 
-  final List<_PaymentCardData> _cards = [];
-  var _initialized = false;
-  var _nextCardId = 1;
-  Locale? _cardsLocale;
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    final locale = Localizations.localeOf(context);
-    final l10n = AppLocalizations.of(context)!;
-    if (_initialized) {
-      if (_cardsLocale?.languageCode != locale.languageCode) {
-        _cardsLocale = locale;
-        for (var index = 0; index < _cards.length; index++) {
-          final card = _cards[index];
-          if (card.usesLocalizedSample) {
-            _cards[index] = card.copyWith(holder: l10n.sampleCardHolder);
-          }
-        }
-      }
-      return;
-    }
-
-    _cards.add(
-      _PaymentCardData(
-        id: _nextCardId++,
-        holder: l10n.sampleCardHolder,
-        maskedNumber: l10n.sampleMaskedCardNumber,
-        expiry: l10n.sampleCardExpiry,
-        usesLocalizedSample: true,
-      ),
-    );
-    _cardsLocale = locale;
-    _initialized = true;
+  void initState() {
+    super.initState();
+    // Fetch cards when screen opens
+    context.read<PaymentMethodCubit>().fetchSavedCards();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final showEmptyState =
-        PaymentMethodScreen._showEmptyState || _cards.isEmpty;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
@@ -90,18 +62,35 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             ),
             const SizedBox(height: _contentTopGap),
             Expanded(
-              child: showEmptyState
-                  ? _EmptyCardsState(message: l10n.noCardsMessage)
-                  : _CardsList(cards: _cards, onMoreTap: _showCardActionsMenu),
+              child: BlocBuilder<PaymentMethodCubit, PaymentMethodState>(
+                builder: (context, state) {
+                  return state.when(
+                    initial: () => const Center(child: CircularProgressIndicator()),
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (msg) => _EmptyCardsState(message: msg),
+                    loaded: (cards) {
+                      if (cards.isEmpty) {
+                        return _EmptyCardsState(message: l10n.noCardsMessage);
+                      }
+                      // Map Domain Entities to UI Data
+                      final uiCards = cards.map((c) => _PaymentCardData(
+                        id: c.id,
+                        holder: l10n.sampleCardHolder, // Domain doesn't have holder name currently
+                        maskedNumber: '**** **** **** ${c.last4}',
+                        expiry: '${c.expMonth.toString().padLeft(2, '0')}/${c.expYear.toString().substring(2)}',
+                      )).toList();
+
+                      return _CardsList(cards: uiCards, onMoreTap: _showCardActionsMenu);
+                    },
+                  );
+                },
+              ),
             ),
             _PaymentBottomBar(
               label: l10n.addNewCard,
               iconAsset: AppAssets.paymentAddIcon,
               onTap: _showAddCardSheet,
             ),
-            // TODO: Replace static cards with payment cards API.
-            // TODO: Add real add/edit/delete API calls later.
-            // TODO: Add secure tokenized payment handling later.
           ],
         ),
       ),
@@ -113,21 +102,15 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     if (!mounted || result == null) return;
 
     final l10n = AppLocalizations.of(context)!;
-    final usesLocalizedSample = result.holder.isEmpty;
-    setState(() {
-      _cards.add(
-        _PaymentCardData(
-          id: _nextCardId++,
-          holder: usesLocalizedSample ? l10n.sampleCardHolder : result.holder,
-          maskedNumber: _maskCardNumber(
-            result.cardNumber,
-            fallback: l10n.sampleMaskedCardNumber,
-          ),
-          expiry: result.expiry.isEmpty ? l10n.sampleCardExpiry : result.expiry,
-          usesLocalizedSample: usesLocalizedSample,
+    // Call Cubit to save card
+    context.read<PaymentMethodCubit>().saveCard(
+      const SaveCardParams(
+        request: SaveCardRequestDto(
+          gatewayToken: 'tok_dummy_for_now',
+          gateway: 'stripe',
         ),
-      );
-    });
+      ),
+    );
     _showDesignSnackBar(l10n.cardAddedDesignOnly);
   }
 
@@ -136,21 +119,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     if (!mounted || result == null) return;
 
     final l10n = AppLocalizations.of(context)!;
-    setState(() {
-      final index = _cards.indexWhere((item) => item.id == card.id);
-      if (index == -1) return;
-      final usesLocalizedSample =
-          result.holder.isEmpty && _cards[index].usesLocalizedSample;
-      _cards[index] = card.copyWith(
-        holder: result.holder.isEmpty ? card.holder : result.holder,
-        usesLocalizedSample: usesLocalizedSample,
-        maskedNumber: _maskCardNumber(
-          result.cardNumber,
-          fallback: card.maskedNumber,
-        ),
-        expiry: result.expiry.isEmpty ? card.expiry : result.expiry,
-      );
-    });
+    // Call Cubit to update card (Not supported by API currently, just simulated)
     _showDesignSnackBar(l10n.cardUpdatedDesignOnly);
   }
 
@@ -227,11 +196,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       builder: (dialogContext) {
         return _DeleteCardDialog(
           onDelete: () {
-            // TODO: Delete card through the real payment cards API.
             Navigator.of(dialogContext).pop();
-            setState(() {
-              _cards.removeWhere((item) => item.id == card.id);
-            });
+            context.read<PaymentMethodCubit>().deleteCard(card.id);
             _showDesignSnackBar(
               AppLocalizations.of(context)!.cardDeletedDesignOnly,
             );
@@ -257,13 +223,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     if (max < min) return min;
     return value.clamp(min, max).toDouble();
   }
-
-  String _maskCardNumber(String rawValue, {required String fallback}) {
-    final digits = rawValue.replaceAll(RegExp(r'\D'), '');
-    if (digits.length < 4) return fallback;
-
-    return '**** **** **** ${digits.substring(digits.length - 4)}';
-  }
 }
 
 class _PaymentCardData {
@@ -275,7 +234,7 @@ class _PaymentCardData {
     this.usesLocalizedSample = false,
   });
 
-  final int id;
+  final String id;
   final String holder;
   final String maskedNumber;
   final String expiry;

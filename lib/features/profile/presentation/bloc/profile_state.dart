@@ -37,18 +37,19 @@ class ProfileState extends Equatable {
       errorMessage: errorMessage,
       deleteAccountSuccess: deleteAccountSuccess ?? this.deleteAccountSuccess,
       updateProfileSuccess: updateProfileSuccess ?? this.updateProfileSuccess,
-      updateSettingsSuccess: updateSettingsSuccess ?? this.updateSettingsSuccess,
+      updateSettingsSuccess:
+          updateSettingsSuccess ?? this.updateSettingsSuccess,
     );
   }
 
   @override
   List<Object?> get props => [
-        profile,
-        settings,
-        isLoading,
-        errorMessage,
-        deleteAccountSuccess,
-        updateProfileSuccess,
-        updateSettingsSuccess,
-      ];
+    profile,
+    settings,
+    isLoading,
+    errorMessage,
+    deleteAccountSuccess,
+    updateProfileSuccess,
+    updateSettingsSuccess,
+  ];
 }

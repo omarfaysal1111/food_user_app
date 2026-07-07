@@ -9,8 +9,8 @@ import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
-import 'package:food_user_app/features/profile/data/models/saved_address_dto.dart';
 import 'package:food_user_app/features/profile/domain/models/saved_address.dart';
+import 'package:food_user_app/features/profile/domain/models/saved_address_input.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
@@ -284,7 +284,7 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
     final latitude = selectedLatitude ?? 30.0444;
     final longitude = selectedLongitude ?? 31.2357;
 
-    final request = SavedAddressRequest(
+    final input = SavedAddressInput(
       label:
           existingAddress?.title(Localizations.localeOf(context)) ??
           l10n.apartmentAddressTitle,
@@ -302,10 +302,10 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
     );
 
     if (mode == AddressFlowMode.edit && existingAddress != null) {
-      return controller.updateAddress(id: existingAddress.id, request: request);
+      return controller.updateAddress(id: existingAddress.id, input: input);
     }
 
-    return controller.addAddress(request);
+    return controller.addAddress(input);
   }
 }
 

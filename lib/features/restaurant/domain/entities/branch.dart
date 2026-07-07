@@ -21,12 +21,12 @@ class Branch extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        restaurantId,
-        address,
-        lat,
-        lng,
-        operatingHours,
-        active,
-      ];
+    id,
+    restaurantId,
+    address,
+    lat,
+    lng,
+    operatingHours,
+    active,
+  ];
 }

@@ -138,7 +138,7 @@ class OnboardingScreen extends StatelessWidget {
                             height: 48,
                             preserveContentOrder: true,
                             label: l10n.onboardingCta,
-                            onPressed: () => context.go(RouteNames.login),
+                            onPressed: () => context.go(RouteNames.authEntry),
                             trailing: const AppSvgImage.asset(
                               AppAssets.onboardingArrow,
                               width: 20,

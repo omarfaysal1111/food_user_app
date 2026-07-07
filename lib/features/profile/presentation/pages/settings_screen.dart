@@ -15,7 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_state.dart';
-import 'package:food_user_app/features/user/data/models/update_user_settings_request.dart';
+import 'package:food_user_app/features/user/domain/models/update_settings_request.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
 
@@ -100,14 +100,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               value: notificationsEnabled,
                               onChanged: (value) {
                                 context.read<ProfileBloc>().add(
-                                      UpdateSettingsEvent(
-                                        UpdateUserSettingsRequest(
-                                          pushNotifications: value,
-                                          smsNotifications: value,
-                                          emailNotifications: value,
-                                        ),
-                                      ),
-                                    );
+                                  UpdateSettingsEvent(
+                                    UpdateSettingsRequest(
+                                      pushNotifications: value,
+                                      smsNotifications: value,
+                                      emailNotifications: value,
+                                      theme: isDark ? 'dark' : 'light',
+                                    ),
+                                  ),
+                                );
                               },
                             ),
                           ),
@@ -140,9 +141,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const Positioned.fill(
                     child: ColoredBox(
                       color: Colors.black26,
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      child: Center(child: CircularProgressIndicator()),
                     ),
                   ),
               ],

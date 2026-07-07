@@ -20,11 +20,11 @@ class PageResponseRestaurant extends Equatable {
 
   @override
   List<Object?> get props => [
-        content,
-        page,
-        size,
-        totalElements,
-        totalPages,
-        last,
-      ];
+    content,
+    page,
+    size,
+    totalElements,
+    totalPages,
+    last,
+  ];
 }

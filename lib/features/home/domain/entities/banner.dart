@@ -23,13 +23,13 @@ class BannerItem extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        imageUrl,
-        title,
-        subtitle,
-        ctaText,
-        discountText,
-        deepLink,
-        sortOrder,
-      ];
+    id,
+    imageUrl,
+    title,
+    subtitle,
+    ctaText,
+    discountText,
+    deepLink,
+    sortOrder,
+  ];
 }

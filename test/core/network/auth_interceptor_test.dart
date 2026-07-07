@@ -35,9 +35,9 @@ void main() {
         tokenStorage.getAccessToken,
       ).thenAnswer((_) async => 'test-access-token');
       final adapter = _CapturingAdapter();
-      final dio = Dio(BaseOptions(baseUrl: ApiEndpoints.baseUrl))
-        ..interceptors.add(AuthInterceptor(tokenStorage))
-        ..httpClientAdapter = adapter;
+      final dio = Dio(BaseOptions(baseUrl: ApiEndpoints.baseUrl));
+      dio.interceptors.add(AuthInterceptor(tokenStorage, getDio: () => dio));
+      dio.httpClientAdapter = adapter;
 
       await dio.post<dynamic>(ApiEndpoints.userAddresses, data: {});
 
@@ -53,9 +53,9 @@ void main() {
         tokenStorage.getAccessToken,
       ).thenAnswer((_) async => 'Bearer test-access-token');
       final adapter = _CapturingAdapter();
-      final dio = Dio(BaseOptions(baseUrl: ApiEndpoints.baseUrl))
-        ..interceptors.add(AuthInterceptor(tokenStorage))
-        ..httpClientAdapter = adapter;
+      final dio = Dio(BaseOptions(baseUrl: ApiEndpoints.baseUrl));
+      dio.interceptors.add(AuthInterceptor(tokenStorage, getDio: () => dio));
+      dio.httpClientAdapter = adapter;
 
       await dio.post<dynamic>(ApiEndpoints.userAddresses, data: {});
 
@@ -71,9 +71,9 @@ void main() {
         tokenStorage.getAccessToken,
       ).thenAnswer((_) async => 'test-access-token');
       final adapter = _CapturingAdapter();
-      final dio = Dio(BaseOptions(baseUrl: ApiEndpoints.baseUrl))
-        ..interceptors.add(AuthInterceptor(tokenStorage))
-        ..httpClientAdapter = adapter;
+      final dio = Dio(BaseOptions(baseUrl: ApiEndpoints.baseUrl));
+      dio.interceptors.add(AuthInterceptor(tokenStorage, getDio: () => dio));
+      dio.httpClientAdapter = adapter;
 
       await dio.post<dynamic>(ApiEndpoints.login, data: {});
 

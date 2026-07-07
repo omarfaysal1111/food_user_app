@@ -136,9 +136,9 @@ class _SearchScreenState extends State<SearchScreen> {
                               : cat;
                         });
                         _resetScroll();
-                        context
-                            .read<SearchCubit>()
-                            .search(_controller.text.trim());
+                        context.read<SearchCubit>().search(
+                          _controller.text.trim(),
+                        );
                       },
                     ),
                     if (showFilters) ...[
@@ -165,14 +165,10 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: BlocBuilder<SearchCubit, SearchState>(
                   builder: (context, state) {
                     return state.maybeWhen(
-                      loading: () => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
                       error: (msg) => Center(
-                        child: Text(
-                          msg,
-                          style: AppTextStyles.body(context),
-                        ),
+                        child: Text(msg, style: AppTextStyles.body(context)),
                       ),
                       historyLoaded: (history) => _buildSearchResults(
                         context,
@@ -223,9 +219,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
     // Filter and map restaurants
     final matchedRestaurants = restaurants
-        .where((r) =>
-            scope == null ||
-            r.cuisineType.toLowerCase().contains(scope.toLowerCase()))
+        .where(
+          (r) =>
+              scope == null ||
+              r.cuisineType.toLowerCase().contains(scope.toLowerCase()),
+        )
         .where((r) => _matchesTopFilter(r))
         .map(_mapToServicePlaceData)
         .toList();
@@ -235,14 +233,17 @@ class _SearchScreenState extends State<SearchScreen> {
 
     // Filter and map products
     final filteredProducts = items
-        .where((item) =>
-            scope == null ||
-            item.name.toLowerCase().contains(scope.toLowerCase()))
+        .where(
+          (item) =>
+              scope == null ||
+              item.name.toLowerCase().contains(scope.toLowerCase()),
+        )
         .map(_mapToSearchResult)
         .toList();
 
     final showFilters = scope != null || query.isNotEmpty;
-    final noResults = query.isNotEmpty &&
+    final noResults =
+        query.isNotEmpty &&
         displayedLargeStores.isEmpty &&
         displayedStores.isEmpty &&
         filteredProducts.isEmpty;
@@ -272,10 +273,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     title: isArabic ? 'سجل البحث' : 'Search History',
                   ),
                   const SizedBox(height: 12),
-                  _MostSearchedTokens(
-                    tokens: history,
-                    onTap: _onTokenTap,
-                  ),
+                  _MostSearchedTokens(tokens: history, onTap: _onTokenTap),
                   const SizedBox(height: 22),
                 ],
                 _SectionTitle(title: l10n.searchMostSearchedTitle),
@@ -287,10 +285,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ] else ...[
                 if (noResults) ...[
                   const SizedBox(height: 48),
-                  const EmptyStateWidget(
-                    imageWidth: 100,
-                    imageHeight: 100,
-                  ),
+                  const EmptyStateWidget(imageWidth: 100, imageHeight: 100),
                 ] else ...[
                   if (displayedStores.isNotEmpty) ...[
                     _SectionTitle(title: l10n.serviceAllPlaces),
@@ -303,9 +298,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     const SizedBox(height: 12),
                     ...filteredProducts.map(
                       (r) => Padding(
-                        padding: const EdgeInsetsDirectional.only(
-                          bottom: 12,
-                        ),
+                        padding: const EdgeInsetsDirectional.only(bottom: 12),
                         child: _ResultCard(result: r),
                       ),
                     ),

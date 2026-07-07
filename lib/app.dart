@@ -15,6 +15,10 @@ import 'package:food_user_app/features/profile/presentation/controllers/saved_ad
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/features/home/presentation/cubit/banner_cubit.dart';
 import 'package:food_user_app/features/search/presentation/cubit/search_cubit.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:food_user_app/features/payment/presentation/cubit/checkout_cubit.dart';
+import 'package:food_user_app/features/payment/presentation/cubit/payment_method_cubit.dart';
 
 class App extends StatelessWidget {
   const App({
@@ -43,6 +47,18 @@ class App extends StatelessWidget {
         ),
         BlocProvider<SearchCubit>(
           create: (_) => sl<SearchCubit>()..getSearchHistory(),
+        ),
+        BlocProvider<FavoriteCubit>(
+          create: (_) => sl<FavoriteCubit>()..loadFavorites(),
+        ),
+        BlocProvider<CartCubit>(
+          create: (_) => sl<CartCubit>()..loadCart(),
+        ),
+        BlocProvider<PaymentMethodCubit>(
+          create: (_) => sl<PaymentMethodCubit>()..fetchSavedCards(),
+        ),
+        BlocProvider<CheckoutCubit>(
+          create: (_) => sl<CheckoutCubit>(),
         ),
       ],
       child: AppLocaleScope(

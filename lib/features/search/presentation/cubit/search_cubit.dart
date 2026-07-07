@@ -6,7 +6,7 @@ class SearchCubit extends Cubit<SearchState> {
   final SearchRepository searchRepository;
 
   SearchCubit({required this.searchRepository})
-      : super(const SearchState.initial());
+    : super(const SearchState.initial());
 
   Future<void> search(String query) async {
     if (query.isEmpty) {

@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:food_user_app/features/user/data/models/update_user_profile_request.dart';
-import 'package:food_user_app/features/user/data/models/update_user_settings_request.dart';
+import 'package:food_user_app/features/user/domain/models/update_profile_request.dart';
+import 'package:food_user_app/features/user/domain/models/update_settings_request.dart';
 
 abstract class ProfileEvent extends Equatable {
   const ProfileEvent();
@@ -14,7 +14,7 @@ class GetProfileEvent extends ProfileEvent {
 }
 
 class UpdateProfileEvent extends ProfileEvent {
-  final UpdateUserProfileRequest request;
+  final UpdateProfileRequest request;
   const UpdateProfileEvent(this.request);
 
   @override
@@ -26,7 +26,7 @@ class GetSettingsEvent extends ProfileEvent {
 }
 
 class UpdateSettingsEvent extends ProfileEvent {
-  final UpdateUserSettingsRequest request;
+  final UpdateSettingsRequest request;
   const UpdateSettingsEvent(this.request);
 
   @override

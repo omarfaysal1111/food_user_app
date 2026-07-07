@@ -27,9 +27,5 @@ class GetRestaurantsParams {
   final int size;
   final String? categoryId;
 
-  const GetRestaurantsParams({
-    this.page = 0,
-    this.size = 20,
-    this.categoryId,
-  });
+  const GetRestaurantsParams({this.page = 0, this.size = 20, this.categoryId});
 }

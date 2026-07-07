@@ -1,14 +1,30 @@
-import 'package:food_user_app/features/address/data/models/create_address_request.dart';
 import 'package:food_user_app/features/address/domain/entities/address.dart';
+import 'package:food_user_app/features/address/domain/models/address_request.dart';
 import 'package:food_user_app/features/address/domain/repositories/address_repository.dart';
-import 'package:food_user_app/features/profile/data/models/saved_address_dto.dart';
 import 'package:food_user_app/features/profile/domain/models/saved_address.dart';
+import 'package:food_user_app/features/profile/domain/models/saved_address_input.dart';
 import 'package:food_user_app/features/profile/domain/repositories/saved_addresses_repository.dart';
 
 class SavedAddressesRepositoryImpl implements SavedAddressesRepository {
   const SavedAddressesRepositoryImpl({required this.addressRepository});
 
   final AddressRepository addressRepository;
+
+  /// Maps a pure-domain [SavedAddressInput] to a domain [AddressRequest].
+  AddressRequest _toAddressRequest(SavedAddressInput input) => AddressRequest(
+    label: input.label,
+    fullAddress: input.fullAddress,
+    lat: input.lat,
+    lng: input.lng,
+    city: input.city,
+    neighborhood: input.neighborhood,
+    streetNumber: input.streetNumber,
+    buildingNumber: input.buildingNumber,
+    floor: input.floor,
+    apartment: input.apartment,
+    addressType: input.addressType,
+    isDefault: input.isDefault,
+  );
 
   @override
   Future<List<SavedAddress>> getAddresses() async {
@@ -20,22 +36,10 @@ class SavedAddressesRepositoryImpl implements SavedAddressesRepository {
   }
 
   @override
-  Future<SavedAddress> createAddress(SavedAddressRequest request) async {
-    final createRequest = CreateAddressRequest(
-      label: request.label,
-      fullAddress: request.fullAddress,
-      lat: request.lat,
-      lng: request.lng,
-      city: request.city,
-      neighborhood: request.neighborhood,
-      streetNumber: request.streetNumber,
-      buildingNumber: request.buildingNumber,
-      floor: request.floor,
-      apartment: request.apartment,
-      addressType: request.addressType,
-      isDefault: request.isDefault,
+  Future<SavedAddress> createAddress(SavedAddressInput input) async {
+    final result = await addressRepository.createAddress(
+      _toAddressRequest(input),
     );
-    final result = await addressRepository.createAddress(createRequest);
     return result.fold(
       (failure) => throw Exception(failure.message),
       (address) => _mapToSavedAddress(address),
@@ -45,25 +49,11 @@ class SavedAddressesRepositoryImpl implements SavedAddressesRepository {
   @override
   Future<SavedAddress> updateAddress({
     required String id,
-    required SavedAddressRequest request,
+    required SavedAddressInput input,
   }) async {
-    final updateRequest = CreateAddressRequest(
-      label: request.label,
-      fullAddress: request.fullAddress,
-      lat: request.lat,
-      lng: request.lng,
-      city: request.city,
-      neighborhood: request.neighborhood,
-      streetNumber: request.streetNumber,
-      buildingNumber: request.buildingNumber,
-      floor: request.floor,
-      apartment: request.apartment,
-      addressType: request.addressType,
-      isDefault: request.isDefault,
-    );
     final result = await addressRepository.updateAddress(
       id: id,
-      request: updateRequest,
+      request: _toAddressRequest(input),
     );
     return result.fold(
       (failure) => throw Exception(failure.message),

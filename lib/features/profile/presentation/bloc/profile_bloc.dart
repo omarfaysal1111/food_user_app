@@ -21,9 +21,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(state.copyWith(isLoading: true));
     final result = await userRepository.getProfile();
     result.fold(
-      (failure) => emit(
-        state.copyWith(isLoading: false, errorMessage: failure.message),
-      ),
+      (failure) =>
+          emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
       (profile) => emit(state.copyWith(isLoading: false, profile: profile)),
     );
   }
@@ -35,9 +34,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(state.copyWith(isLoading: true));
     final result = await userRepository.updateProfile(event.request);
     result.fold(
-      (failure) => emit(
-        state.copyWith(isLoading: false, errorMessage: failure.message),
-      ),
+      (failure) =>
+          emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
       (profile) => emit(
         state.copyWith(
           isLoading: false,
@@ -55,9 +53,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(state.copyWith(isLoading: true));
     final result = await userRepository.getSettings();
     result.fold(
-      (failure) => emit(
-        state.copyWith(isLoading: false, errorMessage: failure.message),
-      ),
+      (failure) =>
+          emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
       (settings) => emit(state.copyWith(isLoading: false, settings: settings)),
     );
   }
@@ -69,9 +66,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(state.copyWith(isLoading: true));
     final result = await userRepository.updateSettings(event.request);
     result.fold(
-      (failure) => emit(
-        state.copyWith(isLoading: false, errorMessage: failure.message),
-      ),
+      (failure) =>
+          emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
       (settings) => emit(
         state.copyWith(
           isLoading: false,
@@ -89,9 +85,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(state.copyWith(isLoading: true));
     final result = await userRepository.deleteAccount();
     result.fold(
-      (failure) => emit(
-        state.copyWith(isLoading: false, errorMessage: failure.message),
-      ),
+      (failure) =>
+          emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
       (_) => emit(state.copyWith(isLoading: false, deleteAccountSuccess: true)),
     );
   }
