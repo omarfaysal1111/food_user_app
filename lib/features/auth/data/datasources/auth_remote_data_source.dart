@@ -38,6 +38,10 @@ abstract class AuthRemoteDataSource {
     required String lastName,
     String? email,
   });
+
+  /// Handshake with backend for social login
+  /// Backend: `POST /api/v2/auth/firebase` `{ idToken }`
+  Future<AuthResponseModel> loginWithFirebase({required String idToken});
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -130,6 +134,23 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'lastName': lastName,
           if (email != null && email.trim().isNotEmpty) 'email': email.trim(),
         },
+      );
+      final raw = response.data;
+      if (raw is! Map<String, dynamic>) {
+        throw const ServerException('Invalid response');
+      }
+      return AuthResponseModel.fromJson(raw);
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<AuthResponseModel> loginWithFirebase({required String idToken}) async {
+    try {
+      final response = await _dio.post<dynamic>(
+        ApiEndpoints.v2(ApiEndpoints.firebaseAuth),
+        data: <String, dynamic>{'idToken': idToken},
       );
       final raw = response.data;
       if (raw is! Map<String, dynamic>) {

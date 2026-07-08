@@ -141,6 +141,24 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
+  Future<Either<Failure, AuthResponseModel>> loginWithFirebase({
+    required String idToken,
+  }) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure('No internet connection'));
+    }
+    try {
+      final auth = await remoteDataSource.loginWithFirebase(idToken: idToken);
+      if (!auth.newUser && auth.hasAccessToken) {
+        await _persistSession(auth);
+      }
+      return Right(auth);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
   Future<void> _clearLocalSession() async {
     await localDataSource.clearTokens();
     await localDataSource.clearCachedUser();

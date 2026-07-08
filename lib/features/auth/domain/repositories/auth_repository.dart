@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart' show Either, Unit;
 import 'package:food_user_app/core/errors/failures.dart';
 import 'package:food_user_app/features/auth/domain/entities/user.dart';
+import 'package:food_user_app/features/auth/data/models/auth_response_model.dart';
 
 /// Outcome of verifying a phone OTP in the unified flow.
 /// - [newUser] true  → no account yet; navigate to complete-profile (register).
@@ -52,5 +53,10 @@ abstract class AuthRepository {
     required String firstName,
     required String lastName,
     String? email,
+  });
+
+  /// Handshake with backend for social login
+  Future<Either<Failure, AuthResponseModel>> loginWithFirebase({
+    required String idToken,
   });
 }

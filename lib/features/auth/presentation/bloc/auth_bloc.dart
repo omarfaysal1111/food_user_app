@@ -6,6 +6,7 @@ import 'package:food_user_app/features/auth/domain/usecases/logout_usecase.dart'
 import 'package:food_user_app/features/auth/domain/usecases/send_phone_otp_usecase.dart';
 import 'package:food_user_app/features/auth/domain/usecases/verify_phone_otp_usecase.dart';
 import 'package:food_user_app/features/auth/domain/usecases/complete_registration_usecase.dart';
+import 'package:food_user_app/features/auth/data/datasources/social_auth_service.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
@@ -22,6 +23,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<PhoneOtpRequested>(_onPhoneOtpRequested);
     on<PhoneOtpVerifySubmitted>(_onPhoneOtpVerifySubmitted);
     on<CompleteRegistrationSubmitted>(_onCompleteRegistrationSubmitted);
+    on<SocialLoginRequested>(_onSocialLoginRequested);
   }
 
   final LogoutUseCase logoutUseCase;
@@ -58,6 +60,49 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const LogoutInProgress());
     await logoutUseCase(const NoParams());
     emit(const Unauthenticated());
+  }
+
+  // ── Social Login ───────────────────────────────────────────────────────────
+
+  Future<void> _onSocialLoginRequested(
+    SocialLoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const SocialLoginInProgress());
+    
+    try {
+      SocialAuthResult? result;
+      if (event.provider == 'google') {
+        result = await SocialAuthService.signInWithGoogle();
+      } else if (event.provider == 'apple') {
+        result = await SocialAuthService.signInWithApple();
+      } else if (event.provider == 'facebook') {
+        result = await SocialAuthService.signInWithFacebook();
+      }
+
+      if (result == null) {
+        emit(const SocialLoginFailure('Social login was canceled or failed.'));
+        return;
+      }
+
+      final response = await authRepository.loginWithFirebase(idToken: result.idToken);
+      response.fold(
+        (failure) => emit(SocialLoginFailure(failure.message)),
+        (authResponse) {
+          if (authResponse.newUser) {
+            emit(SocialLoginNewUser(
+              firstName: result!.firstName,
+              lastName: result.lastName,
+              email: result.email,
+            ));
+          } else {
+            emit(Authenticated(authResponse.user));
+          }
+        },
+      );
+    } catch (e) {
+      emit(SocialLoginFailure(e.toString()));
+    }
   }
 
   // ── Unified phone login/register (API v2) ──────────────────────────────────

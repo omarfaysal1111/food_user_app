@@ -17,6 +17,15 @@ class LogoutRequested extends AuthEvent {
   const LogoutRequested();
 }
 
+class SocialLoginRequested extends AuthEvent {
+  final String provider;
+
+  const SocialLoginRequested({required this.provider});
+
+  @override
+  List<Object?> get props => [provider];
+}
+
 
 // ── Unified phone login/register (API v2) ────────────────────────────────────
 

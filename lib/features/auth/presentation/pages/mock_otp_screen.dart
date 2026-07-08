@@ -91,13 +91,36 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
           listenWhen: (prev, curr) =>
               curr is PhoneOtpNewUser ||
               curr is PhoneOtpLoginSuccess ||
+              curr is CompleteRegistrationSuccess ||
+              curr is CompleteRegistrationFailure ||
               curr is PhoneOtpVerifyFailure,
           listener: (context, state) {
             if (state is PhoneOtpNewUser) {
-              context.push(RouteNames.completeProfile, extra: state.phone);
-            } else if (state is PhoneOtpLoginSuccess) {
+              if (widget.args.isSocial && widget.args.firstName != null && widget.args.lastName != null) {
+                context.read<AuthBloc>().add(CompleteRegistrationSubmitted(
+                  phone: state.phone,
+                  firstName: widget.args.firstName!,
+                  lastName: widget.args.lastName!,
+                  email: widget.args.email,
+                ));
+              } else {
+                context.push(RouteNames.completeProfile, extra: state.phone);
+              }
+            } else if (state is PhoneOtpLoginSuccess || state is CompleteRegistrationSuccess) {
               context.go(RouteNames.home);
             } else if (state is PhoneOtpVerifyFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    localizedAuthError(
+                      AppLocalizations.of(context)!,
+                      state.message,
+                    ),
+                    style: AppTextStyles.snackBarMessage(context),
+                  ),
+                ),
+              );
+            } else if (state is CompleteRegistrationFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/router/route_names.dart';
@@ -7,27 +8,19 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 
 class AuthEntryScreen extends StatelessWidget {
   const AuthEntryScreen({super.key});
-
-  static const bool _mockSocialUserHasPhone = false;
 
   void _startPhoneFlow(BuildContext context) {
     context.push(RouteNames.phoneAuth, extra: const PhoneAuthArgs());
   }
 
-  void _startSocialFlow(BuildContext context) {
-    // TODO(auth-api): Replace this local branch with provider profile + phone
-    // verification state once Google/Facebook/Apple SDKs are integrated.
-    if (_mockSocialUserHasPhone) {
-      context.go(RouteNames.home);
-      return;
-    }
-    context.push(
-      RouteNames.phoneAuth,
-      extra: const PhoneAuthArgs(startedFromSocial: true),
-    );
+  void _startSocialFlow(BuildContext context, String provider) {
+    context.read<AuthBloc>().add(SocialLoginRequested(provider: provider));
   }
 
   @override
@@ -36,10 +29,32 @@ class AuthEntryScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
-      body: SafeArea(
-        top: false,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
+      body: BlocListener<AuthBloc, AuthState>(
+        listenWhen: (prev, curr) => curr is SocialLoginNewUser || curr is SocialLoginFailure || curr is Authenticated,
+        listener: (context, state) {
+          if (state is SocialLoginNewUser) {
+            context.push(
+              RouteNames.phoneAuth,
+              extra: PhoneAuthArgs(
+                startedFromSocial: true,
+                mockNewUser: false,
+                firstName: state.firstName,
+                lastName: state.lastName,
+                email: state.email,
+              ),
+            );
+          } else if (state is Authenticated) {
+            context.go(RouteNames.home);
+          } else if (state is SocialLoginFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
+        },
+        child: SafeArea(
+          top: false,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
             return SingleChildScrollView(
               physics: const ClampingScrollPhysics(),
               padding: EdgeInsetsDirectional.only(
@@ -85,7 +100,7 @@ class AuthEntryScreen extends StatelessWidget {
                           const SizedBox(height: 16),
                           _AuthMethodButton(
                             label: l10n.authContinueWithApple,
-                            onPressed: () => _startSocialFlow(context),
+                            onPressed: () => _startSocialFlow(context, 'apple'),
                             icon: AppSvgImage.asset(
                               Theme.of(context).brightness == Brightness.dark
                                   ? AppAssets.socialAppleDark
@@ -97,7 +112,7 @@ class AuthEntryScreen extends StatelessWidget {
                           const SizedBox(height: 16),
                           _AuthMethodButton(
                             label: l10n.authContinueWithGoogle,
-                            onPressed: () => _startSocialFlow(context),
+                            onPressed: () => _startSocialFlow(context, 'google'),
                             icon: const AppSvgImage.asset(
                               AppAssets.socialGoogle,
                               width: 20,
@@ -107,7 +122,7 @@ class AuthEntryScreen extends StatelessWidget {
                           const SizedBox(height: 16),
                           _AuthMethodButton(
                             label: l10n.authContinueWithFacebook,
-                            onPressed: () => _startSocialFlow(context),
+                            onPressed: () => _startSocialFlow(context, 'facebook'),
                             icon: const Icon(
                               Icons.facebook_rounded,
                               size: 20,
@@ -124,6 +139,7 @@ class AuthEntryScreen extends StatelessWidget {
           },
         ),
       ),
+    ),
     );
   }
 }
@@ -310,8 +326,14 @@ class PhoneAuthArgs {
   const PhoneAuthArgs({
     this.startedFromSocial = false,
     this.mockNewUser = true,
+    this.firstName,
+    this.lastName,
+    this.email,
   });
 
   final bool startedFromSocial;
   final bool mockNewUser;
+  final String? firstName;
+  final String? lastName;
+  final String? email;
 }

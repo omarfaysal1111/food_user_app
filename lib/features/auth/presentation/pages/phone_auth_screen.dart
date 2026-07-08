@@ -63,6 +63,10 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                 extra: MockOtpArgs(
                   phoneNumber: state.phone,
                   mockNewUser: !state.isExistingUser,
+                  isSocial: widget.args.startedFromSocial,
+                  firstName: widget.args.firstName,
+                  lastName: widget.args.lastName,
+                  email: widget.args.email,
                 ),
               );
             } else if (state is PhoneOtpSendFailure) {
@@ -266,8 +270,19 @@ class _AuthTopBar extends StatelessWidget {
 }
 
 class MockOtpArgs {
-  const MockOtpArgs({required this.phoneNumber, this.mockNewUser = true});
+  const MockOtpArgs({
+    required this.phoneNumber,
+    this.mockNewUser = true,
+    this.isSocial = false,
+    this.firstName,
+    this.lastName,
+    this.email,
+  });
 
   final String phoneNumber;
   final bool mockNewUser;
+  final bool isSocial;
+  final String? firstName;
+  final String? lastName;
+  final String? email;
 }

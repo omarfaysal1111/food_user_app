@@ -16,6 +16,36 @@ class LogoutInProgress extends AuthState {
   const LogoutInProgress();
 }
 
+// ── Social Login ────────────────────────────────────────────────────────────
+
+class SocialLoginInProgress extends AuthState {
+  const SocialLoginInProgress();
+}
+
+class SocialLoginNewUser extends AuthState {
+  final String firstName;
+  final String lastName;
+  final String email;
+
+  const SocialLoginNewUser({
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+  });
+
+  @override
+  List<Object?> get props => [firstName, lastName, email];
+}
+
+class SocialLoginFailure extends AuthState {
+  final String message;
+
+  const SocialLoginFailure(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
 
 
 // ── Session status ──────────────────────────────────────────────────────────
