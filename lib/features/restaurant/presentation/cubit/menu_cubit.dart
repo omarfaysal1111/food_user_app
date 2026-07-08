@@ -33,4 +33,5 @@ class MenuCubit extends Cubit<MenuState> {
       (modifiers) => emit(MenuState.modifiersLoaded(modifiers: modifiers)),
     );
   }
+
 }

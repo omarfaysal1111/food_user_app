@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -8,134 +6,122 @@ import '../../storage/token_storage.dart';
 import '../../router/app_router.dart';
 import '../../router/route_names.dart';
 
-/// Attaches `Authorization: Bearer <token>` to outgoing requests, except for
-/// public auth endpoints listed in [ApiEndpoints.publicAuthPaths].
+/// A record holding a pending request that arrived while a token refresh was
+/// already in flight.
+typedef _PendingRequest = ({
+  RequestOptions options,
+  ErrorInterceptorHandler handler,
+});
+
+/// Attaches `Authorization: Bearer <token>` to every non-public request and
+/// implements a strict Mutex / Queue pattern for 401 token-refresh retries.
 ///
-/// Implements 401 refresh-token retry flow using a locking mechanism.
-class AuthInterceptor extends QueuedInterceptor {
+/// When a 401 occurs:
+/// - The first failure sets [_isRefreshing] = true and fires the refresh call.
+/// - Every subsequent concurrent 401 is pushed into [_requestsQueue] and waits.
+/// - On success: all queued requests are retried with the new token.
+/// - On failure: all queued requests are rejected and the user is logged out.
+class AuthInterceptor extends Interceptor {
   AuthInterceptor(
     this._tokenStorage, {
     required this.getDio,
   });
 
   final TokenStorage _tokenStorage;
+
+  /// Returns the main application [Dio] instance (used only to read [BaseOptions]).
   final Dio Function() getDio;
 
+  // ── Mutex state ──────────────────────────────────────────────────────────────
   bool _isRefreshing = false;
+  final List<_PendingRequest> _requestsQueue = [];
 
+  // ── Helpers ──────────────────────────────────────────────────────────────────
   bool _isPublicAuthPath(String path) {
     for (final publicPath in ApiEndpoints.publicAuthPaths) {
-      if (path == publicPath || path.endsWith(publicPath)) {
-        return true;
-      }
+      if (path == publicPath || path.endsWith(publicPath)) return true;
     }
     return false;
   }
 
+  String? _normalizeAccessToken(String? token) {
+    final trimmed = token?.trim();
+    if (trimmed == null || trimmed.isEmpty) return null;
+    const prefix = 'Bearer ';
+    if (trimmed.toLowerCase().startsWith(prefix.toLowerCase())) {
+      return trimmed.substring(prefix.length).trim();
+    }
+    return trimmed;
+  }
+
+  // ── onRequest ─────────────────────────────────────────────────────────────────
   @override
   Future<void> onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
     final path = options.uri.path;
-    final isAuthRequest =
-        _isPublicAuthPath(path) || _isPublicAuthPath(options.path);
-    final token = await _tokenStorage.getAccessToken();
-    final normalizedToken = _normalizeAccessToken(token);
-    final accessTokenExists = normalizedToken != null;
-    var authorizationHeaderAttached = false;
+    final isPublic = _isPublicAuthPath(path) || _isPublicAuthPath(options.path);
 
-    if (!isAuthRequest && accessTokenExists) {
-      options.headers['Authorization'] = 'Bearer $normalizedToken';
-      authorizationHeaderAttached = true;
+    if (!isPublic) {
+      final raw = await _tokenStorage.getAccessToken();
+      final token = _normalizeAccessToken(raw);
+      if (token != null) {
+        options.headers['Authorization'] = 'Bearer $token';
+      }
     }
 
-    final authorizationHeader = options.headers['Authorization']?.toString();
-    final authorizationHeaderStartsWithBearer =
-        authorizationHeader?.startsWith('Bearer ') ?? false;
-
-    _logAuthDebug('path=$path');
-    _logAuthDebug('isAuthRequest=$isAuthRequest');
-    _logAuthDebug('accessTokenExists=$accessTokenExists');
-    _logAuthDebug('authorizationHeaderAttached=$authorizationHeaderAttached');
-    _logAuthDebug(
-      'authorizationHeaderStartsWithBearer='
-      '$authorizationHeaderStartsWithBearer',
-    );
-
+    _logAuthDebug('→ ${options.method} ${options.path} | public=$isPublic');
     return handler.next(options);
   }
 
+  // ── onError ───────────────────────────────────────────────────────────────────
   @override
   Future<void> onError(
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
-    if (err.response?.statusCode == 401) {
-      final isRefreshRequest =
-          err.requestOptions.path == ApiEndpoints.refreshToken ||
-          err.requestOptions.path.endsWith(ApiEndpoints.refreshToken);
-
-      if (isRefreshRequest) {
-        await _logout();
-        return handler.next(err);
-      }
-
-      // If another request is already refreshing the token, just retry after it's done
-      // Since this is a QueuedInterceptor, the queue is naturally locked/paused during async operations.
-      // However, we simulate the lock/unlock state explicitly as requested.
-      if (_isRefreshing) {
-        try {
-          final response = await _retryRequest(err.requestOptions);
-          return handler.resolve(response);
-        } catch (e) {
-          return handler.next(err);
-        }
-      }
-
-      _lock();
-
-      try {
-        final success = await _refreshToken();
-        if (success) {
-          _unlock();
-          final response = await _retryRequest(err.requestOptions);
-          return handler.resolve(response);
-        } else {
-          _unlock();
-          await _logout();
-          return handler.next(err);
-        }
-      } catch (e) {
-        _unlock();
-        await _logout();
-        return handler.next(err);
-      }
+    // Only handle 401s
+    if (err.response?.statusCode != 401) {
+      return handler.next(err);
     }
 
-    return handler.next(err);
-  }
+    // If the failing request IS the refresh endpoint → logout immediately
+    final failedPath = err.requestOptions.path;
+    if (failedPath == ApiEndpoints.refreshToken ||
+        failedPath.endsWith(ApiEndpoints.refreshToken)) {
+      _logAuthDebug('Refresh endpoint returned 401 → logging out');
+      await _handleLogout(err);
+      return handler.next(err);
+    }
 
-  // Simulated lock mechanism (QueuedInterceptor handles actual queueing in Dio 5)
-  void _lock() {
+    // ── MUTEX CHECK ────────────────────────────────────────────────────────────
+    if (_isRefreshing) {
+      // Another refresh is already in flight → queue this request and WAIT
+      _logAuthDebug('Refresh in progress – queuing request: $failedPath');
+      _requestsQueue.add((options: err.requestOptions, handler: handler));
+      return; // Do NOT call handler.next / resolve here; it will be resolved later
+    }
+
+    // ── FIRST 401 → ACQUIRE LOCK AND REFRESH ──────────────────────────────────
     _isRefreshing = true;
-  }
+    _logAuthDebug('Token refresh initiated for: $failedPath');
 
-  void _unlock() {
-    _isRefreshing = false;
-  }
-
-  Future<bool> _refreshToken() async {
-    print("Token refresh initiated...");
     final refreshToken = await _tokenStorage.getRefreshToken();
     if (refreshToken == null || refreshToken.isEmpty) {
-      return false;
+      _logAuthDebug('No refresh token stored → logging out');
+      _isRefreshing = false;
+      await _rejectQueue(err);
+      await _handleLogout(err);
+      return handler.next(err);
     }
 
-    // Use a separate Dio instance to avoid recursive interception loops
-    final dio = Dio(
+    // Use a CLEAN Dio instance – zero interceptors – to call the refresh endpoint
+    final cleanDio = Dio(
       BaseOptions(
         baseUrl: ApiEndpoints.baseUrl,
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 15),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -144,62 +130,117 @@ class AuthInterceptor extends QueuedInterceptor {
     );
 
     try {
-      final response = await dio.post(
+      final refreshResponse = await cleanDio.post(
         ApiEndpoints.refreshToken,
         data: {'refreshToken': refreshToken},
       );
 
-      final data = response.data;
-      if (data is Map<String, dynamic> && data['data'] != null) {
-        final tokenData = data['data'];
-        final newAccess = tokenData['accessToken'];
-        final newRefresh = tokenData['refreshToken'];
+      final data = refreshResponse.data;
+      String? newAccessToken;
+      String? newRefreshToken;
 
-        if (newAccess != null) {
-          await _tokenStorage.saveAccessToken(newAccess);
-          if (newRefresh != null) {
-            await _tokenStorage.saveRefreshToken(newRefresh);
-          }
-          return true;
+      if (data is Map<String, dynamic>) {
+        // Try common response shapes: data.data.accessToken or data.accessToken
+        final inner = data['data'] ?? data;
+        if (inner is Map<String, dynamic>) {
+          newAccessToken = inner['accessToken']?.toString();
+          newRefreshToken = inner['refreshToken']?.toString();
         }
       }
-      return false;
-    } catch (_) {
-      return false;
+
+      if (newAccessToken == null || newAccessToken.isEmpty) {
+        throw Exception('Refresh response did not contain a valid accessToken');
+      }
+
+      // ── SUCCESS ──────────────────────────────────────────────────────────────
+      await _tokenStorage.saveAccessToken(newAccessToken);
+      if (newRefreshToken != null && newRefreshToken.isNotEmpty) {
+        await _tokenStorage.saveRefreshToken(newRefreshToken);
+      }
+
+      _logAuthDebug('Token refreshed successfully');
+      _isRefreshing = false;
+
+      // Retry the original failed request
+      final retryDio = _buildRetryDio();
+      err.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
+      final retryResponse = await retryDio.fetch(err.requestOptions);
+      handler.resolve(retryResponse);
+
+      // Drain the queue
+      await _resolveQueue(newAccessToken);
+    } catch (e) {
+      // ── FAILURE ──────────────────────────────────────────────────────────────
+      _logAuthDebug('Token refresh FAILED: $e');
+      _isRefreshing = false;
+      await _rejectQueue(err);
+      await _handleLogout(err);
+      handler.next(err);
     }
   }
 
-  Future<Response<dynamic>> _retryRequest(RequestOptions requestOptions) async {
-    final dio = getDio();
-    final newAccessToken = await _tokenStorage.getAccessToken();
-    final normalizedToken = _normalizeAccessToken(newAccessToken);
+  // ── Queue helpers ─────────────────────────────────────────────────────────────
 
-    if (normalizedToken != null) {
-      requestOptions.headers['Authorization'] = 'Bearer $normalizedToken';
+  /// Retry every queued request with the newly obtained [newToken].
+  Future<void> _resolveQueue(String newToken) async {
+    final pending = List<_PendingRequest>.from(_requestsQueue);
+    _requestsQueue.clear();
+
+    final retryDio = _buildRetryDio();
+    for (final req in pending) {
+      try {
+        req.options.headers['Authorization'] = 'Bearer $newToken';
+        _logAuthDebug('Retrying queued: ${req.options.path}');
+        final response = await retryDio.fetch(req.options);
+        req.handler.resolve(response);
+      } on DioException catch (e) {
+        req.handler.next(e);
+      } catch (e) {
+        req.handler.next(
+          DioException(requestOptions: req.options, error: e),
+        );
+      }
     }
-
-    return await dio.fetch(requestOptions);
   }
 
-  Future<void> _logout() async {
+  /// Reject every queued request with [err].
+  Future<void> _rejectQueue(DioException err) async {
+    final pending = List<_PendingRequest>.from(_requestsQueue);
+    _requestsQueue.clear();
+    for (final req in pending) {
+      req.handler.next(
+        DioException(
+          requestOptions: req.options,
+          response: err.response,
+          type: err.type,
+          error: err.error,
+        ),
+      );
+    }
+  }
+
+  /// A minimal Dio instance used solely to re-execute failed requests.
+  /// It does NOT include the AuthInterceptor to avoid infinite loops.
+  Dio _buildRetryDio() {
+    final mainDio = getDio();
+    final retryDio = Dio(mainDio.options);
+    for (final interceptor in mainDio.interceptors) {
+      if (interceptor is! AuthInterceptor) {
+        retryDio.interceptors.add(interceptor);
+      }
+    }
+    return retryDio;
+  }
+
+  Future<void> _handleLogout(DioException err) async {
     await _tokenStorage.clearAccessToken();
     await _tokenStorage.clearRefreshToken();
     AppRouter.router.go(RouteNames.authEntry);
-  }
-
-  String? _normalizeAccessToken(String? token) {
-    final trimmed = token?.trim();
-    if (trimmed == null || trimmed.isEmpty) return null;
-    const bearerPrefix = 'Bearer ';
-    if (trimmed.toLowerCase().startsWith(bearerPrefix.toLowerCase())) {
-      return trimmed.substring(bearerPrefix.length).trim();
-    }
-    return trimmed;
   }
 }
 
 void _logAuthDebug(String message) {
   if (kDebugMode) {
-    debugPrint('[AUTH_DEBUG] $message');
+    debugPrint('[AUTH] $message');
   }
 }

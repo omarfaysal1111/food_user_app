@@ -223,6 +223,8 @@ class AppAssets {
       'assets/images/home/home_most_ordered_restaurant_2.jpg';
   static const homeRestaurantLogo =
       'assets/images/home/home_restaurant_logo.png';
+  static const storeIcon = 'assets/images/store/store_icon.png';
+  static const storeBanner = 'assets/images/store/store_banner.png';
 
   // ── Home SVG Icons ────────────────────────────────────────────────────────
   static const homeNavUser = 'assets/images/home/home_nav_user.svg';

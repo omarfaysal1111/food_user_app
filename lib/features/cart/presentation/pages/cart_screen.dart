@@ -202,17 +202,6 @@ class _CartEmptyPlaceholder extends StatelessWidget {
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.cartEmptyMessage,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.body(context).copyWith(
-                color: AppColors.paragraph(context),
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                height: 1.3,
-              ),
-            ),
           ],
         ),
       ),
@@ -244,17 +233,6 @@ class _CartHeader extends StatelessWidget {
               ),
             ),
           ],
-        ),
-        const SizedBox(height: 2),
-        Text(
-          restaurantName ?? l10n.cartRestaurantSubtitle,
-          textAlign: TextAlign.start,
-          style: AppTextStyles.textLink(context).copyWith(
-            color: AppColors.paragraph(context),
-            fontSize: 10,
-            fontWeight: FontWeight.w500,
-            height: 1.25,
-          ),
         ),
       ],
     );

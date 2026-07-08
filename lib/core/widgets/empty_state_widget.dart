@@ -30,44 +30,39 @@ class EmptyStateWidget extends StatelessWidget {
     final displayMessage =
         message ?? l10n?.serviceNoResultsAvailable ?? 'No results available';
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Adjust padding and constraints based on available height/width
-        final isCompact = constraints.maxHeight < 250;
-        final padding = isCompact ? 12.0 : 24.0;
-        final spacing = isCompact ? 12.0 : 20.0;
+    // Use MediaQuery instead of LayoutBuilder to avoid intrinsic-dimension
+    // conflicts when this widget is placed inside SliverFillRemaining.
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final isCompact = screenHeight < 500;
+    final padding = isCompact ? 12.0 : 24.0;
+    final spacing = isCompact ? 12.0 : 20.0;
 
-        return Center(
-          child: SingleChildScrollView(
-            physics: const NeverScrollableScrollPhysics(),
-            child: Padding(
-              padding: EdgeInsets.all(padding),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AppRasterImage.asset(
-                    AppAssets.serviceNotFoundFolder,
-                    width: imageWidth,
-                    height: imageHeight,
-                    fit: BoxFit.contain,
-                  ),
-                  SizedBox(height: spacing),
-                  Text(
-                    displayMessage,
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.body(context).copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.hint(context),
-                    ),
-                  ),
-                ],
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(padding),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppRasterImage.asset(
+              AppAssets.serviceNotFoundFolder,
+              width: imageWidth,
+              height: imageHeight,
+              fit: BoxFit.contain,
+            ),
+            SizedBox(height: spacing),
+            Text(
+              displayMessage,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body(context).copyWith(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.hint(context),
               ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

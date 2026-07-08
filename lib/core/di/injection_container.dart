@@ -50,6 +50,8 @@ import 'package:food_user_app/features/restaurant/domain/repositories/menu_repos
 import 'package:food_user_app/features/restaurant/presentation/cubit/menu_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_filter_cubit.dart';
+import 'package:food_user_app/features/store/presentation/cubit/store_detail_cubit.dart';
+import 'package:food_user_app/features/search/presentation/cubit/unified_results_cubit.dart';
 import 'package:food_user_app/features/cart/data/datasources/cart_remote_data_source.dart';
 import 'package:food_user_app/features/cart/data/repositories/cart_repository_impl.dart';
 import 'package:food_user_app/features/cart/domain/repositories/cart_repository.dart';
@@ -241,6 +243,17 @@ Future<void> init({SharedPreferences? prefs}) async {
   sl.registerFactory<RestaurantFilterCubit>(
     () =>
         RestaurantFilterCubit(restaurantRepository: sl<RestaurantRepository>()),
+  );
+
+  sl.registerFactory<StoreDetailCubit>(
+    () => StoreDetailCubit(
+      restaurantRepository: sl<RestaurantRepository>(),
+      menuRepository: sl<MenuRepository>(),
+    ),
+  );
+
+  sl.registerFactory<UnifiedResultsCubit>(
+    () => UnifiedResultsCubit(menuRepository: sl<MenuRepository>()),
   );
 
   sl.registerLazySingleton<CartRemoteDataSource>(

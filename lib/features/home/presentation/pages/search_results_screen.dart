@@ -42,7 +42,7 @@ class SearchResultsScreen extends StatelessWidget {
                     ),
                     SliverList.separated(
                       itemCount: result.restaurants.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         final restaurant = result.restaurants[index];
                         return Padding(
@@ -67,7 +67,7 @@ class SearchResultsScreen extends StatelessWidget {
                     ),
                     SliverList.separated(
                       itemCount: result.items.length,
-                      separatorBuilder: (_, __) => const Divider(),
+                      separatorBuilder: (_, _) => const Divider(),
                       itemBuilder: (context, index) {
                         final item = result.items[index];
                         return ListTile(

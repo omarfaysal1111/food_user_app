@@ -1,0 +1,699 @@
+
+Node ID: 8102:12825
+- Department stores (FRAME)
+  ↳ radius=24.0
+  - Frame 1171279437 (FRAME)
+    - Group 1 (GROUP)
+      - Group (GROUP)
+        - Group (GROUP)
+          - Vector (VECTOR)
+          - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+          - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Vector (VECTOR)
+      - Group (GROUP)
+        - Group (GROUP)
+          - Vector (VECTOR)
+          - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+          - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Vector (VECTOR)
+      - Group (GROUP)
+        - Group (GROUP)
+          - Vector (VECTOR)
+          - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+          - Vector (VECTOR)
+          - Group (GROUP)
+            - Vector (VECTOR)
+          - Vector (VECTOR)
+      - Group (GROUP)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+      - Group (GROUP)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+      - Group (GROUP)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+      - Group (GROUP)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+        - Group (GROUP)
+          - Vector (VECTOR)
+      - Group (GROUP)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+      - Group (GROUP)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+      - Group (GROUP)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+      - Group (GROUP)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+      - Group (GROUP)
+        - Group (GROUP)
+          - Vector (VECTOR)
+        - Vector (VECTOR)
+      - Group (GROUP)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+      - Group (GROUP)
+        - Group (GROUP)
+          - Vector (VECTOR)
+        - Vector (VECTOR)
+      - Group (GROUP)
+        - Group (GROUP)
+          - Vector (VECTOR)
+          - Vector (VECTOR)
+          - Vector (VECTOR)
+          - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+      - Group (GROUP)
+        - Group (GROUP)
+          - Vector (VECTOR)
+          - Vector (VECTOR)
+          - Vector (VECTOR)
+          - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+    - Frame 1171279444 (FRAME)
+      ↳ mode=VERTICAL | gap=20.0
+      - Frame 1171279371 (INSTANCE)
+        ↳ mode=VERTICAL | gap=10.0
+        - Frame 1171279256 (FRAME)
+          ↳ mode=HORIZONTAL | gap=10.0 | pt=12.0, pb=12.0, pl=12.0, pr=12.0 | radius=10.0
+          - Frame 1171279339 (FRAME)
+            ↳ mode=HORIZONTAL | gap=4.0
+            - ابحث عن ما تحب (TEXT)
+              ↳ font=Expo Arabic 400 12.0px
+            - search-01 (INSTANCE)
+              - elements (GROUP)
+                - Icon (VECTOR)
+    - Group 8 (GROUP)
+      - iPhone X/Status Bars/Status Bar (Black) (INSTANCE)
+        - Rectangle (RECTANGLE)
+        - Group 3 (GROUP)
+          - Battery (GROUP)
+            - Border (RECTANGLE)
+              ↳ radius=2.6666667461395264
+            - Cap (VECTOR)
+            - Capacity (RECTANGLE)
+              ↳ radius=1.3333333730697632
+          - Wifi (BOOLEAN_OPERATION)
+            - Wifi-path (VECTOR)
+            - Wifi-path (VECTOR)
+            - Wifi-path (VECTOR)
+          - Cellular Connection (BOOLEAN_OPERATION)
+            - Cellular_Connection-path (VECTOR)
+            - Cellular_Connection-path (VECTOR)
+            - Cellular_Connection-path (VECTOR)
+            - Cellular_Connection-path (VECTOR)
+        - Time Style (FRAME)
+          - ↳ Time (VECTOR)
+    - Frame 1171279526 (FRAME)
+    - Frame 1984078867 (FRAME)
+      ↳ mode=HORIZONTAL | gap=227.0
+      - Frame 1984078837 (FRAME)
+        ↳ radius=12.0
+      - Frame 1171279449 (FRAME)
+        ↳ mode=HORIZONTAL | gap=4.0
+        - الكابتن (TEXT)
+          ↳ font=Expo Arabic 600 16.0px
+        - arrow-left-01 (INSTANCE)
+          ↳ radius=8.0
+          - elements (GROUP)
+            - Icon (VECTOR)
+  - Frame 1984078869 (FRAME)
+    ↳ mode=VERTICAL | gap=12.0
+    - تسوّق حسب التصنيفات (TEXT)
+      ↳ font=Expo Arabic 600 15.0px
+    - Frame 1984078868 (FRAME)
+      ↳ mode=VERTICAL | gap=12.0
+      - Frame 1984078859 (FRAME)
+        - Frame 1984078855 (FRAME)
+          ↳ mode=HORIZONTAL | gap=12.0
+          - Frame 1984078852 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - iot-connected-appliance 1 (RECTANGLE)
+            - إلكترونيات (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078856 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - pile-lentils-moong-dal-vata-digestion 1 (RECTANGLE)
+            - البقوليات (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078850 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - cheese-block 1 (RECTANGLE)
+            - الجبن (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078851 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - sundae 1 (RECTANGLE)
+            - ايس كريم (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078853 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - milk-bottle 1 (RECTANGLE)
+            - Frame 1984078853 (FRAME)
+              ↳ mode=VERTICAL | gap=4.0
+              - الالبان (TEXT)
+                ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078855 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - sliced-meat 1 (RECTANGLE)
+            - اللحوم (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+      - Frame 1984078860 (FRAME)
+        - Frame 1984078855 (FRAME)
+          ↳ mode=HORIZONTAL | gap=12.0
+          - Frame 1984078850 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - cheese-block 1 (RECTANGLE)
+            - الجبن (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078853 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - milk-bottle 1 (RECTANGLE)
+            - Frame 1984078853 (FRAME)
+              ↳ mode=VERTICAL | gap=4.0
+              - الالبان (TEXT)
+                ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078851 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - sundae 1 (RECTANGLE)
+            - ايس كريم (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078855 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - pile-lentils-moong-dal-vata-digestion 1 (RECTANGLE)
+            - البقوليات (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078852 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - iot-connected-appliance 1 (RECTANGLE)
+            - إلكترونيات (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078856 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - bottle-of-sparkling-water 1 (RECTANGLE)
+            - مياة غازيه (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+      - Frame 1984078861 (FRAME)
+        - Frame 1984078855 (FRAME)
+          ↳ mode=HORIZONTAL | gap=12.0
+          - Frame 1984078854 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - iot-connected-appliance 1 (RECTANGLE)
+            - إلكترونيات (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078856 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - pile-lentils-moong-dal-vata-digestion 1 (RECTANGLE)
+            - البقوليات (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078852 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - bottle-of-sparkling-water 1 (RECTANGLE)
+            - مياة غازيه (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078855 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - sundae 1 (RECTANGLE)
+            - ايس كريم (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078853 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - milk-bottle 1 (RECTANGLE)
+            - Frame 1984078853 (FRAME)
+              ↳ mode=VERTICAL | gap=4.0
+              - الالبان (TEXT)
+                ↳ font=Expo Arabic 500 12.0px
+          - Frame 1984078850 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0
+            - Frame 1984078842 (FRAME)
+              ↳ radius=12.0
+              - cheese-block 1 (RECTANGLE)
+            - الجبن (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+  - Frame 1984078862 (FRAME)
+    ↳ mode=VERTICAL | gap=12.0
+    - Group 1171276131 (GROUP)
+      - Frame 1984078838 (FRAME)
+        ↳ radius=12.0
+        - Frame 1984078839 (FRAME)
+          ↳ mode=VERTICAL | gap=8.0
+          - Frame 1984078840 (FRAME)
+            ↳ mode=VERTICAL | gap=4.0
+            - عرض خاص (TEXT)
+              ↳ font=Expo Arabic 500 10.0px
+            - خصم 30% على  منتجات الفاكهه والخضار (TEXT)
+              ↳ font=Expo Arabic 400 12.0px
+          - Frame 1171279439 (FRAME)
+            ↳ mode=HORIZONTAL | gap=4.0
+            - arrow-right-02 (INSTANCE)
+              - elements (GROUP)
+                - Icon (VECTOR)
+            - اطلب الان (TEXT)
+              ↳ font=Expo Arabic 500 14.0px
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Vector (VECTOR)
+        - Frame 1984078841 (FRAME)
+          - Vector (VECTOR)
+          - Vector (VECTOR)
+        - Frame 1171279526 (FRAME)
+        - Vector (VECTOR)
+      - 316 1 (RECTANGLE)
+    - Frame 1171279343 (FRAME)
+      ↳ mode=HORIZONTAL | gap=8.0
+      - Frame 1171279341 (FRAME)
+        ↳ radius=24.0
+      - Frame 1171279342 (FRAME)
+        ↳ radius=24.0
+      - Frame 1171279343 (FRAME)
+        ↳ radius=24.0
+      - Frame 1984078662 (FRAME)
+        ↳ radius=24.0
+  - المنتجات الاكثر طلباً (TEXT)
+    ↳ font=Expo Arabic 600 15.0px
+  - Frame 1984078866 (FRAME)
+    ↳ mode=HORIZONTAL | gap=12.0
+    - Frame 1984078866 (FRAME)
+      ↳ mode=VERTICAL | radius=12.0
+      - Group 23 (GROUP)
+        - Frame 1171279474 (FRAME)
+          - images (3) 1 (RECTANGLE)
+          - Frame 1984078384 (INSTANCE)
+            ↳ mode=VERTICAL | gap=10.0 | pt=4.0, pb=4.0, pl=4.0, pr=4.0 | radius=8.0
+            - Frame 1171279518 (FRAME)
+              ↳ mode=HORIZONTAL | gap=10.0
+              - plus-sign (INSTANCE)
+                - elements (GROUP)
+                  - Icon (VECTOR)
+      - Frame 1171279472 (FRAME)
+        ↳ mode=VERTICAL | gap=8.0 | pt=12.0, pb=12.0, pl=12.0, pr=12.0
+        - لحم بقري 500 جم (TEXT)
+          ↳ font=Expo Arabic 400 12.0px
+        - 490 ج.م (TEXT)
+          ↳ font=Expo Arabic 500 12.0px
+    - Frame 1984078385 (FRAME)
+      ↳ mode=VERTICAL | radius=12.0
+      - Group 23 (GROUP)
+        - Frame 1171279474 (FRAME)
+          - 667177_main 1 (RECTANGLE)
+          - Frame 1984078384 (INSTANCE)
+            ↳ mode=VERTICAL | gap=10.0 | pt=4.0, pb=4.0, pl=4.0, pr=4.0 | radius=8.0
+            - Frame 1171279518 (FRAME)
+              ↳ mode=HORIZONTAL | gap=10.0
+              - plus-sign (INSTANCE)
+                - elements (GROUP)
+                  - Icon (VECTOR)
+      - Frame 1171279472 (FRAME)
+        ↳ mode=VERTICAL | gap=8.0 | pt=12.0, pb=12.0, pl=12.0, pr=12.0
+        - كيس جامبو برجر دجاج (TEXT)
+          ↳ font=Expo Arabic 400 12.0px
+        - 120 ج.م (TEXT)
+          ↳ font=Expo Arabic 500 12.0px
+    - Frame 1984078386 (INSTANCE)
+      ↳ mode=VERTICAL | radius=12.0
+      - Group 23 (GROUP)
+        - Frame 1171279474 (FRAME)
+          - 0007101_-250-_450 2 (RECTANGLE)
+          - Frame 1984078384 (INSTANCE)
+            ↳ mode=VERTICAL | gap=10.0 | pt=4.0, pb=4.0, pl=4.0, pr=4.0 | radius=8.0
+            - Frame 1171279518 (FRAME)
+              ↳ mode=HORIZONTAL | gap=10.0
+              - plus-sign (INSTANCE)
+                - elements (GROUP)
+                  - Icon (VECTOR)
+      - Frame 1171279472 (FRAME)
+        ↳ mode=VERTICAL | gap=8.0 | pt=12.0, pb=12.0, pl=12.0, pr=12.0
+        - توسيت توت (TEXT)
+          ↳ font=Expo Arabic 400 12.0px
+        - 190 ج.م (TEXT)
+          ↳ font=Expo Arabic 500 12.0px
+    - Frame 1984078867 (FRAME)
+      ↳ mode=VERTICAL | radius=12.0
+      - Group 23 (GROUP)
+        - Frame 1171279474 (FRAME)
+          - 448258_main 1 (RECTANGLE)
+          - Frame 1984078384 (INSTANCE)
+            ↳ mode=VERTICAL | gap=10.0 | pt=4.0, pb=4.0, pl=4.0, pr=4.0 | radius=8.0
+            - Frame 1171279518 (FRAME)
+              ↳ mode=HORIZONTAL | gap=10.0
+              - plus-sign (INSTANCE)
+                - elements (GROUP)
+                  - Icon (VECTOR)
+      - Frame 1171279472 (FRAME)
+        ↳ mode=VERTICAL | gap=8.0 | pt=12.0, pb=12.0, pl=12.0, pr=12.0
+        - برجر حار 670 جرام (TEXT)
+          ↳ font=Expo Arabic 400 12.0px
+        - 230 ج.م (TEXT)
+          ↳ font=Expo Arabic 500 12.0px
+
+Node ID: 8145:9757
+- Restaurant Details - Scrolled (FRAME)
+  ↳ radius=24.0
+  - Frame 1984078870 (FRAME)
+    - iPhone X/Status Bars/Status Bar (Black) (INSTANCE)
+      - Rectangle (RECTANGLE)
+      - Group 3 (GROUP)
+        - Battery (GROUP)
+          - Border (RECTANGLE)
+            ↳ radius=2.6666667461395264
+          - Cap (VECTOR)
+          - Capacity (RECTANGLE)
+            ↳ radius=1.3333333730697632
+        - Wifi (BOOLEAN_OPERATION)
+          - Wifi-path (VECTOR)
+          - Wifi-path (VECTOR)
+          - Wifi-path (VECTOR)
+        - Cellular Connection (BOOLEAN_OPERATION)
+          - Cellular_Connection-path (VECTOR)
+          - Cellular_Connection-path (VECTOR)
+          - Cellular_Connection-path (VECTOR)
+          - Cellular_Connection-path (VECTOR)
+      - Time Style (FRAME)
+        - ↳ Time (VECTOR)
+    - Frame 1171279388 (INSTANCE)
+      ↳ mode=HORIZONTAL | gap=4.0
+      - تغيير الموقع الجغرافي (TEXT)
+        ↳ font=Expo Arabic 600 16.0px
+      - back (INSTANCE)
+        - arrow-right-01 (INSTANCE)
+          - elements (GROUP)
+            - Icon (VECTOR)
+    - Frame 1171279444 (FRAME)
+      ↳ mode=VERTICAL | gap=20.0
+      - Frame 1171279371 (INSTANCE)
+        ↳ mode=VERTICAL | gap=10.0
+        - Frame 1171279256 (FRAME)
+          ↳ mode=HORIZONTAL | gap=10.0 | pt=12.0, pb=12.0, pl=12.0, pr=12.0 | radius=10.0
+          - Frame 1171279339 (FRAME)
+            ↳ mode=HORIZONTAL | gap=4.0
+            - ابحث عن ما تحب (TEXT)
+              ↳ font=Expo Arabic 400 12.0px
+            - search-01 (INSTANCE)
+              - elements (GROUP)
+                - Icon (VECTOR)
+    - Frame 1171279469 (FRAME)
+      ↳ mode=HORIZONTAL | gap=75.0
+      - Frame 1171279468 (FRAME)
+        ↳ mode=VERTICAL | gap=10.0
+        - بقري (TEXT)
+          ↳ font=Expo Arabic 400 12.0px
+        - Frame 1171279466 (FRAME)
+          ↳ radius=24.0
+      - Frame 1171279467 (FRAME)
+        ↳ mode=VERTICAL | gap=10.0
+        - كبدة (TEXT)
+          ↳ font=Expo Arabic 400 12.0px
+        - Frame 1171279466 (FRAME)
+          ↳ radius=24.0
+      - Frame 1171279471 (FRAME)
+        ↳ mode=VERTICAL | gap=10.0
+        - بلدي (TEXT)
+          ↳ font=Expo Arabic 400 12.0px
+        - Frame 1171279466 (FRAME)
+          ↳ radius=24.0
+      - Frame 1171279470 (FRAME)
+        ↳ mode=VERTICAL | gap=10.0
+        - مفرومة (TEXT)
+          ↳ font=Expo Arabic 400 12.0px
+        - Frame 1171279466 (FRAME)
+          ↳ radius=24.0
+      - Frame 1171279469 (FRAME)
+        ↳ mode=VERTICAL | gap=10.0
+        - الكل (TEXT)
+          ↳ font=Expo Arabic 500 12.0px
+        - Frame 1171279466 (FRAME)
+  - Frame 1984078871 (FRAME)
+    ↳ mode=VERTICAL | gap=16.0
+    - كل اللحوم (TEXT)
+      ↳ font=Expo Arabic 500 14.0px
+    - Frame 1171279478 (FRAME)
+      ↳ mode=VERTICAL | gap=12.0
+      - Frame 1171279477 (FRAME)
+        ↳ mode=HORIZONTAL | gap=12.0
+        - Frame 1171279476 (INSTANCE)
+          ↳ mode=VERTICAL | radius=12.0
+          - Frame 1171279473 (FRAME)
+            - arrow-left-01 (INSTANCE)
+              ↳ radius=8.0
+              - elements (GROUP)
+                - Icon (VECTOR)
+          - Frame 1171279472 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0 | pt=12.0, pb=12.0, pl=12.0, pr=12.0
+            - لحم بقري 500 جم (TEXT)
+              ↳ font=Expo Arabic 400 12.0px
+            - 490 ج.م (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+        - Frame 1171279477 (INSTANCE)
+          ↳ mode=VERTICAL | radius=12.0
+          - Frame 1171279473 (FRAME)
+            - arrow-left-01 (INSTANCE)
+              ↳ radius=8.0
+              - elements (GROUP)
+                - Icon (VECTOR)
+          - Frame 1171279472 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0 | pt=12.0, pb=12.0, pl=12.0, pr=12.0
+            - لحم بقري 500 جم (TEXT)
+              ↳ font=Expo Arabic 400 12.0px
+            - 490 ج.م (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+      - Frame 1171279476 (FRAME)
+        ↳ mode=HORIZONTAL | gap=12.0
+        - Frame 1171279474 (INSTANCE)
+          ↳ mode=VERTICAL | radius=12.0
+          - Frame 1171279473 (FRAME)
+            - arrow-left-01 (INSTANCE)
+              ↳ radius=8.0
+              - elements (GROUP)
+                - Icon (VECTOR)
+          - Frame 1171279472 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0 | pt=12.0, pb=12.0, pl=12.0, pr=12.0
+            - لحم بقري 500 جم (TEXT)
+              ↳ font=Expo Arabic 400 12.0px
+            - 490 ج.م (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+        - Frame 1171279476 (INSTANCE)
+          ↳ mode=VERTICAL | radius=12.0
+          - Frame 1171279473 (FRAME)
+            - arrow-left-01 (INSTANCE)
+              ↳ radius=8.0
+              - elements (GROUP)
+                - Icon (VECTOR)
+          - Frame 1171279472 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0 | pt=12.0, pb=12.0, pl=12.0, pr=12.0
+            - لحم بقري 500 جم (TEXT)
+              ↳ font=Expo Arabic 400 12.0px
+            - 490 ج.م (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+      - Frame 1171279478 (FRAME)
+        ↳ mode=HORIZONTAL | gap=12.0
+        - Frame 1171279474 (INSTANCE)
+          ↳ mode=VERTICAL | radius=12.0
+          - Frame 1171279473 (FRAME)
+            - arrow-left-01 (INSTANCE)
+              ↳ radius=8.0
+              - elements (GROUP)
+                - Icon (VECTOR)
+          - Frame 1171279472 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0 | pt=12.0, pb=12.0, pl=12.0, pr=12.0
+            - لحم بقري 500 جم (TEXT)
+              ↳ font=Expo Arabic 400 12.0px
+            - 490 ج.م (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+        - Frame 1171279476 (INSTANCE)
+          ↳ mode=VERTICAL | radius=12.0
+          - Frame 1171279473 (FRAME)
+            - arrow-left-01 (INSTANCE)
+              ↳ radius=8.0
+              - elements (GROUP)
+                - Icon (VECTOR)
+          - Frame 1171279472 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0 | pt=12.0, pb=12.0, pl=12.0, pr=12.0
+            - لحم بقري 500 جم (TEXT)
+              ↳ font=Expo Arabic 400 12.0px
+            - 490 ج.م (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+      - Frame 1171279479 (FRAME)
+        ↳ mode=HORIZONTAL | gap=12.0
+        - Frame 1171279474 (INSTANCE)
+          ↳ mode=VERTICAL | radius=12.0
+          - Frame 1171279473 (FRAME)
+            - arrow-left-01 (INSTANCE)
+              ↳ radius=8.0
+              - elements (GROUP)
+                - Icon (VECTOR)
+          - Frame 1171279472 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0 | pt=12.0, pb=12.0, pl=12.0, pr=12.0
+            - لحم بقري 500 جم (TEXT)
+              ↳ font=Expo Arabic 400 12.0px
+            - 490 ج.م (TEXT)
+              ↳ font=Expo Arabic 500 12.0px
+        - Frame 1171279476 (INSTANCE)
+          ↳ mode=VERTICAL | radius=12.0
+          - Frame 1171279473 (FRAME)
+            - arrow-left-01 (INSTANCE)
+              ↳ radius=8.0
+              - elements (GROUP)
+                - Icon (VECTOR)
+          - Frame 1171279472 (FRAME)
+            ↳ mode=VERTICAL | gap=8.0 | pt=12.0, pb=12.0, pl=12.0, pr=12.0
+            - لحم بقري 500 جم (TEXT)
+              ↳ font=Expo Arabic 400 12.0px
+            - 490 ج.م (TEXT)
+              ↳ font=Expo Arabic 500 12.0px

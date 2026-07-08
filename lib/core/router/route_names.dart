@@ -15,6 +15,8 @@ class RouteNames {
   static const restaurantDetail = '/restaurant/:id';
   static const restaurantRate = '/restaurant/:id/rate';
   static const restaurantSearch = '/restaurant/:id/search';
+  static const storeDetail = '/store/:id';
+  static const unifiedResults = '/unified-results';
   static const menuItemDetail = '/menu-item/:id';
   static const cart = '/cart';
   static const productDetails = '/cart/product-details';
@@ -48,5 +50,6 @@ class RouteNames {
   static String restaurantDetailFor(String id) => '/restaurant/$id';
   static String restaurantRateFor(String id) => '/restaurant/$id/rate';
   static String restaurantSearchFor(String id) => '/restaurant/$id/search';
+  static String storeDetailFor(String id) => '/store/$id';
   static String orderDetailFor(String id) => '/order/$id';
 }

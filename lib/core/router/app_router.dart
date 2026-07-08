@@ -46,6 +46,9 @@ import '../../features/support/presentation/pages/help_support_screen.dart';
 import '../../features/support/presentation/pages/about_screen.dart';
 import '../../features/service_listing/presentation/models/service_listing_type.dart';
 import '../../features/service_listing/presentation/pages/service_listing_screen.dart';
+import '../../features/search/presentation/pages/unified_results_screen.dart';
+import '../../features/search/presentation/models/results_config.dart';
+import '../../features/store/presentation/pages/store_details_screen.dart';
 
 class AppRouter {
   AppRouter._();
@@ -131,6 +134,21 @@ class AppRouter {
         builder: (c, s) => RestaurantSearchScreen(
           restaurantId: s.pathParameters['id'] ?? 'az-al-sham',
         ),
+      ),
+      GoRoute(
+        path: RouteNames.storeDetail,
+        builder: (c, s) => StoreDetailsScreen(
+          storeId: s.pathParameters['id'] ?? 'store-id',
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.unifiedResults,
+        builder: (c, s) {
+          final config = s.extra is ResultsConfig
+              ? s.extra as ResultsConfig
+              : const ResultsConfig();
+          return UnifiedResultsScreen(config: config);
+        },
       ),
       GoRoute(
         path: RouteNames.menuItemDetail,

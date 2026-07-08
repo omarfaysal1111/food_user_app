@@ -475,49 +475,54 @@ class _CompactStoreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 92,
-      height: 98,
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard(context),
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.onSurface(context).withValues(alpha: 0.08),
-            blurRadius: 2,
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ClipOval(
-            child: AppRasterImage.asset(
-              item.imageAsset,
-              width: 40,
-              height: 40,
-              fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        context.push(RouteNames.storeDetailFor(item.detailId));
+      },
+      child: Container(
+        width: 92,
+        height: 98,
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceCard(context),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.onSurface(context).withValues(alpha: 0.08),
+              blurRadius: 2,
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            item.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: AppTextStyles.body(
-              context,
-            ).copyWith(fontSize: 12, height: 1.3),
-          ),
-          const SizedBox(height: 4),
-          _TimeLabel(
-            time: item.time,
-            iconSize: 14,
-            fontSize: 10,
-            textColor: AppColors.onSurface(context),
-          ),
-        ],
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipOval(
+              child: AppRasterImage.asset(
+                item.imageAsset,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              item.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body(
+                context,
+              ).copyWith(fontSize: 12, height: 1.3),
+            ),
+            const SizedBox(height: 4),
+            _TimeLabel(
+              time: item.time,
+              iconSize: 14,
+              fontSize: 10,
+              textColor: AppColors.onSurface(context),
+            ),
+          ],
+        ),
       ),
     );
   }

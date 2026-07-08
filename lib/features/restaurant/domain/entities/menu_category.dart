@@ -5,6 +5,7 @@ class MenuCategory extends Equatable {
   final String id;
   final String branchId;
   final String name;
+  final String? imageUrl;
   final int sortOrder;
   final List<MenuItem> items;
   final bool visible;
@@ -13,11 +14,12 @@ class MenuCategory extends Equatable {
     required this.id,
     required this.branchId,
     required this.name,
+    this.imageUrl,
     required this.sortOrder,
     required this.items,
     required this.visible,
   });
 
   @override
-  List<Object?> get props => [id, branchId, name, sortOrder, items, visible];
+  List<Object?> get props => [id, branchId, name, imageUrl, sortOrder, items, visible];
 }
