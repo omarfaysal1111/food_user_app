@@ -135,9 +135,11 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
         ? l10n.addressUpdatedDesignOnly
         : l10n.addressSavedDesignOnly;
     final addressesController = SavedAddressesScope.of(context);
-    final editedAddress = widget.addressId == null
-        ? addressesController.selectedAddress
-        : addressesController.addressById(widget.addressId!);
+    final editedAddress = isEdit
+        ? (widget.addressId == null
+            ? addressesController.selectedAddress
+            : addressesController.addressById(widget.addressId!))
+        : null;
     _hydrateFields(editedAddress);
     final previewAddress =
         widget.mapResult?.address ??
@@ -291,8 +293,8 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
       fullAddress: location,
       lat: latitude,
       lng: longitude,
-      city: existingAddress?.city,
-      neighborhood: existingAddress?.neighborhood,
+      city: existingAddress?.city ?? mapResult?.city,
+      neighborhood: existingAddress?.neighborhood ?? mapResult?.neighborhood,
       streetNumber: existingAddress?.streetNumber,
       buildingNumber: _buildingController.text,
       floor: _floorController.text,
@@ -605,18 +607,48 @@ class _StaticMap extends StatelessWidget {
   }
 }
 
-class _AddressInputField extends StatelessWidget {
+class _AddressInputField extends StatefulWidget {
   const _AddressInputField({required this.hint, this.controller});
 
   final String hint;
   final TextEditingController? controller;
 
   @override
+  State<_AddressInputField> createState() => _AddressInputFieldState();
+}
+
+class _AddressInputFieldState extends State<_AddressInputField> {
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus && widget.controller != null && widget.controller!.text.isNotEmpty) {
+      widget.controller!.selection = TextSelection.collapsed(
+        offset: widget.controller!.text.length,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 40,
       child: TextFormField(
-        controller: controller,
+        focusNode: _focusNode,
+        controller: widget.controller,
         onTapOutside: (_) => FocusScope.of(context).unfocus(),
         textAlign: TextAlign.start,
         cursorColor: AppColors.cursor(context),
@@ -624,7 +656,7 @@ class _AddressInputField extends StatelessWidget {
           context,
         ).copyWith(fontSize: 12, height: 1.3),
         decoration: InputDecoration(
-          hintText: hint,
+          hintText: widget.hint,
           hintStyle: AppTextStyles.inputHint(
             context,
           ).copyWith(color: AppColors.hint(context), fontSize: 12, height: 1.3),

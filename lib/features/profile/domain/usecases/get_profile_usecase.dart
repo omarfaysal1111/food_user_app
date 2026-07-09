@@ -1,14 +1,16 @@
 import 'package:dartz/dartz.dart';
-import 'package:food_user_app/features/profile/domain/entities/profile.dart';
+import 'package:food_user_app/features/user/domain/entities/user_profile.dart';
+import 'package:food_user_app/features/user/domain/repositories/user_repository.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 
-class GetProfileUseCase extends UseCase<Profile, NoParams> {
-  // TODO: inject repository
+class GetProfileUseCase extends UseCase<UserProfile, NoParams> {
+  final UserRepository repository;
+
+  GetProfileUseCase(this.repository);
 
   @override
-  Future<Either<Failure, Profile>> call(NoParams params) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<Either<Failure, UserProfile>> call(NoParams params) {
+    return repository.getProfile();
   }
 }

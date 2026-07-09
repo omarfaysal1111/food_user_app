@@ -243,7 +243,7 @@ class _ProfileHeader extends StatelessWidget {
   }
 }
 
-class _ProfileField extends StatelessWidget {
+class _ProfileField extends StatefulWidget {
   const _ProfileField({
     required this.label,
     required this.controller,
@@ -263,9 +263,38 @@ class _ProfileField extends StatelessWidget {
   final Widget? trailing;
 
   @override
+  State<_ProfileField> createState() => _ProfileFieldState();
+}
+
+class _ProfileFieldState extends State<_ProfileField> {
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus && widget.controller.text.isNotEmpty) {
+      widget.controller.selection = TextSelection.collapsed(
+        offset: widget.controller.text.length,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final fieldTextAlign = textDirection == TextDirection.ltr && isRtl
+    final fieldTextAlign = widget.textDirection == TextDirection.ltr && isRtl
         ? TextAlign.right
         : TextAlign.start;
 
@@ -273,7 +302,7 @@ class _ProfileField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label,
+          widget.label,
           textAlign: TextAlign.start,
           style: AppTextStyles.fieldLabel(context).copyWith(
             color: AppColors.onSurface(context),
@@ -295,15 +324,16 @@ class _ProfileField extends StatelessWidget {
             children: [
               Expanded(
                 child: TextField(
-                  controller: controller,
-                  readOnly: readOnly,
-                  keyboardType: keyboardType,
-                  textInputAction: textInputAction,
-                  textDirection: textDirection,
+                  focusNode: _focusNode,
+                  controller: widget.controller,
+                  readOnly: widget.readOnly,
+                  keyboardType: widget.keyboardType,
+                  textInputAction: widget.textInputAction,
+                  textDirection: widget.textDirection,
                   textAlign: fieldTextAlign,
                   cursorColor: AppColors.cursor(context),
                   style: AppTextStyles.inputText(context).copyWith(
-                    color: readOnly
+                    color: widget.readOnly
                         ? AppColors.paragraph(context)
                         : AppColors.onSurface(context),
                     fontSize: 12,
@@ -319,7 +349,7 @@ class _ProfileField extends StatelessWidget {
                   ),
                 ),
               ),
-              if (trailing != null) ...[const SizedBox(width: 12), trailing!],
+              if (widget.trailing != null) ...[const SizedBox(width: 12), widget.trailing!],
             ],
           ),
         ),

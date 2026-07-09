@@ -4,18 +4,16 @@ import 'package:go_router/go_router.dart';
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
-import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/core/widgets/app_search_field.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
-import 'package:food_user_app/features/service_listing/presentation/models/service_listing_type.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:food_user_app/features/home/presentation/cubit/banner_cubit.dart';
-import 'package:food_user_app/features/home/presentation/cubit/banner_state.dart';
-import 'package:food_user_app/features/home/domain/entities/banner.dart';
+import 'package:food_user_app/features/home/presentation/widgets/banner_slider.dart';
+import 'package:food_user_app/features/home/presentation/cubit/category_cubit.dart';
+import 'package:food_user_app/features/home/presentation/widgets/category_grid.dart';
 import 'package:food_user_app/features/restaurant/presentation/widgets/restaurant_card.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_filter_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_filter_state.dart';
@@ -44,15 +42,17 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.only(top: 22, bottom: AppSpacing.lg),
             sliver: SliverList.list(
               children: [
-                // TODO: Integrate with /categories endpoint
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.md,
                   ),
-                  child: _CategoryStrip(copy: copy),
+                  child: BlocProvider<CategoryCubit>(
+                    create: (context) => sl<CategoryCubit>(),
+                    child: const CategoryGrid(),
+                  ),
                 ),
                 const SizedBox(height: 20),
-                const _PromoSlider(),
+                const BannerSlider(),
                 const SizedBox(height: 18),
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -255,244 +255,6 @@ class _SearchEntryState extends State<_SearchEntry> {
   }
 }
 
-class _CategoryStrip extends StatelessWidget {
-  const _CategoryStrip({required this.copy});
-
-  final _HomeCopy copy;
-
-  @override
-  Widget build(BuildContext context) {
-    final categories = copy.categories;
-
-    return Row(
-      children: [
-        for (var index = 0; index < categories.length; index++) ...[
-          Expanded(child: _CategoryTile(category: categories[index])),
-          if (index != categories.length - 1) const SizedBox(width: 14),
-        ],
-      ],
-    );
-  }
-}
-
-class _CategoryTile extends StatelessWidget {
-  const _CategoryTile({required this.category});
-
-  final _HomeCategory category;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () =>
-          context.push(RouteNames.serviceListingFor(category.type.pathSegment)),
-      borderRadius: const BorderRadius.all(Radius.circular(12)),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 72,
-            height: 72,
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              color: AppColors.surfaceCard(context),
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-              border: Border.all(color: AppColors.border(context), width: 0.5),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.black.withValues(alpha: 0.06),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                const PositionedDirectional(
-                  top: 0,
-                  start: 0,
-                  end: 0,
-                  child: AppRasterImage.asset(
-                    AppAssets.homeCategoryStrokeTop,
-                    height: 2,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                const PositionedDirectional(
-                  bottom: 0,
-                  start: 0,
-                  end: 0,
-                  child: AppRasterImage.asset(
-                    AppAssets.homeCategoryStrokeBottom,
-                    height: 2,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                AppRasterImage.asset(
-                  category.imageAsset,
-                  width: 56,
-                  height: 56,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            category.label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.body(context).copyWith(
-              fontSize: 12,
-              height: 1.3,
-              color: AppColors.onSurface(context),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PromoSlider extends StatefulWidget {
-  const _PromoSlider();
-
-  @override
-  State<_PromoSlider> createState() => _PromoSliderState();
-}
-
-class _PromoSliderState extends State<_PromoSlider> {
-  late final PageController _controller;
-  int _currentPage = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = PageController();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<BannerCubit, BannerState>(
-      builder: (context, state) {
-        return state.maybeWhen(
-          loaded: (banners) {
-            if (banners.isEmpty) return const SizedBox.shrink();
-
-            return Column(
-              children: [
-                SizedBox(
-                  height: 155,
-                  child: PageView.builder(
-                    controller: _controller,
-                    onPageChanged: (page) =>
-                        setState(() => _currentPage = page),
-                    itemCount: banners.length,
-                    itemBuilder: (context, index) {
-                      final banner = banners[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.md,
-                        ),
-                        child: _PromoBanner(banner: banner),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 12),
-                _BannerIndicator(
-                  activePage: _currentPage,
-                  count: banners.length,
-                ),
-              ],
-            );
-          },
-          orElse: () {
-            return const SizedBox(
-              height: 155,
-              child: Center(child: CircularProgressIndicator()),
-            );
-          },
-        );
-      },
-    );
-  }
-}
-
-class _PromoBanner extends StatelessWidget {
-  const _PromoBanner({required this.banner});
-
-  final BannerItem banner;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.all(Radius.circular(16)),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          AppNetworkImage(
-            banner.imageUrl,
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _BannerIndicator extends StatelessWidget {
-  const _BannerIndicator({required this.activePage, required this.count});
-
-  final int activePage;
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        for (var i = 0; i < count; i++) ...[
-          _IndicatorDot(
-            color: i == activePage
-                ? AppColors.primary
-                : AppColors.inactiveIndicator,
-            width: i == activePage ? 32 : 8,
-          ),
-          if (i != count - 1) const SizedBox(width: AppSpacing.sm),
-        ],
-      ],
-    );
-  }
-}
-
-class _IndicatorDot extends StatelessWidget {
-  const _IndicatorDot({required this.color, this.width = 8});
-
-  final Color color;
-  final double width;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      width: width,
-      height: 8,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: const BorderRadius.all(AppRadius.full),
-      ),
-    );
-  }
-}
-
 class _SectionHeader extends StatelessWidget {
   const _SectionHeader({required this.title});
 
@@ -528,7 +290,9 @@ class _OfferList extends StatelessWidget {
             return state.maybeWhen(
               loaded: (restaurants, type) {
                 if (restaurants.isEmpty) {
-                  return const Center(child: Text('No offers available'));
+                  return Center(
+                    child: Text(AppLocalizations.of(context)!.noOffersAvailable),
+                  );
                 }
                 return ListView.separated(
                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -661,7 +425,9 @@ class _RestaurantList extends StatelessWidget {
               ),
               loaded: (restaurants, filterType) {
                 if (restaurants.isEmpty) {
-                  return const Center(child: Text('No restaurants found'));
+                  return Center(
+                    child: Text(AppLocalizations.of(context)!.noRestaurantsFound),
+                  );
                 }
                 return ListView.separated(
                   padding: const EdgeInsets.symmetric(
@@ -695,9 +461,6 @@ class _HomeCopy {
     required this.mostOrderedTitle,
     required this.available,
     required this.closed,
-    required this.categories,
-    required this.offers,
-    required this.restaurants,
   });
 
   final String deliveryTo;
@@ -710,9 +473,6 @@ class _HomeCopy {
   final String mostOrderedTitle;
   final String available;
   final String closed;
-  final List<_HomeCategory> categories;
-  final List<_HomeOffer> offers;
-  final List<_HomeRestaurant> restaurants;
 
   static _HomeCopy of(BuildContext context) {
     final locale = Localizations.localeOf(context);
@@ -732,112 +492,6 @@ class _HomeCopy {
       mostOrderedTitle: l10n.homeMostOrderedTitle,
       available: l10n.serviceAvailable,
       closed: l10n.serviceClosed,
-      categories: [
-        _HomeCategory(
-          label: l10n.homeCategoryRestaurants,
-          imageAsset: AppAssets.homeCategoryRestaurants,
-          type: ServiceListingType.restaurants,
-        ),
-        _HomeCategory(
-          label: l10n.homeCategoryGrocery,
-          imageAsset: AppAssets.homeCategoryGrocery,
-          type: ServiceListingType.grocery,
-        ),
-        _HomeCategory(
-          label: l10n.homeCategoryStores,
-          imageAsset: AppAssets.homeCategoryStore,
-          type: ServiceListingType.stores,
-        ),
-        _HomeCategory(
-          label: l10n.homeCategoryPickup,
-          imageAsset: AppAssets.homeCategoryPickup,
-          type: ServiceListingType.pickup,
-        ),
-      ],
-      offers: [
-        for (var i = 0; i < 4; i++)
-          _HomeOffer(
-            restaurant: l10n.orderRestaurantAzAlSham,
-            title: l10n.cartProductBurgerCombo,
-            price: l10n.cartPrice(190),
-            imageAsset: AppAssets.homeOfferProduct,
-          ),
-      ],
-      restaurants: [
-        _HomeRestaurant(
-          name: l10n.orderRestaurantAzAlSham,
-          description: l10n.serviceRestaurantDescription,
-          deliveryTime: l10n.serviceDeliveryTimeRange,
-          rating: l10n.orderCourierRating,
-          isOpen: false,
-          id: 'az-al-sham',
-          imageAsset: AppAssets.homeMostOrderedRestaurant1,
-        ),
-        _HomeRestaurant(
-          name: l10n.orderRestaurantAzAlSham,
-          description: l10n.serviceRestaurantDescription,
-          deliveryTime: l10n.serviceDeliveryTimeRange,
-          rating: l10n.orderCourierRating,
-          isOpen: true,
-          id: 'az-al-sham',
-          imageAsset: AppAssets.homeMostOrderedRestaurant2,
-        ),
-        _HomeRestaurant(
-          name: l10n.orderRestaurantAzAlSham,
-          description: l10n.serviceRestaurantDescription,
-          deliveryTime: l10n.serviceDeliveryTimeRange,
-          rating: l10n.orderCourierRating,
-          isOpen: false,
-          id: 'az-al-sham',
-          imageAsset: AppAssets.homeMostOrderedRestaurant1,
-        ),
-      ],
     );
   }
-}
-
-class _HomeCategory {
-  const _HomeCategory({
-    required this.label,
-    required this.imageAsset,
-    required this.type,
-  });
-
-  final String label;
-  final String imageAsset;
-  final ServiceListingType type;
-}
-
-class _HomeOffer {
-  const _HomeOffer({
-    required this.restaurant,
-    required this.title,
-    required this.price,
-    required this.imageAsset,
-  });
-
-  final String restaurant;
-  final String title;
-  final String price;
-  final String imageAsset;
-}
-
-class _HomeRestaurant {
-  const _HomeRestaurant({
-    required this.name,
-    required this.description,
-    required this.deliveryTime,
-    required this.rating,
-    required this.isOpen,
-    required this.id,
-    required this.imageAsset,
-  });
-
-  final String name;
-  final String description;
-  final String deliveryTime;
-  final String rating;
-  final bool isOpen;
-  final String id;
-  final String imageAsset;
 }

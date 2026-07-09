@@ -6,7 +6,7 @@ import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 
-class AppSearchField extends StatelessWidget {
+class AppSearchField extends StatefulWidget {
   const AppSearchField({
     required this.controller,
     required this.hint,
@@ -43,12 +43,51 @@ class AppSearchField extends StatelessWidget {
   final TextStyle? textStyle;
 
   @override
+  State<AppSearchField> createState() => _AppSearchFieldState();
+}
+
+class _AppSearchFieldState extends State<AppSearchField> {
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode => widget.focusNode ?? (_internalFocusNode ??= FocusNode());
+
+  @override
+  void initState() {
+    super.initState();
+    _effectiveFocusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void didUpdateWidget(AppSearchField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.focusNode != oldWidget.focusNode) {
+      oldWidget.focusNode?.removeListener(_onFocusChange);
+      _internalFocusNode?.removeListener(_onFocusChange);
+      _effectiveFocusNode.addListener(_onFocusChange);
+    }
+  }
+
+  void _onFocusChange() {
+    if (_effectiveFocusNode.hasFocus && widget.controller.text.isNotEmpty) {
+      widget.controller.selection = TextSelection.collapsed(
+        offset: widget.controller.text.length,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _effectiveFocusNode.removeListener(_onFocusChange);
+    _internalFocusNode?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final hasText = controller.text.isNotEmpty;
+    final hasText = widget.controller.text.isNotEmpty;
 
     return Container(
-      height: height,
-      padding: EdgeInsetsDirectional.symmetric(horizontal: horizontalPadding),
+      height: widget.height,
+      padding: EdgeInsetsDirectional.symmetric(horizontal: widget.horizontalPadding),
       decoration: BoxDecoration(
         color: AppColors.surfaceCard(context),
         borderRadius: const BorderRadius.all(AppRadius.sm),
@@ -56,18 +95,18 @@ class AppSearchField extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _SearchIcon(iconAsset: iconAsset),
-          SizedBox(width: iconGap),
+          _SearchIcon(iconAsset: widget.iconAsset),
+          SizedBox(width: widget.iconGap),
           Expanded(
             child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              onChanged: onChanged,
+              controller: widget.controller,
+              focusNode: _effectiveFocusNode,
+              onChanged: widget.onChanged,
               textAlign: TextAlign.start,
               textInputAction: TextInputAction.search,
               cursorColor: AppColors.cursor(context),
               style:
-                  textStyle ??
+                  widget.textStyle ??
                   AppTextStyles.inputText(
                     context,
                   ).copyWith(fontSize: 12, height: 1.3),
@@ -75,9 +114,9 @@ class AppSearchField extends StatelessWidget {
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: EdgeInsetsDirectional.zero,
-                hintText: hint,
+                hintText: widget.hint,
                 hintStyle: AppTextStyles.inputHint(context).copyWith(
-                  color: hintColor,
+                  color: widget.hintColor,
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
                   height: 1.3,
@@ -85,18 +124,18 @@ class AppSearchField extends StatelessWidget {
               ),
             ),
           ),
-          if (isLoading)
+          if (widget.isLoading)
             SizedBox(
-              width: loadingSize,
-              height: loadingSize,
+              width: widget.loadingSize,
+              height: widget.loadingSize,
               child: CircularProgressIndicator(
-                strokeWidth: loadingStrokeWidth,
+                strokeWidth: widget.loadingStrokeWidth,
                 color: AppColors.paragraph(context),
               ),
             )
-          else if (showClearButton && hasText && onClear != null)
+          else if (widget.showClearButton && hasText && widget.onClear != null)
             IconButton(
-              onPressed: onClear,
+              onPressed: widget.onClear,
               style: IconButton.styleFrom(
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 minimumSize: const Size(36, 36),

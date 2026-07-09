@@ -1,44 +1,62 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/core/di/injection_container.dart' as di;
+import 'package:food_user_app/features/support/presentation/cubit/chat_cubit.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
-
-enum SupportMessageType { text, image, video }
 
 class SupportChatMessage {
   const SupportChatMessage({
     required this.id,
-    required this.type,
+    required this.text,
     required this.isMine,
     required this.createdAt,
-    this.text,
-    this.file,
   });
 
   final String id;
-  final SupportMessageType type;
-  final String? text;
-  final XFile? file;
+  final String text;
   final bool isMine;
   final DateTime createdAt;
 }
 
-class HelpSupportScreen extends StatefulWidget {
-  const HelpSupportScreen({super.key});
+class HelpSupportScreen extends StatelessWidget {
+  final String? ticketId;
+
+  const HelpSupportScreen({super.key, this.ticketId});
 
   @override
-  State<HelpSupportScreen> createState() => _HelpSupportScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) {
+        final cubit = di.sl<ChatCubit>();
+        if (ticketId != null) {
+          cubit.fetchMessages(ticketId!);
+        }
+        return cubit;
+      },
+      child: _HelpSupportScreenContent(ticketId: ticketId),
+    );
+  }
 }
 
-class _HelpSupportScreenState extends State<HelpSupportScreen> {
+class _HelpSupportScreenContent extends StatefulWidget {
+  final String? ticketId;
+
+  const _HelpSupportScreenContent({this.ticketId});
+
+  @override
+  State<_HelpSupportScreenContent> createState() =>
+      _HelpSupportScreenContentState();
+}
+
+class _HelpSupportScreenContentState
+    extends State<_HelpSupportScreenContent> {
   static const _headerContentHeight = 68.0;
   static const _composerTopPadding = 20.0;
   static const _composerHorizontalPadding = 16.0;
@@ -47,13 +65,12 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
 
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
-  final _picker = ImagePicker();
-  late List<SupportChatMessage> _messages;
+  List<SupportChatMessage> _messages = [];
 
   @override
   void initState() {
     super.initState();
-    _messages = _initialMessages();
+    _messages = [];
   }
 
   @override
@@ -63,74 +80,12 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     super.dispose();
   }
 
-  List<SupportChatMessage> _initialMessages() {
-    final fixedTime = DateTime(2026, 1, 1, 14, 20);
-
-    return [
-      SupportChatMessage(
-        id: 'support-good-evening',
-        type: SupportMessageType.text,
-        text: 'supportGoodEvening',
-        isMine: false,
-        createdAt: fixedTime,
-      ),
-      SupportChatMessage(
-        id: 'support-how-help',
-        type: SupportMessageType.text,
-        text: 'supportHowCanWeHelp',
-        isMine: false,
-        createdAt: fixedTime,
-      ),
-      SupportChatMessage(
-        id: 'user-sample-issue',
-        type: SupportMessageType.text,
-        text: 'supportSampleUserIssue',
-        isMine: true,
-        createdAt: fixedTime,
-      ),
-    ];
-  }
-
-  void _appendMessage(SupportChatMessage message) {
-    setState(() {
-      _messages = [..._messages, message];
-    });
-    _scrollToBottom();
-  }
-
   void _sendText() {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
 
-    // TODO: Replace local append with support chat send-message API.
-    _appendMessage(
-      SupportChatMessage(
-        id: DateTime.now().microsecondsSinceEpoch.toString(),
-        type: SupportMessageType.text,
-        text: text,
-        isMine: true,
-        createdAt: DateTime.now(),
-      ),
-    );
+    context.read<ChatCubit>().sendMessage(text);
     _controller.clear();
-  }
-
-  Future<void> _pickImage() async {
-    FocusManager.instance.primaryFocus?.unfocus();
-
-    final file = await _picker.pickImage(source: ImageSource.gallery);
-    if (!mounted || file == null) return;
-
-    // TODO: Upload selected image through the support attachment API.
-    _appendMessage(
-      SupportChatMessage(
-        id: DateTime.now().microsecondsSinceEpoch.toString(),
-        type: SupportMessageType.image,
-        file: file,
-        isMine: true,
-        createdAt: DateTime.now(),
-      ),
-    );
   }
 
   void _scrollToBottom() {
@@ -153,44 +108,70 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBackground(context),
-        body: Column(
-          children: [
-            _SupportChatHeader(title: l10n.supportChatTitle),
-            Expanded(
-              child: ListView(
-                controller: _scrollController,
-                physics: const ClampingScrollPhysics(),
-                padding: const EdgeInsetsDirectional.fromSTEB(
-                  _messageHorizontalPadding,
-                  20,
-                  _messageHorizontalPadding,
-                  24,
-                ),
-                children: [
-                  _DateSeparator(label: l10n.supportToday),
-                  const SizedBox(height: 20),
-                  _SupportMessageGroup(
-                    messages: _messages.where((m) => !m.isMine).toList(),
-                    resolveText: _resolveMessageText,
-                  ),
-                  const SizedBox(height: 12),
-                  for (final message in _messages.where((m) => m.isMine))
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _ChatMessageBubble(
-                        message: message,
-                        text: _resolveMessageText(message),
+        body: BlocConsumer<ChatCubit, ChatState>(
+          listener: (context, state) {
+            state.maybeWhen(
+              loaded: (messages) {
+                setState(() {
+                  _messages = messages
+                      .map((m) => SupportChatMessage(
+                            id: m.id,
+                            text: m.content,
+                            isMine: m.senderRole == 'USER',
+                            createdAt: m.sentAt,
+                          ))
+                      .toList();
+                });
+                _scrollToBottom();
+              },
+              orElse: () {},
+            );
+          },
+          builder: (context, state) {
+            return Column(
+              children: [
+                _SupportChatHeader(title: l10n.supportChatTitle),
+                Expanded(
+                  child: state.maybeWhen(
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (msg) => Center(child: Text(msg)),
+                    orElse: () => ListView(
+                      controller: _scrollController,
+                      physics: const ClampingScrollPhysics(),
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        _messageHorizontalPadding,
+                        20,
+                        _messageHorizontalPadding,
+                        24,
                       ),
+                      children: [
+                        _DateSeparator(label: l10n.supportToday),
+                        const SizedBox(height: 20),
+                        _SupportMessageGroup(
+                          messages: _messages.where((m) => !m.isMine).toList(),
+                          resolveText: _resolveMessageText,
+                        ),
+                        const SizedBox(height: 12),
+                        for (final message in _messages.where((m) => m.isMine))
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _ChatMessageBubble(
+                              message: message,
+                              text: _resolveMessageText(message),
+                            ),
+                          ),
+                      ],
                     ),
-                ],
-              ),
-            ),
-            _SupportComposer(
-              controller: _controller,
-              onSend: _sendText,
-              onAttach: _pickImage,
-            ),
-          ],
+                  ),
+                ),
+                _SupportComposer(
+                  controller: _controller,
+                  onSend: _sendText,
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -203,8 +184,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
       'supportGoodEvening' => l10n.supportGoodEvening,
       'supportHowCanWeHelp' => l10n.supportHowCanWeHelp,
       'supportSampleUserIssue' => l10n.supportSampleUserIssue,
-      final text? => text,
-      null => '',
+      final text => text,
     };
   }
 }
@@ -219,7 +199,7 @@ class _SupportChatHeader extends StatelessWidget {
     final topSafe = MediaQuery.of(context).padding.top;
 
     return SizedBox(
-      height: topSafe + _HelpSupportScreenState._headerContentHeight,
+      height: topSafe + _HelpSupportScreenContentState._headerContentHeight,
       child: Stack(
         fit: StackFit.expand,
         clipBehavior: Clip.hardEdge,
@@ -366,9 +346,7 @@ class _ChatMessageBubble extends StatelessWidget {
     final isMine = message.isMine;
 
     final bubble = Column(
-      crossAxisAlignment: isMine
-          ? CrossAxisAlignment.end
-          : CrossAxisAlignment.start,
+      crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
         DecoratedBox(
           decoration: BoxDecoration(
@@ -377,7 +355,7 @@ class _ChatMessageBubble extends StatelessWidget {
                 : AppColors.error.withValues(alpha: 0.10),
             borderRadius: _bubbleRadius(isMine),
           ),
-          child: _MessageContent(message: message, text: text),
+          child: _MessageContent(text: text),
         ),
         if (isMine) ...[
           const SizedBox(height: 4),
@@ -414,18 +392,13 @@ class _ChatMessageBubble extends StatelessWidget {
 }
 
 class _MessageContent extends StatelessWidget {
-  const _MessageContent({required this.message, required this.text});
+  const _MessageContent({required this.text});
 
-  final SupportChatMessage message;
   final String text;
 
   @override
   Widget build(BuildContext context) {
-    return switch (message.type) {
-      SupportMessageType.text => _TextMessageContent(text: text),
-      SupportMessageType.image => _ImageMessageContent(file: message.file),
-      SupportMessageType.video => _VideoMessageContent(message: message),
-    };
+    return _TextMessageContent(text: text);
   }
 }
 
@@ -458,81 +431,6 @@ class _TextMessageContent extends StatelessWidget {
   }
 }
 
-class _ImageMessageContent extends StatelessWidget {
-  const _ImageMessageContent({required this.file});
-
-  final XFile? file;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    if (file == null) {
-      return _TextMessageContent(text: l10n.supportImageMessage);
-    }
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Image.file(
-        File(file!.path),
-        width: 180,
-        height: 140,
-        fit: BoxFit.cover,
-      ),
-    );
-  }
-}
-
-class _VideoMessageContent extends StatelessWidget {
-  const _VideoMessageContent({required this.message});
-
-  final SupportChatMessage message;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final fileName = message.text ?? l10n.supportVideoMessage;
-
-    return Container(
-      width: 220,
-      padding: const EdgeInsetsDirectional.all(12),
-      child: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.play_arrow_rounded,
-              color: AppColors.text,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              fileName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.start,
-              style: AppTextStyles.caption(context).copyWith(
-                color: AppColors.onSurface(context),
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                height: 1.3,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _MessageTime extends StatelessWidget {
   const _MessageTime({required this.time});
 
@@ -556,12 +454,10 @@ class _SupportComposer extends StatelessWidget {
   const _SupportComposer({
     required this.controller,
     required this.onSend,
-    required this.onAttach,
   });
 
   final TextEditingController controller;
   final VoidCallback onSend;
-  final Future<void> Function() onAttach;
 
   @override
   Widget build(BuildContext context) {
@@ -571,10 +467,10 @@ class _SupportComposer extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: EdgeInsetsDirectional.fromSTEB(
-        _HelpSupportScreenState._composerHorizontalPadding,
-        _HelpSupportScreenState._composerTopPadding,
-        _HelpSupportScreenState._composerHorizontalPadding,
-        bottomSafe + _HelpSupportScreenState._composerBottomPadding,
+        _HelpSupportScreenContentState._composerHorizontalPadding,
+        _HelpSupportScreenContentState._composerTopPadding,
+        _HelpSupportScreenContentState._composerHorizontalPadding,
+        bottomSafe + _HelpSupportScreenContentState._composerBottomPadding,
       ),
       decoration: BoxDecoration(
         color: AppColors.surfaceCard(context),
@@ -597,9 +493,8 @@ class _SupportComposer extends StatelessWidget {
                 cursorColor: AppColors.cursor(context),
                 minLines: 1,
                 maxLines: 1,
-                style: AppTextStyles.inputText(
-                  context,
-                ).copyWith(fontSize: 12, height: 1.3),
+                style:
+                    AppTextStyles.inputText(context).copyWith(fontSize: 12, height: 1.3),
                 decoration: InputDecoration(
                   hintText: l10n.supportInputHint,
                   hintStyle: AppTextStyles.inputHint(context).copyWith(
@@ -609,9 +504,8 @@ class _SupportComposer extends StatelessWidget {
                   ),
                   filled: true,
                   fillColor: AppColors.surfaceCard(context),
-                  contentPadding: const EdgeInsetsDirectional.symmetric(
-                    horizontal: 12,
-                  ),
+                  contentPadding:
+                      const EdgeInsetsDirectional.symmetric(horizontal: 12),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
@@ -635,19 +529,6 @@ class _SupportComposer extends StatelessWidget {
                   ),
                 ),
                 onSubmitted: (_) => onSend(),
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          _ComposerIconButton(
-            onTap: onAttach,
-            child: SvgPicture.asset(
-              AppAssets.supportAttachmentIcon,
-              width: 24,
-              height: 24,
-              colorFilter: ColorFilter.mode(
-                AppColors.paragraph(context),
-                BlendMode.srcIn,
               ),
             ),
           ),

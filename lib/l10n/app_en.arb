@@ -166,8 +166,8 @@
   "checkoutCardPayment": "Pay by Visa",
   "checkoutConfirmOrder": "Place order",
   "confirmPayment": "Confirm payment",
-  "checkoutOrderDesignOnly": "Order submitted for design preview",
-  "checkoutAddressUpdated": "Address updated for design preview",
+  "checkoutOrderDesignOnly": "Order submitted successfully",
+  "checkoutAddressUpdated": "Address updated successfully",
   "cartPrice": "{amount} EGP",
   "@cartPrice": {
     "placeholders": {
@@ -245,7 +245,7 @@
   "orderProductName": "Burger meal with fries offer",
   "orderProductPrice": "200 EGP",
   "cancelOrder": "Cancel order",
-  "orderCancelDesignOnly": "Order cancelled for design preview",
+  "orderCancelDesignOnly": "Order cancelled successfully",
   "courierDetails": "Courier details:",
   "orderCourierName": "Ahmed Ali",
   "orderCourierPhone": "01004059966",
@@ -260,8 +260,8 @@
   "ratingFeedbackHint": "Write how satisfied you are with the service",
   "skipRating": "Skip",
   "submitRating": "Send",
-  "ratingSubmittedDesignOnly": "Rating submitted for design preview",
-  "orderDetailsDesignOnly": "Updated for design preview",
+  "ratingSubmittedDesignOnly": "Rating submitted successfully",
+  "orderDetailsDesignOnly": "Updated successfully",
   "rateOrder": "Rate order",
   "currentOrders": "Current",
   "previousOrders": "Previous",
@@ -314,8 +314,11 @@
   "building": "Building Number",
   "apartment": "Apartment Number",
   "floor": "Floor",
-  "addressSavedDesignOnly": "Address saved for design preview",
-  "addressUpdatedDesignOnly": "Address updated for design preview",
+  "addressSavedDesignOnly": "Address saved successfully",
+  "addressUpdatedDesignOnly": "Address updated successfully",
+  "addressDeletedDesignOnly": "Address deleted successfully",
+  "itemAddedToFavorites": "Item added to favorites successfully",
+  "itemRemovedFromFavorites": "Item removed from favorites successfully",
   "chooseLocation": "Select Location",
   "selectedLocation": "Your current address",
   "selectDeliveryAddress": "Select delivery address",
@@ -371,16 +374,16 @@
   "sampleCardExpiry": "2026",
   "paymentCardEnding": "Visa ending in 4242",
   "paymentIntegrationComingSoon": "Payment card saving is coming soon.",
-  "cardAddedDesignOnly": "Card added for design preview",
-  "cardUpdatedDesignOnly": "Card updated for design preview",
-  "cardDeletedDesignOnly": "Card deleted for design preview",
+  "cardAddedDesignOnly": "Card added successfully",
+  "cardUpdatedDesignOnly": "Card updated successfully",
+  "cardDeletedDesignOnly": "Card deleted successfully",
   "editProfileTitle": "Edit Personal Data",
   "personalDataTitle": "Personal Data",
   "fullName": "Full Name",
   "mobileNumber": "Mobile Number",
   "email": "Email",
   "saveChanges": "Save Changes",
-  "profileChangesSaved": "Changes saved for design preview",
+  "profileChangesSaved": "Changes saved successfully",
   "changePhone": "Change",
   "changePhoneTitle": "Change Phone Number",
   "changePhoneSubtitle": "Enter your new number correctly so we can send the activation code.",
@@ -400,8 +403,8 @@
     }
   },
   "phoneChangedTitle": "Phone number changed successfully",
-  "phoneChangedMessage": "Your phone number has been updated for design preview.",
-  "profileUpdatedDesignOnly": "Profile updated for design preview",
+  "phoneChangedMessage": "Your phone number has been updated successfully.",
+  "profileUpdatedDesignOnly": "Profile updated successfully",
   "invalidPhoneMessage": "Please enter a phone number",
   "invalidPhoneLengthMessage": "Phone number must be 11 or 12 digits",
   "invalidOtpMessage": "Please enter the complete verification code",
@@ -490,5 +493,26 @@
   "searchMostSearchedNuts": "Nuts",
   "searchMostSearchedPepsi": "Pepsi",
   "searchMostSearchedJuice": "Juice",
-  "searchMostSearchedCheese": "Cheese"
+  "searchMostSearchedCheese": "Cheese",
+  "startSearching": "Start searching",
+  "itemsTitle": "Items",
+  "addressDetailsFormat": "Building: {building} / Apartment: {apartment} / Floor: {floor}",
+  "@addressDetailsFormat": {
+    "placeholders": {
+      "building": { "type": "String" },
+      "apartment": { "type": "String" },
+      "floor": { "type": "String" }
+    }
+  },
+  "noOffersAvailable": "No offers available",
+  "noRestaurantsFound": "No restaurants found",
+  "connectingToApi": "Connecting to API...",
+  "priceWithCurrency": "{amount} EGP",
+  "@priceWithCurrency": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -7,6 +7,7 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_state.dart';
@@ -93,6 +94,15 @@ class RestaurantCard extends StatelessWidget {
                             onTap: () {
                               context.read<FavoriteCubit>().toggleFavorite(
                                 restaurant.id,
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    isFav
+                                        ? AppLocalizations.of(context)!.itemRemovedFromFavorites
+                                        : AppLocalizations.of(context)!.itemAddedToFavorites,
+                                  ),
+                                ),
                               );
                             },
                             child: Container(

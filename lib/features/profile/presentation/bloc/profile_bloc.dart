@@ -1,12 +1,27 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:food_user_app/features/user/domain/repositories/user_repository.dart';
+import 'package:food_user_app/core/usecases/usecase.dart';
+import 'package:food_user_app/features/profile/domain/usecases/get_profile_usecase.dart';
+import 'package:food_user_app/features/profile/domain/usecases/update_profile_usecase.dart';
+import 'package:food_user_app/features/profile/domain/usecases/get_settings_usecase.dart';
+import 'package:food_user_app/features/profile/domain/usecases/update_settings_usecase.dart';
+import 'package:food_user_app/features/profile/domain/usecases/delete_account_usecase.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
-  final UserRepository userRepository;
+  final GetProfileUseCase getProfileUseCase;
+  final UpdateProfileUseCase updateProfileUseCase;
+  final GetSettingsUseCase getSettingsUseCase;
+  final UpdateSettingsUseCase updateSettingsUseCase;
+  final DeleteAccountUseCase deleteAccountUseCase;
 
-  ProfileBloc({required this.userRepository}) : super(const ProfileState()) {
+  ProfileBloc({
+    required this.getProfileUseCase,
+    required this.updateProfileUseCase,
+    required this.getSettingsUseCase,
+    required this.updateSettingsUseCase,
+    required this.deleteAccountUseCase,
+  }) : super(const ProfileState()) {
     on<GetProfileEvent>(_onGetProfile);
     on<UpdateProfileEvent>(_onUpdateProfile);
     on<GetSettingsEvent>(_onGetSettings);
@@ -19,7 +34,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     emit(state.copyWith(isLoading: true));
-    final result = await userRepository.getProfile();
+    final result = await getProfileUseCase(NoParams());
     result.fold(
       (failure) =>
           emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
@@ -32,7 +47,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     emit(state.copyWith(isLoading: true));
-    final result = await userRepository.updateProfile(event.request);
+    final result = await updateProfileUseCase(event.request);
     result.fold(
       (failure) =>
           emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
@@ -51,7 +66,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     emit(state.copyWith(isLoading: true));
-    final result = await userRepository.getSettings();
+    final result = await getSettingsUseCase(NoParams());
     result.fold(
       (failure) =>
           emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
@@ -64,7 +79,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     emit(state.copyWith(isLoading: true));
-    final result = await userRepository.updateSettings(event.request);
+    final result = await updateSettingsUseCase(event.request);
     result.fold(
       (failure) =>
           emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
@@ -83,7 +98,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     emit(state.copyWith(isLoading: true));
-    final result = await userRepository.deleteAccount();
+    final result = await deleteAccountUseCase(NoParams());
     result.fold(
       (failure) =>
           emit(state.copyWith(isLoading: false, errorMessage: failure.message)),

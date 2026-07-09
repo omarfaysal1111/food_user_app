@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 
-class AuthTextField extends StatelessWidget {
+class AuthTextField extends StatefulWidget {
   final TextEditingController controller;
   final String label;
   final String hintText;
@@ -32,31 +32,77 @@ class AuthTextField extends StatelessWidget {
   });
 
   @override
+  State<AuthTextField> createState() => _AuthTextFieldState();
+}
+
+class _AuthTextFieldState extends State<AuthTextField> {
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+
+    if (widget.controller.text.isNotEmpty) {
+      widget.controller.selection = TextSelection.collapsed(
+        offset: widget.controller.text.length,
+      );
+    }
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus && widget.controller.text.isNotEmpty) {
+      widget.controller.selection = TextSelection.collapsed(
+        offset: widget.controller.text.length,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  TextDirection? _getDirection(String text) {
+    if (text.isEmpty) return null;
+    final isEnglish = RegExp(r'^[a-zA-Z0-9]').hasMatch(text);
+    return isEnglish ? TextDirection.ltr : null;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          label,
+          widget.label,
           textAlign: TextAlign.start,
           style: AppTextStyles.fieldLabel(context),
         ),
         const SizedBox(height: 8),
         TextFormField(
-          enabled: enabled,
-          controller: controller,
-          keyboardType: keyboardType,
-          obscureText: obscureText,
-          validator: validator,
+          focusNode: _focusNode,
+          enabled: widget.enabled,
+          controller: widget.controller,
+          keyboardType: widget.keyboardType,
+          obscureText: widget.obscureText,
+          validator: widget.validator,
           textAlign: TextAlign.start,
           style: AppTextStyles.inputText(context),
           cursorColor: AppColors.cursor(context),
-          maxLength: maxLength,
-          inputFormatters: inputFormatters,
+          maxLength: widget.maxLength,
+          inputFormatters: widget.inputFormatters,
+          textDirection: _getDirection(widget.controller.text),
+          onChanged: (val) {
+            setState(() {});
+          },
           onTapOutside: (_) {
             FocusScope.of(context).unfocus();
           },
-          buildCounter: maxLength != null
+          buildCounter: widget.maxLength != null
               ? (
                   context, {
                   required currentLength,
@@ -65,12 +111,12 @@ class AuthTextField extends StatelessWidget {
                 }) => null
               : null,
           decoration: InputDecoration(
-            hintText: hintText,
+            hintText: widget.hintText,
             hintStyle: AppTextStyles.inputHint(context),
             filled: true,
             fillColor: AppColors.surfaceCard(context),
-            prefixIcon: prefixIcon,
-            suffixIcon: suffixIcon,
+            prefixIcon: widget.prefixIcon,
+            suffixIcon: widget.suffixIcon,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,

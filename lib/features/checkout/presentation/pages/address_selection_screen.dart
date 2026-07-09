@@ -272,7 +272,7 @@ class _CheckoutAddressCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    address.details(locale),
+                    'مبنى : ${address.buildingNumber ?? ''} / شقة : ${address.apartment ?? ''} / الدور : ${address.floor ?? ''}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.start,
@@ -299,7 +299,7 @@ class _CheckoutAddressCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Flexible(
                         child: Text(
-                          address.location(locale),
+                          address.fullAddress ?? address.location(locale),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.start,

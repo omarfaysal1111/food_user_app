@@ -1,18 +1,19 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:food_user_app/features/payment/domain/usecases/checkout_usecase.dart';
+import 'package:food_user_app/core/usecases/usecase.dart';
+import 'package:food_user_app/features/checkout/domain/usecases/place_order_usecase.dart';
 import 'package:food_user_app/features/payment/presentation/cubit/checkout_state.dart';
 
 class CheckoutCubit extends Cubit<CheckoutState> {
-  final CheckoutUseCase checkoutUseCase;
+  final PlaceOrderUseCase placeOrderUseCase;
 
-  CheckoutCubit({required this.checkoutUseCase}) : super(const CheckoutState.initial());
+  CheckoutCubit({required this.placeOrderUseCase}) : super(const CheckoutState.initial());
 
-  Future<void> checkout(CheckoutParams params) async {
+  Future<void> checkout() async {
     emit(const CheckoutState.loading());
-    final result = await checkoutUseCase(params);
+    final result = await placeOrderUseCase(NoParams());
     result.fold(
       (failure) => emit(CheckoutState.error(failure.message)),
-      (checkoutResult) => emit(CheckoutState.success(checkoutResult)),
+      (order) => emit(CheckoutState.success(order)),
     );
   }
 }

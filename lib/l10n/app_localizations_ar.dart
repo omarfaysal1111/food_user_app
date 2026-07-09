@@ -498,10 +498,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get confirmPayment => 'تأكيد الدفع';
 
   @override
-  String get checkoutOrderDesignOnly => 'تم إرسال الطلب لمعاينة التصميم';
+  String get checkoutOrderDesignOnly => 'تم إرسال الطلب بنجاح';
 
   @override
-  String get checkoutAddressUpdated => 'تم تحديث العنوان لمعاينة التصميم';
+  String get checkoutAddressUpdated => 'تم تحديث العنوان بنجاح';
 
   @override
   String cartPrice(int amount) {
@@ -679,7 +679,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cancelOrder => 'إلغاء الطلب';
 
   @override
-  String get orderCancelDesignOnly => 'تم إلغاء الطلب لمعاينة التصميم';
+  String get orderCancelDesignOnly => 'تم إلغاء الطلب بنجاح';
 
   @override
   String get courierDetails => 'بيانات المندوب :';
@@ -724,10 +724,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get submitRating => 'إرسال';
 
   @override
-  String get ratingSubmittedDesignOnly => 'تم إرسال التقييم لمعاينة التصميم';
+  String get ratingSubmittedDesignOnly => 'تم إرسال التقييم بنجاح';
 
   @override
-  String get orderDetailsDesignOnly => 'تم التحديث لمعاينة التصميم';
+  String get orderDetailsDesignOnly => 'تم التحديث بنجاح';
 
   @override
   String get rateOrder => 'تقييم الطلب';
@@ -886,10 +886,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get floor => 'الدور';
 
   @override
-  String get addressSavedDesignOnly => 'تم حفظ العنوان لمعاينة التصميم';
+  String get addressSavedDesignOnly => 'تم حفظ العنوان بنجاح';
 
   @override
-  String get addressUpdatedDesignOnly => 'تم تحديث العنوان لمعاينة التصميم';
+  String get addressUpdatedDesignOnly => 'تم تحديث العنوان بنجاح';
+
+  @override
+  String get addressDeletedDesignOnly => 'تم حذف العنوان بنجاح';
+
+  @override
+  String get itemAddedToFavorites => 'تم إضافة العنصر للمفضلة بنجاح';
+
+  @override
+  String get itemRemovedFromFavorites => 'تم إزالة العنصر من المفضلة بنجاح';
 
   @override
   String get chooseLocation => 'تحديد الموقع الجغرافي';
@@ -1058,13 +1067,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get paymentIntegrationComingSoon => 'حفظ بطاقات الدفع قادم قريباً.';
 
   @override
-  String get cardAddedDesignOnly => 'تمت إضافة البطاقة لمعاينة التصميم';
+  String get cardAddedDesignOnly => 'تمت إضافة البطاقة بنجاح';
 
   @override
-  String get cardUpdatedDesignOnly => 'تم تعديل البطاقة لمعاينة التصميم';
+  String get cardUpdatedDesignOnly => 'تم تعديل البطاقة بنجاح';
 
   @override
-  String get cardDeletedDesignOnly => 'تم حذف البطاقة لمعاينة التصميم';
+  String get cardDeletedDesignOnly => 'تم حذف البطاقة بنجاح';
 
   @override
   String get editProfileTitle => 'تعديل البيانات الشخصية';
@@ -1085,7 +1094,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get saveChanges => 'حفظ التغييرات';
 
   @override
-  String get profileChangesSaved => 'تم حفظ التغييرات لمعاينة التصميم';
+  String get profileChangesSaved => 'تم حفظ التغييرات بنجاح';
 
   @override
   String get changePhone => 'تغيير';
@@ -1127,10 +1136,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get phoneChangedTitle => 'تم تغيير رقم الجوال بنجاح';
 
   @override
-  String get phoneChangedMessage => 'تم تحديث رقم الجوال لمعاينة التصميم.';
+  String get phoneChangedMessage => 'تم تحديث رقم الجوال بنجاح.';
 
   @override
-  String get profileUpdatedDesignOnly => 'تم تحديث البيانات لمعاينة التصميم';
+  String get profileUpdatedDesignOnly => 'تم تحديث البيانات بنجاح';
 
   @override
   String get invalidPhoneMessage => 'يرجى إدخال رقم الجوال';
@@ -1402,4 +1411,29 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get searchMostSearchedCheese => 'جبنة';
+
+  @override
+  String get startSearching => 'ابدأ البحث';
+
+  @override
+  String get itemsTitle => 'العناصر';
+
+  @override
+  String addressDetailsFormat(String building, String apartment, String floor) {
+    return 'مبنى : $building / شقة : $apartment / الدور : $floor';
+  }
+
+  @override
+  String get noOffersAvailable => 'لا توجد عروض متاحة حالياً';
+
+  @override
+  String get noRestaurantsFound => 'لا توجد مطاعم';
+
+  @override
+  String get connectingToApi => 'جاري ربط البيانات بالـ API...';
+
+  @override
+  String priceWithCurrency(String amount) {
+    return '$amount ج.م';
+  }
 }

@@ -25,7 +25,7 @@ class RouteNames {
   static const addEditAddress = '/checkout/address/edit';
   static const mapPicker = '/checkout/map';
   static const paymentMethod = '/checkout/payment';
-  static const orderConfirmation = '/checkout/confirmation';
+  static const orderConfirmation = '/checkout/confirmation/:id';
   static const orderTracking = '/order/:id/tracking';
   static const orderDetail = '/order/:id';
   static const orderHistory = '/orders';
@@ -41,7 +41,7 @@ class RouteNames {
   static const addressBookEditDetails = '/profile/address-book/edit/details';
   static const favourites = '/profile/favourites';
   static const discountPoints = '/profile/discount-points';
-  static const notifications = '/notifications';
+
   static const settings = '/settings';
   static const helpSupport = '/help';
   static const about = '/about';
@@ -52,4 +52,6 @@ class RouteNames {
   static String restaurantSearchFor(String id) => '/restaurant/$id/search';
   static String storeDetailFor(String id) => '/store/$id';
   static String orderDetailFor(String id) => '/order/$id';
+  static String orderConfirmationFor(String id) => '/checkout/confirmation/$id';
+  static String orderTrackingFor(String id) => '/order/$id/tracking';
 }

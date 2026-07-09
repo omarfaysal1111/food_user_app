@@ -219,9 +219,12 @@ class _OtpBoxes extends StatelessWidget {
                 keyboardType: TextInputType.number,
                 maxLength: 6,
                 textAlign: TextAlign.left,
+                textDirection: TextDirection.ltr,
                 showCursor: false,
                 style: AppTextStyles.hiddenOtpInput,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                ],
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   counterText: '',

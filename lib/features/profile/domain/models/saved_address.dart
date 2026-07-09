@@ -49,18 +49,33 @@ class SavedAddress {
   String location(Locale locale) =>
       _localized(locale, ar: locationAr, en: locationEn);
 
-  String shortLocation(Locale locale) {
-    final parts = location(locale)
-        .split(RegExp(r'،|,'))
-        .map((part) => part.trim())
-        .where((part) => part.isNotEmpty)
-        .toList();
-    if (parts.length >= 2) {
-      return parts
-          .sublist(parts.length - 2)
-          .join(locale.languageCode == 'ar' ? '، ' : ', ');
+  String? shortLocation(Locale locale) {
+    final c = city?.trim() ?? '';
+    final n = neighborhood?.trim() ?? '';
+
+    if (c.isNotEmpty && n.isNotEmpty) {
+      return locale.languageCode == 'ar' ? '$c ، $n' : '$c, $n';
+    } else if (c.isNotEmpty) {
+      return c;
+    } else if (n.isNotEmpty) {
+      return n;
     }
-    return location(locale);
+
+    final f = fullAddress?.trim() ?? '';
+    if (f.isNotEmpty) {
+      final parts = f.split(RegExp(r'[،,]')).map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+      final filteredParts = parts.where((p) => !p.contains('+')).toList();
+      if (filteredParts.isEmpty) return f;
+      final shortParts = filteredParts.take(2).toList();
+      return locale.languageCode == 'ar' ? shortParts.join(' ، ') : shortParts.join(', ');
+    }
+
+    final t = title(locale).trim();
+    if (t.isNotEmpty) {
+      return t;
+    }
+
+    return null;
   }
 
   SavedAddress copyWith({

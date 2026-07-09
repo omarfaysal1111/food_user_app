@@ -1,17 +1,35 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
-import 'package:food_user_app/features/cart/domain/repositories/cart_repository.dart';
+import 'package:food_user_app/features/cart/domain/usecases/add_to_cart_usecase.dart';
+import 'package:food_user_app/features/cart/domain/usecases/clear_cart_usecase.dart';
+import 'package:food_user_app/features/cart/domain/usecases/get_cart_usecase.dart';
+import 'package:food_user_app/features/cart/domain/usecases/remove_from_cart_usecase.dart';
+import 'package:food_user_app/features/cart/domain/usecases/update_cart_item_usecase.dart';
+import 'package:food_user_app/features/checkout/domain/usecases/apply_promo_usecase.dart';
+import 'package:food_user_app/core/usecases/usecase.dart';
 import 'cart_state.dart';
 
 class CartCubit extends Cubit<CartState> {
-  final CartRepository cartRepository;
+  final GetCartUseCase getCartUseCase;
+  final AddToCartUseCase addToCartUseCase;
+  final UpdateCartItemUseCase updateCartItemUseCase;
+  final RemoveFromCartUseCase removeFromCartUseCase;
+  final ClearCartUseCase clearCartUseCase;
+  final ApplyPromoUseCase applyPromoUseCase;
 
-  CartCubit({required this.cartRepository}) : super(const CartState.initial());
+  CartCubit({
+    required this.getCartUseCase,
+    required this.addToCartUseCase,
+    required this.updateCartItemUseCase,
+    required this.removeFromCartUseCase,
+    required this.clearCartUseCase,
+    required this.applyPromoUseCase,
+  }) : super(const CartState.initial());
 
   Future<void> loadCart() async {
     emit(const CartState.loading());
-    final result = await cartRepository.getCart();
+    final result = await getCartUseCase(NoParams());
     result.fold(
       (failure) => emit(CartState.error(
         cart: const Cart.empty(),
@@ -22,6 +40,7 @@ class CartCubit extends Cubit<CartState> {
   }
 
   Future<void> addToCart({
+    required String restaurantId,
     required String menuItemId,
     required String name,
     required int price,
@@ -40,6 +59,20 @@ class CartCubit extends Cubit<CartState> {
       orElse: () => null,
     );
 
+    if (currentCart.items.isNotEmpty && currentCart.restaurantId != restaurantId) {
+      emit(CartState.conflict(
+        cart: currentCart,
+        newRestaurantId: restaurantId,
+        menuItemId: menuItemId,
+        name: name,
+        price: price,
+        quantity: quantity,
+        selectedModifiers: selectedModifiers,
+        notes: notes,
+      ));
+      return;
+    }
+
     final List<CartItem> updatedItems = List.from(currentCart.items);
     final existingIndex = updatedItems.indexWhere((item) => item.menuItemId == menuItemId);
 
@@ -53,6 +86,7 @@ class CartCubit extends Cubit<CartState> {
       updatedItems.add(CartItem(
         id: menuItemId,
         menuItemId: menuItemId,
+        restaurantId: restaurantId,
         name: name,
         price: price,
         unitPrice: price.toDouble(),
@@ -69,7 +103,7 @@ class CartCubit extends Cubit<CartState> {
 
     final optimisticCart = Cart(
       id: currentCart.id,
-      restaurantId: currentCart.restaurantId,
+      restaurantId: restaurantId,
       restaurantName: currentCart.restaurantName,
       items: updatedItems,
       subtotal: newSubtotal,
@@ -80,11 +114,13 @@ class CartCubit extends Cubit<CartState> {
 
     emit(CartState.loaded(cart: optimisticCart, appliedPromo: currentPromo));
 
-    final result = await cartRepository.addToCart(
-      menuItemId: menuItemId,
-      quantity: quantity,
-      selectedModifiers: selectedModifiers,
-      notes: notes,
+    final result = await addToCartUseCase(
+      AddToCartParams(
+        menuItemId: menuItemId,
+        quantity: quantity,
+        selectedModifiers: selectedModifiers,
+        notes: notes,
+      ),
     );
 
     result.fold(
@@ -94,6 +130,53 @@ class CartCubit extends Cubit<CartState> {
         message: failure.message,
       )),
       (serverCart) => emit(CartState.loaded(cart: serverCart, appliedPromo: currentPromo)),
+    );
+  }
+
+  Future<void> clearAndAddToCart({
+    required String restaurantId,
+    required String menuItemId,
+    required String name,
+    required int price,
+    required int quantity,
+    List<Map<String, dynamic>>? selectedModifiers,
+    String? notes,
+  }) async {
+    final currentCart = state.maybeWhen(
+      loaded: (cart, promo) => cart,
+      error: (cart, promo, message) => cart,
+      conflict: (cart, rId, mId, n, p, q, mods, nts) => cart,
+      orElse: () => const Cart.empty(),
+    );
+    final currentPromo = state.maybeWhen(
+      loaded: (cart, promo) => promo,
+      error: (cart, promo, message) => promo,
+      orElse: () => null,
+    );
+
+    emit(const CartState.loading());
+    final clearResult = await clearCartUseCase(NoParams());
+    
+    await clearResult.fold(
+      (failure) async {
+        emit(CartState.error(
+          cart: currentCart,
+          appliedPromo: currentPromo,
+          message: failure.message,
+        ));
+      },
+      (_) async {
+        emit(const CartState.loaded(cart: Cart.empty(), appliedPromo: null));
+        await addToCart(
+          restaurantId: restaurantId,
+          menuItemId: menuItemId,
+          name: name,
+          price: price,
+          quantity: quantity,
+          selectedModifiers: selectedModifiers,
+          notes: notes,
+        );
+      },
     );
   }
 
@@ -144,8 +227,8 @@ class CartCubit extends Cubit<CartState> {
     emit(CartState.loaded(cart: optimisticCart, appliedPromo: currentPromo));
 
     final result = newQuantity <= 0
-        ? await cartRepository.removeFromCart(itemId)
-        : await cartRepository.updateCartItem(itemId: itemId, quantity: newQuantity);
+        ? await removeFromCartUseCase(itemId)
+        : await updateCartItemUseCase(UpdateCartItemParams(itemId: itemId, quantity: newQuantity));
 
     result.fold(
       (failure) => emit(CartState.error(
@@ -175,7 +258,7 @@ class CartCubit extends Cubit<CartState> {
 
     emit(const CartState.loaded(cart: Cart.empty(), appliedPromo: null));
 
-    final result = await cartRepository.clearCart();
+    final result = await clearCartUseCase(NoParams());
     result.fold(
       (failure) => emit(CartState.error(
         cart: currentCart,
@@ -202,9 +285,11 @@ class CartCubit extends Cubit<CartState> {
 
     emit(const CartState.loading());
 
-    final result = await cartRepository.applyPromo(
-      code: code,
-      subtotal: currentCart.subtotal,
+    final result = await applyPromoUseCase(
+      ApplyPromoParams(
+        code: code,
+        subtotal: currentCart.subtotal,
+      ),
     );
 
     result.fold(

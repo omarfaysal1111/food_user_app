@@ -2,14 +2,18 @@ import 'package:dio/dio.dart';
 
 import '../constants/api_endpoints.dart';
 import 'interceptors/auth_interceptor.dart';
+import 'interceptors/global_error_interceptor.dart';
 import 'interceptors/logging_interceptor.dart';
 import 'interceptors/retry_interceptor.dart';
+import 'interceptors/language_interceptor.dart';
 
 class DioClient {
   DioClient({
     required AuthInterceptor authInterceptor,
     required LoggingInterceptor loggingInterceptor,
     required RetryInterceptor retryInterceptor,
+    required GlobalErrorHandlerInterceptor globalErrorHandlerInterceptor,
+    required LanguageInterceptor languageInterceptor,
   }) {
     _dio = Dio(
       BaseOptions(
@@ -25,9 +29,11 @@ class DioClient {
       ),
     );
     _dio.interceptors
+      ..add(languageInterceptor)
       ..add(authInterceptor)
       ..add(loggingInterceptor)
-      ..add(retryInterceptor);
+      ..add(retryInterceptor)
+      ..add(globalErrorHandlerInterceptor);
   }
 
   late final Dio _dio;

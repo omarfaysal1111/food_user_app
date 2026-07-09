@@ -15,6 +15,8 @@ import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/features/store/presentation/cubit/store_detail_cubit.dart';
 import 'package:food_user_app/features/store/presentation/cubit/store_detail_state.dart';
 import 'package:food_user_app/core/utils/category_icon_helper.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
 
 class StoreDetailsScreen extends StatelessWidget {
   final String storeId;
@@ -27,7 +29,43 @@ class StoreDetailsScreen extends StatelessWidget {
       create: (_) => sl<StoreDetailCubit>()..loadStoreDetails(storeId),
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBackground(context),
-        body: BlocBuilder<StoreDetailCubit, StoreDetailState>(
+        body: BlocListener<CartCubit, CartState>(
+          listener: (context, state) {
+            state.maybeWhen(
+              conflict: (cart, newRestaurantId, menuItemId, name, price, quantity, modifiers, notes) {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Cart Conflict'),
+                    content: const Text('Adding items from a different restaurant will clear your current cart. Continue?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          context.read<CartCubit>().clearAndAddToCart(
+                            restaurantId: newRestaurantId,
+                            menuItemId: menuItemId,
+                            name: name,
+                            price: price,
+                            quantity: quantity,
+                            selectedModifiers: modifiers,
+                            notes: notes,
+                          );
+                        },
+                        child: const Text('Continue'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              orElse: () {},
+            );
+          },
+          child: BlocBuilder<StoreDetailCubit, StoreDetailState>(
           builder: (context, state) {
             return state.when(
               initial: () => const Center(child: CircularProgressIndicator()),
@@ -51,6 +89,7 @@ class StoreDetailsScreen extends StatelessWidget {
               },
             );
           },
+        ),
         ),
       ),
     );

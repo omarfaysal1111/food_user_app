@@ -57,6 +57,8 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   Timer? _searchDebounce;
   LatLng _selectedLatLng = _fallbackLatLng;
   String _selectedAddress = '';
+  String? _selectedCity;
+  String? _selectedNeighborhood;
   bool _isResolvingAddress = false;
   bool _isSearching = false;
   List<_PlacePrediction> _predictions = const [];
@@ -461,10 +463,26 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
 
       final results = body['results'];
       String? address;
+      String? city;
+      String? neighborhood;
       if (results is List && results.isNotEmpty) {
         final firstResult = results.first;
         if (firstResult is Map<String, dynamic>) {
           address = firstResult['formatted_address'] as String?;
+          final addressComponents = firstResult['address_components'];
+          if (addressComponents is List) {
+            for (final component in addressComponents) {
+              if (component is Map<String, dynamic>) {
+                final types = component['types'] as List<dynamic>? ?? [];
+                if (types.contains('locality') || types.contains('administrative_area_level_2')) {
+                  city ??= component['long_name'] as String?;
+                }
+                if (types.contains('sublocality') || types.contains('neighborhood') || types.contains('administrative_area_level_3')) {
+                  neighborhood ??= component['long_name'] as String?;
+                }
+              }
+            }
+          }
         }
       }
 
@@ -472,6 +490,8 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         _selectedAddress = address?.trim().isNotEmpty == true
             ? address!.trim()
             : l10n.mapPickerFallbackAddress;
+        _selectedCity = city;
+        _selectedNeighborhood = neighborhood;
         _isResolvingAddress = false;
       });
     } catch (_) {
@@ -505,6 +525,8 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         address: _selectedAddress.isEmpty
             ? l10n.mapPickerFallbackAddress
             : _selectedAddress,
+        city: _selectedCity,
+        neighborhood: _selectedNeighborhood,
       ),
     );
   }

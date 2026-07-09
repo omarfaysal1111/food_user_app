@@ -1055,13 +1055,13 @@ abstract class AppLocalizations {
   /// No description provided for @checkoutOrderDesignOnly.
   ///
   /// In en, this message translates to:
-  /// **'Order submitted for design preview'**
+  /// **'Order submitted successfully'**
   String get checkoutOrderDesignOnly;
 
   /// No description provided for @checkoutAddressUpdated.
   ///
   /// In en, this message translates to:
-  /// **'Address updated for design preview'**
+  /// **'Address updated successfully'**
   String get checkoutAddressUpdated;
 
   /// No description provided for @cartPrice.
@@ -1403,7 +1403,7 @@ abstract class AppLocalizations {
   /// No description provided for @orderCancelDesignOnly.
   ///
   /// In en, this message translates to:
-  /// **'Order cancelled for design preview'**
+  /// **'Order cancelled successfully'**
   String get orderCancelDesignOnly;
 
   /// No description provided for @courierDetails.
@@ -1493,13 +1493,13 @@ abstract class AppLocalizations {
   /// No description provided for @ratingSubmittedDesignOnly.
   ///
   /// In en, this message translates to:
-  /// **'Rating submitted for design preview'**
+  /// **'Rating submitted successfully'**
   String get ratingSubmittedDesignOnly;
 
   /// No description provided for @orderDetailsDesignOnly.
   ///
   /// In en, this message translates to:
-  /// **'Updated for design preview'**
+  /// **'Updated successfully'**
   String get orderDetailsDesignOnly;
 
   /// No description provided for @rateOrder.
@@ -1817,14 +1817,32 @@ abstract class AppLocalizations {
   /// No description provided for @addressSavedDesignOnly.
   ///
   /// In en, this message translates to:
-  /// **'Address saved for design preview'**
+  /// **'Address saved successfully'**
   String get addressSavedDesignOnly;
 
   /// No description provided for @addressUpdatedDesignOnly.
   ///
   /// In en, this message translates to:
-  /// **'Address updated for design preview'**
+  /// **'Address updated successfully'**
   String get addressUpdatedDesignOnly;
+
+  /// No description provided for @addressDeletedDesignOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Address deleted successfully'**
+  String get addressDeletedDesignOnly;
+
+  /// No description provided for @itemAddedToFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Item added to favorites successfully'**
+  String get itemAddedToFavorites;
+
+  /// No description provided for @itemRemovedFromFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Item removed from favorites successfully'**
+  String get itemRemovedFromFavorites;
 
   /// No description provided for @chooseLocation.
   ///
@@ -2159,19 +2177,19 @@ abstract class AppLocalizations {
   /// No description provided for @cardAddedDesignOnly.
   ///
   /// In en, this message translates to:
-  /// **'Card added for design preview'**
+  /// **'Card added successfully'**
   String get cardAddedDesignOnly;
 
   /// No description provided for @cardUpdatedDesignOnly.
   ///
   /// In en, this message translates to:
-  /// **'Card updated for design preview'**
+  /// **'Card updated successfully'**
   String get cardUpdatedDesignOnly;
 
   /// No description provided for @cardDeletedDesignOnly.
   ///
   /// In en, this message translates to:
-  /// **'Card deleted for design preview'**
+  /// **'Card deleted successfully'**
   String get cardDeletedDesignOnly;
 
   /// No description provided for @editProfileTitle.
@@ -2213,7 +2231,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileChangesSaved.
   ///
   /// In en, this message translates to:
-  /// **'Changes saved for design preview'**
+  /// **'Changes saved successfully'**
   String get profileChangesSaved;
 
   /// No description provided for @changePhone.
@@ -2291,13 +2309,13 @@ abstract class AppLocalizations {
   /// No description provided for @phoneChangedMessage.
   ///
   /// In en, this message translates to:
-  /// **'Your phone number has been updated for design preview.'**
+  /// **'Your phone number has been updated successfully.'**
   String get phoneChangedMessage;
 
   /// No description provided for @profileUpdatedDesignOnly.
   ///
   /// In en, this message translates to:
-  /// **'Profile updated for design preview'**
+  /// **'Profile updated successfully'**
   String get profileUpdatedDesignOnly;
 
   /// No description provided for @invalidPhoneMessage.
@@ -2833,6 +2851,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cheese'**
   String get searchMostSearchedCheese;
+
+  /// No description provided for @startSearching.
+  ///
+  /// In en, this message translates to:
+  /// **'Start searching'**
+  String get startSearching;
+
+  /// No description provided for @itemsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get itemsTitle;
+
+  /// No description provided for @addressDetailsFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Building: {building} / Apartment: {apartment} / Floor: {floor}'**
+  String addressDetailsFormat(String building, String apartment, String floor);
+
+  /// No description provided for @noOffersAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No offers available'**
+  String get noOffersAvailable;
+
+  /// No description provided for @noRestaurantsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No restaurants found'**
+  String get noRestaurantsFound;
+
+  /// No description provided for @connectingToApi.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to API...'**
+  String get connectingToApi;
+
+  /// No description provided for @priceWithCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} EGP'**
+  String priceWithCurrency(String amount);
 }
 
 class _AppLocalizationsDelegate

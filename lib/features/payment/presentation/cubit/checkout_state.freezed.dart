@@ -128,12 +128,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( CheckoutResult result)?  success,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( Order order)?  success,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Success() when success != null:
-return success(_that.result);case _Error() when error != null:
+return success(_that.order);case _Error() when error != null:
 return error(_that.message);case _:
   return orElse();
 
@@ -152,12 +152,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( CheckoutResult result)  success,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( Order order)  success,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Success():
-return success(_that.result);case _Error():
+return success(_that.order);case _Error():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
@@ -175,12 +175,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( CheckoutResult result)?  success,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( Order order)?  success,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Success() when success != null:
-return success(_that.result);case _Error() when error != null:
+return success(_that.order);case _Error() when error != null:
 return error(_that.message);case _:
   return null;
 
@@ -257,10 +257,10 @@ String toString() {
 
 
 class _Success implements CheckoutState {
-  const _Success(this.result);
+  const _Success(this.order);
   
 
- final  CheckoutResult result;
+ final  Order order;
 
 /// Create a copy of CheckoutState
 /// with the given fields replaced by the non-null parameter values.
@@ -272,16 +272,16 @@ _$SuccessCopyWith<_Success> get copyWith => __$SuccessCopyWithImpl<_Success>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Success&&(identical(other.result, result) || other.result == result));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Success&&(identical(other.order, order) || other.order == order));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,result);
+int get hashCode => Object.hash(runtimeType,order);
 
 @override
 String toString() {
-  return 'CheckoutState.success(result: $result)';
+  return 'CheckoutState.success(order: $order)';
 }
 
 
@@ -292,7 +292,7 @@ abstract mixin class _$SuccessCopyWith<$Res> implements $CheckoutStateCopyWith<$
   factory _$SuccessCopyWith(_Success value, $Res Function(_Success) _then) = __$SuccessCopyWithImpl;
 @useResult
 $Res call({
- CheckoutResult result
+ Order order
 });
 
 
@@ -309,10 +309,10 @@ class __$SuccessCopyWithImpl<$Res>
 
 /// Create a copy of CheckoutState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? result = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? order = null,}) {
   return _then(_Success(
-null == result ? _self.result : result // ignore: cast_nullable_to_non_nullable
-as CheckoutResult,
+null == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
+as Order,
   ));
 }
 

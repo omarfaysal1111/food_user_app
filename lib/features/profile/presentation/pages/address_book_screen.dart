@@ -117,9 +117,14 @@ class _AddressBookBody extends StatelessWidget {
           onSelected: () async {
             final ok = await controller.selectAddress(address.id);
             if (!context.mounted) return;
-            if (ok && context.canPop()) {
-              context.pop();
-            } else if (!ok) {
+            if (ok) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.addressUpdatedDesignOnly)),
+              );
+              if (context.canPop()) {
+                context.pop();
+              }
+            } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(l10n.authErrorRequestFailed)),
               );
@@ -127,10 +132,16 @@ class _AddressBookBody extends StatelessWidget {
           },
           onDelete: () async {
             final ok = await controller.deleteAddress(address.id);
-            if (!context.mounted || ok) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.authErrorRequestFailed)),
-            );
+            if (!context.mounted) return;
+            if (ok) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.addressDeletedDesignOnly)),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.authErrorRequestFailed)),
+              );
+            }
           },
         );
       },
@@ -272,7 +283,11 @@ class _SavedAddressCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                address.details(locale),
+                l10n.addressDetailsFormat(
+                  address.buildingNumber ?? '',
+                  address.apartment ?? '',
+                  address.floor ?? '',
+                ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.start,
@@ -298,7 +313,7 @@ class _SavedAddressCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      address.location(locale),
+                      address.fullAddress ?? address.location(locale),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.start,

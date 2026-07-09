@@ -8,6 +8,10 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/core/di/injection_container.dart' as di;
+import 'package:food_user_app/features/support/presentation/cubit/support_ticket_cubit.dart';
+import 'package:food_user_app/core/services/snackbar_service.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 enum OrderDetailsStatus {
@@ -19,8 +23,13 @@ enum OrderDetailsStatus {
 }
 
 class OrderDetailsScreen extends StatefulWidget {
-  const OrderDetailsScreen({super.key, required this.status});
+  const OrderDetailsScreen({
+    super.key,
+    required this.orderId,
+    required this.status,
+  });
 
+  final String orderId;
   final OrderDetailsStatus status;
 
   static const screenPadding = 16.0;
@@ -35,10 +44,48 @@ class OrderDetailsScreen extends StatefulWidget {
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => di.sl<SupportTicketCubit>(),
+      child: _OrderDetailsScreenContent(
+        orderId: widget.orderId,
+        status: widget.status,
+      ),
+    );
+  }
+}
+
+class _OrderDetailsScreenContent extends StatefulWidget {
+  final String orderId;
+  final OrderDetailsStatus status;
+
+  const _OrderDetailsScreenContent({
+    required this.orderId,
+    required this.status,
+  });
+
+  @override
+  State<_OrderDetailsScreenContent> createState() => _OrderDetailsScreenContentState();
+}
+
+class _OrderDetailsScreenContentState extends State<_OrderDetailsScreenContent> {
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final config = _OrderDetailsConfig.fromStatus(widget.status, l10n);
 
-    return Scaffold(
+    return BlocListener<SupportTicketCubit, SupportTicketState>(
+      listener: (context, state) {
+        state.maybeWhen(
+          success: (ticket) {
+            context.push(RouteNames.helpSupport, extra: ticket.id);
+          },
+          error: (message) {
+            di.sl<SnackbarService>().showError(message);
+          },
+          orElse: () {},
+        );
+      },
+      child: Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
       body: SafeArea(
         bottom: false,
@@ -59,7 +106,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     _OrderDetailsHeader(
                       title: l10n.trackYourOrder,
                       showSupport: config.showSupportAction,
-                      onSupport: () => context.push(RouteNames.helpSupport),
+                      onSupport: () {
+                        context.read<SupportTicketCubit>().createTicket(
+                          subject: 'Order #${widget.orderId}',
+                          message: 'I need help with order #${widget.orderId}',
+                        );
+                      },
                     ),
                     const SizedBox(height: OrderDetailsScreen.contentGap),
                     _OrderStatusSummaryCard(config: config),
@@ -107,6 +159,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           ],
         ),
       ),
+    ),
     );
   }
 

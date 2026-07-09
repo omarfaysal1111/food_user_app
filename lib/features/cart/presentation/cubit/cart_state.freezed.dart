@@ -55,13 +55,14 @@ extension CartStatePatterns on CartState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Loaded value)?  loaded,TResult Function( _Error value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Loaded value)?  loaded,TResult Function( _Conflict value)?  conflict,TResult Function( _Error value)?  error,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
 return loading(_that);case _Loaded() when loaded != null:
-return loaded(_that);case _Error() when error != null:
+return loaded(_that);case _Conflict() when conflict != null:
+return conflict(_that);case _Error() when error != null:
 return error(_that);case _:
   return orElse();
 
@@ -80,13 +81,14 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Loaded value)  loaded,required TResult Function( _Error value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Loaded value)  loaded,required TResult Function( _Conflict value)  conflict,required TResult Function( _Error value)  error,}){
 final _that = this;
 switch (_that) {
 case _Initial():
 return initial(_that);case _Loading():
 return loading(_that);case _Loaded():
-return loaded(_that);case _Error():
+return loaded(_that);case _Conflict():
+return conflict(_that);case _Error():
 return error(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -104,13 +106,14 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Loaded value)?  loaded,TResult? Function( _Error value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Loaded value)?  loaded,TResult? Function( _Conflict value)?  conflict,TResult? Function( _Error value)?  error,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
 return loading(_that);case _Loaded() when loaded != null:
-return loaded(_that);case _Error() when error != null:
+return loaded(_that);case _Conflict() when conflict != null:
+return conflict(_that);case _Error() when error != null:
 return error(_that);case _:
   return null;
 
@@ -128,12 +131,13 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( Cart cart,  Promo? appliedPromo)?  loaded,TResult Function( Cart cart,  Promo? appliedPromo,  String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( Cart cart,  Promo? appliedPromo)?  loaded,TResult Function( Cart cart,  String newRestaurantId,  String menuItemId,  String name,  int price,  int quantity,  List<Map<String, dynamic>>? selectedModifiers,  String? notes)?  conflict,TResult Function( Cart cart,  Promo? appliedPromo,  String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.cart,_that.appliedPromo);case _Error() when error != null:
+return loaded(_that.cart,_that.appliedPromo);case _Conflict() when conflict != null:
+return conflict(_that.cart,_that.newRestaurantId,_that.menuItemId,_that.name,_that.price,_that.quantity,_that.selectedModifiers,_that.notes);case _Error() when error != null:
 return error(_that.cart,_that.appliedPromo,_that.message);case _:
   return orElse();
 
@@ -152,12 +156,13 @@ return error(_that.cart,_that.appliedPromo,_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( Cart cart,  Promo? appliedPromo)  loaded,required TResult Function( Cart cart,  Promo? appliedPromo,  String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( Cart cart,  Promo? appliedPromo)  loaded,required TResult Function( Cart cart,  String newRestaurantId,  String menuItemId,  String name,  int price,  int quantity,  List<Map<String, dynamic>>? selectedModifiers,  String? notes)  conflict,required TResult Function( Cart cart,  Promo? appliedPromo,  String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Loaded():
-return loaded(_that.cart,_that.appliedPromo);case _Error():
+return loaded(_that.cart,_that.appliedPromo);case _Conflict():
+return conflict(_that.cart,_that.newRestaurantId,_that.menuItemId,_that.name,_that.price,_that.quantity,_that.selectedModifiers,_that.notes);case _Error():
 return error(_that.cart,_that.appliedPromo,_that.message);case _:
   throw StateError('Unexpected subclass');
 
@@ -175,12 +180,13 @@ return error(_that.cart,_that.appliedPromo,_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( Cart cart,  Promo? appliedPromo)?  loaded,TResult? Function( Cart cart,  Promo? appliedPromo,  String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( Cart cart,  Promo? appliedPromo)?  loaded,TResult? Function( Cart cart,  String newRestaurantId,  String menuItemId,  String name,  int price,  int quantity,  List<Map<String, dynamic>>? selectedModifiers,  String? notes)?  conflict,TResult? Function( Cart cart,  Promo? appliedPromo,  String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.cart,_that.appliedPromo);case _Error() when error != null:
+return loaded(_that.cart,_that.appliedPromo);case _Conflict() when conflict != null:
+return conflict(_that.cart,_that.newRestaurantId,_that.menuItemId,_that.name,_that.price,_that.quantity,_that.selectedModifiers,_that.notes);case _Error() when error != null:
 return error(_that.cart,_that.appliedPromo,_that.message);case _:
   return null;
 
@@ -315,6 +321,94 @@ class __$LoadedCopyWithImpl<$Res>
 cart: null == cart ? _self.cart : cart // ignore: cast_nullable_to_non_nullable
 as Cart,appliedPromo: freezed == appliedPromo ? _self.appliedPromo : appliedPromo // ignore: cast_nullable_to_non_nullable
 as Promo?,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _Conflict implements CartState {
+  const _Conflict({required this.cart, required this.newRestaurantId, required this.menuItemId, required this.name, required this.price, required this.quantity, final  List<Map<String, dynamic>>? selectedModifiers, this.notes}): _selectedModifiers = selectedModifiers;
+  
+
+ final  Cart cart;
+ final  String newRestaurantId;
+ final  String menuItemId;
+ final  String name;
+ final  int price;
+ final  int quantity;
+ final  List<Map<String, dynamic>>? _selectedModifiers;
+ List<Map<String, dynamic>>? get selectedModifiers {
+  final value = _selectedModifiers;
+  if (value == null) return null;
+  if (_selectedModifiers is EqualUnmodifiableListView) return _selectedModifiers;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  String? notes;
+
+/// Create a copy of CartState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ConflictCopyWith<_Conflict> get copyWith => __$ConflictCopyWithImpl<_Conflict>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Conflict&&(identical(other.cart, cart) || other.cart == cart)&&(identical(other.newRestaurantId, newRestaurantId) || other.newRestaurantId == newRestaurantId)&&(identical(other.menuItemId, menuItemId) || other.menuItemId == menuItemId)&&(identical(other.name, name) || other.name == name)&&(identical(other.price, price) || other.price == price)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&const DeepCollectionEquality().equals(other._selectedModifiers, _selectedModifiers)&&(identical(other.notes, notes) || other.notes == notes));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,cart,newRestaurantId,menuItemId,name,price,quantity,const DeepCollectionEquality().hash(_selectedModifiers),notes);
+
+@override
+String toString() {
+  return 'CartState.conflict(cart: $cart, newRestaurantId: $newRestaurantId, menuItemId: $menuItemId, name: $name, price: $price, quantity: $quantity, selectedModifiers: $selectedModifiers, notes: $notes)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ConflictCopyWith<$Res> implements $CartStateCopyWith<$Res> {
+  factory _$ConflictCopyWith(_Conflict value, $Res Function(_Conflict) _then) = __$ConflictCopyWithImpl;
+@useResult
+$Res call({
+ Cart cart, String newRestaurantId, String menuItemId, String name, int price, int quantity, List<Map<String, dynamic>>? selectedModifiers, String? notes
+});
+
+
+
+
+}
+/// @nodoc
+class __$ConflictCopyWithImpl<$Res>
+    implements _$ConflictCopyWith<$Res> {
+  __$ConflictCopyWithImpl(this._self, this._then);
+
+  final _Conflict _self;
+  final $Res Function(_Conflict) _then;
+
+/// Create a copy of CartState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? cart = null,Object? newRestaurantId = null,Object? menuItemId = null,Object? name = null,Object? price = null,Object? quantity = null,Object? selectedModifiers = freezed,Object? notes = freezed,}) {
+  return _then(_Conflict(
+cart: null == cart ? _self.cart : cart // ignore: cast_nullable_to_non_nullable
+as Cart,newRestaurantId: null == newRestaurantId ? _self.newRestaurantId : newRestaurantId // ignore: cast_nullable_to_non_nullable
+as String,menuItemId: null == menuItemId ? _self.menuItemId : menuItemId // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
+as int,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,selectedModifiers: freezed == selectedModifiers ? _self._selectedModifiers : selectedModifiers // ignore: cast_nullable_to_non_nullable
+as List<Map<String, dynamic>>?,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

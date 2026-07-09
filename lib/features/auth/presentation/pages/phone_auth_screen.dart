@@ -189,9 +189,12 @@ class _PhoneNumberField extends StatelessWidget {
                   keyboardType: TextInputType.phone,
                   textInputAction: TextInputAction.done,
                   textAlign: TextAlign.start,
+                  textDirection: TextDirection.ltr,
                   style: AppTextStyles.inputText(context),
                   cursorColor: AppColors.cursor(context),
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ],
                   onTapOutside: (_) =>
                       FocusManager.instance.primaryFocus?.unfocus(),
                   decoration: InputDecoration(

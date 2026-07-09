@@ -1,4 +1,14 @@
+import 'package:food_user_app/features/home/domain/usecases/get_categories_usecase.dart';
+import 'package:food_user_app/features/home/presentation/cubit/category_cubit.dart';
+import 'package:food_user_app/features/home/domain/usecases/get_nearby_restaurants_usecase.dart';
+import 'package:food_user_app/features/profile/domain/usecases/get_favourites_usecase.dart';
+import 'package:food_user_app/features/profile/domain/usecases/toggle_favourite_usecase.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:food_user_app/features/profile/domain/usecases/get_profile_usecase.dart';
+import 'package:food_user_app/features/profile/domain/usecases/update_profile_usecase.dart';
+import 'package:food_user_app/features/profile/domain/usecases/get_settings_usecase.dart';
+import 'package:food_user_app/features/profile/domain/usecases/update_settings_usecase.dart';
+import 'package:food_user_app/features/profile/domain/usecases/delete_account_usecase.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
@@ -6,10 +16,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:food_user_app/core/network/dio_client.dart';
 import 'package:food_user_app/core/network/interceptors/auth_interceptor.dart';
+import 'package:food_user_app/core/network/interceptors/global_error_interceptor.dart';
 import 'package:food_user_app/core/network/interceptors/logging_interceptor.dart';
 import 'package:food_user_app/core/network/interceptors/retry_interceptor.dart';
+import 'package:food_user_app/core/network/interceptors/language_interceptor.dart';
 import 'package:food_user_app/core/network/network_info.dart';
 import 'package:food_user_app/core/storage/token_storage.dart';
+import 'package:food_user_app/core/services/push_notification_service.dart';
+import 'package:food_user_app/core/services/snackbar_service.dart';
+import 'package:food_user_app/features/location/data/services/location_service_impl.dart';
+import 'package:food_user_app/features/location/domain/services/location_service.dart';
 
 import 'package:food_user_app/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:food_user_app/features/auth/data/datasources/auth_remote_data_source.dart';
@@ -21,8 +37,11 @@ import 'package:food_user_app/features/auth/domain/usecases/verify_phone_otp_use
 import 'package:food_user_app/features/auth/domain/usecases/complete_registration_usecase.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
-import 'package:food_user_app/features/profile/data/repositories/saved_addresses_repository_impl.dart';
-import 'package:food_user_app/features/profile/domain/repositories/saved_addresses_repository.dart';
+import 'package:food_user_app/features/checkout/domain/usecases/get_saved_addresses_usecase.dart';
+import 'package:food_user_app/features/checkout/domain/usecases/save_address_usecase.dart';
+import 'package:food_user_app/features/checkout/domain/usecases/update_address_usecase.dart';
+import 'package:food_user_app/features/checkout/domain/usecases/delete_address_usecase.dart';
+import 'package:food_user_app/features/checkout/domain/usecases/set_default_address_usecase.dart';
 import 'package:food_user_app/features/user/data/datasources/user_remote_data_source.dart';
 import 'package:food_user_app/features/user/data/repositories/user_repository_impl.dart';
 import 'package:food_user_app/features/user/domain/repositories/user_repository.dart';
@@ -56,6 +75,21 @@ import 'package:food_user_app/features/cart/data/datasources/cart_remote_data_so
 import 'package:food_user_app/features/cart/data/repositories/cart_repository_impl.dart';
 import 'package:food_user_app/features/cart/domain/repositories/cart_repository.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:food_user_app/features/cart/domain/usecases/add_to_cart_usecase.dart';
+import 'package:food_user_app/features/cart/domain/usecases/clear_cart_usecase.dart';
+import 'package:food_user_app/features/cart/domain/usecases/get_cart_usecase.dart';
+import 'package:food_user_app/features/cart/domain/usecases/remove_from_cart_usecase.dart';
+import 'package:food_user_app/features/cart/domain/usecases/update_cart_item_usecase.dart';
+import 'package:food_user_app/features/checkout/domain/usecases/apply_promo_usecase.dart';
+import 'package:food_user_app/features/support/data/datasources/support_remote_data_source.dart';
+import 'package:food_user_app/features/support/data/repositories/support_repository_impl.dart';
+import 'package:food_user_app/features/support/domain/repositories/support_repository.dart';
+import 'package:food_user_app/features/support/domain/usecases/create_ticket_usecase.dart';
+import 'package:food_user_app/features/support/domain/usecases/get_messages_usecase.dart';
+import 'package:food_user_app/features/support/domain/usecases/send_message_usecase.dart';
+import 'package:food_user_app/features/support/presentation/cubit/chat_cubit.dart';
+import 'package:food_user_app/features/support/presentation/cubit/support_ticket_cubit.dart';
+
 import 'package:food_user_app/features/payment/data/datasources/payment_remote_data_source.dart';
 import 'package:food_user_app/features/payment/data/repositories/payment_repository_impl.dart';
 import 'package:food_user_app/features/payment/domain/repositories/payment_repository.dart';
@@ -65,6 +99,14 @@ import 'package:food_user_app/features/payment/domain/usecases/get_saved_cards_u
 import 'package:food_user_app/features/payment/domain/usecases/save_card_usecase.dart';
 import 'package:food_user_app/features/payment/presentation/cubit/checkout_cubit.dart';
 import 'package:food_user_app/features/payment/presentation/cubit/payment_method_cubit.dart';
+import 'package:food_user_app/features/checkout/domain/usecases/place_order_usecase.dart';
+import 'package:food_user_app/features/order/data/datasources/order_remote_data_source.dart';
+import 'package:food_user_app/features/order/data/repositories/order_repository_impl.dart';
+import 'package:food_user_app/features/order/domain/repositories/order_repository.dart';
+import 'package:food_user_app/features/order/domain/usecases/get_order_detail_usecase.dart';
+import 'package:food_user_app/features/order/domain/usecases/get_order_history_usecase.dart';
+import 'package:food_user_app/features/order/domain/usecases/get_order_tracking_usecase.dart';
+import 'package:food_user_app/features/order/presentation/cubit/order_tracking_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -107,13 +149,28 @@ Future<void> init({SharedPreferences? prefs}) async {
     () => RetryInterceptor(dio: Dio()),
   );
 
+  sl.registerLazySingleton<LanguageInterceptor>(
+    () => LanguageInterceptor(sl<SharedPreferences>()),
+  );
+
+  sl.registerLazySingleton<GlobalErrorHandlerInterceptor>(
+    () => GlobalErrorHandlerInterceptor(),
+  );
+
   sl.registerLazySingleton<DioClient>(
     () => DioClient(
       authInterceptor: sl<AuthInterceptor>(),
       loggingInterceptor: sl<LoggingInterceptor>(),
       retryInterceptor: sl<RetryInterceptor>(),
+      globalErrorHandlerInterceptor: sl<GlobalErrorHandlerInterceptor>(),
+      languageInterceptor: sl<LanguageInterceptor>(),
     ),
   );
+
+  // ── UI Services ─────────────────────────────────────────────────────────  // Services
+  sl.registerLazySingleton<SnackbarService>(() => SnackbarService());
+  sl.registerLazySingleton<LocationService>(() => LocationServiceImpl());
+  sl.registerLazySingleton<PushNotificationService>(() => PushNotificationService());
 
   // ── Auth local cache ─────────────────────────────────────────────────────
   sl.registerLazySingleton<AuthLocalDataSource>(
@@ -156,8 +213,21 @@ Future<void> init({SharedPreferences? prefs}) async {
     ),
   );
 
+  // Profile UseCases
+  sl.registerLazySingleton(() => GetProfileUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateProfileUseCase(sl()));
+  sl.registerLazySingleton(() => GetSettingsUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateSettingsUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteAccountUseCase(sl()));
+
   sl.registerFactory<ProfileBloc>(
-    () => ProfileBloc(userRepository: sl<UserRepository>()),
+    () => ProfileBloc(
+      getProfileUseCase: sl(),
+      updateProfileUseCase: sl(),
+      getSettingsUseCase: sl(),
+      updateSettingsUseCase: sl(),
+      deleteAccountUseCase: sl(),
+    ),
   );
 
   // ── Saved addresses ───────────────────────────────────────────────────────
@@ -168,11 +238,11 @@ Future<void> init({SharedPreferences? prefs}) async {
     () =>
         AddressRepositoryImpl(remoteDataSource: sl<AddressRemoteDataSource>()),
   );
-  sl.registerLazySingleton<SavedAddressesRepository>(
-    () => SavedAddressesRepositoryImpl(
-      addressRepository: sl<AddressRepository>(),
-    ),
-  );
+  sl.registerLazySingleton(() => GetSavedAddressesUseCase(sl<AddressRepository>()));
+  sl.registerLazySingleton(() => SaveAddressUseCase(sl<AddressRepository>()));
+  sl.registerLazySingleton(() => UpdateAddressUseCase(sl<AddressRepository>()));
+  sl.registerLazySingleton(() => DeleteAddressUseCase(sl<AddressRepository>()));
+  sl.registerLazySingleton(() => SetDefaultAddressUseCase(sl<AddressRepository>()));
 
   // ── User Profile & Settings ────────────────────────────────────────────────
   sl.registerLazySingleton<UserRemoteDataSource>(
@@ -203,6 +273,12 @@ Future<void> init({SharedPreferences? prefs}) async {
     () => SearchCubit(searchRepository: sl<SearchRepository>()),
   );
 
+  // ── Categories & Home ──────────────────────────────────────────────────────
+  sl.registerLazySingleton(() => GetCategoriesUseCase());
+  sl.registerFactory<CategoryCubit>(
+    () => CategoryCubit(getCategoriesUseCase: sl<GetCategoriesUseCase>()),
+  );
+
   // ── Restaurants ────────────────────────────────────────────────────────────
   sl.registerLazySingleton<RestaurantRemoteDataSource>(
     () => RestaurantRemoteDataSourceImpl(dio: sl<DioClient>().dio),
@@ -219,8 +295,13 @@ Future<void> init({SharedPreferences? prefs}) async {
   sl.registerLazySingleton(
     () => GetRestaurantDetailUseCase(repository: sl<RestaurantRepository>()),
   );
+  sl.registerLazySingleton(
+    () => GetNearbyRestaurantsUseCase(sl<RestaurantRepository>()),
+  );
   sl.registerFactory<RestaurantListCubit>(
-    () => RestaurantListCubit(restaurantRepository: sl<RestaurantRepository>()),
+    () => RestaurantListCubit(
+      getNearbyRestaurantsUseCase: sl<GetNearbyRestaurantsUseCase>(),
+    ),
   );
   sl.registerFactory<RestaurantDetailCubit>(
     () =>
@@ -237,6 +318,12 @@ Future<void> init({SharedPreferences? prefs}) async {
     () => MenuCubit(menuRepository: sl<MenuRepository>()),
   );
 
+  sl.registerLazySingleton(
+    () => GetFavouritesUseCase(sl<RestaurantRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => ToggleFavouriteUseCase(sl<RestaurantRepository>()),
+  );
   sl.registerFactory<FavoriteCubit>(
     () => FavoriteCubit(restaurantRepository: sl<RestaurantRepository>()),
   );
@@ -262,8 +349,23 @@ Future<void> init({SharedPreferences? prefs}) async {
   sl.registerLazySingleton<CartRepository>(
     () => CartRepositoryImpl(remoteDataSource: sl<CartRemoteDataSource>()),
   );
+  
+  sl.registerLazySingleton(() => GetCartUseCase(repository: sl<CartRepository>()));
+  sl.registerLazySingleton(() => AddToCartUseCase(repository: sl<CartRepository>()));
+  sl.registerLazySingleton(() => UpdateCartItemUseCase(repository: sl<CartRepository>()));
+  sl.registerLazySingleton(() => RemoveFromCartUseCase(repository: sl<CartRepository>()));
+  sl.registerLazySingleton(() => ClearCartUseCase(repository: sl<CartRepository>()));
+  sl.registerLazySingleton(() => ApplyPromoUseCase(repository: sl<CartRepository>()));
+
   sl.registerFactory<CartCubit>(
-    () => CartCubit(cartRepository: sl<CartRepository>()),
+    () => CartCubit(
+      getCartUseCase: sl<GetCartUseCase>(),
+      addToCartUseCase: sl<AddToCartUseCase>(),
+      updateCartItemUseCase: sl<UpdateCartItemUseCase>(),
+      removeFromCartUseCase: sl<RemoveFromCartUseCase>(),
+      clearCartUseCase: sl<ClearCartUseCase>(),
+      applyPromoUseCase: sl<ApplyPromoUseCase>(),
+    ),
   );
 
   // ── Payment & Checkout ────────────────────────────────────────────────────
@@ -286,6 +388,53 @@ Future<void> init({SharedPreferences? prefs}) async {
     ),
   );
   sl.registerFactory<CheckoutCubit>(
-    () => CheckoutCubit(checkoutUseCase: sl<CheckoutUseCase>()),
+    () => CheckoutCubit(placeOrderUseCase: sl<PlaceOrderUseCase>()),
+  );
+
+  // ── Order & Tracking ──────────────────────────────────────────────────────
+  importOrderDependencies();
+  importSupportDependencies();
+}
+
+void importSupportDependencies() {
+  // Data Sources
+  sl.registerLazySingleton<SupportRemoteDataSource>(
+    () => SupportRemoteDataSourceImpl(dio: sl<DioClient>().dio),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<SupportRepository>(
+    () => SupportRepositoryImpl(sl()),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => CreateTicketUseCase(sl()));
+  sl.registerLazySingleton(() => GetMessagesUseCase(sl()));
+  sl.registerLazySingleton(() => SendMessageUseCase(sl()));
+
+  // Cubits
+  sl.registerFactory(() => SupportTicketCubit(sl()));
+  sl.registerFactory(() => ChatCubit(sl<GetMessagesUseCase>(), sl<SendMessageUseCase>()));
+}
+
+void importOrderDependencies() {
+  sl.registerLazySingleton<OrderRemoteDataSource>(
+    () => OrderRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<OrderRepository>(
+    () => OrderRepositoryImpl(sl<OrderRemoteDataSource>()),
+  );
+  sl.registerLazySingleton(() => PlaceOrderUseCase(
+        orderRepository: sl<OrderRepository>(),
+        cartRepository: sl<CartRepository>(),
+        paymentRepository: sl<PaymentRepository>(),
+        addressRepository: sl<AddressRepository>(),
+      ));
+  sl.registerLazySingleton(() => GetOrderDetailUseCase(sl<OrderRepository>()));
+  sl.registerLazySingleton(() => GetOrderHistoryUseCase(sl<OrderRepository>()));
+  sl.registerLazySingleton(() => GetOrderTrackingUseCase(sl<OrderRepository>()));
+
+  sl.registerFactory<OrderTrackingCubit>(
+    () => OrderTrackingCubit(getOrderTrackingUseCase: sl<GetOrderTrackingUseCase>()),
   );
 }

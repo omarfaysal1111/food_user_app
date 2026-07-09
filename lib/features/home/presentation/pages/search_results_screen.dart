@@ -6,15 +6,17 @@ import 'package:food_user_app/features/search/presentation/cubit/search_state.da
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/features/restaurant/presentation/widgets/restaurant_card.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class SearchResultsScreen extends StatelessWidget {
   const SearchResultsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Results'),
+        title: Text(l10n.searchResultsTitle),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -26,17 +28,17 @@ class SearchResultsScreen extends StatelessWidget {
             error: (msg) => Center(child: Text(msg)),
             loaded: (result) {
               if (result.restaurants.isEmpty && result.items.isEmpty) {
-                return const Center(child: Text('No results found'));
+                return Center(child: Text(l10n.serviceNoResultsAvailable));
               }
               return CustomScrollView(
                 slivers: [
                   if (result.restaurants.isNotEmpty) ...[
-                    const SliverPadding(
-                      padding: EdgeInsets.all(AppSpacing.md),
+                    SliverPadding(
+                      padding: const EdgeInsets.all(AppSpacing.md),
                       sliver: SliverToBoxAdapter(
                         child: Text(
-                          'Restaurants',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          l10n.homeCategoryRestaurants,
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -56,12 +58,12 @@ class SearchResultsScreen extends StatelessWidget {
                     ),
                   ],
                   if (result.items.isNotEmpty) ...[
-                    const SliverPadding(
-                      padding: EdgeInsets.all(AppSpacing.md),
+                    SliverPadding(
+                      padding: const EdgeInsets.all(AppSpacing.md),
                       sliver: SliverToBoxAdapter(
                         child: Text(
-                          'Items',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          l10n.itemsTitle,
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -76,7 +78,7 @@ class SearchResultsScreen extends StatelessWidget {
                               : const Icon(Icons.fastfood),
                           title: Text(item.name),
                           subtitle: Text(item.description),
-                          trailing: Text('EGP ${item.price}'),
+                          trailing: Text(l10n.priceWithCurrency(item.price.toString())),
                         );
                       },
                     ),
@@ -84,7 +86,7 @@ class SearchResultsScreen extends StatelessWidget {
                 ],
               );
             },
-            orElse: () => const Center(child: Text('Start searching')),
+            orElse: () => Center(child: Text(l10n.startSearching)),
           );
         },
       ),

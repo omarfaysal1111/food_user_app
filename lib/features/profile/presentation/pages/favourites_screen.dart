@@ -95,6 +95,13 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                 context.read<FavoriteCubit>().toggleFavorite(
                                   restaurants[index].id,
                                 );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      AppLocalizations.of(context)!.itemRemovedFromFavorites,
+                                    ),
+                                  ),
+                                );
                               },
                             );
                           },

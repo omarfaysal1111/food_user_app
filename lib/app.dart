@@ -73,6 +73,7 @@ class App extends StatelessWidget {
                 final locale = localeController.locale;
                 final code = locale.languageCode;
                 return MaterialApp.router(
+                  scaffoldMessengerKey: AppRouter.scaffoldMessengerKey,
                   onGenerateTitle: (context) =>
                       AppLocalizations.of(context)!.appTitle,
                   locale: locale,

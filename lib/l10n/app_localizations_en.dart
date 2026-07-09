@@ -505,10 +505,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmPayment => 'Confirm payment';
 
   @override
-  String get checkoutOrderDesignOnly => 'Order submitted for design preview';
+  String get checkoutOrderDesignOnly => 'Order submitted successfully';
 
   @override
-  String get checkoutAddressUpdated => 'Address updated for design preview';
+  String get checkoutAddressUpdated => 'Address updated successfully';
 
   @override
   String cartPrice(int amount) {
@@ -686,7 +686,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancelOrder => 'Cancel order';
 
   @override
-  String get orderCancelDesignOnly => 'Order cancelled for design preview';
+  String get orderCancelDesignOnly => 'Order cancelled successfully';
 
   @override
   String get courierDetails => 'Courier details:';
@@ -732,10 +732,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get submitRating => 'Send';
 
   @override
-  String get ratingSubmittedDesignOnly => 'Rating submitted for design preview';
+  String get ratingSubmittedDesignOnly => 'Rating submitted successfully';
 
   @override
-  String get orderDetailsDesignOnly => 'Updated for design preview';
+  String get orderDetailsDesignOnly => 'Updated successfully';
 
   @override
   String get rateOrder => 'Rate order';
@@ -897,10 +897,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get floor => 'Floor';
 
   @override
-  String get addressSavedDesignOnly => 'Address saved for design preview';
+  String get addressSavedDesignOnly => 'Address saved successfully';
 
   @override
-  String get addressUpdatedDesignOnly => 'Address updated for design preview';
+  String get addressUpdatedDesignOnly => 'Address updated successfully';
+
+  @override
+  String get addressDeletedDesignOnly => 'Address deleted successfully';
+
+  @override
+  String get itemAddedToFavorites => 'Item added to favorites successfully';
+
+  @override
+  String get itemRemovedFromFavorites =>
+      'Item removed from favorites successfully';
 
   @override
   String get chooseLocation => 'Select Location';
@@ -1071,13 +1081,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Payment card saving is coming soon.';
 
   @override
-  String get cardAddedDesignOnly => 'Card added for design preview';
+  String get cardAddedDesignOnly => 'Card added successfully';
 
   @override
-  String get cardUpdatedDesignOnly => 'Card updated for design preview';
+  String get cardUpdatedDesignOnly => 'Card updated successfully';
 
   @override
-  String get cardDeletedDesignOnly => 'Card deleted for design preview';
+  String get cardDeletedDesignOnly => 'Card deleted successfully';
 
   @override
   String get editProfileTitle => 'Edit Personal Data';
@@ -1098,7 +1108,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveChanges => 'Save Changes';
 
   @override
-  String get profileChangesSaved => 'Changes saved for design preview';
+  String get profileChangesSaved => 'Changes saved successfully';
 
   @override
   String get changePhone => 'Change';
@@ -1142,10 +1152,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get phoneChangedMessage =>
-      'Your phone number has been updated for design preview.';
+      'Your phone number has been updated successfully.';
 
   @override
-  String get profileUpdatedDesignOnly => 'Profile updated for design preview';
+  String get profileUpdatedDesignOnly => 'Profile updated successfully';
 
   @override
   String get invalidPhoneMessage => 'Please enter a phone number';
@@ -1419,4 +1429,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchMostSearchedCheese => 'Cheese';
+
+  @override
+  String get startSearching => 'Start searching';
+
+  @override
+  String get itemsTitle => 'Items';
+
+  @override
+  String addressDetailsFormat(String building, String apartment, String floor) {
+    return 'Building: $building / Apartment: $apartment / Floor: $floor';
+  }
+
+  @override
+  String get noOffersAvailable => 'No offers available';
+
+  @override
+  String get noRestaurantsFound => 'No restaurants found';
+
+  @override
+  String get connectingToApi => 'Connecting to API...';
+
+  @override
+  String priceWithCurrency(String amount) {
+    return '$amount EGP';
+  }
 }

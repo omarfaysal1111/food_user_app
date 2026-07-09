@@ -264,7 +264,9 @@ class _PhoneNumberField extends StatelessWidget {
                     textInputAction: TextInputAction.done,
                     textDirection: TextDirection.ltr,
                     textAlign: isRtl ? TextAlign.right : TextAlign.left,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    ],
                     cursorColor: AppColors.cursor(context),
                     style: AppTextStyles.inputText(context).copyWith(
                       color: AppColors.onSurface(context),

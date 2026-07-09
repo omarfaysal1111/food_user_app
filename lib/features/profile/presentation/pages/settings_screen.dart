@@ -18,6 +18,8 @@ import 'package:food_user_app/features/profile/presentation/bloc/profile_state.d
 import 'package:food_user_app/features/user/domain/models/update_settings_request.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:food_user_app/core/services/snackbar_service.dart';
+import 'package:food_user_app/core/di/injection_container.dart' as di;
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -27,6 +29,12 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProfileBloc>().add(const GetSettingsEvent());
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -52,15 +60,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           );
         }
+        if (state.updateSettingsSuccess) {
+          di.sl<SnackbarService>().showSuccess('Settings updated');
+        }
         if (state.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                state.errorMessage!,
-                style: AppTextStyles.snackBarMessage(context),
-              ),
-            ),
-          );
+          di.sl<SnackbarService>().showError(state.errorMessage!);
         }
       },
       builder: (context, state) {
@@ -103,9 +107,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   UpdateSettingsEvent(
                                     UpdateSettingsRequest(
                                       pushNotifications: value,
-                                      smsNotifications: value,
-                                      emailNotifications: value,
-                                      theme: isDark ? 'dark' : 'light',
                                     ),
                                   ),
                                 );
@@ -121,6 +122,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               onChanged: (value) {
                                 themeController.setThemeMode(
                                   value ? ThemeMode.dark : ThemeMode.light,
+                                );
+                                context.read<ProfileBloc>().add(
+                                  UpdateSettingsEvent(
+                                    UpdateSettingsRequest(
+                                      theme: value ? 'dark' : 'light',
+                                    ),
+                                  ),
                                 );
                               },
                             ),

@@ -10,8 +10,10 @@ import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/core/widgets/app_search_field.dart';
 import 'package:food_user_app/core/widgets/app_status_dot_label.dart';
+
 import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
 import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
+
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_config.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'dart:async';
@@ -214,10 +216,8 @@ class _SearchScreenState extends State<SearchScreen> {
     required List<MenuItem> items,
   }) {
     final l10n = AppLocalizations.of(context)!;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final copy = _SearchCopy.of(context);
 
-    // Filter and map restaurants
     final matchedRestaurants = restaurants
         .where(
           (r) =>
@@ -228,8 +228,10 @@ class _SearchScreenState extends State<SearchScreen> {
         .map(_mapToServicePlaceData)
         .toList();
 
-    final displayedLargeStores = matchedRestaurants.take(2).toList();
-    final displayedStores = matchedRestaurants.skip(2).toList();
+    // Fallback: Since the Restaurant entity does not have a property like 'isSupermarket'
+    // or 'type', we treat all results as regular restaurants.
+    final displayedLargeStores = <ServicePlaceData>[];
+    final displayedStores = matchedRestaurants;
 
     // Filter and map products
     final filteredProducts = items
@@ -268,14 +270,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 const SizedBox(height: 22),
               ],
               if (!showFilters) ...[
-                if (history.isNotEmpty) ...[
-                  _SectionTitle(
-                    title: isArabic ? 'سجل البحث' : 'Search History',
-                  ),
-                  const SizedBox(height: 12),
-                  _MostSearchedTokens(tokens: history, onTap: _onTokenTap),
-                  const SizedBox(height: 22),
-                ],
+
                 _SectionTitle(title: l10n.searchMostSearchedTitle),
                 const SizedBox(height: 12),
                 _MostSearchedTokens(
@@ -340,6 +335,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   ServicePlaceData _mapToServicePlaceData(Restaurant restaurant) {
     return ServicePlaceData.restaurant(
+      id: restaurant.id,
       name: restaurant.name,
       subtitle: restaurant.cuisineType,
       time: '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
@@ -664,204 +660,6 @@ class _CompactStoreCard extends StatelessWidget {
   }
 }
 
-class _PlaceList extends StatelessWidget {
-  const _PlaceList({required this.items});
-
-  final List<ServicePlaceData> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (var i = 0; i < items.length; i++) ...[
-          _PlaceListTile(item: items[i]),
-          if (i != items.length - 1)
-            Divider(
-              height: 24,
-              thickness: 0.5,
-              color: AppColors.border(context),
-            ),
-        ],
-      ],
-    );
-  }
-}
-
-class _PlaceListTile extends StatelessWidget {
-  const _PlaceListTile({required this.item});
-
-  final ServicePlaceData item;
-
-  @override
-  Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
-
-    return InkWell(
-      onTap: () => context.push(
-        RouteNames.restaurantDetailFor(_detailId(item.name)),
-        extra: _toRestaurantDetailArgs(item),
-      ),
-      borderRadius: const BorderRadius.all(AppRadius.sm),
-      child: Padding(
-        padding: const EdgeInsetsDirectional.symmetric(vertical: 4),
-        child: Row(
-          children: [
-            _PlaceImage(item: item),
-            const SizedBox(width: 8),
-            Expanded(child: _PlaceDetails(item: item)),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 20,
-              height: 20,
-              child: Center(
-                child: Transform.scale(
-                  scaleX: isRtl ? -1 : 1,
-                  child: AppSvgImage.asset(
-                    AppAssets.serviceBackIcon,
-                    width: 7,
-                    height: 12,
-                    color: AppColors.onSurface(context),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PlaceImage extends StatelessWidget {
-  const _PlaceImage({required this.item});
-
-  final ServicePlaceData item;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 56,
-      height: 56,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.all(AppRadius.md),
-              child: _buildImage(
-                item.imageAsset,
-                width: 56,
-                height: 56,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          if (item.showFavourite)
-            PositionedDirectional(
-              top: 6,
-              start: 6,
-              child: Container(
-                width: 22,
-                height: 22,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceCard(context),
-                  borderRadius: const BorderRadius.all(AppRadius.full),
-                ),
-                child: AppSvgImage.asset(
-                  AppAssets.serviceFavouriteIcon,
-                  width: 14,
-                  height: 14,
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PlaceDetails extends StatelessWidget {
-  const _PlaceDetails({required this.item});
-
-  final ServicePlaceData item;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Flexible(
-              child: Text(
-                item.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.start,
-                style: AppTextStyles.body(
-                  context,
-                ).copyWith(fontSize: 12, height: 1.3),
-              ),
-            ),
-            const SizedBox(width: 8),
-            AppStatusDotLabel(
-              label: l10n.serviceAvailable,
-              color: AppColors.success,
-            ),
-          ],
-        ),
-        if (item.subtitle != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            item.subtitle!,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.start,
-            style: AppTextStyles.caption(context).copyWith(fontSize: 10),
-          ),
-        ],
-        const SizedBox(height: 6),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _RatingLabel(rating: item.rating),
-            const SizedBox(width: 12),
-            _TimeLabel(time: item.time),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _RatingLabel extends StatelessWidget {
-  const _RatingLabel({required this.rating});
-
-  final String rating;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AppSvgImage.asset(AppAssets.serviceStarIcon, width: 14, height: 14),
-        const SizedBox(width: 2),
-        Text(
-          rating,
-          style: AppTextStyles.body(
-            context,
-          ).copyWith(fontSize: 10, height: 1.25),
-        ),
-      ],
-    );
-  }
-}
-
 class _TimeLabel extends StatelessWidget {
   const _TimeLabel({
     required this.time,
@@ -1086,26 +884,7 @@ void _openSearchResult(BuildContext context, _SearchResult result) {
   );
 }
 
-String _detailId(String name) {
-  final normalized = name
-      .trim()
-      .toLowerCase()
-      .replaceAll(RegExp(r'\s+'), '-')
-      .replaceAll(RegExp(r'[^a-z0-9\u0600-\u06FF-]'), '');
-  return normalized.isEmpty ? 'service-place' : normalized;
-}
 
-RestaurantDetailArgs _toRestaurantDetailArgs(ServicePlaceData item) {
-  return RestaurantDetailArgs(
-    id: _detailId(item.name),
-    name: item.name,
-    description: item.subtitle ?? item.name,
-    deliveryTime: item.time,
-    rating: double.tryParse(item.rating) ?? 4.5,
-    logoAsset: item.imageAsset,
-    coverAsset: item.imageAsset,
-  );
-}
 
 class _SearchGroup {
   const _SearchGroup({
@@ -1429,4 +1208,222 @@ Widget _buildImage(
     return AppNetworkImage(path, width: width, height: height, fit: fit);
   }
   return AppRasterImage.asset(path, width: width, height: height, fit: fit);
+}
+
+class _PlaceList extends StatelessWidget {
+  const _PlaceList({required this.items});
+
+  final List<ServicePlaceData> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (var i = 0; i < items.length; i++) ...[
+          _PlaceListTile(item: items[i]),
+          if (i != items.length - 1)
+            Divider(
+              height: 24,
+              thickness: 0.5,
+              color: AppColors.border(context),
+            ),
+        ],
+      ],
+    );
+  }
+}
+
+class _PlaceListTile extends StatelessWidget {
+  const _PlaceListTile({required this.item});
+
+  final ServicePlaceData item;
+
+  @override
+  Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+
+    return InkWell(
+      onTap: () => context.push(
+        RouteNames.restaurantDetailFor(item.id ?? _detailId(item.name)),
+        extra: _toRestaurantDetailArgs(item),
+      ),
+      borderRadius: const BorderRadius.all(AppRadius.sm),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            _PlaceImage(item: item),
+            const SizedBox(width: 8),
+            Expanded(child: _PlaceDetails(item: item)),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: Center(
+                child: Transform.scale(
+                  scaleX: isRtl ? -1 : 1,
+                  child: AppSvgImage.asset(
+                    AppAssets.serviceBackIcon,
+                    width: 7,
+                    height: 12,
+                    color: AppColors.onSurface(context),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PlaceImage extends StatelessWidget {
+  const _PlaceImage({required this.item});
+
+  final ServicePlaceData item;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 56,
+      height: 56,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: const BorderRadius.all(AppRadius.md),
+              child: _buildImage(
+                item.imageAsset,
+                width: 56,
+                height: 56,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          if (item.showFavourite)
+            PositionedDirectional(
+              top: 6,
+              start: 6,
+              child: Container(
+                width: 22,
+                height: 22,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceCard(context),
+                  borderRadius: const BorderRadius.all(AppRadius.full),
+                ),
+                child: AppSvgImage.asset(
+                  AppAssets.serviceFavouriteIcon,
+                  width: 14,
+                  height: 14,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PlaceDetails extends StatelessWidget {
+  const _PlaceDetails({required this.item});
+
+  final ServicePlaceData item;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Flexible(
+              child: Text(
+                item.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.start,
+                style: AppTextStyles.body(
+                  context,
+                ).copyWith(fontSize: 12, height: 1.3),
+              ),
+            ),
+            const SizedBox(width: 8),
+            AppStatusDotLabel(
+              label: l10n.serviceAvailable,
+              color: AppColors.success,
+            ),
+          ],
+        ),
+        if (item.subtitle != null) ...[
+          const SizedBox(height: 4),
+          Text(
+            item.subtitle!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.start,
+            style: AppTextStyles.caption(context).copyWith(fontSize: 10),
+          ),
+        ],
+        const SizedBox(height: 6),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _RatingLabel(rating: item.rating),
+            const SizedBox(width: 12),
+            _TimeLabel(time: item.time),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _RatingLabel extends StatelessWidget {
+  const _RatingLabel({required this.rating});
+
+  final String rating;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AppSvgImage.asset(AppAssets.serviceStarIcon, width: 14, height: 14),
+        const SizedBox(width: 2),
+        Text(
+          rating,
+          style: AppTextStyles.body(
+            context,
+          ).copyWith(fontSize: 10, height: 1.25),
+        ),
+      ],
+    );
+  }
+}
+
+String _detailId(String name) {
+  final normalized = name
+      .toLowerCase()
+      .replaceAll(' ', '-')
+      .replaceAll(RegExp(r'[^a-z0-9\u0600-\u06FF-]'), '');
+  return normalized.isEmpty ? 'service-place' : normalized;
+}
+
+RestaurantDetailArgs _toRestaurantDetailArgs(ServicePlaceData item) {
+  return RestaurantDetailArgs(
+    id: item.id ?? _detailId(item.name),
+    name: item.name,
+    description: item.subtitle ?? item.name,
+    deliveryTime: item.time,
+    rating: double.tryParse(item.rating) ?? 4.5,
+    logoAsset: item.imageAsset,
+    coverAsset: item.imageAsset,
+  );
 }

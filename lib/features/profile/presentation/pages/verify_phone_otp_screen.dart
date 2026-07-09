@@ -313,8 +313,11 @@ class _OtpInput extends StatelessWidget {
                     keyboardType: TextInputType.number,
                     maxLength: 6,
                     textAlign: TextAlign.left,
+                    textDirection: TextDirection.ltr,
                     textInputAction: TextInputAction.done,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    ],
                     style: AppTextStyles.hiddenOtpInput,
                     showCursor: false,
                     cursorColor: AppColors.transparent,

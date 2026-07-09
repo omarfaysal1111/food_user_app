@@ -1,14 +1,30 @@
 import 'package:flutter/foundation.dart';
+import 'package:food_user_app/core/usecases/usecase.dart';
 
 import 'package:food_user_app/features/profile/domain/models/saved_address.dart';
 import 'package:food_user_app/features/profile/domain/models/saved_address_input.dart';
-import 'package:food_user_app/features/profile/domain/repositories/saved_addresses_repository.dart';
+import 'package:food_user_app/features/address/domain/entities/address.dart';
+import 'package:food_user_app/features/address/domain/models/address_request.dart';
+import 'package:food_user_app/features/checkout/domain/usecases/get_saved_addresses_usecase.dart';
+import 'package:food_user_app/features/checkout/domain/usecases/save_address_usecase.dart';
+import 'package:food_user_app/features/checkout/domain/usecases/update_address_usecase.dart';
+import 'package:food_user_app/features/checkout/domain/usecases/delete_address_usecase.dart';
+import 'package:food_user_app/features/checkout/domain/usecases/set_default_address_usecase.dart';
 
 class SavedAddressesController extends ChangeNotifier {
-  SavedAddressesController({required SavedAddressesRepository repository})
-    : _repository = repository;
+  SavedAddressesController({
+    required this.getSavedAddressesUseCase,
+    required this.saveAddressUseCase,
+    required this.updateAddressUseCase,
+    required this.deleteAddressUseCase,
+    required this.setDefaultAddressUseCase,
+  });
 
-  final SavedAddressesRepository _repository;
+  final GetSavedAddressesUseCase getSavedAddressesUseCase;
+  final SaveAddressUseCase saveAddressUseCase;
+  final UpdateAddressUseCase updateAddressUseCase;
+  final DeleteAddressUseCase deleteAddressUseCase;
+  final SetDefaultAddressUseCase setDefaultAddressUseCase;
 
   List<SavedAddress> _addresses = const [];
   String? _selectedAddressId;
@@ -54,19 +70,23 @@ class SavedAddressesController extends ChangeNotifier {
     _isLoading = true;
     _lastError = null;
     notifyListeners();
-    try {
-      final addresses = await _repository.getAddresses();
-      _setAddresses(addresses);
-      _hasLoaded = true;
-    } catch (error) {
-      _lastError = error;
-      _addresses = const [];
-      _selectedAddressId = null;
-      _hasLoaded = true;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+    
+    final result = await getSavedAddressesUseCase(NoParams());
+    result.fold(
+      (failure) {
+        _lastError = failure;
+        _addresses = const [];
+        _selectedAddressId = null;
+        _hasLoaded = true;
+      },
+      (addressList) {
+        _setAddresses(addressList.map(_mapAddressToSavedAddress).toList());
+        _hasLoaded = true;
+      },
+    );
+    
+    _isLoading = false;
+    notifyListeners();
   }
 
   Future<bool> selectAddress(String id) async {
@@ -82,27 +102,30 @@ class SavedAddressesController extends ChangeNotifier {
     _lastError = null;
     notifyListeners();
 
-    try {
-      await _repository.setDefaultAddress(id);
-      await loadAddresses();
-      return true;
-    } catch (error) {
-      _lastError = error;
-      _selectedAddressId = previousId;
-      _addresses = [
-        for (final address in _addresses)
-          address.copyWith(isDefault: address.id == previousId),
-      ];
-      notifyListeners();
-      return false;
-    }
+    final result = await setDefaultAddressUseCase(id);
+    return result.fold(
+      (failure) {
+        _lastError = failure;
+        _selectedAddressId = previousId;
+        _addresses = [
+          for (final address in _addresses)
+            address.copyWith(isDefault: address.id == previousId),
+        ];
+        notifyListeners();
+        return false;
+      },
+      (_) async {
+        await loadAddresses();
+        return true;
+      },
+    );
   }
 
   Future<bool> addAddress(SavedAddressInput input) async {
     _logAddressDebug('SavedAddressesController.addAddress');
     return _mutate(() async {
-      await _repository.createAddress(input);
-      await loadAddresses();
+      final result = await saveAddressUseCase(_mapInputToRequest(input));
+      return result.fold((f) => throw f, (_) => null);
     });
   }
 
@@ -111,16 +134,16 @@ class SavedAddressesController extends ChangeNotifier {
     required SavedAddressInput input,
   }) async {
     return _mutate(() async {
-      await _repository.updateAddress(id: id, input: input);
-      await loadAddresses();
+      final result = await updateAddressUseCase(UpdateAddressParams(id: id, request: _mapInputToRequest(input)));
+      return result.fold((f) => throw f, (_) => null);
     });
   }
 
   Future<bool> deleteAddress(String id) async {
     return _mutate(() async {
       final wasSelected = _selectedAddressId == id;
-      await _repository.deleteAddress(id);
-      await loadAddresses();
+      final result = await deleteAddressUseCase(id);
+      result.fold((f) => throw f, (_) => null);
       if (wasSelected && _addresses.isNotEmpty && _selectedAddressId == null) {
         await selectAddress(_addresses.first.id);
       }
@@ -134,6 +157,7 @@ class SavedAddressesController extends ChangeNotifier {
     notifyListeners();
     try {
       await action();
+      await loadAddresses();
       return true;
     } catch (error) {
       _lastError = error;
@@ -160,6 +184,47 @@ class SavedAddressesController extends ChangeNotifier {
         : currentStillExists
         ? _selectedAddressId
         : _addresses.first.id;
+  }
+
+  SavedAddress _mapAddressToSavedAddress(Address address) {
+    final loc = '${address.city}, ${address.neighborhood}';
+    return SavedAddress(
+      id: address.id,
+      titleAr: address.label,
+      titleEn: address.label,
+      detailsAr: address.fullAddress,
+      detailsEn: address.fullAddress,
+      locationAr: loc,
+      locationEn: loc,
+      latitude: address.lat,
+      longitude: address.lng,
+      fullAddress: address.fullAddress,
+      city: address.city,
+      neighborhood: address.neighborhood,
+      streetNumber: address.streetNumber,
+      buildingNumber: address.buildingNumber,
+      floor: address.floor,
+      apartment: address.apartment,
+      addressType: address.addressType,
+      isDefault: address.isDefault,
+    );
+  }
+
+  AddressRequest _mapInputToRequest(SavedAddressInput input) {
+    return AddressRequest(
+      label: input.label,
+      fullAddress: input.fullAddress,
+      lat: input.lat,
+      lng: input.lng,
+      city: input.city,
+      neighborhood: input.neighborhood,
+      streetNumber: input.streetNumber,
+      buildingNumber: input.buildingNumber,
+      floor: input.floor,
+      apartment: input.apartment,
+      addressType: input.addressType,
+      isDefault: input.isDefault,
+    );
   }
 }
 

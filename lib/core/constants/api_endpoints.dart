@@ -66,6 +66,17 @@ class ApiEndpoints {
   static String userCard(String id) => '$userCards/$id';
   static const String checkout = '/payments/checkout';
 
+  // ── Orders ────────────────────────────────────────────────────────────────
+  static const String orders = '/orders';
+  static String orderDetail(String id) => '$orders/$id';
+  static String orderTracking(String id) => '$orders/$id/tracking';
+
+  // ── Notifications ──────────────────────────────────────────────────────────
+  static const String notifications = '/notifications';
+  static String notificationRead(String id) => '$notifications/$id/read';
+  static const String notificationsReadAll = '/notifications/read-all';
+  static const String notificationsToken = '/notifications/token';
+
   // ── Banners & Search ──────────────────────────────────────────────────────
   static const String banners = '/banners';
   static const String search = '/search';

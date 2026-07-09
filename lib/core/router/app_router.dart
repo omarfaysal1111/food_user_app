@@ -40,7 +40,7 @@ import '../../features/profile/presentation/pages/add_edit_address_screen.dart'
     as profile_address;
 import '../../features/profile/presentation/pages/discount_points_screen.dart';
 import '../../features/profile/presentation/pages/favourites_screen.dart';
-import '../../features/notifications/presentation/pages/notifications_screen.dart';
+
 import '../../features/profile/presentation/pages/settings_screen.dart';
 import '../../features/support/presentation/pages/help_support_screen.dart';
 import '../../features/support/presentation/pages/about_screen.dart';
@@ -50,8 +50,13 @@ import '../../features/search/presentation/pages/unified_results_screen.dart';
 import '../../features/search/presentation/models/results_config.dart';
 import '../../features/store/presentation/pages/store_details_screen.dart';
 
+import 'package:flutter/material.dart';
+
 class AppRouter {
   AppRouter._();
+
+  static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   static final router = GoRouter(
     // Auth UI Preview Mode: start from splash for design review.
@@ -206,19 +211,29 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.orderConfirmation,
-        builder: (c, s) => const OrderConfirmationScreen(),
+        builder: (c, s) {
+          final orderId = s.pathParameters['id'] ?? '';
+          return OrderConfirmationScreen(orderId: orderId);
+        },
       ),
       GoRoute(
         path: RouteNames.orderTracking,
-        builder: (c, s) => const OrderTrackingScreen(),
+        builder: (c, s) {
+          final orderId = s.pathParameters['id'] ?? '';
+          return OrderTrackingScreen(orderId: orderId);
+        },
       ),
       GoRoute(
         path: RouteNames.orderDetail,
         builder: (c, s) {
+          final orderId = s.pathParameters['id'] ?? '';
           final status =
               s.extra as OrderDetailsStatus? ??
               OrderDetailsStatus.waitingAcceptance;
-          return OrderDetailsScreen(status: status);
+          return OrderDetailsScreen(
+            orderId: orderId,
+            status: status,
+          );
         },
       ),
       GoRoute(
@@ -304,17 +319,17 @@ class AppRouter {
         path: RouteNames.discountPoints,
         builder: (c, s) => const DiscountPointsScreen(),
       ),
-      GoRoute(
-        path: RouteNames.notifications,
-        builder: (c, s) => const NotificationsScreen(),
-      ),
+
       GoRoute(
         path: RouteNames.settings,
         builder: (c, s) => const SettingsScreen(),
       ),
       GoRoute(
         path: RouteNames.helpSupport,
-        builder: (c, s) => const HelpSupportScreen(),
+        builder: (c, s) {
+          final ticketId = s.extra is String ? s.extra as String : null;
+          return HelpSupportScreen(ticketId: ticketId);
+        },
       ),
       GoRoute(path: RouteNames.about, builder: (c, s) => const AboutScreen()),
     ],

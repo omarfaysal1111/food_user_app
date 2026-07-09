@@ -421,6 +421,7 @@ enum ServicePlaceKind { restaurant, store, pickup }
 class ServicePlaceData {
   const ServicePlaceData._({
     required this.kind,
+    this.id,
     required this.name,
     required this.time,
     required this.imageAsset,
@@ -432,7 +433,10 @@ class ServicePlaceData {
     this.subtitle,
   });
 
+  final String? id;
+
   factory ServicePlaceData.restaurant({
+    String? id,
     required String name,
     required String subtitle,
     required String time,
@@ -444,6 +448,7 @@ class ServicePlaceData {
   }) {
     return ServicePlaceData._(
       kind: ServicePlaceKind.restaurant,
+      id: id,
       name: name,
       subtitle: subtitle,
       time: time,
@@ -456,6 +461,7 @@ class ServicePlaceData {
   }
 
   factory ServicePlaceData.store({
+    String? id,
     required String name,
     required String time,
     required String imageAsset,
@@ -467,6 +473,7 @@ class ServicePlaceData {
   }) {
     return ServicePlaceData._(
       kind: ServicePlaceKind.store,
+      id: id,
       name: name,
       time: time,
       imageAsset: imageAsset,
@@ -479,6 +486,7 @@ class ServicePlaceData {
   }
 
   factory ServicePlaceData.pickup({
+    String? id,
     required String name,
     required String time,
     required String imageAsset,
@@ -489,6 +497,7 @@ class ServicePlaceData {
   }) {
     return ServicePlaceData._(
       kind: ServicePlaceKind.pickup,
+      id: id,
       name: name,
       time: time,
       imageAsset: imageAsset,

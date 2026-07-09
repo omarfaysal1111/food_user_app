@@ -1,15 +1,40 @@
 import 'package:food_user_app/features/profile/domain/entities/profile.dart';
 
 class ProfileModel extends Profile {
-  const ProfileModel() : super();
+  const ProfileModel({
+    required super.id,
+    required super.firstName,
+    required super.lastName,
+    required super.fullName,
+    required super.phone,
+    required super.email,
+    required super.avatar,
+    required super.locale,
+  });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
-    // TODO: implement
-    throw UnimplementedError();
+    return ProfileModel(
+      id: json['id'] as String? ?? '',
+      firstName: json['firstName'] as String? ?? '',
+      lastName: json['lastName'] as String? ?? '',
+      fullName: json['fullName'] as String? ?? '',
+      phone: json['phone'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      avatar: json['avatar'] as String? ?? '',
+      locale: json['locale'] as String? ?? '',
+    );
   }
 
   Map<String, dynamic> toJson() {
-    // TODO: implement
-    throw UnimplementedError();
+    return {
+      'id': id,
+      'firstName': firstName,
+      'lastName': lastName,
+      'fullName': fullName,
+      'phone': phone,
+      'email': email,
+      'avatar': avatar,
+      'locale': locale,
+    };
   }
 }

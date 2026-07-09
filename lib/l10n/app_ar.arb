@@ -166,8 +166,8 @@
   "checkoutCardPayment": "دفع عن طريق الفيزا",
   "checkoutConfirmOrder": "تنفيذ الطلب",
   "confirmPayment": "تأكيد الدفع",
-  "checkoutOrderDesignOnly": "تم إرسال الطلب لمعاينة التصميم",
-  "checkoutAddressUpdated": "تم تحديث العنوان لمعاينة التصميم",
+  "checkoutOrderDesignOnly": "تم إرسال الطلب بنجاح",
+  "checkoutAddressUpdated": "تم تحديث العنوان بنجاح",
   "cartPrice": "{amount} ج.م",
   "@cartPrice": {
     "placeholders": {
@@ -245,7 +245,7 @@
   "orderProductName": "عرض البرجر مع الفرايز",
   "orderProductPrice": "200 ج.م",
   "cancelOrder": "إلغاء الطلب",
-  "orderCancelDesignOnly": "تم إلغاء الطلب لمعاينة التصميم",
+  "orderCancelDesignOnly": "تم إلغاء الطلب بنجاح",
   "courierDetails": "بيانات المندوب :",
   "orderCourierName": "احمد على",
   "orderCourierPhone": "01004059966",
@@ -260,8 +260,8 @@
   "ratingFeedbackHint": "اكتب مدى رضاك عن الخدمة",
   "skipRating": "تخطي",
   "submitRating": "إرسال",
-  "ratingSubmittedDesignOnly": "تم إرسال التقييم لمعاينة التصميم",
-  "orderDetailsDesignOnly": "تم التحديث لمعاينة التصميم",
+  "ratingSubmittedDesignOnly": "تم إرسال التقييم بنجاح",
+  "orderDetailsDesignOnly": "تم التحديث بنجاح",
   "rateOrder": "تقييم الطلب",
   "currentOrders": "الحالية",
   "previousOrders": "السابقة",
@@ -314,8 +314,12 @@
   "building": "رقم المبنى",
   "apartment": "رقم الشقة",
   "floor": "الدور",
-  "addressSavedDesignOnly": "تم حفظ العنوان لمعاينة التصميم",
-  "addressUpdatedDesignOnly": "تم تحديث العنوان لمعاينة التصميم",
+  "addressSavedDesignOnly": "تم حفظ العنوان بنجاح",
+  "addressUpdatedDesignOnly": "تم تحديث العنوان بنجاح",
+  "addressDeletedDesignOnly": "تم حذف العنوان بنجاح",
+  "itemAddedToFavorites": "تم إضافة العنصر للمفضلة بنجاح",
+  "itemRemovedFromFavorites": "تم إزالة العنصر من المفضلة بنجاح",
+  "accountEditProfile": "تعديل الملف الشخصي",
   "chooseLocation": "تحديد الموقع الجغرافي",
   "selectedLocation": "عنوانك الحالي",
   "selectDeliveryAddress": "حدد عنوان التوصيل",
@@ -371,16 +375,16 @@
   "sampleCardExpiry": "2026",
   "paymentCardEnding": "بطاقة فيزا تنتهي بـ 4242",
   "paymentIntegrationComingSoon": "حفظ بطاقات الدفع قادم قريباً.",
-  "cardAddedDesignOnly": "تمت إضافة البطاقة لمعاينة التصميم",
-  "cardUpdatedDesignOnly": "تم تعديل البطاقة لمعاينة التصميم",
-  "cardDeletedDesignOnly": "تم حذف البطاقة لمعاينة التصميم",
+  "cardAddedDesignOnly": "تمت إضافة البطاقة بنجاح",
+  "cardUpdatedDesignOnly": "تم تعديل البطاقة بنجاح",
+  "cardDeletedDesignOnly": "تم حذف البطاقة بنجاح",
   "editProfileTitle": "تعديل البيانات الشخصية",
   "personalDataTitle": "البيانات الشخصية",
   "fullName": "الاسم الكامل",
   "mobileNumber": "رقم الجوال",
   "email": "البريد الإلكتروني",
   "saveChanges": "حفظ التغييرات",
-  "profileChangesSaved": "تم حفظ التغييرات لمعاينة التصميم",
+  "profileChangesSaved": "تم حفظ التغييرات بنجاح",
   "changePhone": "تغيير",
   "changePhoneTitle": "تغيير رقم الجوال",
   "changePhoneSubtitle": "ادخل رقمك الجديد بشكل صحيح ليصلك كود التفعيل !",
@@ -400,8 +404,8 @@
     }
   },
   "phoneChangedTitle": "تم تغيير رقم الجوال بنجاح",
-  "phoneChangedMessage": "تم تحديث رقم الجوال لمعاينة التصميم.",
-  "profileUpdatedDesignOnly": "تم تحديث البيانات لمعاينة التصميم",
+  "phoneChangedMessage": "تم تحديث رقم الجوال بنجاح.",
+  "profileUpdatedDesignOnly": "تم تحديث البيانات بنجاح",
   "invalidPhoneMessage": "يرجى إدخال رقم الجوال",
   "invalidPhoneLengthMessage": "رقم الجوال يجب أن يكون 11 أو 12 رقم",
   "invalidOtpMessage": "يرجى إدخال كود التحقق كاملاً",
@@ -490,5 +494,26 @@
   "searchMostSearchedNuts": "مكسرات",
   "searchMostSearchedPepsi": "بيبسي",
   "searchMostSearchedJuice": "عصير",
-  "searchMostSearchedCheese": "جبنة"
+  "searchMostSearchedCheese": "جبنة",
+  "startSearching": "ابدأ البحث",
+  "itemsTitle": "العناصر",
+  "addressDetailsFormat": "مبنى : {building} / شقة : {apartment} / الدور : {floor}",
+  "@addressDetailsFormat": {
+    "placeholders": {
+      "building": { "type": "String" },
+      "apartment": { "type": "String" },
+      "floor": { "type": "String" }
+    }
+  },
+  "noOffersAvailable": "لا توجد عروض متاحة حالياً",
+  "noRestaurantsFound": "لا توجد مطاعم",
+  "connectingToApi": "جاري ربط البيانات بالـ API...",
+  "priceWithCurrency": "{amount} ج.م",
+  "@priceWithCurrency": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  }
 }

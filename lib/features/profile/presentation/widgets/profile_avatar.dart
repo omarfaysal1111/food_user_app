@@ -5,7 +5,6 @@ class ProfileAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement
-    throw UnimplementedError();
+    return const SizedBox.shrink();
   }
 }

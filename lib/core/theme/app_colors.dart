@@ -17,6 +17,8 @@ class AppColors {
   static const statusClosed = Color(0xFFA7A7A7);
   static const ratingStar = Color(0xFFFFB800);
   static const facebookBlue = Color(0xFF1877F2);
+  static const textSelectionHighlight = Color(0xFFB3D7FF);
+  static const textSelectionHandle = Color(0xFF007AFF);
   static const _neutralDarkStroke = Color(0xFF1A1A1A);
 
   static const flagRed = Color(0xFFCE1126);

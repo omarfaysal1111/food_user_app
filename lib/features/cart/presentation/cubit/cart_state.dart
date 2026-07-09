@@ -12,6 +12,16 @@ class CartState with _$CartState {
     required Cart cart,
     Promo? appliedPromo,
   }) = _Loaded;
+  const factory CartState.conflict({
+    required Cart cart,
+    required String newRestaurantId,
+    required String menuItemId,
+    required String name,
+    required int price,
+    required int quantity,
+    List<Map<String, dynamic>>? selectedModifiers,
+    String? notes,
+  }) = _Conflict;
   const factory CartState.error({
     required Cart cart,
     Promo? appliedPromo,

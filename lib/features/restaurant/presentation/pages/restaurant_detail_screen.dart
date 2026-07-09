@@ -1,3 +1,4 @@
+import 'package:food_user_app/features/restaurant/presentation/widgets/menu_item_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -22,6 +23,8 @@ import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dar
 
 import 'package:food_user_app/features/restaurant/presentation/cubit/menu_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/menu_state.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_state.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_state.dart';
 
@@ -60,13 +63,11 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   final _scrollController = ScrollController();
   List<GlobalKey> _sectionKeys = [];
   int _selectedCategoryIndex = 0;
-  bool _isFavorite = false;
   bool _isProgrammaticScroll = false;
 
   @override
   void initState() {
     super.initState();
-    _isFavorite = widget.restaurant?.initialFavorite ?? false;
     _scrollController.addListener(_updateSelectedSectionFromScroll);
   }
 
@@ -89,6 +90,12 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
 
     // maxExtent: pinned AppBar row + hero + info card area.
     final maxExtent = _kHeaderContentHeight;
+
+    final favoriteState = context.watch<FavoriteCubit>().state;
+    final isFav = favoriteState.maybeWhen(
+      loaded: (ids, _) => ids.contains(widget.restaurantId),
+      orElse: () => false,
+    );
 
     return MultiBlocProvider(
       providers: [
@@ -139,9 +146,19 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                             ),
                             restaurantName: restaurant.name,
                             restaurantId: restaurant.id,
-                            isFavorite: _isFavorite,
-                            onFavoriteTap: () =>
-                                setState(() => _isFavorite = !_isFavorite),
+                            isFavorite: isFav,
+                            onFavoriteTap: () {
+                              context.read<FavoriteCubit>().toggleFavorite(restaurant.id);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    isFav
+                                        ? AppLocalizations.of(context)!.itemRemovedFromFavorites
+                                        : AppLocalizations.of(context)!.itemAddedToFavorites,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
 
@@ -1230,7 +1247,7 @@ class _SectionProductGrid extends StatelessWidget {
             Expanded(
               child: SizedBox(
                 height: 164,
-                child: _MenuItemCard(item: items[i]),
+                child: MenuItemTile(item: items[i]),
               ),
             ),
             const SizedBox(width: 12),
@@ -1238,7 +1255,7 @@ class _SectionProductGrid extends StatelessWidget {
               child: i + 1 < items.length
                   ? SizedBox(
                       height: 164,
-                      child: _MenuItemCard(item: items[i + 1]),
+                      child: MenuItemTile(item: items[i + 1]),
                     )
                   : const SizedBox.shrink(),
             ),
@@ -1256,129 +1273,6 @@ class _SectionProductGrid extends StatelessWidget {
       ],
     );
   }
-}
-
-class _MenuItemCard extends StatelessWidget {
-  const _MenuItemCard({required this.item});
-
-  final MenuItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    final locale = Localizations.localeOf(context);
-    final isArabic = locale.languageCode == 'ar';
-
-    return Material(
-      color: AppColors.surfaceCard(context),
-      borderRadius: const BorderRadius.all(AppRadius.md),
-      child: InkWell(
-        borderRadius: const BorderRadius.all(AppRadius.md),
-        onTap: () => _openProductDetails(context, item, locale),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(AppRadius.md),
-            border: Border.all(color: AppColors.border(context), width: 0.5),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: 100,
-                child: Stack(
-                  children: [
-                    Positioned.fill(
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                          top: AppRadius.md,
-                        ),
-                        child: item.imageUrl.isNotEmpty
-                            ? AppNetworkImage(item.imageUrl, fit: BoxFit.cover)
-                            : const AppRasterImage.asset(
-                                AppAssets.restaurantMenuBurgerFries1,
-                                fit: BoxFit.cover,
-                              ),
-                      ),
-                    ),
-                    Positioned(
-                      left: isArabic ? 8 : null,
-                      right: isArabic ? null : 8,
-                      bottom: 8,
-                      child: Container(
-                        width: 28,
-                        height: 28,
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceCard(context),
-                          borderRadius: const BorderRadius.all(AppRadius.sm),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.black.withValues(alpha: 0.08),
-                              blurRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 16,
-                            color: AppColors.onSurface(context),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Column(
-                      crossAxisAlignment: isArabic
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          item.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.heading4(
-                            context,
-                          ).copyWith(fontSize: 16, height: 1.25),
-                        ),
-                        Text(
-                          _formatPrice(item.price, locale),
-                          textAlign: isArabic ? TextAlign.end : TextAlign.start,
-                          style: AppTextStyles.body(
-                            context,
-                          ).copyWith(fontSize: 12, height: 1.3),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-String _formatPrice(double price, Locale locale) {
-  final isArabic = locale.languageCode == 'ar';
-  return isArabic
-      ? '${price.toStringAsFixed(0)} ج.م'
-      : 'EGP ${price.toStringAsFixed(0)}';
-}
-
-void _openProductDetails(BuildContext context, MenuItem item, Locale locale) {
-  context.push(
-    RouteNames.menuItemDetail,
-    extra: item,
-  );
 }
 
 class _RestaurantDetailCopy {

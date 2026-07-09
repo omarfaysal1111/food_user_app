@@ -5,7 +5,7 @@ import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 
-class AppTextField extends StatelessWidget {
+class AppTextField extends StatefulWidget {
   const AppTextField({
     super.key,
     required this.hint,
@@ -30,6 +30,47 @@ class AppTextField extends StatelessWidget {
   final Widget? suffixIcon;
 
   @override
+  State<AppTextField> createState() => _AppTextFieldState();
+}
+
+class _AppTextFieldState extends State<AppTextField> {
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+
+    if (widget.controller != null && widget.controller!.text.isNotEmpty) {
+      widget.controller!.selection = TextSelection.collapsed(
+        offset: widget.controller!.text.length,
+      );
+    }
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus && widget.controller != null && widget.controller!.text.isNotEmpty) {
+      widget.controller!.selection = TextSelection.collapsed(
+        offset: widget.controller!.text.length,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  TextDirection? _getDirection(String text) {
+    if (text.isEmpty) return null;
+    final isEnglish = RegExp(r'^[a-zA-Z0-9]').hasMatch(text);
+    return isEnglish ? TextDirection.ltr : null;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final border = OutlineInputBorder(
       borderRadius: const BorderRadius.all(AppRadius.sm),
@@ -37,22 +78,27 @@ class AppTextField extends StatelessWidget {
     );
 
     return TextFormField(
-      controller: controller,
-      validator: validator,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      textInputAction: textInputAction,
-      onChanged: onChanged,
+      focusNode: _focusNode,
+      controller: widget.controller,
+      validator: widget.validator,
+      obscureText: widget.obscureText,
+      keyboardType: widget.keyboardType,
+      textInputAction: widget.textInputAction,
+      textDirection: _getDirection(widget.controller?.text ?? ''),
+      onChanged: (val) {
+        if (widget.onChanged != null) widget.onChanged!(val);
+        setState(() {});
+      },
       cursorColor: AppColors.cursor(context),
       style: AppTextStyles.inputText(context),
       decoration: InputDecoration(
         isDense: true,
         filled: true,
         fillColor: AppColors.surfaceCard(context),
-        hintText: hint,
+        hintText: widget.hint,
         hintStyle: AppTextStyles.inputHint(context),
-        prefixIcon: prefixIcon,
-        suffixIcon: suffixIcon,
+        prefixIcon: widget.prefixIcon,
+        suffixIcon: widget.suffixIcon,
         contentPadding: const EdgeInsetsDirectional.symmetric(
           horizontal: AppSpacing.md,
           vertical: AppSpacing.sm,

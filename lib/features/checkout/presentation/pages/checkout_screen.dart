@@ -18,8 +18,6 @@ import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
 import 'package:food_user_app/features/payment/presentation/cubit/checkout_cubit.dart';
 import 'package:food_user_app/features/payment/presentation/cubit/checkout_state.dart';
-import 'package:food_user_app/features/payment/domain/usecases/checkout_usecase.dart';
-import 'package:food_user_app/features/payment/data/models/checkout_request_dto.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -53,9 +51,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           child: BlocListener<CheckoutCubit, CheckoutState>(
             listener: (context, state) {
               state.maybeWhen(
-                success: (result) {
-                  // After successful checkout, return to Cart/Home.
-                  context.pop(true);
+                success: (order) {
+                  context.pushReplacement(RouteNames.orderConfirmationFor(order.id));
                 },
                 error: (message) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -111,15 +108,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       totalLabel: l10n.orderGrandTotal,
                       total: l10n.cartPrice(total),
                       onTap: () {
-                        final orderId = cart?.id ?? 'dummy_order_id';
-                        context.read<CheckoutCubit>().checkout(
-                          CheckoutParams(
-                            request: CheckoutRequestDto(
-                              orderId: orderId,
-                              paymentMethodType: _paymentOption.name,
-                            ),
-                          ),
-                        );
+                        context.read<CheckoutCubit>().checkout();
                       },
                     ),
                   ],
