@@ -7,6 +7,8 @@ import 'package:food_user_app/features/order/presentation/cubit/order_tracking_c
 import 'package:food_user_app/features/order/presentation/cubit/order_tracking_state.dart';
 import 'package:intl/intl.dart';
 
+import 'package:food_user_app/l10n/app_localizations.dart';
+
 class OrderTrackingScreen extends StatelessWidget {
   final String orderId;
 
@@ -19,7 +21,7 @@ class OrderTrackingScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBackground(context),
         appBar: AppBar(
-          title: const Text('Track Order'),
+          title: Text(AppLocalizations.of(context)!.trackOrderTitle),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),

@@ -54,14 +54,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'تم حذف الحساب بنجاح',
+                l10n.deleteAccountSuccess,
                 style: AppTextStyles.snackBarMessage(context),
               ),
             ),
           );
         }
         if (state.updateSettingsSuccess) {
-          di.sl<SnackbarService>().showSuccess('Settings updated');
+          di.sl<SnackbarService>().showSuccess(l10n.settingsUpdatedSuccess);
         }
         if (state.errorMessage != null) {
           di.sl<SnackbarService>().showError(state.errorMessage!);

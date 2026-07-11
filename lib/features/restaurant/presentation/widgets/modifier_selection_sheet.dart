@@ -5,6 +5,7 @@ import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/menu_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/menu_state.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class ModifierSelectionSheet extends StatelessWidget {
   const ModifierSelectionSheet({super.key, required this.item});
@@ -52,7 +53,7 @@ class ModifierSelectionSheet extends StatelessWidget {
                           final optPrice = opt['price'] as double? ?? 0.0;
                           return CheckboxListTile(
                             title: Text(optName),
-                            subtitle: optPrice > 0 ? Text('+EGP $optPrice') : null,
+                            subtitle: optPrice > 0 ? Text('+${AppLocalizations.of(context)!.currencyEgp} $optPrice') : null,
                             value: false,
                             onChanged: (val) {},
                           );
@@ -63,7 +64,7 @@ class ModifierSelectionSheet extends StatelessWidget {
                   const SizedBox(height: AppSpacing.lg),
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Apply'),
+                    child: Text(AppLocalizations.of(context)!.applyButton),
                   ),
                 ],
               ),

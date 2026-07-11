@@ -1,6 +1,8 @@
 {
   "@@locale": "en",
   "appTitle": "Food User App",
+  "settingsUpdatedSuccess": "Settings updated successfully",
+  "deleteAccountSuccess": "Account deleted successfully",
   "changeAppLanguageTitle": "Change App Language",
   "languageArabic": "Arabic",
   "languageEnglish": "English",
@@ -499,9 +501,15 @@
   "addressDetailsFormat": "Building: {building} / Apartment: {apartment} / Floor: {floor}",
   "@addressDetailsFormat": {
     "placeholders": {
-      "building": { "type": "String" },
-      "apartment": { "type": "String" },
-      "floor": { "type": "String" }
+      "building": {
+        "type": "String"
+      },
+      "apartment": {
+        "type": "String"
+      },
+      "floor": {
+        "type": "String"
+      }
     }
   },
   "noOffersAvailable": "No offers available",
@@ -514,5 +522,20 @@
         "type": "String"
       }
     }
-  }
+  },
+  "orderConfirmedTitle": "Order Confirmed",
+  "filterTopRated": "Top Rated",
+  "filterMostOrdered": "Most Ordered",
+  "filterWithOffers": "With Offers",
+  "trackOrderTitle": "Track Order",
+  "profileTitle": "Profile",
+  "profileNoData": "No profile data",
+  "profileNameLabel": "Name: ",
+  "profileEmailLabel": "Email: ",
+  "profilePhoneLabel": "Phone: ",
+  "currencyEgp": "EGP",
+  "applyButton": "Apply",
+  "cartConflictTitle": "Cart Conflict",
+  "cartConflictMessage": "Adding items from a different restaurant will clear your current cart. Continue?",
+  "noCategoriesAvailable": "No categories available"
 }

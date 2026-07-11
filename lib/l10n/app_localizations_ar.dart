@@ -12,6 +12,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appTitle => 'تطبيق توصيل الطعام';
 
   @override
+  String get settingsUpdatedSuccess => 'تم تحديث الإعدادات بنجاح';
+
+  @override
+  String get deleteAccountSuccess => 'تم حذف الحساب بنجاح';
+
+  @override
   String get changeAppLanguageTitle => 'تغيير لغة التطبيق';
 
   @override
@@ -1436,4 +1442,50 @@ class AppLocalizationsAr extends AppLocalizations {
   String priceWithCurrency(String amount) {
     return '$amount ج.م';
   }
+
+  @override
+  String get orderConfirmedTitle => 'تم تأكيد الطلب';
+
+  @override
+  String get filterTopRated => 'الأعلى تقييمًا';
+
+  @override
+  String get filterMostOrdered => 'الأكثر طلبًا';
+
+  @override
+  String get filterWithOffers => 'مع عروض';
+
+  @override
+  String get trackOrderTitle => 'تتبع الطلب';
+
+  @override
+  String get profileTitle => 'الملف الشخصي';
+
+  @override
+  String get profileNoData => 'لا توجد بيانات للملف الشخصي';
+
+  @override
+  String get profileNameLabel => 'الاسم: ';
+
+  @override
+  String get profileEmailLabel => 'البريد الإلكتروني: ';
+
+  @override
+  String get profilePhoneLabel => 'رقم الهاتف: ';
+
+  @override
+  String get currencyEgp => 'ج.م';
+
+  @override
+  String get applyButton => 'تطبيق';
+
+  @override
+  String get cartConflictTitle => 'تعارض في السلة';
+
+  @override
+  String get cartConflictMessage =>
+      'إضافة عناصر من مطعم مختلف ستمسح سلتك الحالية. هل ترغب في المتابعة؟';
+
+  @override
+  String get noCategoriesAvailable => 'لا توجد فئات متاحة';
 }

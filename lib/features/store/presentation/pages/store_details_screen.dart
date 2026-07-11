@@ -17,6 +17,7 @@ import 'package:food_user_app/features/store/presentation/cubit/store_detail_sta
 import 'package:food_user_app/core/utils/category_icon_helper.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class StoreDetailsScreen extends StatelessWidget {
   final String storeId;
@@ -36,12 +37,12 @@ class StoreDetailsScreen extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (ctx) => AlertDialog(
-                    title: const Text('Cart Conflict'),
-                    content: const Text('Adding items from a different restaurant will clear your current cart. Continue?'),
+                    title: Text(AppLocalizations.of(context)!.cartConflictTitle),
+                    content: Text(AppLocalizations.of(context)!.cartConflictMessage),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(ctx),
-                        child: const Text('Cancel'),
+                        child: Text(AppLocalizations.of(context)!.cancel),
                       ),
                       TextButton(
                         onPressed: () {
@@ -56,7 +57,7 @@ class StoreDetailsScreen extends StatelessWidget {
                             notes: notes,
                           );
                         },
-                        child: const Text('Continue'),
+                        child: Text(AppLocalizations.of(context)!.continueButton),
                       ),
                     ],
                   ),
@@ -291,7 +292,7 @@ class StoreDetailsScreen extends StatelessWidget {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
-            child: Text('No categories available', style: AppTextStyles.body(context)),
+            child: Text(AppLocalizations.of(context)!.noCategoriesAvailable, style: AppTextStyles.body(context)),
           ),
         ),
       );

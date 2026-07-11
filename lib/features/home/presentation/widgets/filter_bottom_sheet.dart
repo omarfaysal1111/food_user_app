@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_filter_cubit.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class FilterBottomSheet extends StatelessWidget {
   const FilterBottomSheet({super.key});
@@ -27,7 +28,7 @@ class FilterBottomSheet extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           ListTile(
             leading: const Icon(Icons.star, color: Colors.orange),
-            title: const Text('Top Rated'),
+            title: Text(AppLocalizations.of(context)!.filterTopRated),
             onTap: () {
               context.read<RestaurantFilterCubit>().fetchTopRated();
               Navigator.pop(context);
@@ -35,7 +36,7 @@ class FilterBottomSheet extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.trending_up, color: Colors.green),
-            title: const Text('Most Ordered'),
+            title: Text(AppLocalizations.of(context)!.filterMostOrdered),
             onTap: () {
               context.read<RestaurantFilterCubit>().fetchMostOrdered();
               Navigator.pop(context);
@@ -43,7 +44,7 @@ class FilterBottomSheet extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.local_offer, color: Colors.red),
-            title: const Text('With Offers'),
+            title: Text(AppLocalizations.of(context)!.filterWithOffers),
             onTap: () {
               context.read<RestaurantFilterCubit>().fetchWithOffers();
               Navigator.pop(context);

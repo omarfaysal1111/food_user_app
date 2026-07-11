@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 
 class OrderConfirmationScreen extends StatelessWidget {
@@ -14,7 +15,7 @@ class OrderConfirmationScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
       appBar: AppBar(
-        title: const Text('Order Confirmed'),
+        title: Text(AppLocalizations.of(context)!.orderConfirmedTitle),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,

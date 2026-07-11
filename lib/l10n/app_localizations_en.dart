@@ -12,6 +12,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Food User App';
 
   @override
+  String get settingsUpdatedSuccess => 'Settings updated successfully';
+
+  @override
+  String get deleteAccountSuccess => 'Account deleted successfully';
+
+  @override
   String get changeAppLanguageTitle => 'Change App Language';
 
   @override
@@ -1454,4 +1460,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String priceWithCurrency(String amount) {
     return '$amount EGP';
   }
+
+  @override
+  String get orderConfirmedTitle => 'Order Confirmed';
+
+  @override
+  String get filterTopRated => 'Top Rated';
+
+  @override
+  String get filterMostOrdered => 'Most Ordered';
+
+  @override
+  String get filterWithOffers => 'With Offers';
+
+  @override
+  String get trackOrderTitle => 'Track Order';
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get profileNoData => 'No profile data';
+
+  @override
+  String get profileNameLabel => 'Name: ';
+
+  @override
+  String get profileEmailLabel => 'Email: ';
+
+  @override
+  String get profilePhoneLabel => 'Phone: ';
+
+  @override
+  String get currencyEgp => 'EGP';
+
+  @override
+  String get applyButton => 'Apply';
+
+  @override
+  String get cartConflictTitle => 'Cart Conflict';
+
+  @override
+  String get cartConflictMessage =>
+      'Adding items from a different restaurant will clear your current cart. Continue?';
+
+  @override
+  String get noCategoriesAvailable => 'No categories available';
 }

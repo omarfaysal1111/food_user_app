@@ -104,6 +104,18 @@ abstract class AppLocalizations {
   /// **'Food User App'**
   String get appTitle;
 
+  /// No description provided for @settingsUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings updated successfully'**
+  String get settingsUpdatedSuccess;
+
+  /// No description provided for @deleteAccountSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account deleted successfully'**
+  String get deleteAccountSuccess;
+
   /// No description provided for @changeAppLanguageTitle.
   ///
   /// In en, this message translates to:
@@ -2893,6 +2905,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{amount} EGP'**
   String priceWithCurrency(String amount);
+
+  /// No description provided for @orderConfirmedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Confirmed'**
+  String get orderConfirmedTitle;
+
+  /// No description provided for @filterTopRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Rated'**
+  String get filterTopRated;
+
+  /// No description provided for @filterMostOrdered.
+  ///
+  /// In en, this message translates to:
+  /// **'Most Ordered'**
+  String get filterMostOrdered;
+
+  /// No description provided for @filterWithOffers.
+  ///
+  /// In en, this message translates to:
+  /// **'With Offers'**
+  String get filterWithOffers;
+
+  /// No description provided for @trackOrderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Track Order'**
+  String get trackOrderTitle;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTitle;
+
+  /// No description provided for @profileNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'No profile data'**
+  String get profileNoData;
+
+  /// No description provided for @profileNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name: '**
+  String get profileNameLabel;
+
+  /// No description provided for @profileEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email: '**
+  String get profileEmailLabel;
+
+  /// No description provided for @profilePhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone: '**
+  String get profilePhoneLabel;
+
+  /// No description provided for @currencyEgp.
+  ///
+  /// In en, this message translates to:
+  /// **'EGP'**
+  String get currencyEgp;
+
+  /// No description provided for @applyButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get applyButton;
+
+  /// No description provided for @cartConflictTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cart Conflict'**
+  String get cartConflictTitle;
+
+  /// No description provided for @cartConflictMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Adding items from a different restaurant will clear your current cart. Continue?'**
+  String get cartConflictMessage;
+
+  /// No description provided for @noCategoriesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No categories available'**
+  String get noCategoriesAvailable;
 }
 
 class _AppLocalizationsDelegate

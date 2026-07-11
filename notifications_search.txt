@@ -1,0 +1,205 @@
+lib/core/services/snackbar_service.dart-23-    AppRouter.scaffoldMessengerKey.currentState
+lib/core/services/snackbar_service.dart-24-      ?..hideCurrentSnackBar()
+lib/core/services/snackbar_service.dart:25:      ..showSnackBar(snackBar);
+lib/core/services/snackbar_service.dart-26-  }
+lib/core/services/snackbar_service.dart-27-
+lib/core/services/snackbar_service.dart:28:  void showError(String message) => showMessage(message, isError: true);
+lib/core/services/snackbar_service.dart-29-
+lib/core/services/snackbar_service.dart:30:  void showSuccess(String message) => showMessage(message, isError: false);
+lib/core/services/snackbar_service.dart-31-
+lib/core/services/snackbar_service.dart-32-  void handleDioError(DioException error) {
+--
+lib/core/services/snackbar_service.dart-52-    }
+lib/core/services/snackbar_service.dart-53-
+lib/core/services/snackbar_service.dart:54:    showError(message);
+lib/core/services/snackbar_service.dart-55-  }
+lib/core/services/snackbar_service.dart-56-}
+--
+lib/features/order/presentation/pages/order_detail_screen.dart-81-          },
+lib/features/order/presentation/pages/order_detail_screen.dart-82-          error: (message) {
+lib/features/order/presentation/pages/order_detail_screen.dart:83:            di.sl<SnackbarService>().showError(message);
+lib/features/order/presentation/pages/order_detail_screen.dart-84-          },
+lib/features/order/presentation/pages/order_detail_screen.dart-85-          orElse: () {},
+--
+lib/features/order/presentation/pages/order_detail_screen.dart-152-                onTap: () {
+lib/features/order/presentation/pages/order_detail_screen.dart-153-                  // TODO: Cancel order through real order API.
+lib/features/order/presentation/pages/order_detail_screen.dart:154:                  ScaffoldMessenger.of(context).showSnackBar(
+lib/features/order/presentation/pages/order_detail_screen.dart-155-                    SnackBar(content: Text(l10n.orderCancelDesignOnly)),
+lib/features/order/presentation/pages/order_detail_screen.dart-156-                  );
+--
+lib/features/order/presentation/pages/order_detail_screen.dart-176-          // TODO: Submit rating through real rating API.
+lib/features/order/presentation/pages/order_detail_screen.dart-177-          Navigator.of(sheetContext).pop();
+lib/features/order/presentation/pages/order_detail_screen.dart:178:          ScaffoldMessenger.of(context).showSnackBar(
+lib/features/order/presentation/pages/order_detail_screen.dart-179-            SnackBar(
+lib/features/order/presentation/pages/order_detail_screen.dart-180-              content: Text(
+--
+lib/features/restaurant/presentation/pages/restaurant_detail_screen.dart-150-                            onFavoriteTap: () {
+lib/features/restaurant/presentation/pages/restaurant_detail_screen.dart-151-                              context.read<FavoriteCubit>().toggleFavorite(restaurant.id);
+lib/features/restaurant/presentation/pages/restaurant_detail_screen.dart:152:                              ScaffoldMessenger.of(context).showSnackBar(
+lib/features/restaurant/presentation/pages/restaurant_detail_screen.dart-153-                                SnackBar(
+lib/features/restaurant/presentation/pages/restaurant_detail_screen.dart-154-                                  content: Text(
+--
+lib/features/restaurant/presentation/widgets/restaurant_card.dart-96-                                restaurant.id,
+lib/features/restaurant/presentation/widgets/restaurant_card.dart-97-                              );
+lib/features/restaurant/presentation/widgets/restaurant_card.dart:98:                              ScaffoldMessenger.of(context).showSnackBar(
+lib/features/restaurant/presentation/widgets/restaurant_card.dart-99-                                SnackBar(
+lib/features/restaurant/presentation/widgets/restaurant_card.dart-100-                                  content: Text(
+--
+lib/features/auth/presentation/pages/auth_entry_screen.dart-47-            context.go(RouteNames.home);
+lib/features/auth/presentation/pages/auth_entry_screen.dart-48-          } else if (state is SocialLoginFailure) {
+lib/features/auth/presentation/pages/auth_entry_screen.dart:49:            ScaffoldMessenger.of(context).showSnackBar(
+lib/features/auth/presentation/pages/auth_entry_screen.dart-50-              SnackBar(content: Text(state.message)),
+lib/features/auth/presentation/pages/auth_entry_screen.dart-51-            );
+--
+lib/features/auth/presentation/pages/phone_auth_screen.dart-71-              );
+lib/features/auth/presentation/pages/phone_auth_screen.dart-72-            } else if (state is PhoneOtpSendFailure) {
+lib/features/auth/presentation/pages/phone_auth_screen.dart:73:              ScaffoldMessenger.of(context).showSnackBar(
+lib/features/auth/presentation/pages/phone_auth_screen.dart-74-                SnackBar(
+lib/features/auth/presentation/pages/phone_auth_screen.dart-75-                  content: Text(
+--
+lib/features/auth/presentation/pages/mock_otp_screen.dart-110-              context.go(RouteNames.home);
+lib/features/auth/presentation/pages/mock_otp_screen.dart-111-            } else if (state is PhoneOtpVerifyFailure) {
+lib/features/auth/presentation/pages/mock_otp_screen.dart:112:              ScaffoldMessenger.of(context).showSnackBar(
+lib/features/auth/presentation/pages/mock_otp_screen.dart-113-                SnackBar(
+lib/features/auth/presentation/pages/mock_otp_screen.dart-114-                  content: Text(
+--
+lib/features/auth/presentation/pages/mock_otp_screen.dart-122-              );
+lib/features/auth/presentation/pages/mock_otp_screen.dart-123-            } else if (state is CompleteRegistrationFailure) {
+lib/features/auth/presentation/pages/mock_otp_screen.dart:124:              ScaffoldMessenger.of(context).showSnackBar(
+lib/features/auth/presentation/pages/mock_otp_screen.dart-125-                SnackBar(
+lib/features/auth/presentation/pages/mock_otp_screen.dart-126-                  content: Text(
+--
+lib/features/auth/presentation/pages/complete_profile_screen.dart-71-              context.go(RouteNames.home);
+lib/features/auth/presentation/pages/complete_profile_screen.dart-72-            } else if (state is CompleteRegistrationFailure) {
+lib/features/auth/presentation/pages/complete_profile_screen.dart:73:              ScaffoldMessenger.of(context).showSnackBar(
+lib/features/auth/presentation/pages/complete_profile_screen.dart-74-                SnackBar(
+lib/features/auth/presentation/pages/complete_profile_screen.dart-75-                  content: Text(
+--
+lib/features/auth/presentation/widgets/social_login_buttons.dart-36-        OutlinedButton.icon(
+lib/features/auth/presentation/widgets/social_login_buttons.dart-37-          onPressed: () {
+lib/features/auth/presentation/widgets/social_login_buttons.dart:38:            ScaffoldMessenger.of(context).showSnackBar(
+lib/features/auth/presentation/widgets/social_login_buttons.dart-39-              SnackBar(
+lib/features/auth/presentation/widgets/social_login_buttons.dart-40-                content: Text(
+--
+lib/features/auth/presentation/widgets/social_login_buttons.dart-66-        OutlinedButton.icon(
+lib/features/auth/presentation/widgets/social_login_buttons.dart-67-          onPressed: () {
+lib/features/auth/presentation/widgets/social_login_buttons.dart:68:            ScaffoldMessenger.of(context).showSnackBar(
+lib/features/auth/presentation/widgets/social_login_buttons.dart-69-              SnackBar(
+lib/features/auth/presentation/widgets/social_login_buttons.dart-70-                content: Text(
+--
+lib/features/checkout/presentation/pages/address_selection_screen.dart-113-            if (!context.mounted) return;
+lib/features/checkout/presentation/pages/address_selection_screen.dart-114-            if (!ok) {
+lib/features/checkout/presentation/pages/address_selection_screen.dart:115:              ScaffoldMessenger.of(context).showSnackBar(
+lib/features/checkout/presentation/pages/address_selection_screen.dart-116-                SnackBar(content: Text(l10n.authErrorRequestFailed)),
+lib/features/checkout/presentation/pages/address_selection_screen.dart-117-              );
+lib/features/checkout/presentation/pages/address_selection_screen.dart-118-              return;
+lib/features/checkout/presentation/pages/address_selection_screen.dart-119-            }
+lib/features/checkout/presentation/pages/address_selection_screen.dart:120:            ScaffoldMessenger.of(context).showSnackBar(
+lib/features/checkout/presentation/pages/address_selection_screen.dart-121-              SnackBar(content: Text(l10n.checkoutAddressUpdated)),
+lib/features/checkout/presentation/pages/address_selection_screen.dart-122-            );
+--
+lib/features/checkout/presentation/pages/checkout_screen.dart-56-                },
+lib/features/checkout/presentation/pages/checkout_screen.dart-57-                error: (message) {
+lib/features/checkout/presentation/pages/checkout_screen.dart:58:                  ScaffoldMessenger.of(context).showSnackBar(
+lib/features/checkout/presentation/pages/checkout_screen.dart-59-                    SnackBar(content: Text(message), backgroundColor: AppColors.error),
+lib/features/checkout/presentation/pages/checkout_screen.dart-60-                  );
+--
+lib/features/checkout/presentation/pages/add_edit_address_screen.dart-67-                label: l10n.saveAddress,
+lib/features/checkout/presentation/pages/add_edit_address_screen.dart-68-                onTap: () {
+lib/features/checkout/presentation/pages/add_edit_address_screen.dart:69:                  ScaffoldMessenger.of(context).showSnackBar(
+lib/features/checkout/presentation/pages/add_edit_address_screen.dart-70-                    SnackBar(content: Text(l10n.addressSavedDesignOnly)),
+lib/features/checkout/presentation/pages/add_edit_address_screen.dart-71-                  );
+--
+lib/features/checkout/presentation/pages/payment_method_screen.dart-217-    ScaffoldMessenger.of(
+lib/features/checkout/presentation/pages/payment_method_screen.dart-218-      context,
+lib/features/checkout/presentation/pages/payment_method_screen.dart:219:    ).showSnackBar(SnackBar(content: Text(message)));
+lib/features/checkout/presentation/pages/payment_method_screen.dart-220-  }
+lib/features/checkout/presentation/pages/payment_method_screen.dart-221-
+--
+lib/features/profile/presentation/pages/change_phone_screen.dart-46-
+lib/features/profile/presentation/pages/change_phone_screen.dart-47-    if (phone.isEmpty) {
+lib/features/profile/presentation/pages/change_phone_screen.dart:48:      ScaffoldMessenger.of(context).showSnackBar(
+lib/features/profile/presentation/pages/change_phone_screen.dart-49-        SnackBar(
+lib/features/profile/presentation/pages/change_phone_screen.dart-50-          content: Text(
+--
+lib/features/profile/presentation/pages/change_phone_screen.dart-60-    final isDigitsOnly = RegExp(r'^\d+$').hasMatch(phone);
+lib/features/profile/presentation/pages/change_phone_screen.dart-61-    if (!isDigitsOnly || !hasValidLength) {
+lib/features/profile/presentation/pages/change_phone_screen.dart:62:      ScaffoldMessenger.of(context).showSnackBar(
+lib/features/profile/presentation/pages/change_phone_screen.dart-63-        SnackBar(
+lib/features/profile/presentation/pages/change_phone_screen.dart-64-          content: Text(
+--
+lib/features/profile/presentation/pages/settings_screen.dart-52-        if (state.deleteAccountSuccess) {
+lib/features/profile/presentation/pages/settings_screen.dart-53-          context.read<AuthBloc>().add(const LogoutRequested());
+lib/features/profile/presentation/pages/settings_screen.dart:54:          ScaffoldMessenger.of(context).showSnackBar(
+lib/features/profile/presentation/pages/settings_screen.dart-55-            SnackBar(
+lib/features/profile/presentation/pages/settings_screen.dart-56-              content: Text(
+--
+lib/features/profile/presentation/pages/settings_screen.dart-62-        }
+lib/features/profile/presentation/pages/settings_screen.dart-63-        if (state.updateSettingsSuccess) {
+lib/features/profile/presentation/pages/settings_screen.dart:64:          di.sl<SnackbarService>().showSuccess(l10n.settingsUpdatedSuccess);
+lib/features/profile/presentation/pages/settings_screen.dart-65-        }
+lib/features/profile/presentation/pages/settings_screen.dart-66-        if (state.errorMessage != null) {
+lib/features/profile/presentation/pages/settings_screen.dart:67:          di.sl<SnackbarService>().showError(state.errorMessage!);
+lib/features/profile/presentation/pages/settings_screen.dart-68-        }
+lib/features/profile/presentation/pages/settings_screen.dart-69-      },
+--
+lib/features/profile/presentation/pages/verify_phone_otp_screen.dart-111-    FocusManager.instance.primaryFocus?.unfocus();
+lib/features/profile/presentation/pages/verify_phone_otp_screen.dart-112-    // TODO: Verify OTP through the real change-phone API.
+lib/features/profile/presentation/pages/verify_phone_otp_screen.dart:113:    _showSuccessDialogAndReturn();
+lib/features/profile/presentation/pages/verify_phone_otp_screen.dart-114-  }
+lib/features/profile/presentation/pages/verify_phone_otp_screen.dart-115-
+lib/features/profile/presentation/pages/verify_phone_otp_screen.dart:116:  Future<void> _showSuccessDialogAndReturn() async {
+lib/features/profile/presentation/pages/verify_phone_otp_screen.dart-117-    if (_isCompleting) return;
+lib/features/profile/presentation/pages/verify_phone_otp_screen.dart-118-    _resendTimer?.cancel();
+--
+lib/features/profile/presentation/pages/favourites_screen.dart-96-                                  restaurants[index].id,
+lib/features/profile/presentation/pages/favourites_screen.dart-97-                                );
+lib/features/profile/presentation/pages/favourites_screen.dart:98:                                ScaffoldMessenger.of(context).showSnackBar(
+lib/features/profile/presentation/pages/favourites_screen.dart-99-                                  SnackBar(
+lib/features/profile/presentation/pages/favourites_screen.dart-100-                                    content: Text(
+--
+lib/features/profile/presentation/pages/address_book_screen.dart-119-            if (!context.mounted) return;
+lib/features/profile/presentation/pages/address_book_screen.dart-120-            if (ok) {
+lib/features/profile/presentation/pages/address_book_screen.dart:121:              ScaffoldMessenger.of(context).showSnackBar(
+lib/features/profile/presentation/pages/address_book_screen.dart-122-                SnackBar(content: Text(l10n.addressUpdatedDesignOnly)),
+lib/features/profile/presentation/pages/address_book_screen.dart-123-              );
+--
+lib/features/profile/presentation/pages/address_book_screen.dart-126-              }
+lib/features/profile/presentation/pages/address_book_screen.dart-127-            } else {
+lib/features/profile/presentation/pages/address_book_screen.dart:128:              ScaffoldMessenger.of(context).showSnackBar(
+lib/features/profile/presentation/pages/address_book_screen.dart-129-                SnackBar(content: Text(l10n.authErrorRequestFailed)),
+lib/features/profile/presentation/pages/address_book_screen.dart-130-              );
+--
+lib/features/profile/presentation/pages/address_book_screen.dart-135-            if (!context.mounted) return;
+lib/features/profile/presentation/pages/address_book_screen.dart-136-            if (ok) {
+lib/features/profile/presentation/pages/address_book_screen.dart:137:              ScaffoldMessenger.of(context).showSnackBar(
+lib/features/profile/presentation/pages/address_book_screen.dart-138-                SnackBar(content: Text(l10n.addressDeletedDesignOnly)),
+lib/features/profile/presentation/pages/address_book_screen.dart-139-              );
+lib/features/profile/presentation/pages/address_book_screen.dart-140-            } else {
+lib/features/profile/presentation/pages/address_book_screen.dart:141:              ScaffoldMessenger.of(context).showSnackBar(
+lib/features/profile/presentation/pages/address_book_screen.dart-142-                SnackBar(content: Text(l10n.authErrorRequestFailed)),
+lib/features/profile/presentation/pages/address_book_screen.dart-143-              );
+--
+lib/features/profile/presentation/pages/edit_profile_screen.dart-88-        listener: (context, state) {
+lib/features/profile/presentation/pages/edit_profile_screen.dart-89-          if (state.updateProfileSuccess) {
+lib/features/profile/presentation/pages/edit_profile_screen.dart:90:            ScaffoldMessenger.of(context).showSnackBar(
+lib/features/profile/presentation/pages/edit_profile_screen.dart-91-              SnackBar(
+lib/features/profile/presentation/pages/edit_profile_screen.dart-92-                content: Text(
+--
+lib/features/profile/presentation/pages/edit_profile_screen.dart-99-          }
+lib/features/profile/presentation/pages/edit_profile_screen.dart-100-          if (state.errorMessage != null) {
+lib/features/profile/presentation/pages/edit_profile_screen.dart:101:            ScaffoldMessenger.of(context).showSnackBar(
+lib/features/profile/presentation/pages/edit_profile_screen.dart-102-              SnackBar(
+lib/features/profile/presentation/pages/edit_profile_screen.dart-103-                content: Text(
+--
+lib/features/profile/presentation/pages/add_edit_address_screen.dart-218-                      );
+lib/features/profile/presentation/pages/add_edit_address_screen.dart-219-                      if (!context.mounted) return;
+lib/features/profile/presentation/pages/add_edit_address_screen.dart:220:                      ScaffoldMessenger.of(context).showSnackBar(
+lib/features/profile/presentation/pages/add_edit_address_screen.dart-221-                        SnackBar(
+lib/features/profile/presentation/pages/add_edit_address_screen.dart-222-                          content: Text(
+--
+lib/features/cart/presentation/pages/cart_screen.dart-40-              state.maybeWhen(
+lib/features/cart/presentation/pages/cart_screen.dart-41-                error: (cart, promo, message) {
+lib/features/cart/presentation/pages/cart_screen.dart:42:                  ScaffoldMessenger.of(context).showSnackBar(
+lib/features/cart/presentation/pages/cart_screen.dart-43-                    SnackBar(
+lib/features/cart/presentation/pages/cart_screen.dart-44-                      content: Text(message),

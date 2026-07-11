@@ -1,6 +1,8 @@
 {
   "@@locale": "ar",
   "appTitle": "تطبيق توصيل الطعام",
+  "settingsUpdatedSuccess": "تم تحديث الإعدادات بنجاح",
+  "deleteAccountSuccess": "تم حذف الحساب بنجاح",
   "changeAppLanguageTitle": "تغيير لغة التطبيق",
   "languageArabic": "العربية",
   "languageEnglish": "الإنجليزية",
@@ -500,9 +502,15 @@
   "addressDetailsFormat": "مبنى : {building} / شقة : {apartment} / الدور : {floor}",
   "@addressDetailsFormat": {
     "placeholders": {
-      "building": { "type": "String" },
-      "apartment": { "type": "String" },
-      "floor": { "type": "String" }
+      "building": {
+        "type": "String"
+      },
+      "apartment": {
+        "type": "String"
+      },
+      "floor": {
+        "type": "String"
+      }
     }
   },
   "noOffersAvailable": "لا توجد عروض متاحة حالياً",
@@ -515,5 +523,20 @@
         "type": "String"
       }
     }
-  }
+  },
+  "orderConfirmedTitle": "تم تأكيد الطلب",
+  "filterTopRated": "الأعلى تقييمًا",
+  "filterMostOrdered": "الأكثر طلبًا",
+  "filterWithOffers": "مع عروض",
+  "trackOrderTitle": "تتبع الطلب",
+  "profileTitle": "الملف الشخصي",
+  "profileNoData": "لا توجد بيانات للملف الشخصي",
+  "profileNameLabel": "الاسم: ",
+  "profileEmailLabel": "البريد الإلكتروني: ",
+  "profilePhoneLabel": "رقم الهاتف: ",
+  "currencyEgp": "ج.م",
+  "applyButton": "تطبيق",
+  "cartConflictTitle": "تعارض في السلة",
+  "cartConflictMessage": "إضافة عناصر من مطعم مختلف ستمسح سلتك الحالية. هل ترغب في المتابعة؟",
+  "noCategoriesAvailable": "لا توجد فئات متاحة"
 }

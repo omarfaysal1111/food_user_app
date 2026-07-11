@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_state.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -9,7 +10,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.profileTitle)),
       body: BlocBuilder<ProfileBloc, ProfileState>(
         builder: (context, state) {
           if (state.isLoading) {
@@ -18,7 +19,7 @@ class ProfileScreen extends StatelessWidget {
 
           final profile = state.profile;
           if (profile == null) {
-            return const Center(child: Text('No profile data'));
+            return Center(child: Text(AppLocalizations.of(context)!.profileNoData));
           }
 
           return Padding(
@@ -26,11 +27,11 @@ class ProfileScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Name: ${profile.fullName.isNotEmpty ? profile.fullName : '${profile.firstName} ${profile.lastName}'}', style: const TextStyle(fontSize: 18)),
+                Text('${AppLocalizations.of(context)!.profileNameLabel}${profile.fullName.isNotEmpty ? profile.fullName : '${profile.firstName} ${profile.lastName}'}', style: const TextStyle(fontSize: 18)),
                 const SizedBox(height: 8),
-                Text('Email: ${profile.email}', style: const TextStyle(fontSize: 18)),
+                Text('${AppLocalizations.of(context)!.profileEmailLabel}${profile.email}', style: const TextStyle(fontSize: 18)),
                 const SizedBox(height: 8),
-                Text('Phone: ${profile.phone}', style: const TextStyle(fontSize: 18)),
+                Text('${AppLocalizations.of(context)!.profilePhoneLabel}${profile.phone}', style: const TextStyle(fontSize: 18)),
               ],
             ),
           );

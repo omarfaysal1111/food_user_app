@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/menu_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/menu_state.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
@@ -108,7 +109,7 @@ class _MenuItemDetailScreenState extends State<MenuItemDetailScreen> {
                                 return CheckboxListTile(
                                   title: Text(optName),
                                   subtitle: optPrice > 0
-                                      ? Text('+EGP $optPrice')
+                                      ? Text('+${AppLocalizations.of(context)!.currencyEgp} $optPrice')
                                       : null,
                                   value: false, // UI Mock
                                   onChanged: (val) {},
