@@ -1,5 +1,8 @@
+import 'package:food_user_app/features/auth/presentation/widgets/phone_number_field.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:food_user_app/core/utils/phone_formatter.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,7 +43,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
 
   void _submit() {
     FocusManager.instance.primaryFocus?.unfocus();
-    final phone = _phoneController.text.trim();
+    final phone = _phoneController.text.trim().formatAsEgyptianPhone();
     if (phone.isEmpty) return;
     // Sends the OTP; navigation happens in the BlocListener once it succeeds.
     context.read<AuthBloc>().add(PhoneOtpRequested(phone: phone));
@@ -58,17 +61,18 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
               curr is PhoneOtpSent || curr is PhoneOtpSendFailure,
           listener: (context, state) {
             if (state is PhoneOtpSent) {
-              context.push(
-                RouteNames.mockOtp,
-                extra: MockOtpArgs(
-                  phoneNumber: state.phone,
-                  mockNewUser: !state.isExistingUser,
-                  isSocial: widget.args.startedFromSocial,
-                  firstName: widget.args.firstName,
-                  lastName: widget.args.lastName,
-                  email: widget.args.email,
-                ),
-              );
+              if (ModalRoute.of(context)?.isCurrent == true) {
+                context.push(
+                  RouteNames.mockOtp,
+                  extra: MockOtpArgs(
+                    phoneNumber: state.phone,
+                    isSocial: widget.args.startedFromSocial,
+                    firstName: widget.args.firstName,
+                    lastName: widget.args.lastName,
+                    email: widget.args.email,
+                  ),
+                );
+              }
             } else if (state is PhoneOtpSendFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -112,7 +116,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                     style: AppTextStyles.fieldLabel(context),
                   ),
                   const SizedBox(height: 8),
-                  _PhoneNumberField(controller: _phoneController, l10n: l10n),
+                  PhoneNumberField(controller: _phoneController, hintText: l10n.registerPhoneHint),
                   const SizedBox(height: 20),
                   BlocBuilder<AuthBloc, AuthState>(
                     buildWhen: (prev, curr) =>
@@ -132,88 +136,6 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _PhoneNumberField extends StatelessWidget {
-  const _PhoneNumberField({required this.controller, required this.l10n});
-
-  final TextEditingController controller;
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    final textDirection = Directionality.of(context);
-
-    return Container(
-      height: 48,
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard(context),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border(context), width: 0.5),
-      ),
-      child: Directionality(
-        textDirection: TextDirection.ltr,
-        child: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsetsDirectional.only(start: 16, end: 8),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AppSvgImage.asset(
-                    AppAssets.flagEg,
-                    width: 16,
-                    height: 16,
-                    fit: BoxFit.cover,
-                  ),
-                  const SizedBox(width: 4),
-                  Text('+20', style: AppTextStyles.inputHint(context)),
-                  const SizedBox(width: 12),
-                  Container(
-                    width: 0.5,
-                    height: 18,
-                    color: AppColors.border(context),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Directionality(
-                textDirection: textDirection,
-                child: TextField(
-                  controller: controller,
-                  keyboardType: TextInputType.phone,
-                  textInputAction: TextInputAction.done,
-                  textAlign: TextAlign.start,
-                  textDirection: TextDirection.ltr,
-                  style: AppTextStyles.inputText(context),
-                  cursorColor: AppColors.cursor(context),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                  ],
-                  onTapOutside: (_) =>
-                      FocusManager.instance.primaryFocus?.unfocus(),
-                  decoration: InputDecoration(
-                    hintText: l10n.registerPhoneHint,
-                    hintStyle: AppTextStyles.inputHint(context),
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                      8,
-                      14,
-                      16,
-                      14,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -275,17 +197,17 @@ class _AuthTopBar extends StatelessWidget {
 class MockOtpArgs {
   const MockOtpArgs({
     required this.phoneNumber,
-    this.mockNewUser = true,
     this.isSocial = false,
     this.firstName,
     this.lastName,
     this.email,
+    this.registrationToken,
   });
 
   final String phoneNumber;
-  final bool mockNewUser;
   final bool isSocial;
   final String? firstName;
   final String? lastName;
   final String? email;
+  final String? registrationToken;
 }

@@ -7,11 +7,9 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
-import 'package:food_user_app/features/home/domain/entities/category.dart';
-import 'package:food_user_app/features/home/presentation/cubit/category_cubit.dart';
-import 'package:food_user_app/features/home/presentation/cubit/category_state.dart';
+import 'package:food_user_app/features/home/domain/entities/section.dart';
+import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_type.dart';
-import 'package:food_user_app/l10n/app_localizations.dart';
 
 class CategoryGrid extends StatefulWidget {
   const CategoryGrid({super.key});
@@ -24,33 +22,31 @@ class _CategoryGridState extends State<CategoryGrid> {
   @override
   void initState() {
     super.initState();
-    context.read<CategoryCubit>().fetchCategories();
+    context.read<SectionsCubit>().fetchSections();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CategoryCubit, CategoryState>(
+    return BlocBuilder<SectionsCubit, SectionsState>(
       builder: (context, state) {
-        return state.maybeWhen(
-          loaded: (categories) {
-            if (categories.isEmpty) return const SizedBox.shrink();
+        if (state is SectionsLoaded) {
+          final sections = state.sections;
+          if (sections.isEmpty) return const SizedBox.shrink();
 
-            return Row(
-              children: [
-                for (var index = 0; index < categories.length; index++) ...[
-                  Expanded(child: _CategoryTile(category: categories[index])),
-                  if (index != categories.length - 1)
-                    const SizedBox(width: 14),
-                ],
+          return Row(
+            children: [
+              for (var index = 0; index < sections.length; index++) ...[
+                Expanded(child: _CategoryTile(section: sections[index])),
+                if (index != sections.length - 1)
+                  const SizedBox(width: 14),
               ],
-            );
-          },
-          orElse: () {
-            return const SizedBox(
-              height: 104,
-              child: Center(child: CircularProgressIndicator()),
-            );
-          },
+            ],
+          );
+        }
+        
+        return const SizedBox(
+          height: 104,
+          child: Center(child: CircularProgressIndicator()),
         );
       },
     );
@@ -58,15 +54,20 @@ class _CategoryGridState extends State<CategoryGrid> {
 }
 
 class _CategoryTile extends StatelessWidget {
-  const _CategoryTile({required this.category});
+  const _CategoryTile({required this.section});
 
-  final Category category;
+  final Section section;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () =>
-          context.push(RouteNames.serviceListingFor(category.type.pathSegment)),
+      onTap: () {
+        // Map section to legacy service listing type for now if needed,
+        // or just navigate to generic store listing
+        // Assuming ID 1 = restaurants, ID 2 = grocery etc. based on old logic
+        final type = _getLegacyType(section);
+        context.push(RouteNames.serviceListingFor(type.pathSegment));
+      },
       borderRadius: const BorderRadius.all(Radius.circular(12)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -110,17 +111,20 @@ class _CategoryTile extends StatelessWidget {
                     fit: BoxFit.fill,
                   ),
                 ),
-                AppRasterImage.asset(
-                  category.imageUrl,
-                  width: 56,
-                  height: 56,
-                ),
+                if (section.image != null)
+                  AppNetworkImage(
+                    section.image!,
+                    width: 56,
+                    height: 56,
+                  )
+                else
+                  const Icon(Icons.storefront, size: 30, color: Colors.grey),
               ],
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            _getLocalizedCategoryName(context, category),
+            section.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.body(context).copyWith(
@@ -134,17 +138,11 @@ class _CategoryTile extends StatelessWidget {
     );
   }
 
-  String _getLocalizedCategoryName(BuildContext context, Category category) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (category.type) {
-      case ServiceListingType.restaurants:
-        return l10n.homeCategoryRestaurants;
-      case ServiceListingType.grocery:
-        return l10n.homeCategoryGrocery;
-      case ServiceListingType.stores:
-        return l10n.homeCategoryStores;
-      case ServiceListingType.pickup:
-        return l10n.homeCategoryPickup;
-    }
+  ServiceListingType _getLegacyType(Section section) {
+    if (section.id == 1 || section.name.contains('مطاعم') || section.name.toLowerCase().contains('restaurant')) return ServiceListingType.restaurants;
+    if (section.id == 2 || section.name.contains('بقالة') || section.name.toLowerCase().contains('grocery')) return ServiceListingType.grocery;
+    if (section.id == 3 || section.name.contains('متاجر') || section.name.toLowerCase().contains('store')) return ServiceListingType.stores;
+    if (section.id == 4 || section.name.contains('توصيل') || section.name.toLowerCase().contains('pickup')) return ServiceListingType.pickup;
+    return ServiceListingType.restaurants;
   }
 }

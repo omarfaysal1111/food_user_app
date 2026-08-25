@@ -40,6 +40,7 @@ class UnifiedResultsCubit extends Cubit<UnifiedResultsState> {
       }
 
       final result = await _menuRepository.getRestaurantMenu(parentId);
+      if (isClosed) return;
       
       result.fold(
         (failure) => emit(UnifiedResultsState.error(failure.message)),
@@ -69,8 +70,10 @@ class UnifiedResultsCubit extends Cubit<UnifiedResultsState> {
       }
     });
     } catch (e) {
+      if (isClosed) return;
       emit(UnifiedResultsState.error(e.toString()));
     }
+
   }
 
   // ─── Search ───────────────────────────────────────────────────────────────────

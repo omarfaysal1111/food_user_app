@@ -174,7 +174,6 @@ class _AccountProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final chevronIcon = _detailsChevronIcon(context);
 
@@ -185,10 +184,10 @@ class _AccountProfileCard extends StatelessWidget {
             ? profile.fullName
             : (profile != null && profile.firstName.isNotEmpty
                   ? '${profile.firstName} ${profile.lastName}'
-                  : l10n.accountPlaceholderName);
+                  : '');
         final email = profile != null && profile.email.isNotEmpty
             ? profile.email
-            : l10n.accountPlaceholderEmail;
+            : '';
         final letter = name.isNotEmpty ? name.characters.first : 'U';
 
         return PositionedDirectional(

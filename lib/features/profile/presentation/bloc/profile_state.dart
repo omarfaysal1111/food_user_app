@@ -11,6 +11,13 @@ class ProfileState extends Equatable {
   final bool updateProfileSuccess;
   final bool updateSettingsSuccess;
 
+  // Phone Change fields
+  final String? phoneChangeToken;
+  final bool sendCurrentOtpSuccess;
+  final bool verifyCurrentOtpSuccess;
+  final bool sendNewOtpSuccess;
+  final bool changePhoneSuccess;
+
   const ProfileState({
     this.profile,
     this.settings,
@@ -19,6 +26,11 @@ class ProfileState extends Equatable {
     this.deleteAccountSuccess = false,
     this.updateProfileSuccess = false,
     this.updateSettingsSuccess = false,
+    this.phoneChangeToken,
+    this.sendCurrentOtpSuccess = false,
+    this.verifyCurrentOtpSuccess = false,
+    this.sendNewOtpSuccess = false,
+    this.changePhoneSuccess = false,
   });
 
   ProfileState copyWith({
@@ -29,16 +41,25 @@ class ProfileState extends Equatable {
     bool? deleteAccountSuccess,
     bool? updateProfileSuccess,
     bool? updateSettingsSuccess,
+    String? phoneChangeToken,
+    bool? sendCurrentOtpSuccess,
+    bool? verifyCurrentOtpSuccess,
+    bool? sendNewOtpSuccess,
+    bool? changePhoneSuccess,
   }) {
     return ProfileState(
       profile: profile ?? this.profile,
       settings: settings ?? this.settings,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage,
-      deleteAccountSuccess: deleteAccountSuccess ?? this.deleteAccountSuccess,
-      updateProfileSuccess: updateProfileSuccess ?? this.updateProfileSuccess,
-      updateSettingsSuccess:
-          updateSettingsSuccess ?? this.updateSettingsSuccess,
+      deleteAccountSuccess: deleteAccountSuccess ?? false,
+      updateProfileSuccess: updateProfileSuccess ?? false,
+      updateSettingsSuccess: updateSettingsSuccess ?? false,
+      phoneChangeToken: phoneChangeToken ?? this.phoneChangeToken,
+      sendCurrentOtpSuccess: sendCurrentOtpSuccess ?? false,
+      verifyCurrentOtpSuccess: verifyCurrentOtpSuccess ?? false,
+      sendNewOtpSuccess: sendNewOtpSuccess ?? false,
+      changePhoneSuccess: changePhoneSuccess ?? false,
     );
   }
 
@@ -51,5 +72,10 @@ class ProfileState extends Equatable {
     deleteAccountSuccess,
     updateProfileSuccess,
     updateSettingsSuccess,
+    phoneChangeToken,
+    sendCurrentOtpSuccess,
+    verifyCurrentOtpSuccess,
+    sendNewOtpSuccess,
+    changePhoneSuccess,
   ];
 }

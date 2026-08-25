@@ -313,6 +313,7 @@
   "editAddressTitle": "تعديل العنوان",
   "saveAddress": "تاكيد الإضافة",
   "updateAddress": "تاكيد التعديل",
+  "fullAddress": "العنوان بالتفصيل",
   "building": "رقم المبنى",
   "apartment": "رقم الشقة",
   "floor": "الدور",

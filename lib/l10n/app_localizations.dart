@@ -1808,6 +1808,12 @@ abstract class AppLocalizations {
   /// **'Confirm Edit'**
   String get updateAddress;
 
+  /// No description provided for @fullAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Address'**
+  String get fullAddress;
+
   /// No description provided for @building.
   ///
   /// In en, this message translates to:

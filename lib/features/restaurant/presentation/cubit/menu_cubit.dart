@@ -10,6 +10,7 @@ class MenuCubit extends Cubit<MenuState> {
   Future<void> getRestaurantMenu(String restaurantId) async {
     emit(const MenuState.loading());
     final result = await menuRepository.getRestaurantMenu(restaurantId);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(MenuState.error(failure.message)),
       (categories) => emit(MenuState.loaded(categories: categories)),
@@ -19,6 +20,7 @@ class MenuCubit extends Cubit<MenuState> {
   Future<void> getBranchMenu(String branchId) async {
     emit(const MenuState.loading());
     final result = await menuRepository.getBranchMenu(branchId);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(MenuState.error(failure.message)),
       (categories) => emit(MenuState.loaded(categories: categories)),
@@ -28,10 +30,12 @@ class MenuCubit extends Cubit<MenuState> {
   Future<void> getItemModifiers(String itemId) async {
     emit(const MenuState.loading());
     final result = await menuRepository.getItemModifiers(itemId);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(MenuState.error(failure.message)),
       (modifiers) => emit(MenuState.modifiersLoaded(modifiers: modifiers)),
     );
   }
+
 
 }

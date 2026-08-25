@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -47,8 +49,8 @@ class MapPickerScreen extends StatefulWidget {
 
 class _MapPickerScreenState extends State<MapPickerScreen> {
   static const _fallbackLatLng = LatLng(30.0444, 31.2357);
-  static const _googleWebServicesApiKey =
-      'AIzaSyDyHQEAjWa8vsCZa6Fe71DG2ej8x6sjPaE';
+  static String get _googleWebServicesApiKey =>
+      dotenv.env['GOOGLE_MAPS_WEB_API_KEY'] ?? '';
 
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
@@ -72,6 +74,12 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         (widget.initialLatitude != null && widget.initialLongitude != null)
         ? LatLng(widget.initialLatitude!, widget.initialLongitude!)
         : _fallbackLatLng;
+    // TODO: Remove after verifying new API key is loaded correctly
+    assert(() {
+      final key = _googleWebServicesApiKey;
+      debugPrint('🗺️ [MapPicker] USING MAPS KEY: ${key.isEmpty ? "⚠️ EMPTY — dotenv not loaded!" : "✅ ${key.substring(0, 10)}..."}');
+      return true;
+    }());
   }
 
   @override
@@ -511,8 +519,8 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   }) {
     if (!kDebugMode) return;
     debugPrint(
-      '$apiName failed: status=$status, error=$errorMessage, '
-      'http=$httpStatusCode',
+      '🗺️ $apiName failed: status=$status, error=$errorMessage, '
+      'http=$httpStatusCode | key=${_googleWebServicesApiKey.isEmpty ? "⚠️ EMPTY!" : "✅ ${_googleWebServicesApiKey.substring(0, 10)}..."}',
     );
   }
 

@@ -1,18 +1,22 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+class UpdateUserSettingsRequest {
+  final String? locale;
+  final bool? pushNotifications;
+  final bool? smsNotifications;
+  final bool? emailNotifications;
+  final String? theme;
 
-part 'update_user_settings_request.freezed.dart';
-part 'update_user_settings_request.g.dart';
+  const UpdateUserSettingsRequest({
+    this.locale,
+    this.pushNotifications,
+    this.smsNotifications,
+    this.emailNotifications,
+    this.theme,
+  });
 
-@freezed
-abstract class UpdateUserSettingsRequest with _$UpdateUserSettingsRequest {
-  const factory UpdateUserSettingsRequest({
-    String? locale,
-    bool? pushNotifications,
-    bool? smsNotifications,
-    bool? emailNotifications,
-    String? theme,
-  }) = _UpdateUserSettingsRequest;
-
-  factory UpdateUserSettingsRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateUserSettingsRequestFromJson(json);
+  Map<String, dynamic> toJson() {
+    return {
+      if (pushNotifications != null) 'is_notify': pushNotifications! ? 1 : 0,
+      // locale, sms, email, theme are not supported by the new API currently, but kept for signature compat
+    };
+  }
 }

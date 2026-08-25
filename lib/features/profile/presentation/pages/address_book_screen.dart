@@ -300,6 +300,7 @@ class _SavedAddressCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SvgPicture.asset(
                     AppAssets.addressLocationIcon,
@@ -313,15 +314,17 @@ class _SavedAddressCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      address.fullAddress ?? address.location(locale),
-                      maxLines: 1,
+                      (address.fullAddress != null && address.fullAddress!.trim().isNotEmpty)
+                          ? address.fullAddress!.trim()
+                          : address.location(locale),
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.start,
                       style: AppTextStyles.caption(context).copyWith(
                         color: AppColors.onSurface(context),
                         fontSize: 10,
                         fontWeight: FontWeight.w400,
-                        height: 1.25,
+                        height: 1.35,
                       ),
                     ),
                   ),

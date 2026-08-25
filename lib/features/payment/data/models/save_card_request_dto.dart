@@ -1,20 +1,22 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+class SaveCardRequestDto {
+  final String cardNumber;
+  final String expiryDate;
+  final String cvv;
+  final int isDefault;
 
-part 'save_card_request_dto.freezed.dart';
-part 'save_card_request_dto.g.dart';
+  const SaveCardRequestDto({
+    required this.cardNumber,
+    required this.expiryDate,
+    required this.cvv,
+    this.isDefault = 1,
+  });
 
-@freezed
-abstract class SaveCardRequestDto with _$SaveCardRequestDto {
-  const factory SaveCardRequestDto({
-    String? gatewayToken,
-    String? gateway,
-    String? brand,
-    String? last4,
-    int? expMonth,
-    int? expYear,
-    bool? makeDefault,
-  }) = _SaveCardRequestDto;
-
-  factory SaveCardRequestDto.fromJson(Map<String, dynamic> json) =>
-      _$SaveCardRequestDtoFromJson(json);
+  Map<String, dynamic> toJson() {
+    return {
+      'card_number': cardNumber,
+      'expiry_date': expiryDate,
+      'cvv': cvv,
+      'is_default': isDefault,
+    };
+  }
 }

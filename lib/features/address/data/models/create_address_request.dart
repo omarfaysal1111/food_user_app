@@ -1,25 +1,34 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+class CreateAddressRequest {
+  final String? name;
+  final String? fullAddress;
+  final String? buildingNumber;
+  final String? floor;
+  final String? apartment;
+  final double? lat;
+  final double? lng;
+  final String? type;
 
-part 'create_address_request.freezed.dart';
-part 'create_address_request.g.dart';
+  const CreateAddressRequest({
+    this.name,
+    this.fullAddress,
+    this.buildingNumber,
+    this.floor,
+    this.apartment,
+    this.lat,
+    this.lng,
+    this.type,
+  });
 
-@freezed
-abstract class CreateAddressRequest with _$CreateAddressRequest {
-  const factory CreateAddressRequest({
-    String? label,
-    String? fullAddress,
-    double? lat,
-    double? lng,
-    String? city,
-    String? neighborhood,
-    String? streetNumber,
-    String? buildingNumber,
-    String? floor,
-    String? apartment,
-    String? addressType,
-    @JsonKey(name: 'default') bool? isDefault,
-  }) = _CreateAddressRequest;
-
-  factory CreateAddressRequest.fromJson(Map<String, dynamic> json) =>
-      _$CreateAddressRequestFromJson(json);
+  Map<String, dynamic> toJson() {
+    return {
+      if (name != null) 'name': name,
+      if (fullAddress != null) 'full_address': fullAddress,
+      if (buildingNumber != null) 'building_number': buildingNumber,
+      if (floor != null) 'floor': floor,
+      if (apartment != null) 'apartment': apartment,
+      if (lat != null) 'lat': lat,
+      if (lng != null) 'long': lng,
+      if (type != null) 'type': type,
+    };
+  }
 }

@@ -18,6 +18,7 @@ class LanguageInterceptor extends Interceptor {
       language = code == 'ar' ? 'ar' : 'en';
     }
     
+    options.headers['local'] = language;
     options.headers['Accept-Language'] = language;
     super.onRequest(options, handler);
   }

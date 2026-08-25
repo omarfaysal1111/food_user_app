@@ -21,6 +21,7 @@ class RestaurantListCubit extends Cubit<RestaurantListState> {
     final result = await getNearbyRestaurantsUseCase(
       GetRestaurantsParams(page: page, size: size, categoryId: categoryId),
     );
+    if (isClosed) return;
     result.fold((failure) => emit(RestaurantListState.error(failure.message)), (
       pageResponse,
     ) {
@@ -43,6 +44,7 @@ class RestaurantListCubit extends Cubit<RestaurantListState> {
     final result = await getNearbyRestaurantsUseCase(
       GetRestaurantsParams(page: nextPage, size: size, categoryId: categoryId),
     );
+    if (isClosed) return;
     result.fold((failure) => emit(RestaurantListState.error(failure.message)), (
       pageResponse,
     ) {
@@ -58,4 +60,5 @@ class RestaurantListCubit extends Cubit<RestaurantListState> {
       );
     });
   }
+
 }

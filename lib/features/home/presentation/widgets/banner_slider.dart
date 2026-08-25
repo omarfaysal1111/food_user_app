@@ -92,7 +92,7 @@ class _PromoBanner extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           AppNetworkImage(
-            banner.imageUrl,
+            banner.imageUrl ?? '',
             width: double.infinity,
             height: double.infinity,
             fit: BoxFit.cover,

@@ -37,7 +37,7 @@ class SearchResultsScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(AppSpacing.md),
                       sliver: SliverToBoxAdapter(
                         child: Text(
-                          l10n.homeCategoryRestaurants,
+                          result.isRandom ? l10n.serviceNoResultsAvailable : l10n.homeCategoryRestaurants,
                           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),

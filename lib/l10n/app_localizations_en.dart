@@ -894,6 +894,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updateAddress => 'Confirm Edit';
 
   @override
+  String get fullAddress => 'Full Address';
+
+  @override
   String get building => 'Building Number';
 
   @override

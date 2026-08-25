@@ -12,7 +12,7 @@ import 'package:food_user_app/features/profile/presentation/controllers/saved_ad
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/home/presentation/widgets/banner_slider.dart';
-import 'package:food_user_app/features/home/presentation/cubit/category_cubit.dart';
+import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';
 import 'package:food_user_app/features/home/presentation/widgets/category_grid.dart';
 import 'package:food_user_app/features/restaurant/presentation/widgets/restaurant_card.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_filter_cubit.dart';
@@ -46,8 +46,8 @@ class HomeScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.md,
                   ),
-                  child: BlocProvider<CategoryCubit>(
-                    create: (context) => sl<CategoryCubit>(),
+                  child: BlocProvider<SectionsCubit>(
+                    create: (context) => sl<SectionsCubit>(),
                     child: const CategoryGrid(),
                   ),
                 ),
@@ -149,6 +149,10 @@ class _HomeHeader extends StatelessWidget {
   }
 }
 
+// Returns true when the string contains Arabic/Arabic-Extended characters.
+bool _containsArabic(String text) =>
+    RegExp(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]').hasMatch(text);
+
 class _LocationRow extends StatelessWidget {
   const _LocationRow({required this.copy});
 
@@ -156,6 +160,10 @@ class _LocationRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isAddressArabic = _containsArabic(copy.address);
+    final addressTextDirection =
+        isAddressArabic ? TextDirection.rtl : TextDirection.ltr;
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => context.push(RouteNames.addressBook),
@@ -191,6 +199,7 @@ class _LocationRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.start,
+                  textDirection: addressTextDirection,
                   style: AppTextStyles.body(
                     context,
                   ).copyWith(color: AppColors.text, fontSize: 12, height: 1.3),
@@ -477,9 +486,10 @@ class _HomeCopy {
   static _HomeCopy of(BuildContext context) {
     final locale = Localizations.localeOf(context);
     final l10n = AppLocalizations.of(context)!;
-    final selectedAddress = SavedAddressesScope.of(
-      context,
-    ).selectedAddress?.shortLocation(locale);
+    final selectedAddressObj = SavedAddressesScope.of(context).selectedAddress;
+    final selectedAddress = (selectedAddressObj?.fullAddress != null && selectedAddressObj!.fullAddress!.trim().isNotEmpty)
+        ? selectedAddressObj.fullAddress!.trim()
+        : selectedAddressObj?.shortLocation(locale);
 
     return _HomeCopy(
       deliveryTo: l10n.homeDeliveryTo,

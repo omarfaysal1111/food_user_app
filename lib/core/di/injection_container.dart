@@ -1,10 +1,19 @@
-import 'package:food_user_app/features/home/domain/usecases/get_categories_usecase.dart';
-import 'package:food_user_app/features/home/presentation/cubit/category_cubit.dart';
+import 'package:food_user_app/features/home/data/datasources/home_remote_data_source.dart';
+import 'package:food_user_app/features/home/data/repositories/home_repository_impl.dart';
+import 'package:food_user_app/features/profile/domain/usecases/get_cached_profile_usecase.dart';
+import 'package:food_user_app/features/profile/domain/usecases/get_cached_settings_usecase.dart';
+import 'package:food_user_app/features/user/data/datasources/user_local_data_source.dart';
+
+import 'package:food_user_app/features/home/domain/repositories/home_repository.dart';
+import 'package:food_user_app/features/home/domain/usecases/get_general_settings_usecase.dart';
+import 'package:food_user_app/features/home/domain/usecases/home_usecases.dart';
+import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';
 import 'package:food_user_app/features/home/domain/usecases/get_nearby_restaurants_usecase.dart';
 import 'package:food_user_app/features/profile/domain/usecases/get_favourites_usecase.dart';
 import 'package:food_user_app/features/profile/domain/usecases/toggle_favourite_usecase.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:food_user_app/features/profile/domain/usecases/get_profile_usecase.dart';
+import 'package:food_user_app/features/profile/domain/usecases/change_phone_usecases.dart';
 import 'package:food_user_app/features/profile/domain/usecases/update_profile_usecase.dart';
 import 'package:food_user_app/features/profile/domain/usecases/get_settings_usecase.dart';
 import 'package:food_user_app/features/profile/domain/usecases/update_settings_usecase.dart';
@@ -13,6 +22,23 @@ import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:food_user_app/features/market/data/datasources/market_remote_data_source.dart';
+import 'package:food_user_app/features/market/data/repositories/market_repository_impl.dart';
+import 'package:food_user_app/features/market/domain/repositories/market_repository.dart';
+import 'package:food_user_app/features/market/domain/usecases/get_markets_usecase.dart';
+import 'package:food_user_app/features/market/domain/usecases/get_market_detail_usecase.dart';
+import 'package:food_user_app/features/market/domain/usecases/get_market_categories_usecase.dart';
+import 'package:food_user_app/features/market/domain/usecases/get_market_sub_categories_usecase.dart';
+import 'package:food_user_app/features/market/domain/usecases/get_market_products_usecase.dart';
+import 'package:food_user_app/features/market/domain/usecases/get_market_offers_usecase.dart';
+import 'package:food_user_app/features/market/domain/usecases/get_favorite_markets_usecase.dart';
+import 'package:food_user_app/features/market/domain/usecases/toggle_favorite_market_usecase.dart';
+import 'package:food_user_app/features/market/presentation/cubit/markets_list_cubit.dart';
+import 'package:food_user_app/features/market/presentation/cubit/market_details_cubit.dart';
+import 'package:food_user_app/features/market/presentation/cubit/market_catalog_cubit.dart';
+import 'package:food_user_app/features/market/presentation/cubit/market_favorite_cubit.dart';
+
 
 import 'package:food_user_app/core/network/dio_client.dart';
 import 'package:food_user_app/core/network/interceptors/auth_interceptor.dart';
@@ -219,6 +245,15 @@ Future<void> init({SharedPreferences? prefs}) async {
   sl.registerLazySingleton(() => GetSettingsUseCase(sl()));
   sl.registerLazySingleton(() => UpdateSettingsUseCase(sl()));
   sl.registerLazySingleton(() => DeleteAccountUseCase(sl()));
+  
+  sl.registerLazySingleton(() => GetCachedProfileUseCase(sl()));
+  sl.registerLazySingleton(() => GetCachedSettingsUseCase(sl()));
+
+  // Phone cycle use cases
+  sl.registerLazySingleton(() => SendCurrentPhoneOtpUseCase(sl()));
+  sl.registerLazySingleton(() => VerifyCurrentPhoneOtpUseCase(sl()));
+  sl.registerLazySingleton(() => SendNewPhoneOtpUseCase(sl()));
+  sl.registerLazySingleton(() => VerifyNewPhoneOtpUseCase(sl()));
 
   sl.registerFactory<ProfileBloc>(
     () => ProfileBloc(
@@ -227,6 +262,12 @@ Future<void> init({SharedPreferences? prefs}) async {
       getSettingsUseCase: sl(),
       updateSettingsUseCase: sl(),
       deleteAccountUseCase: sl(),
+      getCachedProfileUseCase: sl(),
+      getCachedSettingsUseCase: sl(),
+      sendCurrentPhoneOtpUseCase: sl(),
+      verifyCurrentPhoneOtpUseCase: sl(),
+      sendNewPhoneOtpUseCase: sl(),
+      verifyNewPhoneOtpUseCase: sl(),
     ),
   );
 
@@ -248,8 +289,14 @@ Future<void> init({SharedPreferences? prefs}) async {
   sl.registerLazySingleton<UserRemoteDataSource>(
     () => UserRemoteDataSourceImpl(dio: sl<DioClient>().dio),
   );
+  sl.registerLazySingleton<UserLocalDataSource>(
+    () => UserLocalDataSourceImpl(prefs: sl()),
+  );
   sl.registerLazySingleton<UserRepository>(
-    () => UserRepositoryImpl(remoteDataSource: sl<UserRemoteDataSource>()),
+    () => UserRepositoryImpl(
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+    ),
   );
 
   // ── Banners & Search ───────────────────────────────────────────────────────
@@ -274,9 +321,35 @@ Future<void> init({SharedPreferences? prefs}) async {
   );
 
   // ── Categories & Home ──────────────────────────────────────────────────────
-  sl.registerLazySingleton(() => GetCategoriesUseCase());
-  sl.registerFactory<CategoryCubit>(
-    () => CategoryCubit(getCategoriesUseCase: sl<GetCategoriesUseCase>()),
+  sl.registerLazySingleton<HomeRemoteDataSource>(
+    () => HomeRemoteDataSourceImpl(dio: sl<DioClient>().dio),
+  );
+  sl.registerLazySingleton<HomeRepository>(
+    () => HomeRepositoryImpl(remoteDataSource: sl<HomeRemoteDataSource>()),
+  );
+  
+  // Use cases
+  sl.registerLazySingleton(() => GetGeneralSettingsUseCase(sl<HomeRepository>()));
+  sl.registerLazySingleton(() => GetSectionsUseCase(sl<HomeRepository>()));
+  sl.registerLazySingleton(() => GetTagsUseCase(sl<HomeRepository>()));
+  sl.registerLazySingleton(() => GetStoresUseCase(sl<HomeRepository>()));
+  sl.registerLazySingleton(() => GetMajorStoresUseCase(sl<HomeRepository>()));
+
+  // Cubits
+  sl.registerFactory<SettingsCubit>(
+    () => SettingsCubit(getGeneralSettingsUseCase: sl<GetGeneralSettingsUseCase>()),
+  );
+  sl.registerFactory<SectionsCubit>(
+    () => SectionsCubit(getSectionsUseCase: sl<GetSectionsUseCase>()),
+  );
+  sl.registerFactory<TagsCubit>(
+    () => TagsCubit(getTagsUseCase: sl<GetTagsUseCase>()),
+  );
+  sl.registerFactory<StoresCubit>(
+    () => StoresCubit(getStoresUseCase: sl<GetStoresUseCase>()),
+  );
+  sl.registerFactory<MajorStoresCubit>(
+    () => MajorStoresCubit(getMajorStoresUseCase: sl<GetMajorStoresUseCase>()),
   );
 
   // ── Restaurants ────────────────────────────────────────────────────────────
@@ -394,9 +467,52 @@ Future<void> init({SharedPreferences? prefs}) async {
   // ── Order & Tracking ──────────────────────────────────────────────────────
   importOrderDependencies();
   importSupportDependencies();
+  importMarketDependencies();
+}
+
+void importMarketDependencies() {
+  // Data Sources
+  sl.registerLazySingleton<MarketRemoteDataSource>(
+    () => MarketRemoteDataSourceImpl(
+      dioClient: sl<DioClient>(),
+      tokenStorage: sl<TokenStorage>(),
+    ),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<MarketRepository>(
+    () => MarketRepositoryImpl(remoteDataSource: sl<MarketRemoteDataSource>()),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetMarketsUseCase(sl<MarketRepository>()));
+  sl.registerLazySingleton(() => GetMarketDetailUseCase(sl<MarketRepository>()));
+  sl.registerLazySingleton(() => GetMarketCategoriesUseCase(sl<MarketRepository>()));
+  sl.registerLazySingleton(() => GetMarketSubCategoriesUseCase(sl<MarketRepository>()));
+  sl.registerLazySingleton(() => GetMarketProductsUseCase(sl<MarketRepository>()));
+  sl.registerLazySingleton(() => GetMarketOffersUseCase(sl<MarketRepository>()));
+  sl.registerLazySingleton(() => GetFavoriteMarketsUseCase(sl<MarketRepository>()));
+  sl.registerLazySingleton(() => ToggleFavoriteMarketUseCase(sl<MarketRepository>()));
+
+  // Cubits
+  sl.registerFactory(() => MarketsListCubit(getMarketsUseCase: sl()));
+  sl.registerFactory(() => MarketDetailsCubit(
+        getMarketDetailUseCase: sl(),
+        getMarketCategoriesUseCase: sl(),
+        getMarketOffersUseCase: sl(),
+      ));
+  sl.registerFactory(() => MarketCatalogCubit(
+        getSubCategoriesUseCase: sl(),
+        getProductsUseCase: sl(),
+      ));
+  sl.registerFactory(() => MarketFavoriteCubit(
+        getFavoriteMarketsUseCase: sl(),
+        toggleFavoriteMarketUseCase: sl(),
+      ));
 }
 
 void importSupportDependencies() {
+
   // Data Sources
   sl.registerLazySingleton<SupportRemoteDataSource>(
     () => SupportRemoteDataSourceImpl(dio: sl<DioClient>().dio),

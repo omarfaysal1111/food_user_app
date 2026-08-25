@@ -26,10 +26,9 @@ class SocialLoginRequested extends AuthEvent {
   List<Object?> get props => [provider];
 }
 
+// ── Phone OTP Flow (New Plezmo API) ──────────────────────────────────────────
 
-// ── Unified phone login/register (API v2) ────────────────────────────────────
-
-/// `POST /api/v2/auth/otp/send` — request a code for [phone] (login OR sign-up).
+/// `POST /api/v1/auth/phone/send-otp` — request a code for [phone].
 class PhoneOtpRequested extends AuthEvent {
   final String phone;
 
@@ -39,31 +38,40 @@ class PhoneOtpRequested extends AuthEvent {
   List<Object?> get props => [phone];
 }
 
-/// `POST /api/v2/auth/otp/verify` — verify [otp] for [phone].
+/// `POST /api/v1/auth/phone/verify-otp` — verify [otp] for [phone].
 class PhoneOtpVerifySubmitted extends AuthEvent {
   final String phone;
   final String otp;
+  final String? registrationToken;
 
-  const PhoneOtpVerifySubmitted({required this.phone, required this.otp});
-
-  @override
-  List<Object?> get props => [phone, otp];
-}
-
-/// `POST /api/v2/auth/register` — finish sign-up for a verified [phone].
-class CompleteRegistrationSubmitted extends AuthEvent {
-  final String phone;
-  final String firstName;
-  final String lastName;
-  final String? email;
-
-  const CompleteRegistrationSubmitted({
+  const PhoneOtpVerifySubmitted({
     required this.phone,
-    required this.firstName,
-    required this.lastName,
-    this.email,
+    required this.otp,
+    this.registrationToken,
   });
 
   @override
-  List<Object?> get props => [phone, firstName, lastName, email];
+  List<Object?> get props => [phone, otp, registrationToken];
+}
+
+/// `POST /api/v1/auth/complete-profile` — finish profile for a new user.
+class CompleteRegistrationSubmitted extends AuthEvent {
+  /// One-time token received from the verify-otp `complete_profile` response.
+  final String registrationToken;
+
+  final String? firstName;
+  final String? lastName;
+  final String? email;
+  final String? phone;
+
+  const CompleteRegistrationSubmitted({
+    required this.registrationToken,
+    this.firstName,
+    this.lastName,
+    this.email,
+    this.phone,
+  });
+
+  @override
+  List<Object?> get props => [registrationToken, firstName, lastName, email, phone];
 }

@@ -43,7 +43,10 @@ class RouteNames {
   static const discountPoints = '/profile/discount-points';
 
   static const settings = '/settings';
+  static const marketsList = '/markets';
+  static const marketDetail = '/market/:id';
   static const helpSupport = '/help';
+
   static const about = '/about';
 
   static String serviceListingFor(String type) => '/service-listing/$type';
@@ -51,6 +54,7 @@ class RouteNames {
   static String restaurantRateFor(String id) => '/restaurant/$id/rate';
   static String restaurantSearchFor(String id) => '/restaurant/$id/search';
   static String storeDetailFor(String id) => '/store/$id';
+  static String marketDetailFor(String id) => '/market/$id';
   static String orderDetailFor(String id) => '/order/$id';
   static String orderConfirmationFor(String id) => '/checkout/confirmation/$id';
   static String orderTrackingFor(String id) => '/order/$id/tracking';

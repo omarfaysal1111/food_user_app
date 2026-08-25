@@ -4,7 +4,7 @@ import 'package:food_user_app/core/errors/exceptions.dart';
 import 'package:food_user_app/core/errors/failures.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
 import 'package:food_user_app/features/search/data/datasources/search_remote_data_source.dart';
-import 'package:food_user_app/features/search/data/models/search_result_dto.dart';
+import 'package:food_user_app/features/search/domain/entities/search_log.dart';
 import 'package:food_user_app/features/search/domain/entities/search_result.dart';
 import 'package:food_user_app/features/search/domain/repositories/search_repository.dart';
 
@@ -24,10 +24,40 @@ class SearchRepositoryImpl implements SearchRepository {
   }
 
   @override
-  Future<Either<Failure, List<String>>> getSearchHistory() async {
+  Future<Either<Failure, List<SearchLog>>> getSearchHistory() async {
     try {
       final history = await remoteDataSource.getSearchHistory();
       return Right(history);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, SearchLog>> addSearchLog(String term) async {
+    try {
+      final log = await remoteDataSource.addSearchLog(term);
+      return Right(log);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteSearchLog(int id) async {
+    try {
+      await remoteDataSource.deleteSearchLog(id);
+      return const Right(null);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> clearSearchLogs() async {
+    try {
+      await remoteDataSource.clearSearchLogs();
+      return const Right(null);
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
     }

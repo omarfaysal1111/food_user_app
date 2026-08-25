@@ -883,6 +883,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get updateAddress => 'تاكيد التعديل';
 
   @override
+  String get fullAddress => 'العنوان بالتفصيل';
+
+  @override
   String get building => 'رقم المبنى';
 
   @override

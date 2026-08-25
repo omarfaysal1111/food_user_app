@@ -22,6 +22,7 @@ class ChatCubit extends Cubit<ChatState> {
     _ticketId = ticketId;
     emit(const ChatState.loading());
     final result = await _getMessagesUseCase(ticketId);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(ChatState.error(failure.message)),
       (messages) => emit(ChatState.loaded(messages)),
@@ -41,6 +42,8 @@ class ChatCubit extends Cubit<ChatState> {
       SendMessageParams(ticketId: _ticketId!, content: text),
     );
 
+    if (isClosed) return;
+
     result.fold(
       (failure) {
         emit(ChatState.error(failure.message));
@@ -57,4 +60,5 @@ class ChatCubit extends Cubit<ChatState> {
       },
     );
   }
+
 }

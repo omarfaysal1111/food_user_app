@@ -24,6 +24,7 @@ class DioClient {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'local': 'ar',
         },
         responseType: ResponseType.json,
       ),

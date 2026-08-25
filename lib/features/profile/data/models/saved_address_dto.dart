@@ -31,21 +31,22 @@ class SavedAddressDto {
   final String? addressType;
   final bool isDefault;
 
-  factory SavedAddressDto.fromJson(Map<String, dynamic> json) {
+    factory SavedAddressDto.fromJson(Map<String, dynamic> json) {
+    final type = _readString(json, 'type') ?? 'other';
     return SavedAddressDto(
       id: _readString(json, 'id') ?? '',
-      label: _readString(json, 'label'),
-      fullAddress: _readString(json, 'fullAddress'),
+      label: _readString(json, 'name'),
+      fullAddress: _readString(json, 'full_address'),
       lat: _readDouble(json, 'lat'),
-      lng: _readDouble(json, 'lng'),
-      city: _readString(json, 'city'),
-      neighborhood: _readString(json, 'neighborhood'),
-      streetNumber: _readString(json, 'streetNumber'),
-      buildingNumber: _readString(json, 'buildingNumber'),
+      lng: _readDouble(json, 'long'),
+      city: null,
+      neighborhood: null,
+      streetNumber: null,
+      buildingNumber: _readString(json, 'building_number'),
       floor: _readString(json, 'floor'),
       apartment: _readString(json, 'apartment'),
-      addressType: _readString(json, 'addressType'),
-      isDefault: json['default'] == true || json['isDefault'] == true,
+      addressType: type,
+      isDefault: type == 'primary',
     );
   }
 
@@ -136,19 +137,15 @@ class SavedAddressRequest {
 
   Map<String, dynamic> toJson() {
     return {
-      'label': label,
-      'fullAddress': fullAddress,
+      'name': label,
       'lat': lat,
-      'lng': lng,
-      if (_nonEmpty(city) != null) 'city': city!.trim(),
-      if (_nonEmpty(neighborhood) != null) 'neighborhood': neighborhood!.trim(),
-      if (_nonEmpty(streetNumber) != null) 'streetNumber': streetNumber!.trim(),
-      if (_nonEmpty(buildingNumber) != null)
-        'buildingNumber': buildingNumber!.trim(),
+      'long': lng,
+      if (_nonEmpty(fullAddress) != null) 'full_address': fullAddress.trim(),
+      if (_nonEmpty(buildingNumber) != null) 'building_number': buildingNumber!.trim(),
       if (_nonEmpty(floor) != null) 'floor': floor!.trim(),
       if (_nonEmpty(apartment) != null) 'apartment': apartment!.trim(),
-      'addressType': addressType,
-      'default': isDefault,
+      'type': addressType.toLowerCase() == 'primary' ? 'primary' : 
+              addressType.toLowerCase() == 'work' ? 'work' : 'other',
     };
   }
 }

@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/payment/presentation/cubit/payment_method_cubit.dart';
 import 'package:food_user_app/features/payment/presentation/cubit/payment_method_state.dart';
@@ -73,12 +75,20 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                         return _EmptyCardsState(message: l10n.noCardsMessage);
                       }
                       // Map Domain Entities to UI Data
-                      final uiCards = cards.map((c) => _PaymentCardData(
-                        id: c.id,
-                        holder: l10n.sampleCardHolder, // Domain doesn't have holder name currently
-                        maskedNumber: '**** **** **** ${c.last4}',
-                        expiry: '${c.expMonth.toString().padLeft(2, '0')}/${c.expYear.toString().substring(2)}',
-                      )).toList();
+                      final uiCards = cards.map((c) {
+                        final month = c.expMonth?.toString().padLeft(2, '0') ?? '--';
+                        final yearRaw = c.expYear?.toString() ?? '--';
+                        final year = yearRaw.length >= 4 ? yearRaw.substring(2) : yearRaw;
+
+                        return _PaymentCardData(
+                          id: c.id,
+                          holder: l10n.sampleCardHolder, 
+                          maskedNumber: '**** **** **** ${c.last4 ?? "****"}',
+                          fullNumber: c.cardNumber,
+
+                          expiry: '$month/$year',
+                        );
+                      }).toList();
 
                       return _CardsList(cards: uiCards, onMoreTap: _showCardActionsMenu);
                     },
@@ -102,26 +112,21 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     if (!mounted || result == null) return;
 
     final l10n = AppLocalizations.of(context)!;
+    
     // Call Cubit to save card
     context.read<PaymentMethodCubit>().saveCard(
-      const SaveCardParams(
+      SaveCardParams(
         request: SaveCardRequestDto(
-          gatewayToken: 'tok_dummy_for_now',
-          gateway: 'stripe',
+          cardNumber: result.cardNumber.replaceAll(' ', ''),
+          expiryDate: result.expiry,
+          cvv: result.cvv,
+
         ),
       ),
     );
     _showDesignSnackBar(l10n.cardAddedDesignOnly);
   }
 
-  Future<void> _showEditCardSheet(_PaymentCardData card) async {
-    final result = await _showCardFormSheet(isEdit: true, card: card);
-    if (!mounted || result == null) return;
-
-    final l10n = AppLocalizations.of(context)!;
-    // Call Cubit to update card (Not supported by API currently, just simulated)
-    _showDesignSnackBar(l10n.cardUpdatedDesignOnly);
-  }
 
   Future<_CardFormResult?> _showCardFormSheet({
     required bool isEdit,
@@ -173,10 +178,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               left: left,
               top: top,
               child: _CardActionsMenu(
-                onEdit: () {
-                  Navigator.of(dialogContext).pop();
-                  _runAfterRoutePop(() => _showEditCardSheet(card));
-                },
                 onDelete: () {
                   Navigator.of(dialogContext).pop();
                   _runAfterRoutePop(() => _showDeleteCardDialog(card));
@@ -230,19 +231,29 @@ class _PaymentCardData {
     required this.id,
     required this.holder,
     required this.maskedNumber,
+    this.fullNumber,
+
     required this.expiry,
+
+
     this.usesLocalizedSample = false,
   });
 
   final String id;
   final String holder;
   final String maskedNumber;
+  final String? fullNumber;
+
   final String expiry;
+
+
   final bool usesLocalizedSample;
 
   _PaymentCardData copyWith({
     String? holder,
     String? maskedNumber,
+    String? fullNumber,
+
     String? expiry,
     bool? usesLocalizedSample,
   }) {
@@ -250,6 +261,8 @@ class _PaymentCardData {
       id: id,
       holder: holder ?? this.holder,
       maskedNumber: maskedNumber ?? this.maskedNumber,
+      fullNumber: fullNumber ?? this.fullNumber,
+
       expiry: expiry ?? this.expiry,
       usesLocalizedSample: usesLocalizedSample ?? this.usesLocalizedSample,
     );
@@ -258,14 +271,16 @@ class _PaymentCardData {
 
 class _CardFormResult {
   const _CardFormResult({
-    required this.holder,
     required this.cardNumber,
     required this.expiry,
+    required this.cvv,
+
   });
 
-  final String holder;
   final String cardNumber;
   final String expiry;
+  final String cvv;
+
 }
 
 class _PaymentHeader extends StatelessWidget {
@@ -533,9 +548,8 @@ class _CardMoreButton extends StatelessWidget {
 }
 
 class _CardActionsMenu extends StatelessWidget {
-  const _CardActionsMenu({required this.onEdit, required this.onDelete});
+  const _CardActionsMenu({required this.onDelete});
 
-  final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   @override
@@ -561,16 +575,7 @@ class _CardActionsMenu extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _CardMenuAction(
-              label: l10n.editCard,
-              iconAsset: AppAssets.paymentEditIcon,
-              onTap: onEdit,
-            ),
-            Divider(
-              height: 12,
-              thickness: 0.5,
-              color: AppColors.border(context),
-            ),
+            
             _CardMenuAction(
               label: l10n.deleteCard,
               iconAsset: AppAssets.paymentDeleteIcon,
@@ -767,7 +772,7 @@ class _CardFormSheet extends StatefulWidget {
 }
 
 class _CardFormSheetState extends State<_CardFormSheet> {
-  late final TextEditingController _holderController;
+  String? _errorText;
   late final TextEditingController _numberController;
   late final TextEditingController _expiryController;
   late final TextEditingController _cvvController;
@@ -777,19 +782,53 @@ class _CardFormSheetState extends State<_CardFormSheet> {
     super.initState();
 
     final card = widget.card;
-    _holderController = TextEditingController(text: card?.holder ?? '');
-    _numberController = TextEditingController(text: card?.maskedNumber ?? '');
+    final displayCardNumber = widget.isEdit ? (card?.fullNumber ?? card?.maskedNumber ?? '') : '';
+    
+    _numberController = TextEditingController(text: displayCardNumber);
     _expiryController = TextEditingController(text: card?.expiry ?? '');
     _cvvController = TextEditingController();
   }
 
   @override
   void dispose() {
-    _holderController.dispose();
     _numberController.dispose();
     _expiryController.dispose();
     _cvvController.dispose();
     super.dispose();
+  }
+
+  bool _passesLuhn(String cardNumber) {
+    if (cardNumber.isEmpty) return false;
+    int sum = 0;
+    bool alternate = false;
+    for (int i = cardNumber.length - 1; i >= 0; i--) {
+      int n = int.parse(cardNumber[i]);
+      if (alternate) {
+        n *= 2;
+        if (n > 9) n -= 9;
+      }
+      sum += n;
+      alternate = !alternate;
+    }
+    return sum % 10 == 0;
+  }
+
+  bool _isValidExpiry(String expiry) {
+    if (!RegExp(r'^\d{2}/\d{2}$').hasMatch(expiry)) return false;
+    final parts = expiry.split('/');
+    final month = int.tryParse(parts[0]);
+    final year = int.tryParse(parts[1]);
+    if (month == null || year == null) return false;
+    if (month < 1 || month > 12) return false;
+
+    final now = DateTime.now();
+    final currentYear = now.year % 100;
+    final currentMonth = now.month;
+
+    if (year < currentYear) return false;
+    if (year == currentYear && month < currentMonth) return false;
+
+    return true;
   }
 
   @override
@@ -830,18 +869,15 @@ class _CardFormSheetState extends State<_CardFormSheet> {
                   child: Column(
                     children: [
                       _SheetTextField(
-                        label: l10n.cardHolderName,
-                        hint: l10n.cardHolderName,
-                        controller: _holderController,
-                        textInputAction: TextInputAction.next,
-                      ),
-                      const SizedBox(height: 20),
-                      _SheetTextField(
                         label: l10n.cardNumber,
                         hint: l10n.cardNumber,
                         controller: _numberController,
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.next,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9 ]')),
+                          _CardNumberFormatter(),
+                        ],
                       ),
                       const SizedBox(height: 20),
                       Row(
@@ -853,16 +889,23 @@ class _CardFormSheetState extends State<_CardFormSheet> {
                               controller: _expiryController,
                               keyboardType: TextInputType.datetime,
                               textInputAction: TextInputAction.next,
+                              inputFormatters: [
+                                _ExpiryDateFormatter(),
+                              ],
                             ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
                             child: _SheetTextField(
                               label: l10n.cvv,
-                              hint: 'cvv',
+                              hint: 'CVV',
                               controller: _cvvController,
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.done,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(4),
+                              ],
                             ),
                           ),
                         ],
@@ -870,18 +913,55 @@ class _CardFormSheetState extends State<_CardFormSheet> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                if (_errorText != null) ...[
+                  Padding(
+                    padding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
+                    child: Text(
+                      _errorText!,
+                      style: AppTextStyles.inputText(context).copyWith(
+                        color: AppColors.fieldError(context),
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ] else
+                  const SizedBox(height: 20),
                 _SheetBottomBar(
                   label: widget.isEdit ? l10n.updateCard : l10n.addCard,
                   bottomPadding: bottomSafe + 20,
                   onTap: () {
-                    // TODO: Submit through real add/update card APIs later.
-                    // CVV is intentionally not returned or stored.
+                    final num = _numberController.text.trim();
+                    final exp = _expiryController.text.trim();
+                    final cvv = _cvvController.text.trim();
+
+                    final rawNum = num.replaceAll(' ', '');
+
+                    if (rawNum.length < 15 || rawNum.length > 19 || !_passesLuhn(rawNum)) {
+                      setState(() => _errorText = 'Invalid card number');
+                      return;
+                    }
+
+                    if (!_isValidExpiry(exp)) {
+                      setState(() => _errorText = 'Invalid expiry date');
+                      return;
+                    }
+
+                    if (cvv.length < 3 || cvv.length > 4) {
+                      setState(() => _errorText = 'Invalid CVV');
+                      return;
+                    }
+
+                    setState(() => _errorText = null);
+                    
+                    if (!mounted) return;
+
                     Navigator.of(context).pop(
                       _CardFormResult(
-                        holder: _holderController.text.trim(),
-                        cardNumber: _numberController.text.trim(),
-                        expiry: _expiryController.text.trim(),
+                        cardNumber: rawNum,
+                        expiry: exp,
+                        cvv: cvv,
                       ),
                     );
                   },
@@ -957,6 +1037,8 @@ class _SheetTextField extends StatelessWidget {
     required this.controller,
     this.keyboardType,
     this.textInputAction,
+    this.inputFormatters,
+
   });
 
   final String label;
@@ -964,6 +1046,8 @@ class _SheetTextField extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
+  final List<TextInputFormatter>? inputFormatters;
+
 
   @override
   Widget build(BuildContext context) {
@@ -989,6 +1073,8 @@ class _SheetTextField extends StatelessWidget {
             controller: controller,
             keyboardType: keyboardType,
             textInputAction: textInputAction,
+            inputFormatters: inputFormatters,
+
             textAlign: TextAlign.start,
             cursorColor: AppColors.cursor(context),
             style: AppTextStyles.inputText(
@@ -1149,5 +1235,79 @@ class _PaymentBottomBar extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _CardNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    String text = newValue.text;
+    
+    if (oldValue.text.length > newValue.text.length) {
+      if (oldValue.text.endsWith(' ') && !newValue.text.endsWith(' ')) {
+        text = text.substring(0, text.length - 1);
+      }
+    }
+    
+    final newText = text.replaceAll(' ', '');
+    if (newText.length > 19) return oldValue;
+
+    final buffer = StringBuffer();
+    for (int i = 0; i < newText.length; i++) {
+      if (i > 0 && i % 4 == 0) {
+        buffer.write(' ');
+      }
+      buffer.write(newText[i]);
+    }
+
+    final formattedString = buffer.toString();
+
+    int cursorPosition = newValue.selection.end;
+    if (cursorPosition > text.length) {
+      cursorPosition = text.length;
+    }
+    
+    String rawBeforeCursor = text.substring(0, cursorPosition).replaceAll(' ', '');
+    
+    int newCursorPosition = rawBeforeCursor.length;
+    for (int i = 0; i < rawBeforeCursor.length; i++) {
+      if (i > 0 && i % 4 == 0) {
+        newCursorPosition++;
+      }
+    }
+
+    return TextEditingValue(
+      text: formattedString,
+      selection: TextSelection.collapsed(offset: newCursorPosition),
+    );
+  }
+}
+
+class _ExpiryDateFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final newText = newValue.text;
+    if (newText.length > oldValue.text.length) {
+      if (newText.length > 5) return oldValue;
+      if (newText.length == 2 && oldValue.text.length == 1) {
+        return TextEditingValue(
+          text: '$newText/',
+          selection: const TextSelection.collapsed(offset: 3),
+        );
+      }
+      if (newText.length == 3 && !newText.contains('/')) {
+        return TextEditingValue(
+          text: '${newText.substring(0, 2)}/${newText.substring(2)}',
+          selection: const TextSelection.collapsed(offset: 4),
+        );
+      }
+    }
+    return newValue;
   }
 }

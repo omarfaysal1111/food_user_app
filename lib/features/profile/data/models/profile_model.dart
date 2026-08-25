@@ -14,10 +14,10 @@ class ProfileModel extends Profile {
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     return ProfileModel(
-      id: json['id'] as String? ?? '',
-      firstName: json['firstName'] as String? ?? '',
-      lastName: json['lastName'] as String? ?? '',
-      fullName: json['fullName'] as String? ?? '',
+      id: json['id']?.toString() ?? '',
+      firstName: json['first_name'] as String? ?? json['firstName'] as String? ?? '',
+      lastName: json['last_name'] as String? ?? json['lastName'] as String? ?? '',
+      fullName: json['full_name'] as String? ?? json['fullName'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
       email: json['email'] as String? ?? '',
       avatar: json['avatar'] as String? ?? '',

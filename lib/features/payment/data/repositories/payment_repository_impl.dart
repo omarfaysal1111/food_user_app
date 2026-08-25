@@ -5,7 +5,6 @@ import 'package:food_user_app/core/network/dio_error_mapper.dart';
 import 'package:food_user_app/core/errors/failures.dart';
 import 'package:food_user_app/features/payment/data/datasources/payment_remote_data_source.dart';
 import 'package:food_user_app/features/payment/data/models/checkout_request_dto.dart';
-import 'package:food_user_app/features/payment/data/models/payment_card_dto.dart';
 import 'package:food_user_app/features/payment/data/models/save_card_request_dto.dart';
 import 'package:food_user_app/features/payment/data/models/checkout_response_dto.dart';
 import 'package:food_user_app/features/payment/domain/entities/checkout_result.dart';

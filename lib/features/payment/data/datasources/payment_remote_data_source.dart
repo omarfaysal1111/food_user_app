@@ -19,23 +19,32 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
 
   @override
   Future<List<PaymentCardDto>> getSavedCards() async {
-    final response = await dio.get(ApiEndpoints.userCards);
-    final List<dynamic> data = response.data;
+    final response = await dio.get(ApiEndpoints.userCardsAll);
+    final raw = response.data;
+    if (raw is! Map<String, dynamic> || !raw.containsKey('data')) {
+      throw const FormatException('Expected unified envelope');
+    }
+    final data = raw['data'];
+    if (data is! List) return [];
     return data.map((json) => PaymentCardDto.fromJson(json)).toList();
   }
 
   @override
   Future<PaymentCardDto> saveCard(SaveCardRequestDto request) async {
     final response = await dio.post(
-      ApiEndpoints.userCards,
-      data: request.toJson(),
+      ApiEndpoints.userCardsCreate,
+      data: FormData.fromMap(request.toJson()),
     );
-    return PaymentCardDto.fromJson(response.data);
+    final raw = response.data;
+    if (raw is! Map<String, dynamic> || !raw.containsKey('data')) {
+      throw const FormatException('Expected unified envelope');
+    }
+    return PaymentCardDto.fromJson(raw['data']);
   }
 
   @override
   Future<void> deleteCard(String cardId) async {
-    await dio.delete(ApiEndpoints.userCard(cardId));
+    await dio.delete(ApiEndpoints.userCardDelete(cardId));
   }
 
   @override

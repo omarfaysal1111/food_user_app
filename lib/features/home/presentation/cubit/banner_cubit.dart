@@ -11,9 +11,11 @@ class BannerCubit extends Cubit<BannerState> {
   Future<void> getActiveBanners() async {
     emit(const BannerState.loading());
     final result = await bannerRepository.getActiveBanners();
+    if (isClosed) return;
     result.fold(
       (failure) => emit(BannerState.error(failure.message)),
       (banners) => emit(BannerState.loaded(banners)),
     );
   }
+
 }

@@ -5,15 +5,14 @@ import '../../../../core/errors/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../repositories/auth_repository.dart';
 
-/// Unified flow: `POST /api/v2/auth/otp/send` `{ phone }`.
-/// Returns `isExistingUser` so the UI can hint login vs. sign-up.
-class SendPhoneOtpUseCase extends UseCase<bool, SendPhoneOtpParams> {
+/// `POST /api/v1/auth/phone/send-otp` — sends OTP to [phone].
+class SendPhoneOtpUseCase extends UseCase<void, SendPhoneOtpParams> {
   SendPhoneOtpUseCase(this._repository);
 
   final AuthRepository _repository;
 
   @override
-  Future<Either<Failure, bool>> call(SendPhoneOtpParams params) {
+  Future<Either<Failure, void>> call(SendPhoneOtpParams params) {
     return _repository.sendPhoneOtp(phone: params.phone);
   }
 }

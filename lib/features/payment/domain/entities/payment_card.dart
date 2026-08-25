@@ -5,6 +5,7 @@ class PaymentCard extends Equatable {
   final String? gateway;
   final String? brand;
   final String? last4;
+  final String? cardNumber;
   final int? expMonth;
   final int? expYear;
   final bool isDefault;
@@ -14,6 +15,7 @@ class PaymentCard extends Equatable {
     this.gateway,
     this.brand,
     this.last4,
+    this.cardNumber,
     this.expMonth,
     this.expYear,
     this.isDefault = false,
@@ -25,6 +27,7 @@ class PaymentCard extends Equatable {
         gateway,
         brand,
         last4,
+        cardNumber,
         expMonth,
         expYear,
         isDefault,

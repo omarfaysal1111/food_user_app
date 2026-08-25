@@ -1,35 +1,51 @@
 import 'package:equatable/equatable.dart';
 
+/// A banner card entity returned by `GET /api/v1/banners`.
+///
+/// New API shape:
+/// ```json
+/// {
+///   "id": 1,
+///   "title": "عرض خاص",
+///   "image": "http://.../banners/example.jpg",
+///   "link": "https://example.com/offer",
+///   "status": 1,
+///   "sort_order": 0
+/// }
+/// ```
 class BannerItem extends Equatable {
-  final String id;
-  final String imageUrl;
-  final String title;
+  final int id;
+  final String? title;
+  final String? imageUrl;
+
+  /// External link to open when the banner is tapped.
+  final String? link;
+
+  /// `1` = active, `0` = inactive.
+  final int status;
+  final int sortOrder;
+
+  // ── Legacy fields kept for UI compatibility ────────────────────────────────
   final String subtitle;
   final String ctaText;
   final String discountText;
   final String deepLink;
-  final int sortOrder;
 
   const BannerItem({
     required this.id,
-    required this.imageUrl,
-    required this.title,
-    required this.subtitle,
-    required this.ctaText,
-    required this.discountText,
-    required this.deepLink,
-    required this.sortOrder,
+    this.title,
+    this.imageUrl,
+    this.link,
+    this.status = 1,
+    this.sortOrder = 0,
+    this.subtitle = '',
+    this.ctaText = '',
+    this.discountText = '',
+    this.deepLink = '',
   });
 
+  bool get isActive => status == 1;
+
   @override
-  List<Object?> get props => [
-    id,
-    imageUrl,
-    title,
-    subtitle,
-    ctaText,
-    discountText,
-    deepLink,
-    sortOrder,
-  ];
+  List<Object?> get props => [id, title, imageUrl, link, status, sortOrder];
 }

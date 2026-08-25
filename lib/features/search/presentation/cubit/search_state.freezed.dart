@@ -131,7 +131,7 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( SearchResult result)?  loaded,TResult Function( List<String> history)?  historyLoaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( SearchResult result)?  loaded,TResult Function( List<SearchLog> history)?  historyLoaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
@@ -156,7 +156,7 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( SearchResult result)  loaded,required TResult Function( List<String> history)  historyLoaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( SearchResult result)  loaded,required TResult Function( List<SearchLog> history)  historyLoaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
@@ -180,7 +180,7 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( SearchResult result)?  loaded,TResult? Function( List<String> history)?  historyLoaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( SearchResult result)?  loaded,TResult? Function( List<SearchLog> history)?  historyLoaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
@@ -329,11 +329,11 @@ as SearchResult,
 
 
 class _HistoryLoaded implements SearchState {
-  const _HistoryLoaded(final  List<String> history): _history = history;
+  const _HistoryLoaded(final  List<SearchLog> history): _history = history;
   
 
- final  List<String> _history;
- List<String> get history {
+ final  List<SearchLog> _history;
+ List<SearchLog> get history {
   if (_history is EqualUnmodifiableListView) return _history;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_history);
@@ -370,7 +370,7 @@ abstract mixin class _$HistoryLoadedCopyWith<$Res> implements $SearchStateCopyWi
   factory _$HistoryLoadedCopyWith(_HistoryLoaded value, $Res Function(_HistoryLoaded) _then) = __$HistoryLoadedCopyWithImpl;
 @useResult
 $Res call({
- List<String> history
+ List<SearchLog> history
 });
 
 
@@ -390,7 +390,7 @@ class __$HistoryLoadedCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') $Res call({Object? history = null,}) {
   return _then(_HistoryLoaded(
 null == history ? _self._history : history // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<SearchLog>,
   ));
 }
 

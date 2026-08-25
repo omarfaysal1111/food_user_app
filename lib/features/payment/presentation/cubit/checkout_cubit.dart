@@ -11,9 +11,11 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   Future<void> checkout() async {
     emit(const CheckoutState.loading());
     final result = await placeOrderUseCase(NoParams());
+    if (isClosed) return;
     result.fold(
       (failure) => emit(CheckoutState.error(failure.message)),
       (order) => emit(CheckoutState.success(order)),
     );
   }
+
 }

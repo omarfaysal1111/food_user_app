@@ -1,97 +1,78 @@
 import 'user_model.dart';
 
-/// Auth envelope returned by the backend's v2 unified flow
-/// (`/api/v2/auth/otp/verify` and `/api/v2/auth/register`) and v1 login.
+/// Envelope for a fully-authenticated session from the Plezmo API.
 ///
-/// Backend shape (note: split name + phone + newUser):
+/// Returned by:
+/// - `POST /api/v1/auth/phone/verify-otp` when `data.status == "authenticated"`
+/// - `POST /api/v1/auth/complete-profile`
+/// - `POST /api/v1/auth/firebase` (social login)
+///
+/// New API shape inside `data`:
 /// ```json
 /// {
-///   "accessToken": "...",
-///   "refreshToken": "...",
-///   "tokenType": "Bearer",
-///   "userId": "uuid",
-///   "email": "omar@gmail.com",
-///   "phone": "+201012345678",
-///   "firstName": "Omar",
-///   "lastName": "Tharwat",
-///   "fullName": "Omar Tharwat",
-///   "role": "ROLE_CUSTOMER",
-///   "newUser": false
+///   "status": "authenticated",
+///   "access_token": "...",
+///   "user": {
+///     "id": 1,
+///     "first_name": "Omar",
+///     "last_name": "Tharwat",
+///     "full_name": "Omar Tharwat",
+///     "email": "omar@example.com",
+///     "phone": "+201012345678",
+///     "auth_provider": "phone",
+///     "is_notify": 1
+///   }
 /// }
 /// ```
-///
-/// For a brand-new phone, `accessToken`/`refreshToken` are null and
-/// `newUser` is true — the client must then call `/api/v2/auth/register`.
 class AuthResponseModel {
-  final String? accessToken;
-  final String? refreshToken;
-  final String? tokenType;
-  final String userId;
-  final String? email;
-  final String? phone;
-  final String? firstName;
-  final String? lastName;
-  final String? fullName;
-  final String? role;
-  final bool newUser;
+  final String accessToken;
+  final UserModel user;
+
+  /// The `status` field from the `data` object, if present.
+  final String? status;
 
   const AuthResponseModel({
-    required this.userId,
-    this.accessToken,
-    this.refreshToken,
-    this.tokenType,
-    this.email,
-    this.phone,
-    this.firstName,
-    this.lastName,
-    this.fullName,
-    this.role,
-    this.newUser = false,
+    required this.accessToken,
+    required this.user,
+    this.status,
   });
 
-  bool get hasAccessToken =>
-      accessToken != null && accessToken!.trim().isNotEmpty;
-
+  /// Parses from the `data` JSON object of a verified/authenticated response.
   factory AuthResponseModel.fromJson(Map<String, dynamic> json) {
-    String? str(String key) {
+    String str(String key) {
       final v = json[key];
-      if (v == null) return null;
-      final s = v.toString().trim();
-      return s.isEmpty ? null : s;
+      if (v == null) return '';
+      return v.toString().trim();
+    }
+
+    // access_token may be at root or inside json directly
+    final token = str('access_token') != '' ? str('access_token') : str('accessToken');
+
+    final userJson = json['user'];
+    final UserModel user;
+    if (userJson is Map<String, dynamic>) {
+      user = UserModel.fromJson(userJson);
+    } else {
+      // Fallback: try to build user from flat fields (backward compat)
+      user = UserModel.fromJson(json);
     }
 
     return AuthResponseModel(
-      accessToken: str('accessToken') ?? str('access_token'),
-      refreshToken: str('refreshToken') ?? str('refresh_token'),
-      tokenType: str('tokenType') ?? str('token_type'),
-      userId: str('userId') ?? str('id') ?? '',
-      email: str('email'),
-      phone: str('phone'),
-      firstName: str('firstName'),
-      lastName: str('lastName'),
-      fullName: str('fullName'),
-      role: str('role'),
-      newUser: json['newUser'] == true,
+      accessToken: token,
+      user: user,
+      status: str('status') != '' ? str('status') : null,
     );
   }
 
-  /// Composes a display name from `fullName`, else `firstName + lastName`.
-  String get displayName {
-    final fn = fullName?.trim();
-    if (fn != null && fn.isNotEmpty) return fn;
-    final parts = [firstName, lastName]
-        .where((p) => p != null && p.trim().isNotEmpty)
-        .map((p) => p!.trim())
-        .toList();
-    return parts.join(' ');
-  }
+  bool get hasAccessToken => accessToken.isNotEmpty;
 
-  /// Exposes the user payload as a [UserModel].
-  UserModel get user => UserModel(
-    id: userId,
-    name: displayName,
-    email: email,
-    phone: phone,
-    role: role,
-  );
+  // ── Backward compat getters used by AuthRepositoryImpl ────────────────────
+  String get userId => user.id;
+  String? get email => user.email;
+  String? get phone => user.phone;
+  String? get role => user.role;
+
+  /// Always false now — new API never returns newUser; instead the `data.status`
+  /// field on verify-otp returns `"complete_profile"` for new users.
+  bool get newUser => false;
 }

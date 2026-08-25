@@ -19,7 +19,9 @@ class StoreDetailCubit extends Cubit<StoreDetailState> {
     emit(const StoreDetailState.loading());
     try {
       final restaurantResult = await _restaurantRepository.getRestaurantDetail(storeId);
+      if (isClosed) return;
       final menuResult = await _menuRepository.getRestaurantMenu(storeId);
+      if (isClosed) return;
 
       restaurantResult.fold(
         (failure) => emit(StoreDetailState.error(failure.message)),
@@ -27,7 +29,6 @@ class StoreDetailCubit extends Cubit<StoreDetailState> {
           menuResult.fold(
             (failure) => emit(StoreDetailState.error(failure.message)),
             (categories) {
-              // Extract featured products from all categories as a fallback if not provided explicitly
               final List<MenuItem> featuredProducts = categories
                   .expand((cat) => cat.items)
                   .take(10)
@@ -43,7 +44,9 @@ class StoreDetailCubit extends Cubit<StoreDetailState> {
         },
       );
     } catch (e) {
+      if (isClosed) return;
       emit(StoreDetailState.error(e.toString()));
     }
+
   }
 }

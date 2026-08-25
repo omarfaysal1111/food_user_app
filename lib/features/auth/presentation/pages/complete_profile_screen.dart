@@ -1,5 +1,11 @@
+import 'package:food_user_app/features/auth/presentation/widgets/phone_number_field.dart';
+
+import 'phone_auth_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/core/utils/phone_formatter.dart';
+
 import 'package:go_router/go_router.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
@@ -20,11 +26,16 @@ import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class CompleteProfileScreen extends StatefulWidget {
-  /// Phone number that was just verified via OTP (`newUser:true`). Required to
-  /// complete sign-up via `POST /api/v2/auth/register`.
-  const CompleteProfileScreen({super.key, required this.phone});
+  /// Registration token received from verify-otp `complete_profile` response.
+  /// Required to call `POST /api/v1/auth/complete-profile`.
+  const CompleteProfileScreen({
+    super.key,
+    required this.registrationToken,
+    required this.requiredFields,
+  });
 
-  final String phone;
+  final String registrationToken;
+  final List<String> requiredFields;
 
   @override
   State<CompleteProfileScreen> createState() => _CompleteProfileScreenState();
@@ -33,24 +44,38 @@ class CompleteProfileScreen extends StatefulWidget {
 class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   @override
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
   void _submit() {
     FocusManager.instance.primaryFocus?.unfocus();
+    
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
-    if (firstName.isEmpty || lastName.isEmpty) return;
+    final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim().formatAsEgyptianPhone();
+
+    if (widget.requiredFields.contains('first_name') && firstName.isEmpty) return;
+    if (widget.requiredFields.contains('last_name') && lastName.isEmpty) return;
+    if (widget.requiredFields.contains('email') && email.isEmpty) return;
+    if (widget.requiredFields.contains('phone') && phone.isEmpty) return;
+
     context.read<AuthBloc>().add(
       CompleteRegistrationSubmitted(
-        phone: widget.phone,
-        firstName: firstName,
-        lastName: lastName,
+        registrationToken: widget.registrationToken,
+        firstName: widget.requiredFields.contains('first_name') ? firstName : null,
+        lastName: widget.requiredFields.contains('last_name') ? lastName : null,
+        email: widget.requiredFields.contains('email') ? email : null,
+        phone: widget.requiredFields.contains('phone') ? phone : null,
       ),
     );
   }
@@ -65,10 +90,20 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
         child: BlocListener<AuthBloc, AuthState>(
           listenWhen: (prev, curr) =>
               curr is CompleteRegistrationSuccess ||
-              curr is CompleteRegistrationFailure,
+              curr is CompleteRegistrationFailure ||
+              curr is PhoneOtpVerificationRequired,
           listener: (context, state) {
             if (state is CompleteRegistrationSuccess) {
               context.go(RouteNames.home);
+            } else if (state is PhoneOtpVerificationRequired) {
+              context.push(
+                RouteNames.mockOtp,
+                extra: MockOtpArgs(
+                  phoneNumber: state.phone,
+                  isSocial: true,
+                  registrationToken: state.registrationToken,
+                ),
+              );
             } else if (state is CompleteRegistrationFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -106,18 +141,45 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     style: AppTextStyles.subtitle(context),
                   ),
                   const SizedBox(height: 32),
-                  AuthTextField(
-                    controller: _firstNameController,
-                    label: l10n.firstNameLabel,
-                    hintText: l10n.firstNameHint,
-                  ),
-                  const SizedBox(height: 16),
-                  AuthTextField(
-                    controller: _lastNameController,
-                    label: l10n.lastNameLabel,
-                    hintText: l10n.lastNameHint,
-                  ),
-                  const SizedBox(height: 24),
+                  if (widget.requiredFields.contains('first_name')) ...[
+                    AuthTextField(
+                      controller: _firstNameController,
+                      label: l10n.firstNameLabel,
+                      hintText: l10n.firstNameHint,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  if (widget.requiredFields.contains('last_name')) ...[
+                    AuthTextField(
+                      controller: _lastNameController,
+                      label: l10n.lastNameLabel,
+                      hintText: l10n.lastNameHint,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  if (widget.requiredFields.contains('email')) ...[
+                    AuthTextField(
+                      controller: _emailController,
+                      label: l10n.registerEmailLabel,
+                      hintText: l10n.registerEmailHint,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  if (widget.requiredFields.contains('phone')) ...[
+                    Text(
+                      l10n.registerPhoneLabel,
+                      textAlign: TextAlign.start,
+                      style: AppTextStyles.fieldLabel(context),
+                    ),
+                    const SizedBox(height: 8),
+                    PhoneNumberField(
+                      controller: _phoneController,
+                      hintText: l10n.registerPhoneHint,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  const SizedBox(height: 8),
                   BlocBuilder<AuthBloc, AuthState>(
                     buildWhen: (prev, curr) =>
                         curr is CompleteRegistrationInProgress ||

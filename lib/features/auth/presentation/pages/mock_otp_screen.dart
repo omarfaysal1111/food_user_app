@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:food_user_app/features/auth/presentation/pages/complete_profile_args.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -59,12 +61,17 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
     if (otp.length < 6) return;
     // Verify with backend; navigation happens in the BlocListener.
     context.read<AuthBloc>().add(
-      PhoneOtpVerifySubmitted(phone: widget.args.phoneNumber, otp: otp),
+      PhoneOtpVerifySubmitted(
+        phone: widget.args.phoneNumber,
+        otp: otp,
+        registrationToken: widget.args.registrationToken,
+      ),
     );
   }
 
   void _resend() {
     if (_seconds > 0) return;
+    _controller.clear();
     setState(() => _seconds = 59);
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -89,22 +96,28 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
       body: SafeArea(
         child: BlocListener<AuthBloc, AuthState>(
           listenWhen: (prev, curr) =>
-              curr is PhoneOtpNewUser ||
+              curr is PhoneOtpCompleteProfile ||
               curr is PhoneOtpLoginSuccess ||
               curr is CompleteRegistrationSuccess ||
               curr is CompleteRegistrationFailure ||
               curr is PhoneOtpVerifyFailure,
           listener: (context, state) {
-            if (state is PhoneOtpNewUser) {
+            if (state is PhoneOtpCompleteProfile) {
               if (widget.args.isSocial && widget.args.firstName != null && widget.args.lastName != null) {
                 context.read<AuthBloc>().add(CompleteRegistrationSubmitted(
-                  phone: state.phone,
+                  registrationToken: state.registrationToken,
                   firstName: widget.args.firstName!,
                   lastName: widget.args.lastName!,
                   email: widget.args.email,
                 ));
               } else {
-                context.push(RouteNames.completeProfile, extra: state.phone);
+                context.push(
+                  RouteNames.completeProfile,
+                  extra: CompleteProfileArgs(
+                    registrationToken: state.registrationToken,
+                    requiredFields: state.requiredFields,
+                  ),
+                );
               }
             } else if (state is PhoneOtpLoginSuccess || state is CompleteRegistrationSuccess) {
               context.go(RouteNames.home);
@@ -173,7 +186,7 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
                   BlocBuilder<AuthBloc, AuthState>(
                     buildWhen: (prev, curr) =>
                         curr is PhoneOtpVerifyInProgress ||
-                        curr is PhoneOtpNewUser ||
+                        curr is PhoneOtpCompleteProfile ||
                         curr is PhoneOtpLoginSuccess ||
                         curr is PhoneOtpVerifyFailure ||
                         curr is AuthStateInitial,
@@ -308,7 +321,10 @@ class _ResendRow extends StatelessWidget {
             l10n.otpResend,
             style: AppTextStyles.textLink(
               context,
-            ).copyWith(color: AppColors.primary, fontSize: 14),
+            ).copyWith(
+              color: seconds == 0 ? AppColors.primary : Colors.grey,
+              fontSize: 14,
+            ),
           ),
         ),
       ],

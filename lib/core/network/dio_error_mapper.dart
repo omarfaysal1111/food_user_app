@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import 'package:dio/dio.dart';
 
 import '../errors/exceptions.dart';
@@ -45,6 +47,7 @@ class DioErrorMapper {
       return UnauthorizedException(message);
     }
     if (status == 422) {
+      try { debugPrint('[422 ValidationError] ${response?.data}'); } catch (_) {}
       return ValidationException(
         message,
         errors: _extractValidationErrors(data),
@@ -58,9 +61,13 @@ class DioErrorMapper {
 
   static String? _extractMessage(dynamic data) {
     if (data is Map) {
-      final msg = data['message'];
+      final msg = data['msg'];
       if (msg is String && msg.trim().isNotEmpty) {
         return msg;
+      }
+      final message = data['message'];
+      if (message is String && message.trim().isNotEmpty) {
+        return message;
       }
       final err = data['error'];
       if (err is String && err.trim().isNotEmpty) {
@@ -74,8 +81,13 @@ class DioErrorMapper {
   }
 
   static Map<String, dynamic>? _extractValidationErrors(dynamic data) {
-    if (data is Map && data['errors'] is Map) {
-      return Map<String, dynamic>.from(data['errors'] as Map);
+    if (data is Map) {
+      if (data['data'] is Map) {
+        return Map<String, dynamic>.from(data['data'] as Map);
+      }
+      if (data['errors'] is Map) {
+        return Map<String, dynamic>.from(data['errors'] as Map);
+      }
     }
     return null;
   }

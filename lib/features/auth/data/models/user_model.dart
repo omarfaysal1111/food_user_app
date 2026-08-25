@@ -1,40 +1,73 @@
 import 'package:food_user_app/features/auth/domain/entities/user.dart';
 
+/// Data model for the user JSON object returned by the Plezmo API.
+///
+/// New API shape:
+/// ```json
+/// {
+///   "id": 1,
+///   "first_name": "Omar",
+///   "last_name": "Tharwat",
+///   "full_name": "Omar Tharwat",
+///   "email": "omar@example.com",
+///   "phone": "+201012345678",
+///   "auth_provider": "phone",
+///   "is_notify": 1
+/// }
+/// ```
 class UserModel extends User {
   const UserModel({
     required super.id,
     required super.name,
+    super.firstName,
+    super.lastName,
     super.email,
     super.phone,
+    super.authProvider,
+    super.isNotify,
     super.role,
   });
 
-  /// Parses a flat user-shaped JSON object.
-  ///
-  /// Accepts both `id` and `userId` for the identifier, and composes a display
-  /// name from `name`, else `fullName`, else `firstName` + `lastName` — so the
-  /// same model parses the backend auth envelope and the locally cached user.
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    final rawId = json['userId'] ?? json['id'];
-
-    String composeName() {
-      final name = json['name']?.toString().trim();
-      if (name != null && name.isNotEmpty) return name;
-      final full = json['fullName']?.toString().trim();
-      if (full != null && full.isNotEmpty) return full;
-      final parts = [json['firstName'], json['lastName']]
-          .where((p) => p != null && p.toString().trim().isNotEmpty)
-          .map((p) => p.toString().trim())
-          .toList();
-      return parts.join(' ');
+    String? str(String key) {
+      final v = json[key];
+      if (v == null) return null;
+      final s = v.toString().trim();
+      return s.isEmpty ? null : s;
     }
+
+    // Compose display name: prefer full_name, then first+last, then name
+    String composeName() {
+      final full = str('full_name') ?? str('fullName');
+      if (full != null && full.isNotEmpty) return full;
+      final parts = [str('first_name') ?? str('firstName'), str('last_name') ?? str('lastName')]
+          .where((p) => p != null && p.isNotEmpty)
+          .cast<String>()
+          .toList();
+      if (parts.isNotEmpty) return parts.join(' ');
+      return str('name') ?? '';
+    }
+
+    // is_notify can be bool or int (1/0)
+    bool? parseIsNotify() {
+      final v = json['is_notify'];
+      if (v is bool) return v;
+      if (v is int) return v != 0;
+      return null;
+    }
+
+    final rawId = json['id'];
 
     return UserModel(
       id: rawId?.toString() ?? '',
       name: composeName(),
-      email: json['email']?.toString(),
-      phone: json['phone']?.toString(),
-      role: json['role']?.toString(),
+      firstName: str('first_name') ?? str('firstName'),
+      lastName: str('last_name') ?? str('lastName'),
+      email: str('email'),
+      phone: str('phone'),
+      authProvider: str('auth_provider') ?? str('authProvider'),
+      isNotify: parseIsNotify(),
+      role: str('role'),
     );
   }
 
@@ -42,8 +75,12 @@ class UserModel extends User {
     return {
       'id': id,
       'name': name,
+      if (firstName != null) 'first_name': firstName,
+      if (lastName != null) 'last_name': lastName,
       if (email != null) 'email': email,
       if (phone != null) 'phone': phone,
+      if (authProvider != null) 'auth_provider': authProvider,
+      if (isNotify != null) 'is_notify': isNotify! ? 1 : 0,
       if (role != null) 'role': role,
     };
   }

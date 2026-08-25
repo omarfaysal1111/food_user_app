@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:food_user_app/features/profile/presentation/pages/verify_phone_otp_args.dart';
+
 import 'package:go_router/go_router.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
@@ -48,10 +50,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           : '${profile.firstName} ${profile.lastName}';
       _emailController.text = profile.email;
       _phoneController.text = profile.phone;
-    } else {
-      _nameController.text = AppLocalizations.of(
-        context,
-      )!.accountPlaceholderName;
     }
     _didSetInitialProfileData = true;
   }
@@ -85,6 +83,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
       body: BlocListener<ProfileBloc, ProfileState>(
+        listenWhen: (prev, curr) => 
+            curr.updateProfileSuccess != prev.updateProfileSuccess || 
+            curr.errorMessage != prev.errorMessage ||
+            curr.sendCurrentOtpSuccess != prev.sendCurrentOtpSuccess ||
+            curr.profile != prev.profile,
         listener: (context, state) {
           if (state.updateProfileSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -96,6 +99,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             );
             context.pop();
+          }
+          if (state.sendCurrentOtpSuccess) {
+            context.push(
+              RouteNames.verifyPhoneOtp,
+              extra: VerifyPhoneOtpArgs(
+                phoneNumber: state.profile?.phone ?? '',
+                isCurrentPhone: true,
+              ),
+            );
           }
           if (state.errorMessage != null) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -109,18 +121,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           }
           final profile = state.profile;
           if (profile != null) {
-            if (_nameController.text.isEmpty ||
-                _nameController.text == l10n.accountPlaceholderName) {
+            if (_nameController.text.isEmpty) {
               _nameController.text = profile.fullName.isNotEmpty
                   ? profile.fullName
                   : '${profile.firstName} ${profile.lastName}';
             }
-            if (_emailController.text.isEmpty) {
-              _emailController.text = profile.email;
-            }
-            if (_phoneController.text.isEmpty) {
-              _phoneController.text = profile.phone;
-            }
+            // phone and email are read-only, so always sync them with the latest profile state
+            _emailController.text = profile.email;
+            _phoneController.text = profile.phone;
           }
         },
         child: GestureDetector(
@@ -166,7 +174,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           textDirection: TextDirection.ltr,
                           trailing: _PhoneChangeAction(
                             label: l10n.changePhone,
-                            onTap: () => context.push(RouteNames.changePhone),
+                            onTap: () {
+                              context.read<ProfileBloc>().add(const SendCurrentPhoneOtpEvent());
+                            },
                           ),
                         ),
                         const SizedBox(height: 20),

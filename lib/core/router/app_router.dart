@@ -1,5 +1,9 @@
 import 'package:go_router/go_router.dart';
 import '../constants/app_assets.dart';
+import 'package:food_user_app/features/profile/presentation/pages/verify_phone_otp_args.dart';
+
+import 'package:food_user_app/features/auth/presentation/pages/complete_profile_args.dart';
+
 import 'route_names.dart';
 import '../../features/splash/presentation/pages/splash_screen.dart';
 import '../../features/onboarding/presentation/pages/onboarding_screen.dart';
@@ -49,8 +53,11 @@ import '../../features/service_listing/presentation/pages/service_listing_screen
 import '../../features/search/presentation/pages/unified_results_screen.dart';
 import '../../features/search/presentation/models/results_config.dart';
 import '../../features/store/presentation/pages/store_details_screen.dart';
+import '../../features/market/presentation/pages/markets_list_screen.dart';
+import '../../features/market/presentation/pages/market_details_screen.dart';
 
 import 'package:flutter/material.dart';
+
 
 class AppRouter {
   AppRouter._();
@@ -94,8 +101,18 @@ class AppRouter {
       GoRoute(
         path: RouteNames.completeProfile,
         builder: (c, s) {
-          final phone = s.extra is String ? s.extra as String : '';
-          return CompleteProfileScreen(phone: phone);
+          if (s.extra is CompleteProfileArgs) {
+            final args = s.extra as CompleteProfileArgs;
+            return CompleteProfileScreen(
+              registrationToken: args.registrationToken,
+              requiredFields: args.requiredFields,
+            );
+          }
+          final registrationToken = s.extra is String ? s.extra as String : '';
+          return CompleteProfileScreen(
+            registrationToken: registrationToken,
+            requiredFields: const [],
+          );
         },
       ),
       GoRoute(
@@ -146,6 +163,17 @@ class AppRouter {
           storeId: s.pathParameters['id'] ?? 'store-id',
         ),
       ),
+      GoRoute(
+        path: RouteNames.marketsList,
+        builder: (c, s) => const MarketsListScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.marketDetail,
+        builder: (c, s) => MarketDetailsScreen(
+          marketId: s.pathParameters['id'] ?? '',
+        ),
+      ),
+
       GoRoute(
         path: RouteNames.unifiedResults,
         builder: (c, s) {
@@ -259,8 +287,11 @@ class AppRouter {
       GoRoute(
         path: RouteNames.verifyPhoneOtp,
         builder: (c, s) {
+          if (s.extra is VerifyPhoneOtpArgs) {
+            return VerifyPhoneOtpScreen(args: s.extra as VerifyPhoneOtpArgs);
+          }
           final phone = s.extra is String ? s.extra as String : '';
-          return VerifyPhoneOtpScreen(phoneNumber: phone);
+          return VerifyPhoneOtpScreen(args: VerifyPhoneOtpArgs(phoneNumber: phone));
         },
       ),
       GoRoute(

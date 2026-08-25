@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:food_user_app/core/usecases/usecase.dart';
@@ -32,16 +34,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final CompleteRegistrationUseCase completeRegistrationUseCase;
   final AuthRepository authRepository;
 
+  String? _registrationToken;
+
+  // ── Auth Check ─────────────────────────────────────────────────────────────
+
   Future<void> _onAuthCheckRequested(
     AuthCheckRequested event,
     Emitter<AuthState> emit,
   ) async {
     final loggedIn = await authRepository.isLoggedIn;
+    if (isClosed || emit.isDone) return;
     if (!loggedIn) {
       emit(const Unauthenticated());
       return;
     }
     final cachedUser = await authRepository.getCachedUser();
+    if (isClosed || emit.isDone) return;
     cachedUser.fold((_) => emit(const Unauthenticated()), (user) {
       if (user == null) {
         emit(const Unauthenticated());
@@ -51,14 +59,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 
-
+  // ── Logout ─────────────────────────────────────────────────────────────────
 
   Future<void> _onLogoutRequested(
     LogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
+    _registrationToken = null;
     emit(const LogoutInProgress());
     await logoutUseCase(const NoParams());
+    if (isClosed || emit.isDone) return;
     emit(const Unauthenticated());
   }
 
@@ -69,7 +79,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const SocialLoginInProgress());
-    
+
     try {
       SocialAuthResult? result;
       if (event.provider == 'google') {
@@ -80,32 +90,73 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         result = await SocialAuthService.signInWithFacebook();
       }
 
+      if (isClosed || emit.isDone) return;
+
       if (result == null) {
         emit(const SocialLoginFailure('Social login was canceled or failed.'));
         return;
       }
 
-      final response = await authRepository.loginWithFirebase(idToken: result.idToken);
+      final response = await authRepository.loginWithFirebase(
+        idToken: result.idToken,
+      );
+      if (isClosed || emit.isDone) return;
       response.fold(
         (failure) => emit(SocialLoginFailure(failure.message)),
-        (authResponse) {
-          if (authResponse.newUser) {
-            emit(SocialLoginNewUser(
-              firstName: result!.firstName,
-              lastName: result.lastName,
-              email: result.email,
+        (authFlow) {
+          if (authFlow.registrationToken != null && authFlow.registrationToken!.isNotEmpty) {
+            _registrationToken = authFlow.registrationToken;
+          }
+          if (authFlow.isAuthenticated && authFlow.user != null) {
+            _registrationToken = null;
+            emit(Authenticated(authFlow.user!));
+          } else if (authFlow.needsPhoneVerification) {
+            // Social login required phone verification
+            emit(PhoneOtpVerificationRequired(
+              phone: '', // Can't know phone yet unless it was returned, but usually they enter it
+              registrationToken: authFlow.registrationToken ?? _registrationToken ?? '',
             ));
           } else {
-            emit(Authenticated(authResponse.user));
+            // complete_profile
+            emit(PhoneOtpCompleteProfile(
+              registrationToken: authFlow.registrationToken ?? _registrationToken ?? '',
+              requiredFields: authFlow.requiredFields ?? [],
+            ));
           }
         },
       );
+    } on FirebaseAuthException catch (e) {
+      if (isClosed || emit.isDone) return;
+      if (e.code == 'account-exists-with-different-credential') {
+        final email = e.email;
+        if (email != null) {
+          try {
+            // ignore: deprecated_member_use
+            final methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+            final providerList = methods.isNotEmpty ? methods.join(', ') : 'another method';
+            emit(SocialLoginFailure(
+              'An account already exists with the same email ($email) but signed in using $providerList. Please sign in using your original method.',
+            ));
+          } catch (_) {
+            emit(SocialLoginFailure(
+              'An account already exists with the same email ($email). Please sign in using your original method.',
+            ));
+          }
+        } else {
+          emit(const SocialLoginFailure(
+            'An account already exists with different credentials. Please sign in using your original method.',
+          ));
+        }
+      } else {
+        emit(SocialLoginFailure(e.message ?? e.toString()));
+      }
     } catch (e) {
+      if (isClosed || emit.isDone) return;
       emit(SocialLoginFailure(e.toString()));
     }
   }
 
-  // ── Unified phone login/register (API v2) ──────────────────────────────────
+  // ── Phone OTP Flow (New Plezmo API) ───────────────────────────────────────
 
   Future<void> _onPhoneOtpRequested(
     PhoneOtpRequested event,
@@ -114,10 +165,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const PhoneOtpSendInProgress());
     final phone = event.phone.trim();
     final result = await sendPhoneOtpUseCase(SendPhoneOtpParams(phone: phone));
+    if (isClosed || emit.isDone) return;
     result.fold(
       (failure) => emit(PhoneOtpSendFailure(failure.message)),
-      (isExistingUser) =>
-          emit(PhoneOtpSent(phone: phone, isExistingUser: isExistingUser)),
+      (_) => emit(PhoneOtpSent(phone: phone)),
     );
   }
 
@@ -126,19 +177,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const PhoneOtpVerifyInProgress());
-    final phone = event.phone.trim();
+    final regToken = (event.registrationToken != null && event.registrationToken!.trim().isNotEmpty)
+        ? event.registrationToken!.trim()
+        : _registrationToken;
     final result = await verifyPhoneOtpUseCase(
-      VerifyPhoneOtpParams(phone: phone, otp: event.otp.trim()),
+      VerifyPhoneOtpParams(
+        phone: event.phone.trim(),
+        otp: event.otp.trim(),
+        registrationToken: regToken,
+      ),
     );
-    result.fold((failure) => emit(PhoneOtpVerifyFailure(failure.message)), (
-      verify,
-    ) {
-      if (verify.newUser || verify.user == null) {
-        emit(PhoneOtpNewUser(verify.phone));
-      } else {
-        emit(PhoneOtpLoginSuccess(verify.user!));
-      }
-    });
+    if (isClosed || emit.isDone) return;
+    result.fold(
+      (failure) => emit(PhoneOtpVerifyFailure(failure.message)),
+      (verify) {
+        if (verify.isAuthenticated && verify.user != null) {
+          _registrationToken = null;
+          emit(PhoneOtpLoginSuccess(verify.user!));
+        } else {
+          if (verify.registrationToken != null && verify.registrationToken!.isNotEmpty) {
+            _registrationToken = verify.registrationToken;
+          }
+          emit(PhoneOtpCompleteProfile(
+            registrationToken: verify.registrationToken ?? _registrationToken ?? '',
+            requiredFields: verify.requiredFields ?? [],
+          ));
+        }
+      },
+    );
   }
 
   Future<void> _onCompleteRegistrationSubmitted(
@@ -146,17 +212,36 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const CompleteRegistrationInProgress());
+    _registrationToken = event.registrationToken;
     final result = await completeRegistrationUseCase(
       CompleteRegistrationParams(
-        phone: event.phone.trim(),
-        firstName: event.firstName.trim(),
-        lastName: event.lastName.trim(),
+        registrationToken: event.registrationToken,
+        firstName: event.firstName?.trim(),
+        lastName: event.lastName?.trim(),
         email: event.email?.trim(),
+        phone: event.phone?.trim(),
       ),
     );
+    if (isClosed || emit.isDone) return;
     result.fold(
       (failure) => emit(CompleteRegistrationFailure(failure.message)),
-      (user) => emit(CompleteRegistrationSuccess(user)),
+      (authFlow) {
+        if (authFlow.registrationToken != null && authFlow.registrationToken!.isNotEmpty) {
+          _registrationToken = authFlow.registrationToken;
+        }
+        if (authFlow.needsPhoneVerification) {
+          emit(PhoneOtpVerificationRequired(
+            phone: event.phone ?? '', // pass the phone they just entered
+            registrationToken: authFlow.registrationToken ?? event.registrationToken,
+          ));
+        } else if (authFlow.isAuthenticated && authFlow.user != null) {
+          _registrationToken = null;
+          emit(CompleteRegistrationSuccess(authFlow.user!));
+        } else {
+           // fallback / unexpected
+          emit(const CompleteRegistrationFailure('Unexpected response after completing profile'));
+        }
+      },
     );
   }
 }

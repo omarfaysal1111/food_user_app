@@ -1,25 +1,44 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:food_user_app/features/user/domain/entities/user_settings.dart';
 
-part 'user_settings_dto.freezed.dart';
-part 'user_settings_dto.g.dart';
+class UserSettingsDto {
+  final String id;
+  final String? locale;
+  final bool? pushNotifications;
+  final bool? smsNotifications;
+  final bool? emailNotifications;
+  final String? theme;
 
-@freezed
-abstract class UserSettingsDto with _$UserSettingsDto {
-  const factory UserSettingsDto({
-    required String id,
-    String? locale,
-    bool? pushNotifications,
-    bool? smsNotifications,
-    bool? emailNotifications,
-    String? theme,
-  }) = _UserSettingsDto;
+  const UserSettingsDto({
+    required this.id,
+    this.locale,
+    this.pushNotifications,
+    this.smsNotifications,
+    this.emailNotifications,
+    this.theme,
+  });
 
-  factory UserSettingsDto.fromJson(Map<String, dynamic> json) =>
-      _$UserSettingsDtoFromJson(json);
-}
+  factory UserSettingsDto.fromJson(Map<String, dynamic> json) {
+    return UserSettingsDto(
+      id: json['id']?.toString() ?? '',
+      locale: json['locale'] as String?,
+      pushNotifications: json['is_notify'] as bool? ?? json['pushNotifications'] as bool?,
+      smsNotifications: json['smsNotifications'] as bool?,
+      emailNotifications: json['emailNotifications'] as bool?,
+      theme: json['theme'] as String?,
+    );
+  }
 
-extension UserSettingsDtoMapper on UserSettingsDto {
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'locale': locale,
+      'is_notify': pushNotifications,
+      'smsNotifications': smsNotifications,
+      'emailNotifications': emailNotifications,
+      'theme': theme,
+    };
+  }
+
   UserSettings toEntity() {
     return UserSettings(
       id: id,

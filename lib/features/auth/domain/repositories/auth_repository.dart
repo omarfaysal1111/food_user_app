@@ -1,20 +1,29 @@
 import 'package:dartz/dartz.dart' show Either, Unit;
 import 'package:food_user_app/core/errors/failures.dart';
 import 'package:food_user_app/features/auth/domain/entities/user.dart';
-import 'package:food_user_app/features/auth/data/models/auth_response_model.dart';
 
 /// Outcome of verifying a phone OTP in the unified flow.
-/// - [newUser] true  → no account yet; navigate to complete-profile (register).
-/// - [newUser] false → existing account; session persisted, [user] is set.
-class PhoneVerifyResult {
-  final bool newUser;
-  final String phone;
+///
+/// - [isAuthenticated] true  → session persisted, [user] is set.
+/// - [isAuthenticated] false → new user; navigate to complete-profile.
+///   In that case [registrationToken] and [requiredFields] are set.
+class AuthFlowResult {
+  final bool isAuthenticated;
+  final bool needsPhoneVerification;
   final User? user;
 
-  const PhoneVerifyResult({
-    required this.newUser,
-    required this.phone,
+  /// One-time token required to call `complete-profile` or `verify-otp`. Non-null when !isAuthenticated.
+  final String? registrationToken;
+
+  /// List of required fields for profile completion. Non-null when !isAuthenticated and !needsPhoneVerification.
+  final List<String>? requiredFields;
+
+  const AuthFlowResult({
+    required this.isAuthenticated,
+    this.needsPhoneVerification = false,
     this.user,
+    this.registrationToken,
+    this.requiredFields,
   });
 }
 
@@ -34,29 +43,36 @@ abstract class AuthRepository {
   /// Calls remote logout when possible, then always clears local session.
   Future<Either<Failure, Unit>> logout();
 
-  // ── Unified phone login/register (API v2) ──────────────────────────────────
+  // ── Phone OTP Flow (New Plezmo API) ────────────────────────────────────
 
-  /// Sends an OTP to [phone] (login OR sign-up). Returns `isExistingUser`.
-  Future<Either<Failure, bool>> sendPhoneOtp({required String phone});
+  /// `POST /api/v1/auth/phone/send-otp` — sends OTP to [phone].
+  Future<Either<Failure, void>> sendPhoneOtp({required String phone});
 
-  /// Verifies [otp] for [phone]. For an existing account the session (tokens +
-  /// user) is persisted before returning. For a new phone, [PhoneVerifyResult.newUser]
-  /// is true and the caller proceeds to [completeRegistration].
-  Future<Either<Failure, PhoneVerifyResult>> verifyPhoneOtp({
+  /// `POST /api/v1/auth/phone/verify-otp` — verifies OTP for [phone].
+  /// - Existing user: session persisted, returns [AuthFlowResult.isAuthenticated] = true.
+  /// - New user: returns [AuthFlowResult.isAuthenticated] = false with [registrationToken].
+  Future<Either<Failure, AuthFlowResult>> verifyPhoneOtp({
     required String phone,
     required String otp,
+    String? registrationToken,
   });
 
-  /// Completes sign-up for a freshly-verified [phone]; persists the session.
-  Future<Either<Failure, User>> completeRegistration({
-    required String phone,
-    required String firstName,
-    required String lastName,
+  /// `POST /api/v1/auth/complete-profile` — completes profile using [registrationToken].
+  Future<Either<Failure, AuthFlowResult>> completeRegistration({
+    required String registrationToken,
+    String? firstName,
+    String? lastName,
     String? email,
+    String? phone,
+  });
+
+  /// `PATCH /api/v1/auth/update-fcm` — registers/updates FCM token.
+  Future<Either<Failure, void>> updateFcm({
+    required String fcmToken,
   });
 
   /// Handshake with backend for social login
-  Future<Either<Failure, AuthResponseModel>> loginWithFirebase({
+  Future<Either<Failure, AuthFlowResult>> loginWithFirebase({
     required String idToken,
   });
 }

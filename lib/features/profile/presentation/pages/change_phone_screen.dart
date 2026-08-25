@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:food_user_app/core/utils/phone_formatter.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_state.dart';
+import 'package:food_user_app/features/profile/presentation/pages/verify_phone_otp_args.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
@@ -42,7 +50,7 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
   void _confirmPhone() {
     FocusManager.instance.primaryFocus?.unfocus();
     final l10n = AppLocalizations.of(context)!;
-    final phone = _phoneController.text.trim();
+    final phone = _phoneController.text.trim().formatAsEgyptianPhone();
 
     if (phone.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -57,8 +65,7 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
     }
 
     final hasValidLength = phone.length == 11 || phone.length == 12;
-    final isDigitsOnly = RegExp(r'^\d+$').hasMatch(phone);
-    if (!isDigitsOnly || !hasValidLength) {
+    if (!hasValidLength) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -70,8 +77,7 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
       return;
     }
 
-    // TODO: Send OTP through the real change-phone API.
-    context.push(RouteNames.verifyPhoneOtp, extra: phone);
+    context.read<ProfileBloc>().add(SendNewPhoneOtpEvent(phone));
   }
 
   @override
@@ -81,14 +87,39 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.scaffoldBackground(context),
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              const _PhoneFlowBackHeader(),
+      body: BlocListener<ProfileBloc, ProfileState>(
+        listenWhen: (prev, curr) => 
+            curr.sendNewOtpSuccess != prev.sendNewOtpSuccess ||
+            curr.errorMessage != prev.errorMessage,
+        listener: (context, state) {
+          if (state.errorMessage != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.errorMessage!,
+                  style: AppTextStyles.snackBarMessage(context),
+                ),
+              ),
+            );
+          } else if (state.sendNewOtpSuccess) {
+            context.push(
+              RouteNames.verifyPhoneOtp,
+              extra: VerifyPhoneOtpArgs(
+                phoneNumber: _phoneController.text.trim(),
+                isCurrentPhone: false,
+                newPhoneNumber: _phoneController.text.trim(),
+              ),
+            );
+          }
+        },
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                const _PhoneFlowBackHeader(),
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
@@ -136,6 +167,7 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
             ],
           ),
         ),
+      ),
       ),
     );
   }
@@ -314,7 +346,9 @@ class _EgyptPhonePrefix extends StatelessWidget {
             Text(
               '+20',
               style: AppTextStyles.inputText(context).copyWith(
-                color: AppColors.paragraph(context),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF999999)
+                    : const Color(0xFF787878),
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
                 height: 1.3,

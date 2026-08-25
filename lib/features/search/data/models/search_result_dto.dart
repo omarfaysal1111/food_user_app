@@ -1,28 +1,45 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:food_user_app/features/restaurant/data/models/restaurant_dto.dart';
 import 'package:food_user_app/features/restaurant/data/models/menu_item_dto.dart';
 import 'package:food_user_app/features/search/domain/entities/search_result.dart';
 
-part 'search_result_dto.freezed.dart';
-part 'search_result_dto.g.dart';
+class SearchResultDto {
+  final List<RestaurantDto>? restaurants;
+  final List<MenuItemDto>? items;
+  final bool isRandom;
 
-@freezed
-abstract class SearchResultDto with _$SearchResultDto {
-  const factory SearchResultDto({
-    List<RestaurantDto>? restaurants,
-    List<MenuItemDto>? items,
-  }) = _SearchResultDto;
+  const SearchResultDto({
+    this.restaurants,
+    this.items,
+    this.isRandom = false,
+  });
 
-  factory SearchResultDto.fromJson(Map<String, dynamic> json) =>
-      _$SearchResultDtoFromJson(json);
-}
+  factory SearchResultDto.fromJson(Map<String, dynamic> json) {
+    // The new response format: data: { items: [...], is_random: ... }
+    final isRandom = json['is_random'] == true;
+    final itemsList = json['items'] as List<dynamic>? ?? [];
+    
+    // Map Store objects to RestaurantDto objects since UI still uses Restaurant
+    final mappedRestaurants = itemsList.map((e) {
+      final store = e as Map<String, dynamic>;
+      return RestaurantDto(
+        id: store['id']?.toString() ?? '',
+        name: store['name'] as String?,
+        coverImageUrl: store['cover'] as String? ?? store['logo'] as String?,
+      );
+    }).toList();
 
-extension SearchResultDtoMapper on SearchResultDto {
+    return SearchResultDto(
+      restaurants: mappedRestaurants,
+      items: [], // Search response no longer returns items
+      isRandom: isRandom,
+    );
+  }
+
   SearchResult toEntity() {
     return SearchResult(
-      restaurants:
-          restaurants?.map((dto) => dto.toEntity()).toList() ?? const [],
+      restaurants: restaurants?.map((dto) => dto.toEntity()).toList() ?? const [],
       items: items?.map((dto) => dto.toEntity()).toList() ?? const [],
+      isRandom: isRandom,
     );
   }
 }

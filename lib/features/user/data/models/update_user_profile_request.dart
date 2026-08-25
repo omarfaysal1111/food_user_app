@@ -1,19 +1,28 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+class UpdateUserProfileRequest {
+  final String? firstName;
+  final String? lastName;
+  final String? phone;
+  final String? email;
+  final String? avatar;
+  final String? locale;
 
-part 'update_user_profile_request.freezed.dart';
-part 'update_user_profile_request.g.dart';
+  const UpdateUserProfileRequest({
+    this.firstName,
+    this.lastName,
+    this.phone,
+    this.email,
+    this.avatar,
+    this.locale,
+  });
 
-@freezed
-abstract class UpdateUserProfileRequest with _$UpdateUserProfileRequest {
-  const factory UpdateUserProfileRequest({
-    String? firstName,
-    String? lastName,
-    String? phone,
-    String? email,
-    String? avatar,
-    String? locale,
-  }) = _UpdateUserProfileRequest;
-
-  factory UpdateUserProfileRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateUserProfileRequestFromJson(json);
+  Map<String, dynamic> toJson() {
+    return {
+      if (firstName != null) 'first_name': firstName,
+      if (lastName != null) 'last_name': lastName,
+      if (phone != null) 'phone': phone,
+      if (email != null) 'email': email,
+      if (avatar != null) 'avatar': avatar,
+      if (locale != null) 'locale': locale,
+    };
+  }
 }

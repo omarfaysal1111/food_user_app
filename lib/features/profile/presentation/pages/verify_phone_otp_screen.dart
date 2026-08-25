@@ -1,4 +1,14 @@
 import 'dart:async';
+import 'package:food_user_app/core/utils/phone_formatter.dart';
+
+
+import 'package:food_user_app/core/router/route_names.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_state.dart';
+import 'package:food_user_app/features/profile/presentation/pages/verify_phone_otp_args.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,9 +22,9 @@ import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 class VerifyPhoneOtpScreen extends StatefulWidget {
-  const VerifyPhoneOtpScreen({super.key, required this.phoneNumber});
+  const VerifyPhoneOtpScreen({super.key, required this.args});
 
-  final String phoneNumber;
+  final VerifyPhoneOtpArgs args;
 
   @override
   State<VerifyPhoneOtpScreen> createState() => _VerifyPhoneOtpScreenState();
@@ -96,7 +106,12 @@ class _VerifyPhoneOtpScreenState extends State<VerifyPhoneOtpScreen> {
   void _onResendCode() {
     if (_secondsRemaining > 0 || _isCompleting) return;
 
-    // TODO: Resend OTP through the real change-phone API.
+    if (widget.args.isCurrentPhone) {
+      context.read<ProfileBloc>().add(const SendCurrentPhoneOtpEvent());
+    } else {
+      context.read<ProfileBloc>().add(SendNewPhoneOtpEvent(widget.args.newPhoneNumber!));
+    }
+
     _otpController.clear();
     setState(() {});
     _otpFocusNode.requestFocus();
@@ -109,8 +124,14 @@ class _VerifyPhoneOtpScreenState extends State<VerifyPhoneOtpScreen> {
     if (value.length < 6) return;
 
     FocusManager.instance.primaryFocus?.unfocus();
-    // TODO: Verify OTP through the real change-phone API.
-    _showSuccessDialogAndReturn();
+    
+    if (widget.args.isCurrentPhone) {
+      context.read<ProfileBloc>().add(VerifyCurrentPhoneOtpEvent(value));
+    } else {
+      context.read<ProfileBloc>().add(VerifyNewPhoneOtpEvent(
+          phone: widget.args.newPhoneNumber!.formatAsEgyptianPhone(),
+          otp: value));
+    }
   }
 
   Future<void> _showSuccessDialogAndReturn() async {
@@ -143,11 +164,35 @@ class _VerifyPhoneOtpScreenState extends State<VerifyPhoneOtpScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.scaffoldBackground(context),
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: SafeArea(
-          bottom: false,
+      body: BlocListener<ProfileBloc, ProfileState>(
+        listenWhen: (prev, curr) => 
+            curr.verifyCurrentOtpSuccess != prev.verifyCurrentOtpSuccess ||
+            curr.changePhoneSuccess != prev.changePhoneSuccess ||
+            curr.errorMessage != prev.errorMessage,
+        listener: (context, state) {
+          if (state.errorMessage != null) {
+            setState(() => _isCompleting = false);
+            _otpController.clear();
+            _otpFocusNode.requestFocus();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.errorMessage!,
+                  style: AppTextStyles.snackBarMessage(context),
+                ),
+              ),
+            );
+          } else if (widget.args.isCurrentPhone && state.verifyCurrentOtpSuccess) {
+            context.pushReplacement(RouteNames.changePhone);
+          } else if (!widget.args.isCurrentPhone && state.changePhoneSuccess) {
+            _showSuccessDialogAndReturn();
+          }
+        },
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: SafeArea(
+            bottom: false,
           child: Column(
             children: [
               const _OtpBackHeader(),
@@ -203,6 +248,7 @@ class _VerifyPhoneOtpScreenState extends State<VerifyPhoneOtpScreen> {
             ],
           ),
         ),
+      ),
       ),
     );
   }
@@ -436,9 +482,7 @@ class _ResendCodeRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 textDirection: Directionality.of(context),
                 style: AppTextStyles.footerSecondary(context).copyWith(
-                  color: AppColors.primary.withValues(
-                    alpha: enabled ? 1 : 0.55,
-                  ),
+                  color: enabled ? AppColors.primary : Colors.grey,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   height: 1.25,

@@ -313,6 +313,7 @@
   "editAddressTitle": "Edit Address",
   "saveAddress": "Confirm Add",
   "updateAddress": "Confirm Edit",
+  "fullAddress": "Full Address",
   "building": "Building Number",
   "apartment": "Apartment Number",
   "floor": "Floor",

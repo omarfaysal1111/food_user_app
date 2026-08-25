@@ -23,15 +23,15 @@ class OrderTrackingCubit extends Cubit<OrderTrackingState> {
 
   Future<void> _fetchTracking(String orderId) async {
     final result = await getOrderTrackingUseCase(orderId);
+    if (isClosed) return;
     result.fold(
       (failure) {
-        // If it's already loaded, we might not want to show an error state that replaces the UI
-        // But for simplicity, we emit error.
         emit(OrderTrackingState.error(failure.message));
       },
       (tracking) => emit(OrderTrackingState.loaded(tracking)),
     );
   }
+
 
   @override
   Future<void> close() {

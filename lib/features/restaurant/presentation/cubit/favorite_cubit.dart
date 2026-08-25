@@ -12,6 +12,7 @@ class FavoriteCubit extends Cubit<FavoriteState> {
   Future<void> loadFavorites() async {
     emit(const FavoriteState.loading());
     final result = await restaurantRepository.getFavorites();
+    if (isClosed) return;
     result.fold(
       (failure) => emit(
         FavoriteState.error(
@@ -53,8 +54,6 @@ class FavoriteCubit extends Cubit<FavoriteState> {
       updatedRestaurants.removeWhere((r) => r.id == restaurantId);
     } else {
       updatedIds.add(restaurantId);
-      // If we don't have the full restaurant info, we can wait for a reload,
-      // or if it was toggled from a list card, it doesn't immediately need to be in the favorites page until reloaded.
     }
     emit(
       FavoriteState.loaded(
@@ -66,6 +65,8 @@ class FavoriteCubit extends Cubit<FavoriteState> {
     final result = isFav
         ? await restaurantRepository.removeFavorite(restaurantId)
         : await restaurantRepository.addFavorite(restaurantId);
+
+    if (isClosed) return;
 
     result.fold(
       (failure) {
@@ -87,4 +88,5 @@ class FavoriteCubit extends Cubit<FavoriteState> {
       },
     );
   }
+
 }

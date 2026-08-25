@@ -20,6 +20,7 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
   Future<void> fetchSavedCards() async {
     emit(const PaymentMethodState.loading());
     final result = await getSavedCardsUseCase(NoParams());
+    if (isClosed) return;
     result.fold(
       (failure) => emit(PaymentMethodState.error(failure.message)),
       (cards) => emit(PaymentMethodState.loaded(cards)),
@@ -30,6 +31,7 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
     final currentState = state;
     emit(const PaymentMethodState.loading());
     final result = await saveCardUseCase(params);
+    if (isClosed) return;
     result.fold(
       (failure) {
         emit(PaymentMethodState.error(failure.message));
@@ -66,6 +68,7 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
     emit(PaymentMethodState.loaded(newCards));
 
     final result = await deleteCardUseCase(DeleteCardParams(cardId: cardId));
+    if (isClosed) return;
     result.fold(
       (failure) {
         // Rollback on failure
@@ -77,4 +80,5 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
       },
     );
   }
+
 }

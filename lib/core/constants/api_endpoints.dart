@@ -5,52 +5,74 @@ class ApiEndpoints {
   ///   flutter run --dart-define=API_BASE_URL=https://...
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://delivery-system-api-otmb.onrender.com/api/v1',
+    defaultValue: 'https://mycar.msarweb.net',
   );
 
-  /// Base URL for forgot-password / OTP / set-password only (API v2).
-  /// Login, register, and other auth calls stay on [baseUrl] (v1).
+  /// Base URL for v2 API if needed.
   static const String baseUrlV2 = String.fromEnvironment(
     'API_BASE_URL_V2',
-    defaultValue: 'https://delivery-system-api-otmb.onrender.com/api/v2',
+    defaultValue: 'https://mycar.msarweb.net',
   );
 
-  // ── Auth (v1 — login, register, logout, …) ────────────────────────────────
-  static const String login = '/auth/login';
-  static const String register = '/auth/register';
+  // ── Auth (v1) ─────────────────────────────────────────────────────────────
 
-  // ── Unified phone login/register + password recovery (API v2) ─────────────
-  // The same `/auth/otp/send` + `/auth/otp/verify` drive the phone-first
-  // unified flow: send a code to any phone; verify → existing user gets tokens,
-  // a new phone gets `newUser:true` and then calls [registerV2].
-  static const String sendOtp = '/auth/otp/send';
-  static const String verifyOtp = '/auth/otp/verify';
+  // ── Phone OTP Flow ────────────────────────────────────────────────────────
+  /// `POST /api/v1/auth/phone/send-otp` body: `{ phone }`
+  static const String sendOtp = '/api/v1/auth/phone/send-otp';
 
-  /// Completes sign-up for a freshly OTP-verified phone (API v2).
-  static const String registerV2 = '/auth/register';
+  /// `POST /api/v1/auth/phone/verify-otp` body: `{ phone, otp, device_id, platform }`
+  /// Returns `status: "authenticated"` or `status: "complete_profile"`.
+  static const String verifyOtp = '/api/v1/auth/phone/verify-otp';
 
-  /// Requires `Authorization: Bearer <accessToken>` from verify OTP — see
-  /// [AuthInterceptor]. Do NOT add to [publicAuthPaths].
-  static const String setPassword = '/auth/set-password';
+  /// `POST /api/v1/auth/complete-profile` body: `{ registration_token, first_name, last_name, email }`
+  static const String completeProfile = '/api/v1/auth/complete-profile';
 
-  /// Absolute URL for a v2 auth path (used instead of the v1 [baseUrl]).
-  static String passwordRecoveryUrl(String path) => '$baseUrlV2$path';
+  /// `POST /api/v1/auth/logout` body: `{ device_id }`
+  static const String logout = '/api/v1/auth/logout';
 
-  /// Absolute URL for a v2 auth path. Alias of [passwordRecoveryUrl] with a
-  /// clearer name for the unified login/register flow.
-  static String v2(String path) => '$baseUrlV2$path';
+  /// `PATCH /api/v1/auth/update-fcm` body: `{ device_id, fcm_token, platform }`
+  static const String updateFcm = '/api/v1/auth/update-fcm';
 
-  static const String logout = '/auth/logout';
-  static const String firebaseAuth = '/auth/firebase';
-  static const String me = '/auth/me';
-  static const String refreshToken = '/auth/refresh';
+  /// `POST /api/v1/auth/social/login` social login handshake
+  static const String socialLogin = '/api/v1/auth/social/login';
+
+  static const String me = '/api/v1/auth/me';
+  static const String refreshToken = '/api/v1/auth/refresh';
+
+  // Legacy aliases (kept for compatibility with old code)
+  static const String login = '/api/v1/auth/login';
+  static const String register = '/api/v1/auth/register';
+  static const String registerV2 = '/api/v1/auth/register';
+  static const String setPassword = '/api/v1/auth/set-password';
+  static String v2(String path) => '$baseUrl$path';
 
   // ── User addresses ────────────────────────────────────────────────────────
+  static const String userAddressesAll = '/api/v1/user-addresses/all';
+  static const String userAddressesCreate = '/api/v1/user-addresses/create';
+  static const String userAddressesEdit = '/api/v1/user-addresses/edit';
+  static String userAddressShow(String id) => '/api/v1/user-addresses/show?id=$id';
+  static String userAddressDelete(String id) => '/api/v1/user-addresses/delete?id=$id';
+  
+  // Legacy aliases
   static const String userAddresses = '/user/addresses';
   static String userAddress(String id) => '$userAddresses/$id';
   static String userAddressDefault(String id) => '$userAddresses/$id/default';
 
   // ── User Profile & Settings ───────────────────────────────────────────────
+  /// `GET /api/v1/profile/show`
+  static const String profileShow = '/api/v1/profile/show';
+  /// `PUT /api/v1/profile/edit`
+  static const String profileEdit = '/api/v1/profile/edit';
+  /// `PUT /api/v1/profile/notifications`
+  static const String profileNotifications = '/api/v1/profile/notifications';
+
+  /// Change Phone Flow
+  static const String phoneSendCurrentOtp = '/api/v1/profile/phone/send-current-otp';
+  static const String phoneVerifyCurrentOtp = '/api/v1/profile/phone/verify-current-otp';
+  static const String phoneSendOtp = '/api/v1/profile/phone/send-otp';
+  static const String phoneVerifyOtp = '/api/v1/profile/phone/verify-otp';
+
+  // Legacy user profile endpoints
   static const String userProfile = '/user/profile';
   static const String userSettings = '/user/settings';
   static const String user = '/user';
@@ -62,6 +84,13 @@ class ApiEndpoints {
   static const String applyPromo = '/cart/promo';
 
   // ── Payment & Checkout ────────────────────────────────────────────────────
+  static const String userCardsAll = '/api/v1/user-cards/all';
+  static const String userCardsCreate = '/api/v1/user-cards/create';
+  static const String userCardsEdit = '/api/v1/user-cards/edit';
+  static String userCardShow(String id) => '/api/v1/user-cards/show?id=$id';
+  static String userCardDelete(String id) => '/api/v1/user-cards/delete?id=$id';
+
+  // Legacy
   static const String userCards = '/user/cards';
   static String userCard(String id) => '$userCards/$id';
   static const String checkout = '/payments/checkout';
@@ -77,8 +106,36 @@ class ApiEndpoints {
   static const String notificationsReadAll = '/notifications/read-all';
   static const String notificationsToken = '/notifications/token';
 
-  // ── Banners & Search ──────────────────────────────────────────────────────
-  static const String banners = '/banners';
+  // ── General Settings ──────────────────────────────────────────────────────
+  /// `GET /api/v1/general-settings` — public, no auth.
+  static const String generalSettings = '/api/v1/general-settings';
+
+  // ── Banners ────────────────────────────────────────────────────────────────
+  /// `GET /api/v1/banners` — public, no auth.
+  static const String banners = '/api/v1/banners';
+
+  // ── Sections ──────────────────────────────────────────────────────────────
+  /// `GET /api/v1/sections` — returns active home sections.
+  static const String sections = '/api/v1/sections';
+
+  // ── Tags ──────────────────────────────────────────────────────────────────
+  /// `GET /api/v1/tags?section_id={id}` — tags scoped to a section.
+  static const String tags = '/api/v1/tags';
+
+  // ── Stores ────────────────────────────────────────────────────────────────
+  /// `GET /api/v1/stores?section_id={id}&search=&tag_ids[]=&page=&per_page=`
+  static const String stores = '/api/v1/stores';
+
+  /// `GET /api/v1/stores/major?section_id={id}&page=&per_page=`
+  static const String majorStores = '/api/v1/stores/major';
+
+  // ── Search Logs ───────────────────────────────────────────────────────────
+  static const String userSearchLogsAll = '/api/v1/user-search-logs/all';
+  static const String userSearchLogsCreate = '/api/v1/user-search-logs/create';
+  static const String userSearchLogsDelete = '/api/v1/user-search-logs/delete';
+  static const String userSearchLogsClear = '/api/v1/user-search-logs/clear';
+
+  // ── Legacy search endpoint (kept for backward compat) ─────────────────────
   static const String search = '/search';
   static const String searchHistory = '/search/history';
 
@@ -98,6 +155,23 @@ class ApiEndpoints {
   static const String favorites = '/restaurants/favorites';
   static String toggleFavorite(String id) => '$restaurants/$id/favorite';
 
+  // ── Markets ───────────────────────────────────────────────────────────────
+  static const String markets = '/markets';
+  static String marketDetails(String id) => '$markets/$id';
+  static String marketCategories(String id) => '$markets/$id/categories';
+  static String marketSubCategories(String id, String categoryId) =>
+      '$markets/$id/categories/$categoryId/subcategories';
+  static String marketProducts(
+    String id,
+    String categoryId,
+    String subCategoryId,
+  ) =>
+      '$markets/$id/categories/$categoryId/subcategories/$subCategoryId/products';
+  static String marketOffers(String id) => '$markets/$id/offers';
+  static const String favoriteMarkets = '/markets/favorites';
+  static String toggleFavoriteMarket(String id) => '$markets/$id/favorite';
+
+
   /// Public auth endpoints that must NOT receive an Authorization header.
   /// `/auth/set-password` is intentionally NOT listed here.
   // Note: [registerV2] shares the same path string as [register]
@@ -107,8 +181,8 @@ class ApiEndpoints {
     register,
     sendOtp,
     verifyOtp,
-    firebaseAuth,
+    completeProfile,
+    socialLogin,
     refreshToken,
-    logout,
   };
 }

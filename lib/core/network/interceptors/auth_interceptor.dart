@@ -81,12 +81,16 @@ class AuthInterceptor extends Interceptor {
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
+    final status = err.response?.statusCode;
+    final bodyStatus = err.response?.data is Map ? err.response?.data['status'] : null;
+    final isUnauthorized = status == 401 || bodyStatus == 401;
+
     // Only handle 401s
-    if (err.response?.statusCode != 401) {
+    if (!isUnauthorized) {
       return handler.next(err);
     }
 
-    // If the failing request IS the refresh endpoint → logout immediately
+    // If the failing request IS the refresh endpoint or auth endpoint → logout immediately
     final failedPath = err.requestOptions.path;
     if (failedPath == ApiEndpoints.refreshToken ||
         failedPath.endsWith(ApiEndpoints.refreshToken)) {
@@ -103,9 +107,9 @@ class AuthInterceptor extends Interceptor {
       return; // Do NOT call handler.next / resolve here; it will be resolved later
     }
 
-    // ── FIRST 401 → ACQUIRE LOCK AND REFRESH ──────────────────────────────────
+    // ── FIRST 401 → ACQUIRE LOCK AND REFRESH OR LOGOUT ─────────────────────────
     _isRefreshing = true;
-    _logAuthDebug('Token refresh initiated for: $failedPath');
+    _logAuthDebug('Token invalid/expired (401) for: $failedPath');
 
     final refreshToken = await _tokenStorage.getRefreshToken();
     if (refreshToken == null || refreshToken.isEmpty) {

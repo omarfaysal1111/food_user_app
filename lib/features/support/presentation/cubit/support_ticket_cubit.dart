@@ -20,9 +20,11 @@ class SupportTicketCubit extends Cubit<SupportTicketState> {
     final result = await _createTicketUseCase(
       CreateTicketParams(subject: subject, message: message),
     );
+    if (isClosed) return;
     result.fold(
       (failure) => emit(SupportTicketState.error(failure.message)),
       (ticket) => emit(SupportTicketState.success(ticket)),
     );
   }
+
 }

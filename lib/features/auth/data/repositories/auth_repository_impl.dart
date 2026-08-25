@@ -22,7 +22,7 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthLocalDataSource localDataSource;
   final NetworkInfo networkInfo;
 
-
+  // ── Session helpers ──────────────────────────────────────────────────────
 
   @override
   Future<Either<Failure, User?>> getCachedUser() async {
@@ -62,55 +62,65 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, Unit>> logout() async {
-    final refresh = await localDataSource.getRefreshToken();
-    if (refresh != null &&
-        refresh.isNotEmpty &&
-        await networkInfo.isConnected) {
+    // Best-effort remote logout — local session is cleared regardless.
+    if (await networkInfo.isConnected) {
       try {
-        await remoteDataSource.logout(refreshToken: refresh);
-      } catch (_) {
-        // Best-effort remote logout; local session is cleared regardless.
-      }
+        // device_id is empty string as best-effort — caller can pass it via updateFcm separately
+        await remoteDataSource.logout();
+      } catch (_) {}
     }
     await _clearLocalSession();
     return const Right(unit);
   }
 
-  // ── Unified phone login/register (API v2) ──────────────────────────────────
+  // ── Phone OTP Flow ────────────────────────────────────────────────────────
 
   @override
-  Future<Either<Failure, bool>> sendPhoneOtp({required String phone}) async {
+  Future<Either<Failure, void>> sendPhoneOtp({required String phone}) async {
     if (!await networkInfo.isConnected) {
       return const Left(NetworkFailure('No internet connection'));
     }
     try {
-      final res = await remoteDataSource.sendPhoneOtp(phone: phone);
-      return Right(res.isExistingUser ?? false);
+      await remoteDataSource.sendPhoneOtp(phone: phone);
+      return const Right(null);
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
     }
   }
 
   @override
-  Future<Either<Failure, PhoneVerifyResult>> verifyPhoneOtp({
+  Future<Either<Failure, AuthFlowResult>> verifyPhoneOtp({
     required String phone,
     required String otp,
+    String? registrationToken,
   }) async {
     if (!await networkInfo.isConnected) {
       return const Left(NetworkFailure('No internet connection'));
     }
     try {
-      final auth = await remoteDataSource.verifyPhoneOtp(
+      final result = await remoteDataSource.verifyPhoneOtp(
         phone: phone,
         otp: otp,
+        registrationToken: registrationToken,
       );
-      if (auth.newUser || !auth.hasAccessToken) {
-        // New phone: nothing to persist yet — caller goes to complete-profile.
-        return Right(PhoneVerifyResult(newUser: true, phone: phone));
+
+      if (result.isAuthenticated && result.authResponse != null) {
+        await _persistSession(result.authResponse!);
+        return Right(
+          AuthFlowResult(
+            isAuthenticated: true,
+            user: result.authResponse!.user,
+          ),
+        );
       }
-      await _persistSession(auth);
+
+      // status == "complete_profile"
       return Right(
-        PhoneVerifyResult(newUser: false, phone: phone, user: auth.user),
+        AuthFlowResult(
+          isAuthenticated: false,
+          registrationToken: result.registrationToken,
+          requiredFields: result.requiredFields,
+        ),
       );
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
@@ -118,46 +128,87 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, User>> completeRegistration({
-    required String phone,
-    required String firstName,
-    required String lastName,
+  Future<Either<Failure, AuthFlowResult>> completeRegistration({
+    required String registrationToken,
+    String? firstName,
+    String? lastName,
     String? email,
+    String? phone,
   }) async {
     if (!await networkInfo.isConnected) {
       return const Left(NetworkFailure('No internet connection'));
     }
     try {
-      final auth = await remoteDataSource.completeRegistration(
-        phone: phone,
+      final authFlow = await remoteDataSource.completeProfile(
+        registrationToken: registrationToken,
         firstName: firstName,
         lastName: lastName,
         email: email,
+        phone: phone,
       );
-      await _persistSession(auth);
-      return Right(auth.user);
+
+      if (authFlow.isAuthenticated && authFlow.authResponse != null) {
+        await _persistSession(authFlow.authResponse!);
+      }
+
+      return Right(AuthFlowResult(
+        isAuthenticated: authFlow.isAuthenticated,
+        needsPhoneVerification: authFlow.needsPhoneVerification,
+        user: authFlow.authResponse?.user,
+        registrationToken: authFlow.registrationToken,
+        requiredFields: authFlow.requiredFields,
+      ));
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
     }
   }
 
   @override
-  Future<Either<Failure, AuthResponseModel>> loginWithFirebase({
+  Future<Either<Failure, void>> updateFcm({
+    required String fcmToken,
+  }) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure('No internet connection'));
+    }
+    try {
+      await remoteDataSource.updateFcm(
+        fcmToken: fcmToken,
+      );
+      return const Right(null);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, AuthFlowResult>> loginWithFirebase({
     required String idToken,
   }) async {
     if (!await networkInfo.isConnected) {
       return const Left(NetworkFailure('No internet connection'));
     }
     try {
-      final auth = await remoteDataSource.loginWithFirebase(idToken: idToken);
-      if (!auth.newUser && auth.hasAccessToken) {
-        await _persistSession(auth);
+      final authFlow = await remoteDataSource.loginWithFirebase(
+        idToken: idToken,
+      );
+      
+      if (authFlow.isAuthenticated && authFlow.authResponse != null) {
+        await _persistSession(authFlow.authResponse!);
       }
-      return Right(auth);
+
+      return Right(AuthFlowResult(
+        isAuthenticated: authFlow.isAuthenticated,
+        needsPhoneVerification: authFlow.needsPhoneVerification,
+        user: authFlow.authResponse?.user,
+        registrationToken: authFlow.registrationToken,
+        requiredFields: authFlow.requiredFields,
+      ));
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
     }
   }
+
+  // ── Private helpers ──────────────────────────────────────────────────────
 
   Future<void> _clearLocalSession() async {
     await localDataSource.clearTokens();
@@ -165,15 +216,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   Future<void> _persistSession(AuthResponseModel auth) async {
-    final access = auth.accessToken;
-    if (access != null && access.isNotEmpty) {
-      await localDataSource.cacheAccessToken(access);
-    }
-    final refresh = auth.refreshToken;
-    if (refresh != null && refresh.isNotEmpty) {
-      await localDataSource.cacheRefreshToken(refresh);
-    } else {
-      await localDataSource.clearRefreshToken();
+    if (auth.hasAccessToken) {
+      await localDataSource.cacheAccessToken(auth.accessToken);
     }
     await localDataSource.cacheUser(auth.user);
   }
@@ -186,9 +230,7 @@ class AuthRepositoryImpl implements AuthRepository {
     if (error is ServerException) return ServerFailure(error.message);
     if (error is NetworkException) return NetworkFailure(error.message);
     if (error is TimeoutException) return TimeoutFailure(error.message);
-    if (error is UnauthorizedException) {
-      return UnauthorizedFailure(error.message);
-    }
+    if (error is UnauthorizedException) return UnauthorizedFailure(error.message);
     if (error is ValidationException) {
       return ValidationFailure(error.message, errors: error.errors);
     }

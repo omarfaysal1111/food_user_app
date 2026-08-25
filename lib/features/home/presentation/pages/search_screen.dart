@@ -21,6 +21,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/search/presentation/cubit/search_cubit.dart';
 import 'package:food_user_app/features/search/presentation/cubit/search_state.dart';
 
+import 'package:food_user_app/features/search/domain/entities/search_log.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
 import 'package:food_user_app/core/widgets/empty_state_widget.dart';
@@ -187,6 +188,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         history: const [],
                         restaurants: result.restaurants,
                         items: result.items,
+                        isRandom: result.isRandom,
                       ),
                       orElse: () => _buildSearchResults(
                         context,
@@ -211,9 +213,10 @@ class _SearchScreenState extends State<SearchScreen> {
     BuildContext context, {
     required String query,
     required String? scope,
-    required List<String> history,
+    required List<SearchLog> history,
     required List<Restaurant> restaurants,
     required List<MenuItem> items,
+    bool isRandom = false,
   }) {
     final l10n = AppLocalizations.of(context)!;
     final copy = _SearchCopy.of(context);
@@ -244,11 +247,12 @@ class _SearchScreenState extends State<SearchScreen> {
         .toList();
 
     final showFilters = scope != null || query.isNotEmpty;
+    // We also consider noResults if API returned isRandom = true since those are fallback suggestions
     final noResults =
         query.isNotEmpty &&
-        displayedLargeStores.isEmpty &&
-        displayedStores.isEmpty &&
-        filteredProducts.isEmpty;
+        (displayedLargeStores.isEmpty &&
+         displayedStores.isEmpty &&
+         filteredProducts.isEmpty || isRandom);
 
     return CustomScrollView(
       controller: _scrollController,

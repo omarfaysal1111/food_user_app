@@ -112,10 +112,22 @@ class AddressDetailsScreen extends StatefulWidget {
 }
 
 class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
+  // fullAddress is sourced from the map pick result or existing address;
+  // it is sent silently in the API payload — no UI input field needed.
+  String _fullAddress = '';
   final _buildingController = TextEditingController();
   final _floorController = TextEditingController();
   final _apartmentController = TextEditingController();
   String? _hydratedAddressId;
+
+  @override
+  void initState() {
+    super.initState();
+    final initialAddress = widget.mapResult?.address;
+    if (initialAddress != null && initialAddress.isNotEmpty) {
+      _fullAddress = initialAddress;
+    }
+  }
 
   @override
   void dispose() {
@@ -243,6 +255,10 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
     _buildingController.text = address.buildingNumber ?? '';
     _floorController.text = address.floor ?? '';
     _apartmentController.text = address.apartment ?? '';
+    // Silently capture the full address for the API payload.
+    if (_fullAddress.isEmpty) {
+      _fullAddress = address.fullAddress ?? address.locationEn;
+    }
   }
 
   Future<bool> _submitAddress({
@@ -258,18 +274,21 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
         mapResult?.address ??
         existingAddress?.location(locale) ??
         l10n.deliveryAddress;
+    final detailedAddress = _fullAddress.trim().isNotEmpty
+        ? _fullAddress.trim()
+        : location;
     final selectedLatitude = mapResult?.latitude ?? existingAddress?.latitude;
     final selectedLongitude =
         mapResult?.longitude ?? existingAddress?.longitude;
     final validationPassed =
         !(mode == AddressFlowMode.add && mapResult == null) &&
-        location.trim().isNotEmpty;
+        detailedAddress.trim().isNotEmpty;
 
     _logAddressDebug(
       'ADD_ADDRESS_UI_SUBMIT '
       'selectedLat=$selectedLatitude '
       'selectedLng=$selectedLongitude '
-      'fullAddress="$location" '
+      'fullAddress="$detailedAddress" '
       'label="${existingAddress?.title(locale) ?? l10n.apartmentAddressTitle}" '
       'addressType="${existingAddress?.addressType ?? 'APARTMENT'}" '
       'buildingNumber="${_buildingController.text}" '
@@ -290,7 +309,7 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
       label:
           existingAddress?.title(Localizations.localeOf(context)) ??
           l10n.apartmentAddressTitle,
-      fullAddress: location,
+      fullAddress: detailedAddress,
       lat: latitude,
       lng: longitude,
       city: existingAddress?.city ?? mapResult?.city,
@@ -466,21 +485,6 @@ class _MapPreview extends StatelessWidget {
                 ),
               ),
             ),
-          Positioned(
-            left: 0,
-            right: 0,
-            top: compactBottomRadius ? null : height! * 0.44,
-            bottom: compactBottomRadius ? 36 : null,
-            child: SvgPicture.asset(
-              AppAssets.addressLocationIcon,
-              width: compactBottomRadius ? 28 : 36,
-              height: compactBottomRadius ? 28 : 36,
-              colorFilter: ColorFilter.mode(
-                AppColors.paragraph(context),
-                BlendMode.srcIn,
-              ),
-            ),
-          ),
         ],
       ),
     );

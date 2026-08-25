@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+
 import 'package:food_user_app/core/errors/exceptions.dart';
 import 'package:food_user_app/core/errors/failures.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
 import 'package:food_user_app/features/home/data/datasources/banner_remote_data_source.dart';
-import 'package:food_user_app/features/home/data/models/banner_dto.dart';
 import 'package:food_user_app/features/home/domain/entities/banner.dart';
 import 'package:food_user_app/features/home/domain/repositories/banner_repository.dart';
 
@@ -16,9 +16,9 @@ class BannerRepositoryImpl implements BannerRepository {
   @override
   Future<Either<Failure, List<BannerItem>>> getActiveBanners() async {
     try {
-      final dtos = await remoteDataSource.getActiveBanners();
-      final entities = dtos.map((dto) => dto.toEntity()).toList();
-      return Right(entities);
+      // BannerModel extends BannerItem — direct upcast is fine
+      final models = await remoteDataSource.getActiveBanners();
+      return Right(models);
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
     }
@@ -31,9 +31,7 @@ class BannerRepositoryImpl implements BannerRepository {
     if (error is ServerException) return ServerFailure(error.message);
     if (error is NetworkException) return NetworkFailure(error.message);
     if (error is TimeoutException) return TimeoutFailure(error.message);
-    if (error is UnauthorizedException) {
-      return UnauthorizedFailure(error.message);
-    }
+    if (error is UnauthorizedException) return UnauthorizedFailure(error.message);
     if (error is ValidationException) {
       return ValidationFailure(error.message, errors: error.errors);
     }

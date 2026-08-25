@@ -4,7 +4,6 @@ import 'package:food_user_app/core/errors/exceptions.dart';
 import 'package:food_user_app/core/errors/failures.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
 import 'package:food_user_app/features/address/data/datasources/address_remote_data_source.dart';
-import 'package:food_user_app/features/address/data/models/address_dto.dart';
 import 'package:food_user_app/features/address/data/models/create_address_request.dart';
 import 'package:food_user_app/features/address/domain/entities/address.dart';
 import 'package:food_user_app/features/address/domain/models/address_request.dart';
@@ -17,18 +16,15 @@ class AddressRepositoryImpl implements AddressRepository {
 
   /// Maps a pure-domain [AddressRequest] into the data-layer DTO.
   CreateAddressRequest _toDto(AddressRequest r) => CreateAddressRequest(
-    label: r.label,
+    name: r.label,
     fullAddress: r.fullAddress,
-    lat: r.lat,
-    lng: r.lng,
-    city: r.city,
-    neighborhood: r.neighborhood,
-    streetNumber: r.streetNumber,
     buildingNumber: r.buildingNumber,
     floor: r.floor,
     apartment: r.apartment,
-    addressType: r.addressType,
-    isDefault: r.isDefault,
+    lat: r.lat,
+    lng: r.lng,
+    type: r.addressType?.toLowerCase() == 'primary' ? 'primary' : 
+          r.addressType?.toLowerCase() == 'work' ? 'work' : 'other',
   );
 
   @override

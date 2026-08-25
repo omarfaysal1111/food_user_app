@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../constants/api_endpoints.dart';
-
 /// Debug-only request/response logger.
 ///
 /// Sensitive data is redacted:
@@ -18,6 +16,8 @@ class LoggingInterceptor extends Interceptor {
     'currentPassword',
     'refreshToken',
     'accessToken',
+    'access_token',
+    'firebase_id_token',
     'otp',
   };
 
@@ -40,7 +40,7 @@ class LoggingInterceptor extends Interceptor {
         '[HTTP ←] ${response.statusCode} ${response.requestOptions.method} '
         '${response.requestOptions.uri}',
       );
-      if (_shouldLogAuthOtpResponseBody(response.requestOptions)) {
+      if (response.data != null) {
         debugPrint('[HTTP ← body] ${_stringifyResponseBody(response.data)}');
       }
     }
@@ -57,15 +57,6 @@ class LoggingInterceptor extends Interceptor {
       );
     }
     super.onError(err, handler);
-  }
-
-  bool _shouldLogAuthOtpResponseBody(RequestOptions options) {
-    if (options.method.toUpperCase() != 'POST') {
-      return false;
-    }
-    final path = options.uri.path;
-    return path.endsWith(ApiEndpoints.sendOtp) ||
-        path.endsWith(ApiEndpoints.verifyOtp);
   }
 
   String _stringifyResponseBody(dynamic data) {

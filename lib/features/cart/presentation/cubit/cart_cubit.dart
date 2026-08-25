@@ -30,6 +30,7 @@ class CartCubit extends Cubit<CartState> {
   Future<void> loadCart() async {
     emit(const CartState.loading());
     final result = await getCartUseCase(NoParams());
+    if (isClosed) return;
     result.fold(
       (failure) => emit(CartState.error(
         cart: const Cart.empty(),
@@ -123,6 +124,8 @@ class CartCubit extends Cubit<CartState> {
       ),
     );
 
+    if (isClosed) return;
+
     result.fold(
       (failure) => emit(CartState.error(
         cart: currentCart,
@@ -156,9 +159,11 @@ class CartCubit extends Cubit<CartState> {
 
     emit(const CartState.loading());
     final clearResult = await clearCartUseCase(NoParams());
+    if (isClosed) return;
     
     await clearResult.fold(
       (failure) async {
+        if (isClosed) return;
         emit(CartState.error(
           cart: currentCart,
           appliedPromo: currentPromo,
@@ -166,6 +171,7 @@ class CartCubit extends Cubit<CartState> {
         ));
       },
       (_) async {
+        if (isClosed) return;
         emit(const CartState.loaded(cart: Cart.empty(), appliedPromo: null));
         await addToCart(
           restaurantId: restaurantId,
@@ -230,6 +236,8 @@ class CartCubit extends Cubit<CartState> {
         ? await removeFromCartUseCase(itemId)
         : await updateCartItemUseCase(UpdateCartItemParams(itemId: itemId, quantity: newQuantity));
 
+    if (isClosed) return;
+
     result.fold(
       (failure) => emit(CartState.error(
         cart: currentCart,
@@ -259,6 +267,7 @@ class CartCubit extends Cubit<CartState> {
     emit(const CartState.loaded(cart: Cart.empty(), appliedPromo: null));
 
     final result = await clearCartUseCase(NoParams());
+    if (isClosed) return;
     result.fold(
       (failure) => emit(CartState.error(
         cart: currentCart,
@@ -292,6 +301,8 @@ class CartCubit extends Cubit<CartState> {
       ),
     );
 
+    if (isClosed) return;
+
     result.fold(
       (failure) => emit(CartState.error(
         cart: currentCart,
@@ -313,4 +324,5 @@ class CartCubit extends Cubit<CartState> {
       },
     );
   }
+
 }

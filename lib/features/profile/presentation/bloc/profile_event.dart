@@ -36,3 +36,29 @@ class UpdateSettingsEvent extends ProfileEvent {
 class DeleteAccountEvent extends ProfileEvent {
   const DeleteAccountEvent();
 }
+
+class SendCurrentPhoneOtpEvent extends ProfileEvent {
+  const SendCurrentPhoneOtpEvent();
+}
+
+class VerifyCurrentPhoneOtpEvent extends ProfileEvent {
+  final String otp;
+  const VerifyCurrentPhoneOtpEvent(this.otp);
+  @override
+  List<Object?> get props => [otp];
+}
+
+class SendNewPhoneOtpEvent extends ProfileEvent {
+  final String phone;
+  const SendNewPhoneOtpEvent(this.phone);
+  @override
+  List<Object?> get props => [phone];
+}
+
+class VerifyNewPhoneOtpEvent extends ProfileEvent {
+  final String phone;
+  final String otp;
+  const VerifyNewPhoneOtpEvent({required this.phone, required this.otp});
+  @override
+  List<Object?> get props => [phone, otp];
+}

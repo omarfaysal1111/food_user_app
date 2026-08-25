@@ -1,47 +1,57 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:food_user_app/features/address/domain/entities/address.dart';
 
-part 'address_dto.freezed.dart';
-part 'address_dto.g.dart';
+class AddressDto {
+  final String id;
+  final String? name;
+  final String? fullAddress;
+  final String? buildingNumber;
+  final String? floor;
+  final String? apartment;
+  final double? lat;
+  final double? lng;
+  final String? type;
 
-@freezed
-abstract class AddressDto with _$AddressDto {
-  const factory AddressDto({
-    required String id,
-    String? label,
-    String? fullAddress,
-    double? lat,
-    double? lng,
-    String? city,
-    String? neighborhood,
-    String? streetNumber,
-    String? buildingNumber,
-    String? floor,
-    String? apartment,
-    String? addressType,
-    @JsonKey(name: 'default') bool? isDefault,
-  }) = _AddressDto;
+  const AddressDto({
+    required this.id,
+    this.name,
+    this.fullAddress,
+    this.buildingNumber,
+    this.floor,
+    this.apartment,
+    this.lat,
+    this.lng,
+    this.type,
+  });
 
-  factory AddressDto.fromJson(Map<String, dynamic> json) =>
-      _$AddressDtoFromJson(json);
-}
+  factory AddressDto.fromJson(Map<String, dynamic> json) {
+    return AddressDto(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] as String?,
+      fullAddress: json['full_address'] as String?,
+      buildingNumber: json['building_number'] as String?,
+      floor: json['floor'] as String?,
+      apartment: json['apartment'] as String?,
+      lat: (json['lat'] as num?)?.toDouble(),
+      lng: (json['long'] as num?)?.toDouble() ?? (json['lng'] as num?)?.toDouble(),
+      type: json['type'] as String?,
+    );
+  }
 
-extension AddressDtoMapper on AddressDto {
   Address toEntity() {
     return Address(
       id: id,
-      label: label ?? '',
-      fullAddress: fullAddress ?? '',
+      label: name ?? '',
+      fullAddress: fullAddress ?? '${buildingNumber ?? ''} ${floor ?? ''} ${apartment ?? ''}'.trim(),
       lat: lat ?? 0.0,
       lng: lng ?? 0.0,
-      city: city ?? '',
-      neighborhood: neighborhood ?? '',
-      streetNumber: streetNumber ?? '',
+      city: '',
+      neighborhood: '',
+      streetNumber: '',
       buildingNumber: buildingNumber ?? '',
       floor: floor ?? '',
       apartment: apartment ?? '',
-      addressType: addressType ?? 'OTHER',
-      isDefault: isDefault ?? false,
+      addressType: type?.toUpperCase() ?? 'OTHER',
+      isDefault: type == 'primary',
     );
   }
 }

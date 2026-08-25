@@ -16,7 +16,7 @@ class LogoutInProgress extends AuthState {
   const LogoutInProgress();
 }
 
-// ── Social Login ────────────────────────────────────────────────────────────
+// ── Social Login ─────────────────────────────────────────────────────────────
 
 class SocialLoginInProgress extends AuthState {
   const SocialLoginInProgress();
@@ -46,9 +46,7 @@ class SocialLoginFailure extends AuthState {
   List<Object?> get props => [message];
 }
 
-
-
-// ── Session status ──────────────────────────────────────────────────────────
+// ── Session status ────────────────────────────────────────────────────────────
 
 class Authenticated extends AuthState {
   final User user;
@@ -63,21 +61,21 @@ class Unauthenticated extends AuthState {
   const Unauthenticated();
 }
 
-// ── Unified phone login/register (API v2) ────────────────────────────────────
+// ── Phone OTP Flow (New Plezmo API) ──────────────────────────────────────────
 
 // Send OTP
 class PhoneOtpSendInProgress extends AuthState {
   const PhoneOtpSendInProgress();
 }
 
+/// OTP sent successfully — UI navigates to OTP input screen.
 class PhoneOtpSent extends AuthState {
   final String phone;
-  final bool isExistingUser;
 
-  const PhoneOtpSent({required this.phone, required this.isExistingUser});
+  const PhoneOtpSent({required this.phone});
 
   @override
-  List<Object?> get props => [phone, isExistingUser];
+  List<Object?> get props => [phone];
 }
 
 class PhoneOtpSendFailure extends AuthState {
@@ -104,14 +102,19 @@ class PhoneOtpLoginSuccess extends AuthState {
   List<Object?> get props => [user];
 }
 
-/// New phone verified → proceed to complete-profile/register with [phone].
-class PhoneOtpNewUser extends AuthState {
-  final String phone;
+/// New phone verified → navigate to complete-profile screen.
+/// Carries the [registrationToken] and optional [requiredFields] from the API.
+class PhoneOtpCompleteProfile extends AuthState {
+  final String registrationToken;
+  final List<String> requiredFields;
 
-  const PhoneOtpNewUser(this.phone);
+  const PhoneOtpCompleteProfile({
+    required this.registrationToken,
+    this.requiredFields = const [],
+  });
 
   @override
-  List<Object?> get props => [phone];
+  List<Object?> get props => [registrationToken, requiredFields];
 }
 
 class PhoneOtpVerifyFailure extends AuthState {
@@ -121,6 +124,20 @@ class PhoneOtpVerifyFailure extends AuthState {
 
   @override
   List<Object?> get props => [message];
+}
+
+/// Phone needs verification after social login or profile completion.
+class PhoneOtpVerificationRequired extends AuthState {
+  final String registrationToken;
+  final String phone;
+
+  const PhoneOtpVerificationRequired({
+    required this.registrationToken,
+    required this.phone,
+  });
+
+  @override
+  List<Object?> get props => [registrationToken, phone];
 }
 
 // Complete registration

@@ -13,6 +13,7 @@ class RestaurantDetailCubit extends Cubit<RestaurantDetailState> {
   Future<void> getRestaurantDetail(String id) async {
     emit(const RestaurantDetailState.loading());
     final detailResult = await restaurantRepository.getRestaurantDetail(id);
+    if (isClosed) return;
 
     detailResult.fold(
       (failure) => emit(RestaurantDetailState.error(failure.message)),
@@ -20,9 +21,11 @@ class RestaurantDetailCubit extends Cubit<RestaurantDetailState> {
         final branchesResult = await restaurantRepository.getBranches(
           restaurant.id,
         );
+        if (isClosed) return;
         final offersResult = await restaurantRepository.getOffers(
           restaurant.id,
         );
+        if (isClosed) return;
 
         final branches = branchesResult.fold((_) => <Branch>[], (list) => list);
         final offers = offersResult.fold((_) => <Offer>[], (list) => list);
@@ -37,4 +40,5 @@ class RestaurantDetailCubit extends Cubit<RestaurantDetailState> {
       },
     );
   }
+
 }

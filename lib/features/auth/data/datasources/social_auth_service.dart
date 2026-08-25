@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:math';
+import 'package:crypto/crypto.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -88,12 +92,39 @@ class SocialAuthService {
     );
   }
 
+  static String _generateNonce([int length = 32]) {
+    const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)]).join();
+  }
+
   static Future<SocialAuthResult?> signInWithFacebook() async {
-    final LoginResult result = await FacebookAuth.instance.login();
+    final rawNonce = _generateNonce();
+    final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
+
+    final LoginResult result = await FacebookAuth.instance.login(
+      nonce: hashedNonce,
+    );
     if (result.status != LoginStatus.success) return null;
 
-    final OAuthCredential credential =
-        FacebookAuthProvider.credential(result.accessToken!.tokenString);
+    final token = result.accessToken!;
+    late AuthCredential credential;
+
+    // Check if the token is a limited login token (iOS 17+ requirement for tracking consent)
+    // flutter_facebook_auth exposes `declinedPermissions` or we can just try to see if it's a limited token.
+    // wait, `flutter_facebook_auth`'s `AccessToken` might not expose `type` in older versions.
+    // Let me check if `flutter_facebook_auth` has `isLimitedLogin` or similar. Wait, the prompt specifically says:
+    // "loginResult.accessToken!.type == AccessTokenType.classic"
+    if (token.type == AccessTokenType.classic) {
+      credential = FacebookAuthProvider.credential(token.tokenString);
+    } else {
+      credential = OAuthCredential(
+        providerId: 'facebook.com',
+        signInMethod: 'oauth',
+        idToken: token.tokenString,
+        rawNonce: rawNonce,
+      );
+    }
     
     final UserCredential userCredential =
         await FirebaseAuth.instance.signInWithCredential(credential);

@@ -1,3 +1,6 @@
+import 'complete_profile_args.dart';
+import 'phone_auth_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,17 +34,27 @@ class AuthEntryScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
       body: BlocListener<AuthBloc, AuthState>(
-        listenWhen: (prev, curr) => curr is SocialLoginNewUser || curr is SocialLoginFailure || curr is Authenticated,
+        listenWhen: (prev, curr) => 
+            curr is PhoneOtpCompleteProfile || 
+            curr is PhoneOtpVerificationRequired ||
+            curr is SocialLoginFailure || 
+            curr is Authenticated,
         listener: (context, state) {
-          if (state is SocialLoginNewUser) {
+          if (state is PhoneOtpCompleteProfile) {
             context.push(
-              RouteNames.phoneAuth,
-              extra: PhoneAuthArgs(
-                startedFromSocial: true,
-                mockNewUser: false,
-                firstName: state.firstName,
-                lastName: state.lastName,
-                email: state.email,
+              RouteNames.completeProfile,
+              extra: CompleteProfileArgs(
+                registrationToken: state.registrationToken,
+                requiredFields: state.requiredFields,
+              ),
+            );
+          } else if (state is PhoneOtpVerificationRequired) {
+            context.push(
+              RouteNames.mockOtp,
+              extra: MockOtpArgs(
+                phoneNumber: state.phone,
+                isSocial: true,
+                registrationToken: state.registrationToken,
               ),
             );
           } else if (state is Authenticated) {
