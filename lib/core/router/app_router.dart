@@ -57,7 +57,9 @@ import '../../features/market/presentation/pages/markets_list_screen.dart';
 import '../../features/market/presentation/pages/market_details_screen.dart';
 
 import 'package:flutter/material.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/core/di/injection_container.dart';
+import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';
 
 class AppRouter {
   AppRouter._();
@@ -127,14 +129,31 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.serviceListing,
-        builder: (c, s) => ServiceListingScreen(
-          type: ServiceListingType.fromPathSegment(s.pathParameters['type']),
-        ),
+        builder: (c, s) {
+          final sectionIdStr = s.uri.queryParameters['sectionId'];
+          final sectionId = int.tryParse(sectionIdStr ?? '1') ?? 1;
+
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider<TagsCubit>(create: (_) => sl<TagsCubit>()),
+              BlocProvider<StoresCubit>(create: (_) => sl<StoresCubit>()),
+            ],
+            child: ServiceListingScreen(
+              type: ServiceListingType.fromPathSegment(s.pathParameters['type']),
+              sectionId: sectionId,
+            ),
+          );
+        },
       ),
       GoRoute(
         path: RouteNames.restaurantList,
-        builder: (c, s) =>
-            const ServiceListingScreen(type: ServiceListingType.restaurants),
+        builder: (c, s) => MultiBlocProvider(
+          providers: [
+            BlocProvider<TagsCubit>(create: (_) => sl<TagsCubit>()),
+            BlocProvider<StoresCubit>(create: (_) => sl<StoresCubit>()),
+          ],
+          child: const ServiceListingScreen(type: ServiceListingType.restaurants),
+        ),
       ),
       GoRoute(
         path: RouteNames.restaurantDetail,

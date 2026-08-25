@@ -11,17 +11,22 @@ import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/core/widgets/app_search_field.dart';
 import 'package:food_user_app/core/widgets/app_status_dot_label.dart';
 import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
-import 'package:food_user_app/features/service_listing/presentation/bloc/service_listing_cubit.dart';
-import 'package:food_user_app/features/service_listing/presentation/bloc/service_listing_state.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_config.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_type.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/empty_state_widget.dart';
+import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';
+import 'package:food_user_app/features/home/domain/entities/tag.dart' as entity_tag;
 
 class ServiceListingScreen extends StatefulWidget {
-  const ServiceListingScreen({required this.type, super.key});
+  const ServiceListingScreen({
+    required this.type,
+    this.sectionId = 1,
+    super.key,
+  });
 
   final ServiceListingType type;
+  final int sectionId;
 
   @override
   State<ServiceListingScreen> createState() => _ServiceListingScreenState();
@@ -30,6 +35,14 @@ class ServiceListingScreen extends StatefulWidget {
 class _ServiceListingScreenState extends State<ServiceListingScreen> {
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
+  entity_tag.Tag? _selectedTag;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<TagsCubit>().fetchTags(sectionId: widget.sectionId);
+    context.read<StoresCubit>().fetchStores(sectionId: widget.sectionId);
+  }
 
   @override
   void dispose() {
@@ -49,114 +62,151 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
     final l10n = AppLocalizations.of(context)!;
     final config = ServiceListingConfig.of(l10n, widget.type);
 
-    return BlocProvider(
-      key: ValueKey(widget.type),
-      create: (_) => ServiceListingCubit(config: config),
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground(context),
-        body: SafeArea(
-          bottom: false,
-          child: BlocBuilder<ServiceListingCubit, ServiceListingState>(
-            builder: (context, state) {
-              final largeStores = state.largeStores;
-              final stores = state.filteredStores;
-
-              return GestureDetector(
-                onTap: () => FocusScope.of(context).unfocus(),
-                behavior: HitTestBehavior.opaque,
+    return Scaffold(
+      backgroundColor: AppColors.scaffoldBackground(context),
+      body: SafeArea(
+        bottom: false,
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          behavior: HitTestBehavior.opaque,
+          child: Column(
+            children: [
+              // ── Fixed Top Header Section ─────────────────────────────────────
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 16),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ── Fixed Top Header Section ─────────────────────────────────────
-                    Padding(
-                      padding: const EdgeInsetsDirectional.fromSTEB(
-                        16,
-                        20,
-                        16,
-                        16,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _ListingHeader(title: state.config.title),
-                          const SizedBox(height: 24),
-                          _ListingSearchBox(
-                            controller: _searchController,
-                            hint: state.config.searchHint,
-                            onChanged: (val) {
-                              context.read<ServiceListingCubit>().searchChanged(
-                                val,
+                    _ListingHeader(title: config.title),
+                    const SizedBox(height: 24),
+                    _ListingSearchBox(
+                      controller: _searchController,
+                      hint: config.searchHint,
+                      onChanged: (val) {
+                        context.read<StoresCubit>().fetchStores(
+                          sectionId: widget.sectionId,
+                          search: val,
+                          tagIds: _selectedTag != null ? [_selectedTag!.id] : null,
+                        );
+                        _resetScroll();
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    BlocBuilder<TagsCubit, TagsState>(
+                      builder: (context, tagsState) {
+                        if (tagsState is TagsLoading) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
+                        if (tagsState is TagsLoaded && tagsState.tags.isNotEmpty) {
+                          return _ServiceCategoryStrip(
+                            categories: tagsState.tags,
+                            selectedCategory: _selectedTag,
+                            onSelected: (cat) {
+                              setState(() {
+                                if (_selectedTag?.id == cat.id) {
+                                  _selectedTag = null; // deselect
+                                } else {
+                                  _selectedTag = cat;
+                                }
+                              });
+                              context.read<StoresCubit>().fetchStores(
+                                sectionId: widget.sectionId,
+                                search: _searchController.text.isNotEmpty ? _searchController.text : null,
+                                tagIds: _selectedTag != null ? [_selectedTag!.id] : null,
                               );
                               _resetScroll();
                             },
-                          ),
-                          if (state.categories.isNotEmpty) ...[
-                            const SizedBox(height: 16),
-                            _ServiceCategoryStrip(
-                              categories: state.categories,
-                              selectedCategory: state.selectedCategory,
-                              onSelected: (cat) {
-                                context
-                                    .read<ServiceListingCubit>()
-                                    .toggleCategory(cat);
-                                _resetScroll();
-                              },
-                            ),
-                          ],
-                          if (state.config.filters.isNotEmpty) ...[
-                            const SizedBox(height: 16),
-                            _ServiceFilterStrip(
-                              filters: state.config.filters,
-                              selectedFilters: state.selectedTopFilters,
-                              onToggle: (filter) {
-                                context
-                                    .read<ServiceListingCubit>()
-                                    .toggleTopFilter(filter);
-                                _resetScroll();
-                              },
-                            ),
-                          ],
-                        ],
-                      ),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
                     ),
+                    if (config.filters.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      // Mock filters kept for UI layout
+                      _ServiceFilterStrip(
+                        filters: config.filters,
+                        selectedFilters: const {},
+                        onToggle: (filter) {
+                          _resetScroll();
+                        },
+                      ),
+                    ],
+                  ],
+                ),
+              ),
 
-                    // ── Scrollable Cards Section ─────────────────────────────────────
-                    Expanded(
-                      child: CustomScrollView(
-                        controller: _scrollController,
-                        physics: const ClampingScrollPhysics(),
-                        slivers: [
-                          SliverPadding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                              16,
-                              0,
-                              16,
-                              40,
-                            ),
-                            sliver: SliverList.list(
-                              children: [
-                                if (largeStores.isNotEmpty) ...[
-                                  _SectionTitle(title: l10n.serviceLargeStores),
+              // ── Scrollable Cards Section ─────────────────────────────────────
+              Expanded(
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  physics: const ClampingScrollPhysics(),
+                  slivers: [
+                    SliverPadding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 40),
+                      sliver: SliverToBoxAdapter(
+                        child: BlocBuilder<StoresCubit, StoresState>(
+                          builder: (context, storesState) {
+                            if (storesState is StoresLoading) {
+                              return const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(32.0),
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            }
+
+                            if (storesState is StoresLoaded) {
+                              final stores = storesState.items;
+                              if (stores.isEmpty) {
+                                return Column(
+                                  children: [
+                                    const SizedBox(height: 88),
+                                    _EmptyListingState(l10n: l10n),
+                                  ],
+                                );
+                              }
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _SectionTitle(title: l10n.serviceAllPlaces),
                                   const SizedBox(height: 12),
-                                  _LargeStoreRow(items: largeStores),
-                                  const SizedBox(height: 16),
+                                  _ServicePlaceCollection(
+                                    items: stores.map((s) => ServicePlaceData.store(
+                                      id: s.id.toString(),
+                                      name: s.name,
+                                      time: '${s.prepTimeFrom ?? 0}-${s.prepTimeTo ?? 0} min',
+                                      imageAsset: s.cover ?? s.logo ?? '',
+                                      rating: '0.0', // Fallback as rating is missing in Store
+                                      hasOffer: false,
+                                      topRated: false,
+                                    )).toList(),
+                                  ),
                                 ],
-                                _SectionTitle(title: l10n.serviceAllPlaces),
-                                const SizedBox(height: 12),
-                                _ServicePlaceCollection(items: stores),
-                                if (stores.isEmpty) ...[
-                                  const SizedBox(height: 88),
-                                  _EmptyListingState(l10n: l10n),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ],
+                              );
+                            }
+
+                            if (storesState is StoresError) {
+                              return Center(
+                                child: Text(storesState.message),
+                              );
+                            }
+
+                            return const SizedBox.shrink();
+                          },
+                        ),
                       ),
                     ),
                   ],
                 ),
-              );
-            },
+              ),
+            ],
           ),
         ),
       ),
@@ -260,9 +310,9 @@ class _ServiceCategoryStrip extends StatelessWidget {
     required this.onSelected,
   });
 
-  final List<ServiceCategoryData> categories;
-  final ServiceCategoryData? selectedCategory;
-  final ValueChanged<ServiceCategoryData> onSelected;
+  final List<entity_tag.Tag> categories;
+  final entity_tag.Tag? selectedCategory;
+  final ValueChanged<entity_tag.Tag> onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -276,7 +326,7 @@ class _ServiceCategoryStrip extends StatelessWidget {
         itemBuilder: (context, index) {
           return _ServiceCategoryChip(
             category: categories[index],
-            selected: selectedCategory?.label == categories[index].label,
+            selected: selectedCategory?.id == categories[index].id,
             onTap: () => onSelected(categories[index]),
           );
         },
@@ -292,7 +342,7 @@ class _ServiceCategoryChip extends StatelessWidget {
     required this.onTap,
   });
 
-  final ServiceCategoryData category;
+  final entity_tag.Tag category;
   final bool selected;
   final VoidCallback onTap;
 
@@ -323,15 +373,15 @@ class _ServiceCategoryChip extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.all(7),
-              child: category.imageAsset != null
-                  ? AppRasterImage.asset(
-                      category.imageAsset!,
+              child: category.image != null
+                  ? AppNetworkImage(
+                      category.image!,
                       width: 30,
                       height: 30,
                       fit: BoxFit.contain,
                     )
                   : Icon(
-                      category.fallbackIcon,
+                      Icons.storefront_outlined,
                       color: AppColors.paragraph(context),
                       size: 22,
                     ),
@@ -339,13 +389,13 @@ class _ServiceCategoryChip extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            category.label,
+            category.name,
             maxLines: 1,
             textAlign: TextAlign.center,
             style: AppTextStyles.caption(context).copyWith(
-              color: AppColors.onSurface(context),
-              fontSize: 12,
-              height: 1.3,
+              color: selected ? AppColors.text : AppColors.paragraph(context),
+              fontSize: 10,
+              height: 1.25,
             ),
           ),
         ],
@@ -440,87 +490,6 @@ class _ServicePlaceCollection extends StatelessWidget {
   }
 }
 
-class _LargeStoreRow extends StatelessWidget {
-  const _LargeStoreRow({required this.items});
-
-  final List<ServicePlaceData> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 112,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.zero,
-        itemCount: items.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          return _CompactStoreCard(item: items[index]);
-        },
-      ),
-    );
-  }
-}
-
-class _CompactStoreCard extends StatelessWidget {
-  const _CompactStoreCard({required this.item});
-
-  final ServicePlaceData item;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        context.push(RouteNames.storeDetailFor(item.detailId));
-      },
-      child: Container(
-        width: 92,
-        height: 98,
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceCard(context),
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.onSurface(context).withValues(alpha: 0.08),
-              blurRadius: 2,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipOval(
-              child: AppRasterImage.asset(
-                item.imageAsset,
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              item.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.body(
-                context,
-              ).copyWith(fontSize: 12, height: 1.3),
-            ),
-            const SizedBox(height: 4),
-            _TimeLabel(
-              time: item.time,
-              iconSize: 14,
-              fontSize: 10,
-              textColor: AppColors.onSurface(context),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _PlaceList extends StatelessWidget {
   const _PlaceList({required this.items});
@@ -607,7 +576,7 @@ class _PlaceImage extends StatelessWidget {
           Positioned.fill(
             child: ClipRRect(
               borderRadius: const BorderRadius.all(AppRadius.md),
-              child: AppRasterImage.asset(
+              child: AppNetworkImage(
                 item.imageAsset,
                 width: 56,
                 height: 56,
@@ -707,26 +676,20 @@ class _AvailabilityPill extends StatelessWidget {
 class _TimeLabel extends StatelessWidget {
   const _TimeLabel({
     required this.time,
-    this.iconSize = 14,
-    this.fontSize = 10,
-    this.textColor,
   });
 
   final String time;
-  final double iconSize;
-  final double fontSize;
-  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {
-    final color = textColor ?? AppColors.onSurface(context);
+    final color = AppColors.onSurface(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         AppRasterImage.asset(
           AppAssets.serviceTimeIconPng,
-          width: iconSize,
-          height: iconSize,
+          width: 14,
+          height: 14,
           color: color,
         ),
         const SizedBox(width: 4),
@@ -737,7 +700,7 @@ class _TimeLabel extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.caption(
               context,
-            ).copyWith(color: color, fontSize: fontSize, height: 1.25),
+            ).copyWith(color: color, fontSize: 10, height: 1.25),
           ),
         ),
       ],

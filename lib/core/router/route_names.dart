@@ -49,7 +49,7 @@ class RouteNames {
 
   static const about = '/about';
 
-  static String serviceListingFor(String type) => '/service-listing/$type';
+  static String serviceListingFor(String type, int sectionId) => '/service-listing/$type?sectionId=$sectionId';
   static String restaurantDetailFor(String id) => '/restaurant/$id';
   static String restaurantRateFor(String id) => '/restaurant/$id/rate';
   static String restaurantSearchFor(String id) => '/restaurant/$id/search';

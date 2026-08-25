@@ -117,6 +117,17 @@ class AppNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (url.isEmpty) {
+      return SizedBox(
+        width: width,
+        height: height,
+        child: Icon(
+          Icons.storefront,
+          color: AppColors.paragraph(context),
+        ),
+      );
+    }
+
     return Image.network(
       url,
       width: width,

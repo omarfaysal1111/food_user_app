@@ -4,8 +4,8 @@ import 'package:food_user_app/core/router/route_names.dart';
 void main() {
   test('RouteNames builds dynamic route paths', () {
     expect(
-      RouteNames.serviceListingFor('restaurants'),
-      '/service-listing/restaurants',
+      RouteNames.serviceListingFor('restaurants', 1),
+      '/service-listing/restaurants?sectionId=1',
     );
     expect(
       RouteNames.restaurantDetailFor('az-al-sham'),

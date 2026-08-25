@@ -66,7 +66,7 @@ class _CategoryTile extends StatelessWidget {
         // or just navigate to generic store listing
         // Assuming ID 1 = restaurants, ID 2 = grocery etc. based on old logic
         final type = _getLegacyType(section);
-        context.push(RouteNames.serviceListingFor(type.pathSegment));
+        context.push(RouteNames.serviceListingFor(type.pathSegment, section.id));
       },
       borderRadius: const BorderRadius.all(Radius.circular(12)),
       child: Column(
