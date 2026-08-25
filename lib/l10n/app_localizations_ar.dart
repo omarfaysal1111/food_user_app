@@ -97,7 +97,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'سيتم ربط تدفق حذف الحساب لاحقاً.';
 
   @override
-  String get cancel => 'تراجع';
+  String get cancel => 'إلغاء';
 
   @override
   String get confirm => 'تأكيد';
@@ -1491,4 +1491,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noCategoriesAvailable => 'لا توجد فئات متاحة';
+
+  @override
+  String get searchClearAll => 'مسح الكل';
+
+  @override
+  String get searchClearHistoryConfirm =>
+      'هل أنت متأكد أنك تريد مسح سجل البحث؟';
+
+  @override
+  String get clear => 'مسح';
 }

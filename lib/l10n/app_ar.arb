@@ -29,7 +29,7 @@
   "deleteAccountComingSoon": "تدفق حذف الحساب قادم قريباً.",
   "deleteAccountConfirmationTitle": "حذف الحساب",
   "deleteAccountConfirmationMessage": "سيتم ربط تدفق حذف الحساب لاحقاً.",
-  "cancel": "تراجع",
+  "cancel": "إلغاء",
   "confirm": "تأكيد",
   "loginTitle": "تسجيل دخول !",
   "loginSubtitle": "مرحبا بعودتك مره اخرى سجل دخول الان !",
@@ -539,5 +539,8 @@
   "applyButton": "تطبيق",
   "cartConflictTitle": "تعارض في السلة",
   "cartConflictMessage": "إضافة عناصر من مطعم مختلف ستمسح سلتك الحالية. هل ترغب في المتابعة؟",
-  "noCategoriesAvailable": "لا توجد فئات متاحة"
+  "noCategoriesAvailable": "لا توجد فئات متاحة",
+  "searchClearAll": "مسح الكل",
+  "searchClearHistoryConfirm": "هل أنت متأكد أنك تريد مسح سجل البحث؟",
+  "clear": "مسح"
 }

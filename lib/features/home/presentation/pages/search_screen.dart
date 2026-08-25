@@ -126,6 +126,11 @@ class _SearchScreenState extends State<SearchScreen> {
                       focusNode: _focusNode,
                       hint: l10n.serviceSearchHint,
                       iconAsset: AppAssets.serviceSearchIcon,
+                      onSubmitted: (val) {
+                        if (val.trim().isNotEmpty) {
+                          context.read<SearchCubit>().addSearchLog(val.trim());
+                        }
+                      },
                     ),
                     const SizedBox(height: 16),
                     _CategoryStrip(
@@ -167,9 +172,10 @@ class _SearchScreenState extends State<SearchScreen> {
               Expanded(
                 child: BlocBuilder<SearchCubit, SearchState>(
                   builder: (context, state) {
+                    final isLoading = state.maybeWhen(loading: () => true, orElse: () => false);
+                    final isLoaded = state.maybeWhen(loaded: (_) => true, orElse: () => false);
+
                     return state.maybeWhen(
-                      loading: () =>
-                          const Center(child: CircularProgressIndicator()),
                       error: (msg) => Center(
                         child: Text(msg, style: AppTextStyles.body(context)),
                       ),
@@ -180,6 +186,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         history: history,
                         restaurants: const [],
                         items: const [],
+                        isLoaded: isLoaded,
+                        isLoading: isLoading,
                       ),
                       loaded: (result) => _buildSearchResults(
                         context,
@@ -189,6 +197,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         restaurants: result.restaurants,
                         items: result.items,
                         isRandom: result.isRandom,
+                        isLoaded: isLoaded,
+                        isLoading: isLoading,
                       ),
                       orElse: () => _buildSearchResults(
                         context,
@@ -197,6 +207,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         history: const [],
                         restaurants: const [],
                         items: const [],
+                        isLoaded: isLoaded,
+                        isLoading: isLoading,
                       ),
                     );
                   },
@@ -209,6 +221,30 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
+  void _showClearConfirmDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.searchClearAll),
+        content: Text(l10n.searchClearHistoryConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              context.read<SearchCubit>().clearSearchLogs();
+            },
+            child: Text(l10n.clear, style: const TextStyle(color: AppColors.error)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSearchResults(
     BuildContext context, {
     required String query,
@@ -217,6 +253,8 @@ class _SearchScreenState extends State<SearchScreen> {
     required List<Restaurant> restaurants,
     required List<MenuItem> items,
     bool isRandom = false,
+    bool isLoaded = false,
+    bool isLoading = false,
   }) {
     final l10n = AppLocalizations.of(context)!;
     final copy = _SearchCopy.of(context);
@@ -250,9 +288,12 @@ class _SearchScreenState extends State<SearchScreen> {
     // We also consider noResults if API returned isRandom = true since those are fallback suggestions
     final noResults =
         query.isNotEmpty &&
-        (displayedLargeStores.isEmpty &&
-         displayedStores.isEmpty &&
-         filteredProducts.isEmpty || isRandom);
+        isLoaded &&
+        !isLoading &&
+        displayedLargeStores.isEmpty &&
+        displayedStores.isEmpty &&
+        filteredProducts.isEmpty &&
+        !isRandom;
 
     return CustomScrollView(
       controller: _scrollController,
@@ -274,7 +315,35 @@ class _SearchScreenState extends State<SearchScreen> {
                 const SizedBox(height: 22),
               ],
               if (!showFilters) ...[
-
+                if (history.isNotEmpty) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _SectionTitle(title: l10n.searchRecentTitle),
+                      TextButton(
+                        onPressed: () => _showClearConfirmDialog(context),
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(40, 24),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: Text(
+                          l10n.searchClearAll,
+                          style: AppTextStyles.caption(context).copyWith(
+                            color: AppColors.primary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _RecentSearchesWrap(
+                    history: history,
+                    onTap: _onTokenTap,
+                  ),
+                  const SizedBox(height: 24),
+                ],
                 _SectionTitle(title: l10n.searchMostSearchedTitle),
                 const SizedBox(height: 12),
                 _MostSearchedTokens(
@@ -282,7 +351,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   onTap: _onTokenTap,
                 ),
               ] else ...[
-                if (noResults) ...[
+                if (isLoading && displayedStores.isEmpty && filteredProducts.isEmpty) ...[
+                  const SizedBox(height: 48),
+                  const Center(child: CircularProgressIndicator()),
+                ] else if (noResults) ...[
                   const SizedBox(height: 48),
                   const EmptyStateWidget(imageWidth: 100, imageHeight: 100),
                 ] else ...[
@@ -369,10 +441,9 @@ class _SearchHeader extends StatelessWidget {
             minimumSize: const Size(28, 28),
             padding: EdgeInsets.zero,
           ),
-          icon: AppSvgImage.asset(
-            AppAssets.serviceBackIcon,
-            width: 14,
-            height: 14,
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            size: 20,
             color: AppColors.onSurface(context),
           ),
         ),
@@ -719,6 +790,92 @@ class _MostSearchedTokens extends StatelessWidget {
       children: tokens.map((token) {
         return _SearchToken(label: token, onTap: () => onTap(token));
       }).toList(),
+    );
+  }
+}
+
+class _RecentSearchesWrap extends StatelessWidget {
+  const _RecentSearchesWrap({required this.history, required this.onTap});
+
+  final List<SearchLog> history;
+  final ValueChanged<String> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.sm,
+      children: history.map((log) {
+        return _RecentSearchItem(
+          log: log,
+          onTap: () => onTap(log.term),
+          onDelete: () => context.read<SearchCubit>().deleteSearchLog(log.id),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class _RecentSearchItem extends StatelessWidget {
+  const _RecentSearchItem({
+    required this.log,
+    required this.onTap,
+    required this.onDelete,
+  });
+
+  final SearchLog log;
+  final VoidCallback onTap;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsetsDirectional.fromSTEB(12, 6, 6, 6),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceCard(context),
+        borderRadius: const BorderRadius.all(AppRadius.sm),
+        border: Border.all(color: AppColors.border(context), width: 0.5),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          InkWell(
+            onTap: onTap,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.history_rounded,
+                  size: 14,
+                  color: AppColors.paragraph(context),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  log.term,
+                  style: AppTextStyles.caption(context).copyWith(
+                    color: AppColors.onSurface(context),
+                    fontSize: 12,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 4),
+          InkWell(
+            onTap: onDelete,
+            borderRadius: const BorderRadius.all(AppRadius.full),
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Icon(
+                Icons.close_rounded,
+                size: 14,
+                color: AppColors.paragraph(context),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1255,6 +1412,7 @@ class _PlaceListTile extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsetsDirectional.symmetric(vertical: 4),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _PlaceImage(item: item),
             const SizedBox(width: 8),
@@ -1341,6 +1499,7 @@ class _PlaceDetails extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
@@ -1364,17 +1523,7 @@ class _PlaceDetails extends StatelessWidget {
             ),
           ],
         ),
-        if (item.subtitle != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            item.subtitle!,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.start,
-            style: AppTextStyles.caption(context).copyWith(fontSize: 10),
-          ),
-        ],
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

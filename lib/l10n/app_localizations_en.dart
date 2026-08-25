@@ -1509,4 +1509,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noCategoriesAvailable => 'No categories available';
+
+  @override
+  String get searchClearAll => 'Clear All';
+
+  @override
+  String get searchClearHistoryConfirm =>
+      'Are you sure you want to clear your search history?';
+
+  @override
+  String get clear => 'Clear';
 }

@@ -538,5 +538,8 @@
   "applyButton": "Apply",
   "cartConflictTitle": "Cart Conflict",
   "cartConflictMessage": "Adding items from a different restaurant will clear your current cart. Continue?",
-  "noCategoriesAvailable": "No categories available"
+  "noCategoriesAvailable": "No categories available",
+  "searchClearAll": "Clear All",
+  "searchClearHistoryConfirm": "Are you sure you want to clear your search history?",
+  "clear": "Clear"
 }

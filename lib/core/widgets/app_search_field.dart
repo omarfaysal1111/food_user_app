@@ -13,6 +13,7 @@ class AppSearchField extends StatefulWidget {
     super.key,
     this.focusNode,
     this.onChanged,
+    this.onSubmitted,
     this.onClear,
     this.isLoading = false,
     this.height = 40,
@@ -30,6 +31,7 @@ class AppSearchField extends StatefulWidget {
   final FocusNode? focusNode;
   final String hint;
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
   final VoidCallback? onClear;
   final bool isLoading;
   final double height;
@@ -102,6 +104,7 @@ class _AppSearchFieldState extends State<AppSearchField> {
               controller: widget.controller,
               focusNode: _effectiveFocusNode,
               onChanged: widget.onChanged,
+              onSubmitted: widget.onSubmitted,
               textAlign: TextAlign.start,
               textInputAction: TextInputAction.search,
               cursorColor: AppColors.cursor(context),

@@ -171,8 +171,6 @@ class _ListingHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
-
     return Align(
       alignment: AlignmentDirectional.centerStart,
       child: Row(
@@ -186,14 +184,10 @@ class _ListingHeader extends StatelessWidget {
               minimumSize: const Size(28, 28),
               padding: EdgeInsets.zero,
             ),
-            icon: Transform.scale(
-              scaleX: isRtl ? 1 : -1,
-              child: AppSvgImage.asset(
-                AppAssets.serviceBackIcon,
-                width: 8,
-                height: 14,
-                color: AppColors.onSurface(context),
-              ),
+            icon: Icon(
+              Icons.arrow_back_ios_new,
+              size: 20,
+              color: AppColors.onSurface(context),
             ),
           ),
           const SizedBox(width: 4),
@@ -569,6 +563,7 @@ class _PlaceListTile extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsetsDirectional.symmetric(vertical: 4),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _PlaceImage(item: item),
             const SizedBox(width: 8),
@@ -655,6 +650,7 @@ class _PlaceDetails extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
@@ -665,17 +661,7 @@ class _PlaceDetails extends StatelessWidget {
             _AvailabilityPill(label: l10n.serviceAvailable),
           ],
         ),
-        if (item.subtitle != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            item.subtitle!,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.start,
-            style: AppTextStyles.caption(context).copyWith(fontSize: 10),
-          ),
-        ],
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

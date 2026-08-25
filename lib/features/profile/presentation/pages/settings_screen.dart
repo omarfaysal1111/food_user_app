@@ -123,13 +123,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 themeController.setThemeMode(
                                   value ? ThemeMode.dark : ThemeMode.light,
                                 );
-                                context.read<ProfileBloc>().add(
-                                  UpdateSettingsEvent(
-                                    UpdateSettingsRequest(
-                                      theme: value ? 'dark' : 'light',
-                                    ),
-                                  ),
-                                );
                               },
                             ),
                           ),

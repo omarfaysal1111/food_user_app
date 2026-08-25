@@ -32,10 +32,8 @@ class SearchCubit extends Cubit<SearchState> {
     );
   }
   Future<void> addSearchLog(String term) async {
-    // Optimistic or just call API
+    // Just call API silently
     await searchRepository.addSearchLog(term);
-    // Refresh history
-    getSearchHistory();
   }
 
   Future<void> deleteSearchLog(int id) async {

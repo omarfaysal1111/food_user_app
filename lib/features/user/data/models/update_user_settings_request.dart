@@ -15,8 +15,7 @@ class UpdateUserSettingsRequest {
 
   Map<String, dynamic> toJson() {
     return {
-      if (pushNotifications != null) 'is_notify': pushNotifications! ? 1 : 0,
-      // locale, sms, email, theme are not supported by the new API currently, but kept for signature compat
+      if (pushNotifications != null) 'is_notify': pushNotifications,
     };
   }
 }

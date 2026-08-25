@@ -3001,6 +3001,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No categories available'**
   String get noCategoriesAvailable;
+
+  /// No description provided for @searchClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get searchClearAll;
+
+  /// No description provided for @searchClearHistoryConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to clear your search history?'**
+  String get searchClearHistoryConfirm;
+
+  /// No description provided for @clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clear;
 }
 
 class _AppLocalizationsDelegate
