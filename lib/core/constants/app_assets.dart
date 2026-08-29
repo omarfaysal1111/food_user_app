@@ -287,6 +287,8 @@ class AppAssets {
   static const serviceStarIcon = 'assets/images/service_listing/icon_star.svg';
   static const serviceFavouriteIcon =
       'assets/images/service_listing/icon_favourite.svg';
+  static const serviceSaleIcon =
+      'assets/images/service_listing/sale.svg';
 
   // ── Search Screen ─────────────────────────────────────────────────────────
   static const searchCake = 'assets/images/search/search_cake.png';

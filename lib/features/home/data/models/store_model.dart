@@ -29,6 +29,9 @@ class StoreModel extends Store {
     super.prepTimeFrom,
     super.prepTimeTo,
     super.tags,
+    super.hasOffer,
+    super.ratingAvg,
+    super.ratingCount,
   });
 
   factory StoreModel.fromJson(Map<String, dynamic> json) {
@@ -56,6 +59,9 @@ class StoreModel extends Store {
       prepTimeFrom: json['prep_time_from'] != null ? (json['prep_time_from'] as num).toInt() : null,
       prepTimeTo: json['prep_time_to'] != null ? (json['prep_time_to'] as num).toInt() : null,
       tags: tags,
+      hasOffer: json['has_offer'] == true,
+      ratingAvg: json['rating_avg'] != null ? (json['rating_avg'] as num).toDouble() : null,
+      ratingCount: json['rating_count'] != null ? (json['rating_count'] as num).toInt() : null,
     );
   }
 }

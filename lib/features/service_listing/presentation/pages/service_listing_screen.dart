@@ -1,16 +1,15 @@
+import 'package:food_user_app/core/widgets/shared_store_list_tile.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
-import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/core/widgets/app_search_field.dart';
-import 'package:food_user_app/core/widgets/app_status_dot_label.dart';
-import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_config.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_type.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
@@ -181,10 +180,10 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                                     items: stores.map((s) => ServicePlaceData.store(
                                       id: s.id.toString(),
                                       name: s.name,
-                                      time: '${s.prepTimeFrom ?? 0}-${s.prepTimeTo ?? 0} min',
+                                      time: '${s.prepTimeFrom ?? 0}-${s.prepTimeTo ?? 0}',
                                       imageAsset: s.cover ?? s.logo ?? '',
-                                      rating: '0.0', // Fallback as rating is missing in Store
-                                      hasOffer: false,
+                                      rating: s.ratingAvg?.toStringAsFixed(1) ?? '0.0',
+                                      hasOffer: s.hasOffer,
                                       topRated: false,
                                     )).toList(),
                                   ),
@@ -501,7 +500,7 @@ class _PlaceList extends StatelessWidget {
     return Column(
       children: [
         for (var index = 0; index < items.length; index++) ...[
-          _PlaceListTile(item: items[index]),
+          SharedStoreListTile(item: items[index]),
           if (index != items.length - 1)
             Divider(
               height: 24,
@@ -514,222 +513,12 @@ class _PlaceList extends StatelessWidget {
   }
 }
 
-class _PlaceListTile extends StatelessWidget {
-  const _PlaceListTile({required this.item});
 
-  final ServicePlaceData item;
 
-  @override
-  Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
 
-    return InkWell(
-      onTap: () => context.push(
-        RouteNames.restaurantDetailFor(item.detailId),
-        extra: item.toRestaurantDetailArgs(),
-      ),
-      borderRadius: const BorderRadius.all(AppRadius.sm),
-      child: Padding(
-        padding: const EdgeInsetsDirectional.symmetric(vertical: 4),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _PlaceImage(item: item),
-            const SizedBox(width: 8),
-            Expanded(child: _PlaceDetails(item: item)),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 20,
-              height: 20,
-              child: Center(
-                child: Transform.scale(
-                  scaleX: isRtl ? -1 : 1,
-                  child: AppSvgImage.asset(
-                    AppAssets.serviceBackIcon,
-                    width: 7,
-                    height: 12,
-                    color: AppColors.onSurface(context),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
-class _PlaceImage extends StatelessWidget {
-  const _PlaceImage({required this.item});
 
-  final ServicePlaceData item;
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 56,
-      height: 56,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.all(AppRadius.md),
-              child: AppNetworkImage(
-                item.imageAsset,
-                width: 56,
-                height: 56,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          if (item.showFavourite)
-            PositionedDirectional(
-              top: 6,
-              start: 6,
-              child: Container(
-                width: 22,
-                height: 22,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceCard(context),
-                  borderRadius: const BorderRadius.all(AppRadius.full),
-                ),
-                child: AppSvgImage.asset(
-                  AppAssets.serviceFavouriteIcon,
-                  width: 14,
-                  height: 14,
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PlaceDetails extends StatelessWidget {
-  const _PlaceDetails({required this.item});
-
-  final ServicePlaceData item;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Flexible(child: _PlaceNameText(item.name)),
-            const SizedBox(width: 8),
-            _AvailabilityPill(label: l10n.serviceAvailable),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _RatingLabel(rating: item.rating),
-            const SizedBox(width: 12),
-            _TimeLabel(time: item.time),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _PlaceNameText extends StatelessWidget {
-  const _PlaceNameText(this.name);
-
-  final String name;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      name,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      textAlign: TextAlign.start,
-      style: AppTextStyles.body(context).copyWith(fontSize: 12, height: 1.3),
-    );
-  }
-}
-
-class _AvailabilityPill extends StatelessWidget {
-  const _AvailabilityPill({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppStatusDotLabel(label: label, color: AppColors.success);
-  }
-}
-
-class _TimeLabel extends StatelessWidget {
-  const _TimeLabel({
-    required this.time,
-  });
-
-  final String time;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = AppColors.onSurface(context);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AppRasterImage.asset(
-          AppAssets.serviceTimeIconPng,
-          width: 14,
-          height: 14,
-          color: color,
-        ),
-        const SizedBox(width: 4),
-        Flexible(
-          child: Text(
-            time,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.caption(
-              context,
-            ).copyWith(color: color, fontSize: 10, height: 1.25),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _RatingLabel extends StatelessWidget {
-  const _RatingLabel({required this.rating});
-
-  final String rating;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AppSvgImage.asset(AppAssets.serviceStarIcon, width: 14, height: 14),
-        const SizedBox(width: 2),
-        Text(
-          rating,
-          style: AppTextStyles.body(
-            context,
-          ).copyWith(fontSize: 10, height: 1.25),
-        ),
-      ],
-    );
-  }
-}
 
 class _EmptyListingState extends StatelessWidget {
   const _EmptyListingState({required this.l10n});
@@ -742,25 +531,3 @@ class _EmptyListingState extends StatelessWidget {
   }
 }
 
-extension _ServicePlaceDetailArgs on ServicePlaceData {
-  RestaurantDetailArgs toRestaurantDetailArgs() {
-    return RestaurantDetailArgs(
-      id: detailId,
-      name: name,
-      description: subtitle ?? name,
-      deliveryTime: time,
-      rating: double.tryParse(rating) ?? 4.5,
-      logoAsset: imageAsset,
-      coverAsset: imageAsset,
-    );
-  }
-
-  String get detailId {
-    final normalized = name
-        .trim()
-        .toLowerCase()
-        .replaceAll(RegExp(r'\s+'), '-')
-        .replaceAll(RegExp(r'[^a-z0-9\u0600-\u06FF-]'), '');
-    return normalized.isEmpty ? 'service-place' : normalized;
-  }
-}
