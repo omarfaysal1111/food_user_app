@@ -53,6 +53,9 @@ class HomeRepositoryImpl implements HomeRepository {
     List<int>? tagIds,
     int page = 1,
     int perPage = 10,
+    int? fastPrep,
+    int? topRated,
+    int? hasOffers,
   }) async {
     try {
       final result = await remoteDataSource.getStores(
@@ -61,6 +64,9 @@ class HomeRepositoryImpl implements HomeRepository {
         tagIds: tagIds,
         page: page,
         perPage: perPage,
+        fastPrep: fastPrep,
+        topRated: topRated,
+        hasOffers: hasOffers,
       );
       return Right(result);
     } catch (e) {

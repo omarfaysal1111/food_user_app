@@ -24,6 +24,7 @@ _RestaurantDto _$RestaurantDtoFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String?,
       isAvailable: json['is_available'] as bool?,
       isOpen: json['is_open'] as bool?,
+      isMajor: json['is_major'] as bool?,
     );
 
 Map<String, dynamic> _$RestaurantDtoToJson(_RestaurantDto instance) =>
@@ -44,4 +45,5 @@ Map<String, dynamic> _$RestaurantDtoToJson(_RestaurantDto instance) =>
       'description': instance.description,
       'is_available': instance.isAvailable,
       'is_open': instance.isOpen,
+      'is_major': instance.isMajor,
     };

@@ -32,8 +32,26 @@ class SearchCubit extends Cubit<SearchState> {
     search(currentQuery);
   }
 
+  int? fastPrep;
+  int? topRated;
+  int? hasOffers;
+
+  void resetFilters() {
+    selectedTagId = null;
+    fastPrep = null;
+    topRated = null;
+    hasOffers = null;
+    fetchInitialData();
+  }
+
+  void setFilters({int? fastPrep, int? topRated, int? hasOffers}) {
+    this.fastPrep = fastPrep;
+    this.topRated = topRated;
+    this.hasOffers = hasOffers;
+  }
+
   Future<void> search(String query) async {
-    if (query.isEmpty && selectedTagId == null) {
+    if (query.isEmpty && selectedTagId == null && fastPrep == null && topRated == null && hasOffers == null) {
       state.maybeWhen(
         initialDataLoaded: (h, k, t, m) {
           emit(SearchState.initialDataLoaded(history: h, keywords: k, tags: t, majorStores: m));
@@ -46,7 +64,13 @@ class SearchCubit extends Cubit<SearchState> {
     }
     emit(const SearchState.loading());
     final tagIds = selectedTagId != null ? [selectedTagId!] : null;
-    final result = await searchRepository.search(query, tagIds: tagIds);
+    final result = await searchRepository.search(
+      query,
+      tagIds: tagIds,
+      fastPrep: fastPrep,
+      topRated: topRated,
+      hasOffers: hasOffers,
+    );
     if (isClosed) return;
     result.fold(
       (failure) => emit(SearchState.error(failure.message)),

@@ -35,12 +35,28 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
   entity_tag.Tag? _selectedTag;
+  final Set<ServiceFilterId> _selectedFilters = {};
 
   @override
   void initState() {
     super.initState();
     context.read<TagsCubit>().fetchTags(sectionId: widget.sectionId);
-    context.read<StoresCubit>().fetchStores(sectionId: widget.sectionId);
+    _fetchFilteredStores();
+  }
+
+  void _fetchFilteredStores() {
+    final hasOffers = _selectedFilters.contains(ServiceFilterId.offers) ? 1 : null;
+    final fastPrep = _selectedFilters.contains(ServiceFilterId.fastDelivery) ? 1 : null;
+    final topRated = _selectedFilters.contains(ServiceFilterId.topRated) ? 1 : null;
+    
+    context.read<StoresCubit>().fetchStores(
+      sectionId: widget.sectionId,
+      search: _searchController.text.isNotEmpty ? _searchController.text : null,
+      tagIds: _selectedTag != null ? [_selectedTag!.id] : null,
+      fastPrep: fastPrep,
+      topRated: topRated,
+      hasOffers: hasOffers,
+    );
   }
 
   @override
@@ -82,11 +98,7 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                       controller: _searchController,
                       hint: config.searchHint,
                       onChanged: (val) {
-                        context.read<StoresCubit>().fetchStores(
-                          sectionId: widget.sectionId,
-                          search: val,
-                          tagIds: _selectedTag != null ? [_selectedTag!.id] : null,
-                        );
+                        _fetchFilteredStores();
                         _resetScroll();
                       },
                     ),
@@ -113,11 +125,7 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                                   _selectedTag = cat;
                                 }
                               });
-                              context.read<StoresCubit>().fetchStores(
-                                sectionId: widget.sectionId,
-                                search: _searchController.text.isNotEmpty ? _searchController.text : null,
-                                tagIds: _selectedTag != null ? [_selectedTag!.id] : null,
-                              );
+                              _fetchFilteredStores();
                               _resetScroll();
                             },
                           );
@@ -127,11 +135,17 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                     ),
                     if (config.filters.isNotEmpty) ...[
                       const SizedBox(height: 16),
-                      // Mock filters kept for UI layout
+                      // filters
                       _ServiceFilterStrip(
                         filters: config.filters,
-                        selectedFilters: const {},
+                        selectedFilters: _selectedFilters,
                         onToggle: (filter) {
+                          setState(() {
+                            _selectedFilters.contains(filter)
+                                ? _selectedFilters.remove(filter)
+                                : _selectedFilters.add(filter);
+                          });
+                          _fetchFilteredStores();
                           _resetScroll();
                         },
                       ),

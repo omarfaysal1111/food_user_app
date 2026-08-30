@@ -47,6 +47,8 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
+    // Explicitly reset global filter states to ensure clean entry
+    context.read<SearchCubit>().resetFilters();
     _controller = TextEditingController()..addListener(_onSearchChanged);
     _focusNode = FocusNode();
     _scrollController = ScrollController();
@@ -100,9 +102,11 @@ class _SearchScreenState extends State<SearchScreen> {
     final l10n = AppLocalizations.of(context)!;
     final query = _controller.text.trim();
     final scope = _selectedCategory?.label;
-    final showFilters = scope != null || query.isNotEmpty;
-    
     final searchState = context.watch<SearchCubit>().state;
+    final selectedTagId = context.watch<SearchCubit>().selectedTagId;
+    final hasActiveFilters = _selectedFilters.isNotEmpty;
+    final showFilters = scope != null || query.isNotEmpty || selectedTagId != null || hasActiveFilters;
+    
     final keywords = searchState.maybeWhen(
       initialDataLoaded: (_, kw, _, _) => kw,
       orElse: () => const <SearchKeyword>[],
@@ -167,6 +171,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                 : _selectedFilters.add(filter);
                           });
                           _resetScroll();
+                          
+                          // Map to SearchCubit
+                          final hasOffers = _selectedFilters.contains(ServiceFilterId.offers) ? 1 : null;
+                          final fastPrep = _selectedFilters.contains(ServiceFilterId.fastDelivery) ? 1 : null;
+                          final topRated = _selectedFilters.contains(ServiceFilterId.topRated) ? 1 : null;
+
+                          final cubit = context.read<SearchCubit>();
+                          cubit.setFilters(fastPrep: fastPrep, topRated: topRated, hasOffers: hasOffers);
+                          cubit.search(_controller.text.trim());
                         },
                       ),
                     ],
@@ -192,24 +205,30 @@ class _SearchScreenState extends State<SearchScreen> {
                         history: history,
                         keywords: kw,
                         restaurants: const [],
-                        majorStores: majorStores,
+                        majorStores: query.isNotEmpty ? const [] : majorStores,
                         items: const [],
+                        selectedTagId: selectedTagId,
                         isLoaded: isLoaded,
                         isLoading: isLoading,
                       ),
-                      loaded: (result) => _buildSearchResults(
-                        context,
-                        query: query,
-                        scope: scope,
-                        history: const [],
-                        keywords: keywords,
-                        restaurants: result.restaurants,
-                        majorStores: const [],
-                        items: result.items,
-                        isRandom: result.isRandom,
-                        isLoaded: isLoaded,
-                        isLoading: isLoading,
-                      ),
+                      loaded: (result) {
+                        final majorStores = result.restaurants.where((r) => r.isMajor == true).toList();
+                        final normalStores = result.restaurants.where((r) => r.isMajor == false).toList();
+                        return _buildSearchResults(
+                          context,
+                          query: query,
+                          scope: scope,
+                          history: const [],
+                          keywords: keywords,
+                          restaurants: normalStores,
+                          majorStores: majorStores,
+                          items: result.items,
+                          selectedTagId: selectedTagId,
+                          isRandom: result.isRandom,
+                          isLoaded: isLoaded,
+                          isLoading: isLoading,
+                        );
+                      },
                       orElse: () => _buildSearchResults(
                         context,
                         query: query,
@@ -219,6 +238,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         restaurants: const [],
                         majorStores: const [],
                         items: const [],
+                        selectedTagId: selectedTagId,
                         isLoaded: isLoaded,
                         isLoading: isLoading,
                       ),
@@ -266,39 +286,24 @@ class _SearchScreenState extends State<SearchScreen> {
     required List<Restaurant> restaurants,
     required List<Restaurant> majorStores,
     required List<MenuItem> items,
+    int? selectedTagId,
     bool isRandom = false,
     bool isLoaded = false,
     bool isLoading = false,
   }) {
     final l10n = AppLocalizations.of(context)!;
 
-    final matchedRestaurants = restaurants
-        .where(
-          (r) =>
-              scope == null ||
-              r.cuisineType.toLowerCase().contains(scope.toLowerCase()),
-        )
-        .where((r) => _matchesTopFilter(r))
-        .map(_mapToServicePlaceData)
-        .toList();
-
     final displayedLargeStores = majorStores.map(_mapToServicePlaceData).toList();
-    final displayedStores = matchedRestaurants;
+    final displayedStores = restaurants.map(_mapToServicePlaceData).toList();
 
-    // Filter and map products
-    final filteredProducts = items
-        .where(
-          (item) =>
-              scope == null ||
-              item.name.toLowerCase().contains(scope.toLowerCase()),
-        )
-        .map(_mapToSearchResult)
-        .toList();
+    // Map products directly since backend filters them
+    final filteredProducts = items.map(_mapToSearchResult).toList();
 
-    final showFilters = scope != null || query.isNotEmpty;
+    final hasActiveFilters = _selectedFilters.isNotEmpty;
+    final showFilters = scope != null || query.isNotEmpty || selectedTagId != null || hasActiveFilters;
     // We also consider noResults if API returned isRandom = true since those are fallback suggestions
     final noResults =
-        query.isNotEmpty &&
+        (query.isNotEmpty || selectedTagId != null || hasActiveFilters) &&
         isLoaded &&
         !isLoading &&
         displayedLargeStores.isEmpty &&
@@ -396,16 +401,6 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  bool _matchesTopFilter(Restaurant place) {
-    if (_selectedFilters.isEmpty) return true;
-    return _selectedFilters.every(
-      (f) => switch (f) {
-        ServiceFilterId.offers => false,
-        ServiceFilterId.fastDelivery => place.deliveryTimeMax <= 30,
-        ServiceFilterId.topRated => place.rating >= 4.5,
-      },
-    );
-  }
 
   _SearchResult _mapToSearchResult(MenuItem item) {
     return _SearchResult(

@@ -155,6 +155,9 @@ class StoresCubit extends Cubit<StoresState> {
     List<int>? tagIds,
     int page = 1,
     int perPage = 10,
+    int? fastPrep,
+    int? topRated,
+    int? hasOffers,
   }) async {
     emit(const StoresLoading());
     final result = await getStoresUseCase(
@@ -164,6 +167,9 @@ class StoresCubit extends Cubit<StoresState> {
         tagIds: tagIds,
         page: page,
         perPage: perPage,
+        fastPrep: fastPrep,
+        topRated: topRated,
+        hasOffers: hasOffers,
       ),
     );
     if (isClosed) return;

@@ -49,6 +49,9 @@ class GetStoresParams extends Equatable {
   final List<int>? tagIds;
   final int page;
   final int perPage;
+  final int? fastPrep;
+  final int? topRated;
+  final int? hasOffers;
 
   const GetStoresParams({
     required this.sectionId,
@@ -56,10 +59,13 @@ class GetStoresParams extends Equatable {
     this.tagIds,
     this.page = 1,
     this.perPage = 10,
+    this.fastPrep,
+    this.topRated,
+    this.hasOffers,
   });
 
   @override
-  List<Object?> get props => [sectionId, search, tagIds, page, perPage];
+  List<Object?> get props => [sectionId, search, tagIds, page, perPage, fastPrep, topRated, hasOffers];
 }
 
 /// `GET /api/v1/stores`
@@ -75,6 +81,9 @@ class GetStoresUseCase extends UseCase<StoreListResult, GetStoresParams> {
       tagIds: params.tagIds,
       page: params.page,
       perPage: params.perPage,
+      fastPrep: params.fastPrep,
+      topRated: params.topRated,
+      hasOffers: params.hasOffers,
     );
   }
 }

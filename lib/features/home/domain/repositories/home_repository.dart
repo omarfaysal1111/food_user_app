@@ -22,6 +22,9 @@ abstract class HomeRepository {
     List<int>? tagIds,
     int page = 1,
     int perPage = 10,
+    int? fastPrep,
+    int? topRated,
+    int? hasOffers,
   });
 
   /// `GET /api/v1/stores/major` — featured stores for a section.

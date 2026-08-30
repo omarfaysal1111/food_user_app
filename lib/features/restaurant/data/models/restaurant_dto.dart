@@ -28,6 +28,7 @@ abstract class RestaurantDto with _$RestaurantDto {
     String? description,
     @JsonKey(name: 'is_available') bool? isAvailable,
     @JsonKey(name: 'is_open') bool? isOpen,
+    @JsonKey(name: 'is_major') bool? isMajor,
   }) = _RestaurantDto;
 
   factory RestaurantDto.fromJson(Map<String, dynamic> json) =>
@@ -53,6 +54,7 @@ extension RestaurantDtoMapper on RestaurantDto {
       deliveryFee: deliveryFee ?? 0.0,
       isFavorited: isFavorited ?? false,
       isAvailable: isAvailable ?? isOpen ?? true,
+      isMajor: isMajor ?? false,
     );
   }
 }

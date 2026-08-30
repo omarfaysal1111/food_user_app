@@ -7,7 +7,13 @@ import 'package:food_user_app/features/search/domain/entities/search_keyword.dar
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 
 abstract class SearchRepository {
-  Future<Either<Failure, SearchResult>> search(String query, {List<int>? tagIds});
+  Future<Either<Failure, SearchResult>> search(
+    String query, {
+    List<int>? tagIds,
+    int? fastPrep,
+    int? topRated,
+    int? hasOffers,
+  });
   Future<Either<Failure, List<SearchLog>>> getSearchHistory();
   Future<Either<Failure, SearchLog>> addSearchLog(String term);
   Future<Either<Failure, void>> deleteSearchLog(int id);

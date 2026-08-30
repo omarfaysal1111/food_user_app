@@ -18,9 +18,21 @@ class SearchRepositoryImpl implements SearchRepository {
   SearchRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, SearchResult>> search(String query, {List<int>? tagIds}) async {
+  Future<Either<Failure, SearchResult>> search(
+    String query, {
+    List<int>? tagIds,
+    int? fastPrep,
+    int? topRated,
+    int? hasOffers,
+  }) async {
     try {
-      final dto = await remoteDataSource.search(query, tagIds: tagIds);
+      final dto = await remoteDataSource.search(
+        query,
+        tagIds: tagIds,
+        fastPrep: fastPrep,
+        topRated: topRated,
+        hasOffers: hasOffers,
+      );
       return Right(dto.toEntity());
     } catch (e) {
       return Left(_mapExceptionToFailure(e));

@@ -27,6 +27,8 @@ class SearchResultDto {
         coverImageUrl: store['cover'] as String? ?? store['logo'] as String?,
         deliveryTimeMin: (store['prep_time_from'] as num?)?.toInt(),
         deliveryTimeMax: (store['prep_time_to'] as num?)?.toInt(),
+        ratingAvg: store['rating_avg'],
+        isMajor: store['is_major'] == true,
       );
     }).toList();
 

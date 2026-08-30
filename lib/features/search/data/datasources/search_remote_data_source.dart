@@ -8,7 +8,13 @@ import 'package:food_user_app/features/search/domain/entities/search_keyword.dar
 import 'package:food_user_app/features/restaurant/data/models/restaurant_dto.dart';
 
 abstract class SearchRemoteDataSource {
-  Future<SearchResultDto> search(String query, {List<int>? tagIds});
+  Future<SearchResultDto> search(
+    String query, {
+    List<int>? tagIds,
+    int? fastPrep,
+    int? topRated,
+    int? hasOffers,
+  });
   Future<List<SearchLog>> getSearchHistory();
   Future<SearchLog> addSearchLog(String term);
   Future<void> deleteSearchLog(int id);
@@ -23,7 +29,13 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
   SearchRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
   @override
-  Future<SearchResultDto> search(String query, {List<int>? tagIds}) async {
+  Future<SearchResultDto> search(
+    String query, {
+    List<int>? tagIds,
+    int? fastPrep,
+    int? topRated,
+    int? hasOffers,
+  }) async {
     try {
       final queryParams = <String, dynamic>{
         'search': query,
@@ -32,6 +44,9 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
       if (tagIds != null && tagIds.isNotEmpty) {
         queryParams['tag_ids[]'] = tagIds;
       }
+      if (fastPrep != null) queryParams['fast_prep'] = fastPrep;
+      if (topRated != null) queryParams['top_rated'] = topRated;
+      if (hasOffers != null) queryParams['has_offers'] = hasOffers;
       final response = await _dio.get<dynamic>(
         ApiEndpoints.stores, // Map legacy search to the stores endpoint
         queryParameters: queryParams,
@@ -146,6 +161,8 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
           coverImageUrl: store['cover'] as String? ?? store['logo'] as String?,
           deliveryTimeMin: (store['prep_time_from'] as num?)?.toInt(),
           deliveryTimeMax: (store['prep_time_to'] as num?)?.toInt(),
+          ratingAvg: store['rating_avg'],
+          isMajor: store['is_major'] == true,
         );
       }).toList();
     } on DioException catch (e) {

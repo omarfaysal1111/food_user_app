@@ -29,6 +29,9 @@ abstract class HomeRemoteDataSource {
     List<int>? tagIds,
     int page = 1,
     int perPage = 10,
+    int? fastPrep,
+    int? topRated,
+    int? hasOffers,
   });
 
   /// `GET /api/v1/stores/major` — major/featured stores for a section.
@@ -135,6 +138,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     List<int>? tagIds,
     int page = 1,
     int perPage = 10,
+    int? fastPrep,
+    int? topRated,
+    int? hasOffers,
   }) async {
     try {
       final Map<String, dynamic> params = {
@@ -142,6 +148,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
         'page': page,
         'per_page': perPage,
         if (search != null && search.isNotEmpty) 'search': search,
+        if (fastPrep != null) 'fast_prep': fastPrep,
+        if (topRated != null) 'top_rated': topRated,
+        if (hasOffers != null) 'has_offers': hasOffers,
       };
       // tag_ids[] as separate query params
       if (tagIds != null && tagIds.isNotEmpty) {
