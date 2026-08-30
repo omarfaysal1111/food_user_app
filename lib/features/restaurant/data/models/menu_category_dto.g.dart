@@ -8,8 +8,8 @@ part of 'menu_category_dto.dart';
 
 _MenuCategoryDto _$MenuCategoryDtoFromJson(Map<String, dynamic> json) =>
     _MenuCategoryDto(
-      id: json['id'] as String,
-      branchId: json['branchId'] as String,
+      id: json['id'] == null ? '' : _idFromJson(json['id']),
+      branchId: json['branchId'] == null ? '' : _idFromJson(json['branchId']),
       name: json['name'] as String?,
       sortOrder: (json['sortOrder'] as num?)?.toInt() ?? 0,
       items:

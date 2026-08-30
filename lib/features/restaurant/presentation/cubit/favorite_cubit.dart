@@ -62,9 +62,7 @@ class FavoriteCubit extends Cubit<FavoriteState> {
       ),
     );
 
-    final result = isFav
-        ? await restaurantRepository.removeFavorite(restaurantId)
-        : await restaurantRepository.addFavorite(restaurantId);
+    final result = await restaurantRepository.toggleFavorite(restaurantId);
 
     if (isClosed) return;
 

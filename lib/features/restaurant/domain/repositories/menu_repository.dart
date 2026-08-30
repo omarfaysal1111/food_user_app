@@ -11,4 +11,7 @@ abstract class MenuRepository {
   Future<Either<Failure, List<MenuCategory>>> getBranchMenu(String branchId);
 
   Future<Either<Failure, List<Modifier>>> getItemModifiers(String itemId);
+
+  /// Fetches menu from `/api/v1/stores/products/all?store_id={storeId}`.
+  Future<Either<Failure, List<MenuCategory>>> getStoreMenu(String storeId);
 }

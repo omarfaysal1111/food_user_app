@@ -380,8 +380,10 @@ Future<void> init({SharedPreferences? prefs}) async {
     ),
   );
   sl.registerFactory<RestaurantDetailCubit>(
-    () =>
-        RestaurantDetailCubit(restaurantRepository: sl<RestaurantRepository>()),
+    () => RestaurantDetailCubit(
+      restaurantRepository: sl<RestaurantRepository>(),
+      menuRepository: sl<MenuRepository>(),
+    ),
   );
 
   sl.registerLazySingleton<MenuRemoteDataSource>(

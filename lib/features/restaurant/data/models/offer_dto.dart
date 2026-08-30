@@ -4,11 +4,14 @@ import 'package:food_user_app/features/restaurant/domain/entities/offer.dart';
 part 'offer_dto.freezed.dart';
 part 'offer_dto.g.dart';
 
+String _idFromJson(dynamic value) => value?.toString() ?? '';
+String? _nullableIdFromJson(dynamic value) => value?.toString();
+
 @freezed
 abstract class OfferDto with _$OfferDto {
   const factory OfferDto({
-    required String id,
-    String? restaurantId,
+    @JsonKey(fromJson: _idFromJson) @Default('') String id,
+    @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? restaurantId,
     String? title,
     int? discountPercent,
     double? minOrderAmount,

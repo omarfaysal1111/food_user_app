@@ -15,6 +15,9 @@ abstract class RestaurantRemoteDataSource {
 
   Future<RestaurantDto> getRestaurantDetail(String id);
 
+  /// Fetches full store details from `GET /api/v1/stores/show?id={storeId}`.
+  Future<RestaurantDto> getStoreDetails(String storeId);
+
   Future<List<BranchDto>> getBranches(String restaurantId);
 
   Future<List<OfferDto>> getOffers(String restaurantId);
@@ -33,9 +36,7 @@ abstract class RestaurantRemoteDataSource {
 
   Future<List<RestaurantDto>> getFavorites();
 
-  Future<void> addFavorite(String id);
-
-  Future<void> removeFavorite(String id);
+  Future<void> toggleFavorite(String id);
 }
 
 class RestaurantRemoteDataSourceImpl implements RestaurantRemoteDataSource {
@@ -79,6 +80,23 @@ class RestaurantRemoteDataSourceImpl implements RestaurantRemoteDataSource {
         throw const FormatException('Expected restaurant object');
       }
       return RestaurantDto.fromJson(raw);
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<RestaurantDto> getStoreDetails(String storeId) async {
+    try {
+      final response = await _dio.get<dynamic>(
+        ApiEndpoints.storeShow,
+        queryParameters: {'id': storeId},
+      );
+      final raw = response.data;
+      if (raw is! Map<String, dynamic> || !raw.containsKey('data')) {
+        throw const FormatException('Expected store details envelope');
+      }
+      return RestaurantDto.fromJson(raw['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }
@@ -183,12 +201,25 @@ class RestaurantRemoteDataSourceImpl implements RestaurantRemoteDataSource {
   @override
   Future<List<RestaurantDto>> getFavorites() async {
     try {
-      final response = await _dio.get<dynamic>(ApiEndpoints.favorites);
+      final response = await _dio.get<dynamic>(ApiEndpoints.favoritesList);
       final raw = response.data;
-      if (raw is! List) {
+      
+      List<dynamic> items = [];
+      if (raw is List) {
+        items = raw;
+      } else if (raw is Map<String, dynamic>) {
+        if (raw['data'] is List) {
+          items = raw['data'] as List<dynamic>;
+        } else if (raw['data'] is Map<String, dynamic> && raw['data']['items'] is List) {
+          items = raw['data']['items'] as List<dynamic>;
+        } else if (raw['items'] is List) {
+          items = raw['items'] as List<dynamic>;
+        }
+      } else {
         throw const FormatException('Expected list of favorite restaurants');
       }
-      return raw
+
+      return items
           .map((json) => RestaurantDto.fromJson(json as Map<String, dynamic>))
           .toList();
     } on DioException catch (e) {
@@ -197,18 +228,12 @@ class RestaurantRemoteDataSourceImpl implements RestaurantRemoteDataSource {
   }
 
   @override
-  Future<void> addFavorite(String id) async {
+  Future<void> toggleFavorite(String id) async {
     try {
-      await _dio.post<dynamic>(ApiEndpoints.toggleFavorite(id));
-    } on DioException catch (e) {
-      throw DioErrorMapper.map(e);
-    }
-  }
-
-  @override
-  Future<void> removeFavorite(String id) async {
-    try {
-      await _dio.delete<dynamic>(ApiEndpoints.toggleFavorite(id));
+      await _dio.post<dynamic>(
+        ApiEndpoints.favoritesToggle,
+        data: {'store_id': int.tryParse(id) ?? id},
+      );
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }

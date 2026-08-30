@@ -5,22 +5,30 @@ class Restaurant extends Equatable {
   final String name;
   final String cuisineType;
   final String coverImageUrl;
+  final String logoUrl;
+  final String description;
   final double rating;
+  final int ratingCount;
   final int deliveryTimeMin;
   final int deliveryTimeMax;
   final double deliveryFee;
   final bool isFavorited;
+  final bool isAvailable;
 
   const Restaurant({
     required this.id,
     required this.name,
     required this.cuisineType,
     required this.coverImageUrl,
+    this.logoUrl = '',
+    this.description = '',
     required this.rating,
+    this.ratingCount = 0,
     required this.deliveryTimeMin,
     required this.deliveryTimeMax,
     required this.deliveryFee,
     required this.isFavorited,
+    this.isAvailable = true,
   });
 
   @override
@@ -29,10 +37,14 @@ class Restaurant extends Equatable {
     name,
     cuisineType,
     coverImageUrl,
+    logoUrl,
+    description,
     rating,
+    ratingCount,
     deliveryTimeMin,
     deliveryTimeMax,
     deliveryFee,
     isFavorited,
+    isAvailable,
   ];
 }

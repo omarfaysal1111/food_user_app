@@ -49,6 +49,7 @@ class MenuItemTile extends StatelessWidget {
                               ),
                       ),
                     ),
+                    _buildDiscountBadge(context, item, locale),
                     Positioned(
                       left: isArabic ? 8 : null,
                       right: isArabic ? null : 8,
@@ -81,35 +82,99 @@ class MenuItemTile extends StatelessWidget {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(12),
-                  child: Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Column(
-                      crossAxisAlignment: isArabic
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          item.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.heading4(
-                            context,
-                          ).copyWith(fontSize: 16, height: 1.25),
-                        ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        item.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.body(
+                          context,
+                        ).copyWith(fontSize: 12, height: 1.25, fontWeight: FontWeight.w400),
+                      ),
+                      if (item.originalPrice > item.price)
+                        Row(
+                          children: [
+                            Text(
+                              _formatPrice(item.price, locale),
+                              textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+                              style: AppTextStyles.body(context).copyWith(
+                                fontSize: 12,
+                                height: 1.3,
+                                color: AppColors.onSurface(context),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              _formatPrice(item.originalPrice, locale),
+                              textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+                              style: AppTextStyles.body(context).copyWith(
+                                fontSize: 10,
+                                height: 1.3,
+                                decoration: TextDecoration.lineThrough,
+                                color: AppColors.paragraph(context).withValues(alpha: 0.6),
+                              ),
+                            ),
+                          ],
+                        )
+                      else
                         Text(
                           _formatPrice(item.price, locale),
-                          textAlign: isArabic ? TextAlign.end : TextAlign.start,
-                          style: AppTextStyles.body(
-                            context,
-                          ).copyWith(fontSize: 12, height: 1.3),
+                          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+                          style: AppTextStyles.body(context).copyWith(
+                            fontSize: 12,
+                            height: 1.3,
+                            color: AppColors.onSurface(context),
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDiscountBadge(BuildContext context, MenuItem item, Locale locale) {
+    if (item.discountValue <= 0) {
+      return const SizedBox.shrink();
+    }
+    
+    final isArabic = locale.languageCode == 'ar';
+    String badgeText;
+    
+    if (item.discountType == 'percentage') {
+      badgeText = isArabic 
+          ? 'خصم ${item.discountValue.toStringAsFixed(0)}%'
+          : '${item.discountValue.toStringAsFixed(0)}% OFF';
+    } else {
+      badgeText = isArabic
+          ? 'خصم ${item.discountValue.toStringAsFixed(0)} ج.م'
+          : '${item.discountValue.toStringAsFixed(0)} EGP OFF';
+    }
+
+    return Positioned(
+      top: 8,
+      left: 8,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        decoration: const BoxDecoration(
+          color: Color(0xFF0C9D61),
+          borderRadius: BorderRadius.all(AppRadius.sm),
+        ),
+        child: Text(
+          badgeText,
+          style: AppTextStyles.caption(context).copyWith(
+            color: AppColors.text,
+            fontWeight: FontWeight.w500,
+            fontSize: 10,
           ),
         ),
       ),

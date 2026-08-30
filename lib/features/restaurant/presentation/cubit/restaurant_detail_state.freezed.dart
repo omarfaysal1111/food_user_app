@@ -128,12 +128,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( Restaurant restaurant,  List<Branch> branches,  List<Offer> offers)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( Restaurant restaurant,  List<MenuCategory> menuCategories,  List<Branch> branches,  List<Offer> offers)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.restaurant,_that.branches,_that.offers);case _Error() when error != null:
+return loaded(_that.restaurant,_that.menuCategories,_that.branches,_that.offers);case _Error() when error != null:
 return error(_that.message);case _:
   return orElse();
 
@@ -152,12 +152,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( Restaurant restaurant,  List<Branch> branches,  List<Offer> offers)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( Restaurant restaurant,  List<MenuCategory> menuCategories,  List<Branch> branches,  List<Offer> offers)  loaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Loaded():
-return loaded(_that.restaurant,_that.branches,_that.offers);case _Error():
+return loaded(_that.restaurant,_that.menuCategories,_that.branches,_that.offers);case _Error():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
@@ -175,12 +175,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( Restaurant restaurant,  List<Branch> branches,  List<Offer> offers)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( Restaurant restaurant,  List<MenuCategory> menuCategories,  List<Branch> branches,  List<Offer> offers)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.restaurant,_that.branches,_that.offers);case _Error() when error != null:
+return loaded(_that.restaurant,_that.menuCategories,_that.branches,_that.offers);case _Error() when error != null:
 return error(_that.message);case _:
   return null;
 
@@ -257,10 +257,17 @@ String toString() {
 
 
 class _Loaded implements RestaurantDetailState {
-  const _Loaded({required this.restaurant, final  List<Branch> branches = const [], final  List<Offer> offers = const []}): _branches = branches,_offers = offers;
+  const _Loaded({required this.restaurant, final  List<MenuCategory> menuCategories = const [], final  List<Branch> branches = const [], final  List<Offer> offers = const []}): _menuCategories = menuCategories,_branches = branches,_offers = offers;
   
 
  final  Restaurant restaurant;
+ final  List<MenuCategory> _menuCategories;
+@JsonKey() List<MenuCategory> get menuCategories {
+  if (_menuCategories is EqualUnmodifiableListView) return _menuCategories;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_menuCategories);
+}
+
  final  List<Branch> _branches;
 @JsonKey() List<Branch> get branches {
   if (_branches is EqualUnmodifiableListView) return _branches;
@@ -286,16 +293,16 @@ _$LoadedCopyWith<_Loaded> get copyWith => __$LoadedCopyWithImpl<_Loaded>(this, _
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&(identical(other.restaurant, restaurant) || other.restaurant == restaurant)&&const DeepCollectionEquality().equals(other._branches, _branches)&&const DeepCollectionEquality().equals(other._offers, _offers));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&(identical(other.restaurant, restaurant) || other.restaurant == restaurant)&&const DeepCollectionEquality().equals(other._menuCategories, _menuCategories)&&const DeepCollectionEquality().equals(other._branches, _branches)&&const DeepCollectionEquality().equals(other._offers, _offers));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,restaurant,const DeepCollectionEquality().hash(_branches),const DeepCollectionEquality().hash(_offers));
+int get hashCode => Object.hash(runtimeType,restaurant,const DeepCollectionEquality().hash(_menuCategories),const DeepCollectionEquality().hash(_branches),const DeepCollectionEquality().hash(_offers));
 
 @override
 String toString() {
-  return 'RestaurantDetailState.loaded(restaurant: $restaurant, branches: $branches, offers: $offers)';
+  return 'RestaurantDetailState.loaded(restaurant: $restaurant, menuCategories: $menuCategories, branches: $branches, offers: $offers)';
 }
 
 
@@ -306,7 +313,7 @@ abstract mixin class _$LoadedCopyWith<$Res> implements $RestaurantDetailStateCop
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) = __$LoadedCopyWithImpl;
 @useResult
 $Res call({
- Restaurant restaurant, List<Branch> branches, List<Offer> offers
+ Restaurant restaurant, List<MenuCategory> menuCategories, List<Branch> branches, List<Offer> offers
 });
 
 
@@ -323,10 +330,11 @@ class __$LoadedCopyWithImpl<$Res>
 
 /// Create a copy of RestaurantDetailState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? restaurant = null,Object? branches = null,Object? offers = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? restaurant = null,Object? menuCategories = null,Object? branches = null,Object? offers = null,}) {
   return _then(_Loaded(
 restaurant: null == restaurant ? _self.restaurant : restaurant // ignore: cast_nullable_to_non_nullable
-as Restaurant,branches: null == branches ? _self._branches : branches // ignore: cast_nullable_to_non_nullable
+as Restaurant,menuCategories: null == menuCategories ? _self._menuCategories : menuCategories // ignore: cast_nullable_to_non_nullable
+as List<MenuCategory>,branches: null == branches ? _self._branches : branches // ignore: cast_nullable_to_non_nullable
 as List<Branch>,offers: null == offers ? _self._offers : offers // ignore: cast_nullable_to_non_nullable
 as List<Offer>,
   ));

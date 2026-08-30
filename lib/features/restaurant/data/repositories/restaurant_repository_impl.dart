@@ -48,6 +48,16 @@ class RestaurantRepositoryImpl implements RestaurantRepository {
   }
 
   @override
+  Future<Either<Failure, Restaurant>> getStoreDetails(String storeId) async {
+    try {
+      final dto = await remoteDataSource.getStoreDetails(storeId);
+      return Right(dto.toEntity());
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<Branch>>> getBranches(String restaurantId) async {
     try {
       final dtos = await remoteDataSource.getBranches(restaurantId);
@@ -117,19 +127,9 @@ class RestaurantRepositoryImpl implements RestaurantRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> addFavorite(String id) async {
+  Future<Either<Failure, Unit>> toggleFavorite(String id) async {
     try {
-      await remoteDataSource.addFavorite(id);
-      return const Right(unit);
-    } catch (e) {
-      return Left(_mapExceptionToFailure(e));
-    }
-  }
-
-  @override
-  Future<Either<Failure, Unit>> removeFavorite(String id) async {
-    try {
-      await remoteDataSource.removeFavorite(id);
+      await remoteDataSource.toggleFavorite(id);
       return const Right(unit);
     } catch (e) {
       return Left(_mapExceptionToFailure(e));

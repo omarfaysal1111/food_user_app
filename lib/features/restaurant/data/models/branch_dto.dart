@@ -4,11 +4,14 @@ import 'package:food_user_app/features/restaurant/domain/entities/branch.dart';
 part 'branch_dto.freezed.dart';
 part 'branch_dto.g.dart';
 
+String _idFromJson(dynamic value) => value?.toString() ?? '';
+String? _nullableIdFromJson(dynamic value) => value?.toString();
+
 @freezed
 abstract class BranchDto with _$BranchDto {
   const factory BranchDto({
-    required String id,
-    String? restaurantId,
+    @JsonKey(fromJson: _idFromJson) @Default('') String id,
+    @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? restaurantId,
     String? address,
     double? lat,
     double? lng,

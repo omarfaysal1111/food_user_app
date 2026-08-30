@@ -7,14 +7,18 @@ part of 'menu_item_dto.dart';
 // **************************************************************************
 
 _MenuItemDto _$MenuItemDtoFromJson(Map<String, dynamic> json) => _MenuItemDto(
-  id: json['id'] as String,
-  categoryId: json['categoryId'] as String?,
+  id: json['id'] == null ? '' : _idFromJson(json['id']),
+  categoryId: _nullableIdFromJson(json['categoryId']),
   name: json['name'] as String?,
   description: json['description'] as String?,
+  priceAfterDiscount: (json['price_after_discount'] as num?)?.toDouble(),
   price: (json['price'] as num?)?.toDouble(),
+  basePrice: (json['base_price'] as num?)?.toDouble(),
   originalPrice: (json['originalPrice'] as num?)?.toDouble(),
+  mainImage: json['main_image'] as String?,
   imageUrl: json['imageUrl'] as String?,
   available: json['available'] as bool?,
+  offer: json['offer'] as Map<String, dynamic>?,
 );
 
 Map<String, dynamic> _$MenuItemDtoToJson(_MenuItemDto instance) =>
@@ -23,8 +27,12 @@ Map<String, dynamic> _$MenuItemDtoToJson(_MenuItemDto instance) =>
       'categoryId': instance.categoryId,
       'name': instance.name,
       'description': instance.description,
+      'price_after_discount': instance.priceAfterDiscount,
       'price': instance.price,
+      'base_price': instance.basePrice,
       'originalPrice': instance.originalPrice,
+      'main_image': instance.mainImage,
       'imageUrl': instance.imageUrl,
       'available': instance.available,
+      'offer': instance.offer,
     };

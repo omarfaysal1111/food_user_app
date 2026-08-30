@@ -8,6 +8,8 @@ class MenuItem extends Equatable {
   final double originalPrice;
   final String imageUrl;
   final bool available;
+  final double discountValue;
+  final String discountType;
 
   const MenuItem({
     required this.id,
@@ -17,6 +19,8 @@ class MenuItem extends Equatable {
     required this.originalPrice,
     required this.imageUrl,
     required this.available,
+    this.discountValue = 0.0,
+    this.discountType = '',
   });
 
   @override
@@ -28,5 +32,7 @@ class MenuItem extends Equatable {
     originalPrice,
     imageUrl,
     available,
+    discountValue,
+    discountType,
   ];
 }

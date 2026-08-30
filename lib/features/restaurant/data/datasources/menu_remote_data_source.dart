@@ -3,11 +3,15 @@ import 'package:food_user_app/core/constants/api_endpoints.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
 import 'package:food_user_app/features/restaurant/data/models/menu_category_dto.dart';
 import 'package:food_user_app/features/restaurant/data/models/item_modifier_dto.dart';
+import 'package:food_user_app/features/restaurant/data/models/store_products_dto.dart';
 
 abstract class MenuRemoteDataSource {
   Future<List<MenuCategoryDto>> getRestaurantMenu(String restaurantId);
   Future<List<MenuCategoryDto>> getBranchMenu(String branchId);
   Future<List<ItemModifierDto>> getItemModifiers(String itemId);
+
+  /// Fetches menu from `GET /api/v1/stores/products/all?store_id={storeId}`.
+  Future<StoreProductsDto> getStoreMenu(String storeId);
 }
 
 class MenuRemoteDataSourceImpl implements MenuRemoteDataSource {
@@ -64,6 +68,23 @@ class MenuRemoteDataSourceImpl implements MenuRemoteDataSource {
       return raw
           .map((json) => ItemModifierDto.fromJson(json as Map<String, dynamic>))
           .toList();
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<StoreProductsDto> getStoreMenu(String storeId) async {
+    try {
+      final response = await _dio.get<dynamic>(
+        ApiEndpoints.storeProducts,
+        queryParameters: {'store_id': storeId},
+      );
+      final raw = response.data;
+      if (raw is! Map<String, dynamic>) {
+        throw const FormatException('Expected store products envelope');
+      }
+      return StoreProductsDto.fromJson(raw);
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }

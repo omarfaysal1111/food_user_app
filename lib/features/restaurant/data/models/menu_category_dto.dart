@@ -5,11 +5,14 @@ import 'package:food_user_app/features/restaurant/domain/entities/menu_category.
 part 'menu_category_dto.freezed.dart';
 part 'menu_category_dto.g.dart';
 
+// Safely converts any JSON value (int or String) to String.
+String _idFromJson(dynamic value) => value?.toString() ?? '';
+
 @freezed
 abstract class MenuCategoryDto with _$MenuCategoryDto {
   const factory MenuCategoryDto({
-    required String id,
-    required String branchId,
+    @JsonKey(fromJson: _idFromJson) @Default('') String id,
+    @JsonKey(name: 'branchId', fromJson: _idFromJson) @Default('') String branchId,
     String? name,
     @Default(0) int sortOrder,
     @Default([]) List<MenuItemDto> items,

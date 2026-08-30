@@ -7,8 +7,8 @@ part of 'branch_dto.dart';
 // **************************************************************************
 
 _BranchDto _$BranchDtoFromJson(Map<String, dynamic> json) => _BranchDto(
-  id: json['id'] as String,
-  restaurantId: json['restaurantId'] as String?,
+  id: json['id'] == null ? '' : _idFromJson(json['id']),
+  restaurantId: _nullableIdFromJson(json['restaurantId']),
   address: json['address'] as String?,
   lat: (json['lat'] as num?)?.toDouble(),
   lng: (json['lng'] as num?)?.toDouble(),

@@ -21,10 +21,6 @@ class ToggleFavouriteUseCase extends UseCase<Unit, ToggleFavouriteParams> {
 
   @override
   Future<Either<Failure, Unit>> call(ToggleFavouriteParams params) async {
-    if (params.isCurrentlyFavorite) {
-      return await repository.removeFavorite(params.restaurantId);
-    } else {
-      return await repository.addFavorite(params.restaurantId);
-    }
+    return await repository.toggleFavorite(params.restaurantId);
   }
 }

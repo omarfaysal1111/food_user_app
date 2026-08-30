@@ -22,7 +22,6 @@ import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 
 import 'package:food_user_app/features/restaurant/presentation/cubit/menu_cubit.dart';
-import 'package:food_user_app/features/restaurant/presentation/cubit/menu_state.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_state.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_cubit.dart';
@@ -99,11 +98,13 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
 
     return MultiBlocProvider(
       providers: [
+        // MenuCubit is still available for item modifier lookups
         BlocProvider<MenuCubit>(
-          create: (context) => sl<MenuCubit>()..getRestaurantMenu(widget.restaurantId),
+          create: (context) => sl<MenuCubit>(),
         ),
         BlocProvider<RestaurantDetailCubit>(
-          create: (context) => sl<RestaurantDetailCubit>()..getRestaurantDetail(widget.restaurantId),
+          create: (context) =>
+              sl<RestaurantDetailCubit>()..fetchStoreData(widget.restaurantId),
         ),
       ],
       child: BlocBuilder<RestaurantDetailCubit, RestaurantDetailState>(
@@ -112,131 +113,98 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
             initial: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
             loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
             error: (message) => Scaffold(body: Center(child: Text(message))),
-            loaded: (restaurant, branches, offers) {
-              return BlocBuilder<MenuCubit, MenuState>(
-                builder: (context, menuState) {
-                  final menuCategories = menuState.maybeWhen(
-                    loaded: (categories) => categories,
-                    orElse: () => const <MenuCategory>[],
-                  );
+            loaded: (restaurant, menuCategories, branches, offers) {
+              if (_sectionKeys.length != menuCategories.length) {
+                _sectionKeys = List.generate(
+                  menuCategories.length,
+                  (_) => GlobalKey(),
+                );
+              }
 
-                  if (_sectionKeys.length != menuCategories.length) {
-                    _sectionKeys = List.generate(
-                      menuCategories.length,
-                      (_) => GlobalKey(),
-                    );
-                  }
-
-                  return Scaffold(
-                    backgroundColor: AppColors.scaffoldBackground(context),
-                    body: CustomScrollView(
-                      controller: _scrollController,
-                      slivers: [
-                        // ── 1. Collapsing hero + info-card header ──────────────────────────
-                        SliverPersistentHeader(
-                          pinned: true,
-                          delegate: _RestaurantHeaderDelegate(
-                            minExtent: minExtent,
-                            maxExtent: maxExtent,
-                            hero: _RestaurantHero(imageUrl: restaurant.coverImageUrl),
-                            infoCard: _RestaurantInfoCard(
-                              restaurant: restaurant,
-                              locale: locale,
-                              copy: copy,
-                            ),
-                            restaurantName: restaurant.name,
-                            restaurantId: restaurant.id,
-                            isFavorite: isFav,
-                            onFavoriteTap: () {
-                              context.read<FavoriteCubit>().toggleFavorite(restaurant.id);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    isFav
-                                        ? AppLocalizations.of(context)!.itemRemovedFromFavorites
-                                        : AppLocalizations.of(context)!.itemAddedToFavorites,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+              return Scaffold(
+                backgroundColor: AppColors.scaffoldBackground(context),
+                body: CustomScrollView(
+                  controller: _scrollController,
+                  slivers: [
+                    // ── 1. Collapsing hero + info-card header ──────────────────────────
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _RestaurantHeaderDelegate(
+                        minExtent: minExtent,
+                        maxExtent: maxExtent,
+                        hero: _RestaurantHero(imageUrl: restaurant.coverImageUrl),
+                        infoCard: _RestaurantInfoCard(
+                          restaurant: restaurant,
+                          locale: locale,
+                          copy: copy,
                         ),
-
-                        // ── 2. Scrolling coupon strip ──────────────────────────────────────
-                        SliverPadding(
-                          padding: const EdgeInsets.symmetric(vertical: 21),
-                          sliver: SliverToBoxAdapter(child: _CouponStrip(copy: copy)),
-                        ),
-
-                        // ── 3. Sticky category tabs ────────────────────────────────────────
-                        menuState.maybeWhen(
-                          loaded: (categories) => SliverPersistentHeader(
-                            pinned: true,
-                            delegate: _MenuTabsDelegate(
-                              minExtent: _kTabBarHeight,
-                              maxExtent: _kTabBarHeight,
-                              categories: categories.map((c) => c.name).toList(),
-                              selectedIndex: _selectedCategoryIndex,
-                              onTap: _scrollToCategory,
-                            ),
-                          ),
-                          orElse: () =>
-                              const SliverToBoxAdapter(child: SizedBox.shrink()),
-                        ),
-
-                        // ── 4. Menu sections or Loader ──────────────────────────────────────
-                        menuState.when(
-                          initial: () => const SliverFillRemaining(
-                            hasScrollBody: false,
-                            child: Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 40),
-                                child: CircularProgressIndicator(),
+                        restaurantName: restaurant.name,
+                        restaurantId: restaurant.id,
+                        isFavorite: isFav,
+                        onFavoriteTap: () {
+                          context.read<FavoriteCubit>().toggleFavorite(restaurant.id);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                isFav
+                                    ? AppLocalizations.of(context)!.itemRemovedFromFavorites
+                                    : AppLocalizations.of(context)!.itemAddedToFavorites,
                               ),
                             ),
-                          ),
-                          loading: () => const SliverFillRemaining(
-                            hasScrollBody: false,
-                            child: Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 40),
-                                child: CircularProgressIndicator(),
-                              ),
-                            ),
-                          ),
-                          error: (message) => SliverFillRemaining(
-                            hasScrollBody: false,
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 40),
-                                child: Text(
-                                  message,
-                                  style: TextStyle(color: AppColors.error),
-                                ),
-                              ),
-                            ),
-                          ),
-                          modifiersLoaded: (_) =>
-                              const SliverToBoxAdapter(child: SizedBox.shrink()),
-                          loaded: (categories) => SliverPadding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                              AppSpacing.md,
-                              20,
-                              AppSpacing.md,
-                              40,
-                            ),
-                            sliver: SliverToBoxAdapter(
-                              child: _MenuSections(
-                                sections: categories,
-                                sectionKeys: _sectionKeys,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                          );
+                        },
+                      ),
                     ),
-                  );
-                },
+
+                    // ── 2. Scrolling coupon strip ──────────────────────────────────────
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(vertical: 21),
+                      sliver: SliverToBoxAdapter(child: _CouponStrip(copy: copy)),
+                    ),
+
+                    // ── 3. Sticky category tabs ────────────────────────────────────────
+                    if (menuCategories.isNotEmpty)
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _MenuTabsDelegate(
+                          minExtent: _kTabBarHeight,
+                          maxExtent: _kTabBarHeight,
+                          categories: menuCategories.map((c) => c.name).toList(),
+                          selectedIndex: _selectedCategoryIndex,
+                          onTap: _scrollToCategory,
+                        ),
+                      )
+                    else
+                      const SliverToBoxAdapter(child: SizedBox.shrink()),
+
+                    // ── 4. Menu sections ────────────────────────────────────────────────
+                    if (menuCategories.isEmpty)
+                      const SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 40),
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                      )
+                    else
+                      SliverPadding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          AppSpacing.md,
+                          20,
+                          AppSpacing.md,
+                          40,
+                        ),
+                        sliver: SliverToBoxAdapter(
+                          child: _MenuSections(
+                            sections: menuCategories,
+                            sectionKeys: _sectionKeys,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               );
             },
           );
@@ -681,13 +649,15 @@ class _RestaurantInfoCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              restaurant.cuisineType,
+              restaurant.description.isNotEmpty
+                  ? restaurant.description
+                  : restaurant.cuisineType,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: isArabic ? TextAlign.end : TextAlign.start,
               style: AppTextStyles.caption(
                 context,
-              ).copyWith(fontSize: 9, height: 1.25),
+              ).copyWith(fontSize: 10, height: 1.25),
             ),
           ],
         ),
@@ -731,7 +701,7 @@ class _RestaurantInfoCard extends StatelessWidget {
             textDirection: TextDirection.ltr,
             children: isArabic
                 ? [
-                    _RatingMetric(restaurant: restaurant),
+                    _RatingMetric(restaurant: restaurant, isArabic: isArabic),
                     _VerticalDivider(),
                     Expanded(
                       child: _InfoMetric(
@@ -744,7 +714,9 @@ class _RestaurantInfoCard extends StatelessWidget {
                     Expanded(
                       child: _InfoMetric(
                         assetName: AppAssets.restaurantWallClockIcon,
-                        label: '${restaurant.deliveryTimeMin} - ${restaurant.deliveryTimeMax} min',
+                        label: isArabic
+                            ? '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} دقيقة'
+                            : '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
                         iconOnRight: true,
                       ),
                     ),
@@ -753,7 +725,7 @@ class _RestaurantInfoCard extends StatelessWidget {
                     Expanded(
                       child: _InfoMetric(
                         assetName: AppAssets.restaurantWallClockIcon,
-                        label: '${restaurant.deliveryTimeMin} - ${restaurant.deliveryTimeMax} min',
+                        label: '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
                         iconOnRight: false,
                       ),
                     ),
@@ -766,7 +738,7 @@ class _RestaurantInfoCard extends StatelessWidget {
                       ),
                     ),
                     _VerticalDivider(),
-                    _RatingMetric(restaurant: restaurant),
+                    _RatingMetric(restaurant: restaurant, isArabic: isArabic),
                   ],
           ),
         ],
@@ -878,9 +850,10 @@ class _DashedVerticalDividerPainter extends CustomPainter {
 }
 
 class _RatingMetric extends StatelessWidget {
-  const _RatingMetric({required this.restaurant});
+  const _RatingMetric({required this.restaurant, required this.isArabic});
 
   final Restaurant restaurant;
+  final bool isArabic;
 
   @override
   Widget build(BuildContext context) {
@@ -890,9 +863,8 @@ class _RatingMetric extends StatelessWidget {
         borderRadius: const BorderRadius.all(AppRadius.sm),
         child: _InfoMetric(
           assetName: AppAssets.favoriteStarIcon,
-          label:
-              '${restaurant.rating.toStringAsFixed(1)} (100+)',
-          iconOnRight: true,
+          label: '${restaurant.rating.toStringAsFixed(1)} (${restaurant.ratingCount})',
+          iconOnRight: isArabic,
         ),
       ),
     );

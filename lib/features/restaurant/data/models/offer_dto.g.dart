@@ -7,8 +7,8 @@ part of 'offer_dto.dart';
 // **************************************************************************
 
 _OfferDto _$OfferDtoFromJson(Map<String, dynamic> json) => _OfferDto(
-  id: json['id'] as String,
-  restaurantId: json['restaurantId'] as String?,
+  id: json['id'] == null ? '' : _idFromJson(json['id']),
+  restaurantId: _nullableIdFromJson(json['restaurantId']),
   title: json['title'] as String?,
   discountPercent: (json['discountPercent'] as num?)?.toInt(),
   minOrderAmount: (json['minOrderAmount'] as num?)?.toDouble(),

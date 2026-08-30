@@ -129,6 +129,12 @@ class ApiEndpoints {
   /// `GET /api/v1/stores/major?section_id={id}&page=&per_page=`
   static const String majorStores = '/api/v1/stores/major';
 
+  /// `GET /api/v1/stores/show?id={storeId}` — full store details.
+  static const String storeShow = '/api/v1/stores/show';
+
+  /// `GET /api/v1/stores/products/all?store_id={storeId}` — menu sections.
+  static const String storeProducts = '/api/v1/stores/products/all';
+
   // ── Search Logs ───────────────────────────────────────────────────────────
   static const String userSearchLogsAll = '/api/v1/user-search-logs/all';
   static const String userSearchLogsCreate = '/api/v1/user-search-logs/create';
@@ -153,8 +159,14 @@ class ApiEndpoints {
   static const String topRated = '/restaurants/top-rated';
   static const String mostOrdered = '/restaurants/most-ordered';
   static const String withOffers = '/restaurants/with-offers';
-  static const String favorites = '/restaurants/favorites';
-  static String toggleFavorite(String id) => '$restaurants/$id/favorite';
+  
+  // ── Favorites ───────────────────────────────────────────────────────────────
+  static const String favoritesList = '/api/v1/favorites';
+  static const String favoritesToggle = '/api/v1/favorites/toggle';
+
+  // Legacy favorites (deprecated)
+  // static const String favorites = '/restaurants/favorites';
+  // static String toggleFavorite(String id) => '$restaurants/$id/favorite';
 
   // ── Markets ───────────────────────────────────────────────────────────────
   static const String markets = '/markets';
