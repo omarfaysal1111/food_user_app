@@ -21,6 +21,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/search/presentation/cubit/search_cubit.dart';
 import 'package:food_user_app/features/search/presentation/cubit/search_state.dart';
 
+import 'package:food_user_app/features/home/domain/entities/tag.dart';
+import 'package:food_user_app/features/search/domain/entities/search_keyword.dart';
 import 'package:food_user_app/features/search/domain/entities/search_log.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
@@ -51,7 +53,6 @@ class _SearchScreenState extends State<SearchScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _focusNode.requestFocus();
-        context.read<SearchCubit>().getSearchHistory();
       }
     });
   }
@@ -77,7 +78,7 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {});
     _resetScroll();
     _debounceTimer?.cancel();
-    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       if (mounted) {
         context.read<SearchCubit>().search(_controller.text.trim());
       }
@@ -89,15 +90,25 @@ class _SearchScreenState extends State<SearchScreen> {
     _controller.selection = TextSelection.fromPosition(
       TextPosition(offset: token.length),
     );
+    if (token.trim().isNotEmpty) {
+      context.read<SearchCubit>().addSearchLog(token.trim());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final query = _controller.text.trim();
-    final categories = ServiceListingConfig.allServiceCategories(l10n);
     final scope = _selectedCategory?.label;
     final showFilters = scope != null || query.isNotEmpty;
+    
+    final searchState = context.watch<SearchCubit>().state;
+    final keywords = searchState.maybeWhen(
+      initialDataLoaded: (_, kw, _, _) => kw,
+      orElse: () => const <SearchKeyword>[],
+    );
+
+
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
@@ -134,17 +145,12 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                     const SizedBox(height: 16),
                     _CategoryStrip(
-                      categories: categories,
-                      selectedCategory: _selectedCategory,
-                      onSelected: (cat) {
-                        setState(() {
-                          _selectedCategory =
-                              _selectedCategory?.label == cat.label
-                              ? null
-                              : cat;
-                        });
+                      tags: context.read<SearchCubit>().tags,
+                      selectedTagId: context.read<SearchCubit>().selectedTagId,
+                      onSelected: (tag) {
                         _resetScroll();
-                        context.read<SearchCubit>().search(
+                        context.read<SearchCubit>().toggleTag(
+                          tag.id,
                           _controller.text.trim(),
                         );
                       },
@@ -179,12 +185,14 @@ class _SearchScreenState extends State<SearchScreen> {
                       error: (msg) => Center(
                         child: Text(msg, style: AppTextStyles.body(context)),
                       ),
-                      historyLoaded: (history) => _buildSearchResults(
+                      initialDataLoaded: (history, kw, tags, majorStores) => _buildSearchResults(
                         context,
                         query: query,
                         scope: scope,
                         history: history,
+                        keywords: kw,
                         restaurants: const [],
+                        majorStores: majorStores,
                         items: const [],
                         isLoaded: isLoaded,
                         isLoading: isLoading,
@@ -194,7 +202,9 @@ class _SearchScreenState extends State<SearchScreen> {
                         query: query,
                         scope: scope,
                         history: const [],
+                        keywords: keywords,
                         restaurants: result.restaurants,
+                        majorStores: const [],
                         items: result.items,
                         isRandom: result.isRandom,
                         isLoaded: isLoaded,
@@ -205,7 +215,9 @@ class _SearchScreenState extends State<SearchScreen> {
                         query: query,
                         scope: scope,
                         history: const [],
+                        keywords: keywords,
                         restaurants: const [],
+                        majorStores: const [],
                         items: const [],
                         isLoaded: isLoaded,
                         isLoading: isLoading,
@@ -250,14 +262,15 @@ class _SearchScreenState extends State<SearchScreen> {
     required String query,
     required String? scope,
     required List<SearchLog> history,
+    required List<SearchKeyword> keywords,
     required List<Restaurant> restaurants,
+    required List<Restaurant> majorStores,
     required List<MenuItem> items,
     bool isRandom = false,
     bool isLoaded = false,
     bool isLoading = false,
   }) {
     final l10n = AppLocalizations.of(context)!;
-    final copy = _SearchCopy.of(context);
 
     final matchedRestaurants = restaurants
         .where(
@@ -269,9 +282,7 @@ class _SearchScreenState extends State<SearchScreen> {
         .map(_mapToServicePlaceData)
         .toList();
 
-    // Fallback: Since the Restaurant entity does not have a property like 'isSupermarket'
-    // or 'type', we treat all results as regular restaurants.
-    final displayedLargeStores = <ServicePlaceData>[];
+    final displayedLargeStores = majorStores.map(_mapToServicePlaceData).toList();
     final displayedStores = matchedRestaurants;
 
     // Filter and map products
@@ -344,12 +355,14 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                   const SizedBox(height: 24),
                 ],
-                _SectionTitle(title: l10n.searchMostSearchedTitle),
-                const SizedBox(height: 12),
-                _MostSearchedTokens(
-                  tokens: copy.mostSearchedTokens,
-                  onTap: _onTokenTap,
-                ),
+                if (keywords.isNotEmpty) ...[
+                  _SectionTitle(title: l10n.searchMostSearchedTitle),
+                  const SizedBox(height: 12),
+                  _MostSearchedTokens(
+                    tokens: keywords.map((k) => k.term).toList(),
+                    onTap: _onTokenTap,
+                  ),
+                ],
               ] else ...[
                 if (isLoading && displayedStores.isEmpty && filteredProducts.isEmpty) ...[
                   const SizedBox(height: 48),
@@ -410,11 +423,14 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   ServicePlaceData _mapToServicePlaceData(Restaurant restaurant) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     return ServicePlaceData.restaurant(
       id: restaurant.id,
       name: restaurant.name,
       subtitle: restaurant.cuisineType,
-      time: '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax}',
+      time: isArabic 
+          ? '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} دقيقة'
+          : '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
       imageAsset: restaurant.coverImageUrl,
       rating: restaurant.rating.toStringAsFixed(1),
       hasOffer: false,
@@ -484,30 +500,31 @@ class _SectionTitle extends StatelessWidget {
 
 class _CategoryStrip extends StatelessWidget {
   const _CategoryStrip({
-    required this.categories,
-    required this.selectedCategory,
+    required this.tags,
+    required this.selectedTagId,
     required this.onSelected,
   });
 
-  final List<ServiceCategoryData> categories;
-  final ServiceCategoryData? selectedCategory;
-  final ValueChanged<ServiceCategoryData> onSelected;
+  final List<Tag> tags;
+  final int? selectedTagId;
+  final ValueChanged<Tag> onSelected;
 
   @override
   Widget build(BuildContext context) {
+    if (tags.isEmpty) return const SizedBox.shrink();
     return SizedBox(
-      height: 66,
+      height: 90,
       child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.zero,
-        itemCount: categories.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 18),
+        itemCount: tags.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
-          final cat = categories[index];
+          final tag = tags[index];
           return _CategoryChip(
-            category: cat,
-            selected: cat.label == selectedCategory?.label,
-            onTap: () => onSelected(cat),
+            tag: tag,
+            selected: selectedTagId == tag.id,
+            onTap: () => onSelected(tag),
           );
         },
       ),
@@ -517,12 +534,12 @@ class _CategoryStrip extends StatelessWidget {
 
 class _CategoryChip extends StatelessWidget {
   const _CategoryChip({
-    required this.category,
+    required this.tag,
     required this.selected,
     required this.onTap,
   });
 
-  final ServiceCategoryData category;
+  final Tag tag;
   final bool selected;
   final VoidCallback onTap;
 
@@ -553,15 +570,15 @@ class _CategoryChip extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.all(7),
-              child: category.imageAsset != null
-                  ? AppRasterImage.asset(
-                      category.imageAsset!,
+              child: tag.image != null
+                  ? _buildImage(
+                      tag.image!,
                       width: 30,
                       height: 30,
                       fit: BoxFit.contain,
                     )
                   : Icon(
-                      category.fallbackIcon,
+                      Icons.category,
                       color: AppColors.paragraph(context),
                       size: 22,
                     ),
@@ -569,7 +586,7 @@ class _CategoryChip extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            category.label,
+            tag.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
@@ -668,7 +685,7 @@ class _LargeStoreRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 112,
+      height: 98,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.zero,
@@ -690,7 +707,7 @@ class _CompactStoreCard extends StatelessWidget {
     return Container(
       width: 92,
       height: 98,
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       decoration: BoxDecoration(
         color: AppColors.surfaceCard(context),
         borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -712,7 +729,7 @@ class _CompactStoreCard extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             item.name,
             maxLines: 1,
@@ -722,7 +739,7 @@ class _CompactStoreCard extends StatelessWidget {
               context,
             ).copyWith(fontSize: 12, height: 1.3),
           ),
-          const SizedBox(height: 4),
+          const Spacer(),
           _TimeLabel(
             time: item.time,
             iconSize: 14,

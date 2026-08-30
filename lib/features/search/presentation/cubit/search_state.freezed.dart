@@ -55,14 +55,14 @@ extension SearchStatePatterns on SearchState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Loaded value)?  loaded,TResult Function( _HistoryLoaded value)?  historyLoaded,TResult Function( _Error value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Loaded value)?  loaded,TResult Function( _InitialDataLoaded value)?  initialDataLoaded,TResult Function( _Error value)?  error,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
 return loading(_that);case _Loaded() when loaded != null:
-return loaded(_that);case _HistoryLoaded() when historyLoaded != null:
-return historyLoaded(_that);case _Error() when error != null:
+return loaded(_that);case _InitialDataLoaded() when initialDataLoaded != null:
+return initialDataLoaded(_that);case _Error() when error != null:
 return error(_that);case _:
   return orElse();
 
@@ -81,14 +81,14 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Loaded value)  loaded,required TResult Function( _HistoryLoaded value)  historyLoaded,required TResult Function( _Error value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Loaded value)  loaded,required TResult Function( _InitialDataLoaded value)  initialDataLoaded,required TResult Function( _Error value)  error,}){
 final _that = this;
 switch (_that) {
 case _Initial():
 return initial(_that);case _Loading():
 return loading(_that);case _Loaded():
-return loaded(_that);case _HistoryLoaded():
-return historyLoaded(_that);case _Error():
+return loaded(_that);case _InitialDataLoaded():
+return initialDataLoaded(_that);case _Error():
 return error(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -106,14 +106,14 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Loaded value)?  loaded,TResult? Function( _HistoryLoaded value)?  historyLoaded,TResult? Function( _Error value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Loaded value)?  loaded,TResult? Function( _InitialDataLoaded value)?  initialDataLoaded,TResult? Function( _Error value)?  error,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
 return loading(_that);case _Loaded() when loaded != null:
-return loaded(_that);case _HistoryLoaded() when historyLoaded != null:
-return historyLoaded(_that);case _Error() when error != null:
+return loaded(_that);case _InitialDataLoaded() when initialDataLoaded != null:
+return initialDataLoaded(_that);case _Error() when error != null:
 return error(_that);case _:
   return null;
 
@@ -131,13 +131,13 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( SearchResult result)?  loaded,TResult Function( List<SearchLog> history)?  historyLoaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( SearchResult result)?  loaded,TResult Function( List<SearchLog> history,  List<SearchKeyword> keywords,  List<Tag> tags,  List<Restaurant> majorStores)?  initialDataLoaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.result);case _HistoryLoaded() when historyLoaded != null:
-return historyLoaded(_that.history);case _Error() when error != null:
+return loaded(_that.result);case _InitialDataLoaded() when initialDataLoaded != null:
+return initialDataLoaded(_that.history,_that.keywords,_that.tags,_that.majorStores);case _Error() when error != null:
 return error(_that.message);case _:
   return orElse();
 
@@ -156,13 +156,13 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( SearchResult result)  loaded,required TResult Function( List<SearchLog> history)  historyLoaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( SearchResult result)  loaded,required TResult Function( List<SearchLog> history,  List<SearchKeyword> keywords,  List<Tag> tags,  List<Restaurant> majorStores)  initialDataLoaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Loaded():
-return loaded(_that.result);case _HistoryLoaded():
-return historyLoaded(_that.history);case _Error():
+return loaded(_that.result);case _InitialDataLoaded():
+return initialDataLoaded(_that.history,_that.keywords,_that.tags,_that.majorStores);case _Error():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
@@ -180,13 +180,13 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( SearchResult result)?  loaded,TResult? Function( List<SearchLog> history)?  historyLoaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( SearchResult result)?  loaded,TResult? Function( List<SearchLog> history,  List<SearchKeyword> keywords,  List<Tag> tags,  List<Restaurant> majorStores)?  initialDataLoaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.result);case _HistoryLoaded() when historyLoaded != null:
-return historyLoaded(_that.history);case _Error() when error != null:
+return loaded(_that.result);case _InitialDataLoaded() when initialDataLoaded != null:
+return initialDataLoaded(_that.history,_that.keywords,_that.tags,_that.majorStores);case _Error() when error != null:
 return error(_that.message);case _:
   return null;
 
@@ -328,8 +328,8 @@ as SearchResult,
 /// @nodoc
 
 
-class _HistoryLoaded implements SearchState {
-  const _HistoryLoaded(final  List<SearchLog> history): _history = history;
+class _InitialDataLoaded implements SearchState {
+  const _InitialDataLoaded({required final  List<SearchLog> history, required final  List<SearchKeyword> keywords, required final  List<Tag> tags, required final  List<Restaurant> majorStores}): _history = history,_keywords = keywords,_tags = tags,_majorStores = majorStores;
   
 
  final  List<SearchLog> _history;
@@ -339,38 +339,59 @@ class _HistoryLoaded implements SearchState {
   return EqualUnmodifiableListView(_history);
 }
 
+ final  List<SearchKeyword> _keywords;
+ List<SearchKeyword> get keywords {
+  if (_keywords is EqualUnmodifiableListView) return _keywords;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_keywords);
+}
+
+ final  List<Tag> _tags;
+ List<Tag> get tags {
+  if (_tags is EqualUnmodifiableListView) return _tags;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_tags);
+}
+
+ final  List<Restaurant> _majorStores;
+ List<Restaurant> get majorStores {
+  if (_majorStores is EqualUnmodifiableListView) return _majorStores;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_majorStores);
+}
+
 
 /// Create a copy of SearchState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$HistoryLoadedCopyWith<_HistoryLoaded> get copyWith => __$HistoryLoadedCopyWithImpl<_HistoryLoaded>(this, _$identity);
+_$InitialDataLoadedCopyWith<_InitialDataLoaded> get copyWith => __$InitialDataLoadedCopyWithImpl<_InitialDataLoaded>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HistoryLoaded&&const DeepCollectionEquality().equals(other._history, _history));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _InitialDataLoaded&&const DeepCollectionEquality().equals(other._history, _history)&&const DeepCollectionEquality().equals(other._keywords, _keywords)&&const DeepCollectionEquality().equals(other._tags, _tags)&&const DeepCollectionEquality().equals(other._majorStores, _majorStores));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_history));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_history),const DeepCollectionEquality().hash(_keywords),const DeepCollectionEquality().hash(_tags),const DeepCollectionEquality().hash(_majorStores));
 
 @override
 String toString() {
-  return 'SearchState.historyLoaded(history: $history)';
+  return 'SearchState.initialDataLoaded(history: $history, keywords: $keywords, tags: $tags, majorStores: $majorStores)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$HistoryLoadedCopyWith<$Res> implements $SearchStateCopyWith<$Res> {
-  factory _$HistoryLoadedCopyWith(_HistoryLoaded value, $Res Function(_HistoryLoaded) _then) = __$HistoryLoadedCopyWithImpl;
+abstract mixin class _$InitialDataLoadedCopyWith<$Res> implements $SearchStateCopyWith<$Res> {
+  factory _$InitialDataLoadedCopyWith(_InitialDataLoaded value, $Res Function(_InitialDataLoaded) _then) = __$InitialDataLoadedCopyWithImpl;
 @useResult
 $Res call({
- List<SearchLog> history
+ List<SearchLog> history, List<SearchKeyword> keywords, List<Tag> tags, List<Restaurant> majorStores
 });
 
 
@@ -378,19 +399,22 @@ $Res call({
 
 }
 /// @nodoc
-class __$HistoryLoadedCopyWithImpl<$Res>
-    implements _$HistoryLoadedCopyWith<$Res> {
-  __$HistoryLoadedCopyWithImpl(this._self, this._then);
+class __$InitialDataLoadedCopyWithImpl<$Res>
+    implements _$InitialDataLoadedCopyWith<$Res> {
+  __$InitialDataLoadedCopyWithImpl(this._self, this._then);
 
-  final _HistoryLoaded _self;
-  final $Res Function(_HistoryLoaded) _then;
+  final _InitialDataLoaded _self;
+  final $Res Function(_InitialDataLoaded) _then;
 
 /// Create a copy of SearchState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? history = null,}) {
-  return _then(_HistoryLoaded(
-null == history ? _self._history : history // ignore: cast_nullable_to_non_nullable
-as List<SearchLog>,
+@pragma('vm:prefer-inline') $Res call({Object? history = null,Object? keywords = null,Object? tags = null,Object? majorStores = null,}) {
+  return _then(_InitialDataLoaded(
+history: null == history ? _self._history : history // ignore: cast_nullable_to_non_nullable
+as List<SearchLog>,keywords: null == keywords ? _self._keywords : keywords // ignore: cast_nullable_to_non_nullable
+as List<SearchKeyword>,tags: null == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
+as List<Tag>,majorStores: null == majorStores ? _self._majorStores : majorStores // ignore: cast_nullable_to_non_nullable
+as List<Restaurant>,
   ));
 }
 

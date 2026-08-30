@@ -25,6 +25,8 @@ class SearchResultDto {
         id: store['id']?.toString() ?? '',
         name: store['name'] as String?,
         coverImageUrl: store['cover'] as String? ?? store['logo'] as String?,
+        deliveryTimeMin: (store['prep_time_from'] as num?)?.toInt(),
+        deliveryTimeMax: (store['prep_time_to'] as num?)?.toInt(),
       );
     }).toList();
 

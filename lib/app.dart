@@ -46,7 +46,7 @@ class App extends StatelessWidget {
           create: (_) => sl<BannerCubit>()..getActiveBanners(),
         ),
         BlocProvider<SearchCubit>(
-          create: (_) => sl<SearchCubit>()..getSearchHistory(),
+          create: (context) => sl<SearchCubit>(),
         ),
         BlocProvider<FavoriteCubit>(
           create: (_) => sl<FavoriteCubit>()..loadFavorites(),

@@ -4,9 +4,13 @@ import 'package:food_user_app/core/errors/exceptions.dart';
 import 'package:food_user_app/core/errors/failures.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
 import 'package:food_user_app/features/search/data/datasources/search_remote_data_source.dart';
+import 'package:food_user_app/features/restaurant/data/models/restaurant_dto.dart';
 import 'package:food_user_app/features/search/domain/entities/search_log.dart';
+import 'package:food_user_app/features/search/domain/entities/search_keyword.dart';
 import 'package:food_user_app/features/search/domain/entities/search_result.dart';
 import 'package:food_user_app/features/search/domain/repositories/search_repository.dart';
+
+import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 
 class SearchRepositoryImpl implements SearchRepository {
   final SearchRemoteDataSource remoteDataSource;
@@ -14,9 +18,9 @@ class SearchRepositoryImpl implements SearchRepository {
   SearchRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, SearchResult>> search(String query) async {
+  Future<Either<Failure, SearchResult>> search(String query, {List<int>? tagIds}) async {
     try {
-      final dto = await remoteDataSource.search(query);
+      final dto = await remoteDataSource.search(query, tagIds: tagIds);
       return Right(dto.toEntity());
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
@@ -58,6 +62,27 @@ class SearchRepositoryImpl implements SearchRepository {
     try {
       await remoteDataSource.clearSearchLogs();
       return const Right(null);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<SearchKeyword>>> getSearchKeywords() async {
+    try {
+      final keywords = await remoteDataSource.getSearchKeywords();
+      return Right(keywords);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Restaurant>>> getMajorStores() async {
+    try {
+      final dtos = await remoteDataSource.getMajorStores();
+      final entities = dtos.map((dto) => dto.toEntity()).toList();
+      return Right(entities);
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
     }

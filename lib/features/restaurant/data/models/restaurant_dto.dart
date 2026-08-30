@@ -12,10 +12,10 @@ abstract class RestaurantDto with _$RestaurantDto {
     String? cuisineType,
     String? coverImageUrl,
     double? rating,
-    int? deliveryTimeMin,
-    int? deliveryTimeMax,
-    double? deliveryFee,
-    bool? isFavorited,
+    @JsonKey(name: 'prep_time_from') int? deliveryTimeMin,
+    @JsonKey(name: 'prep_time_to') int? deliveryTimeMax,
+    @JsonKey(name: 'delivery_fee') double? deliveryFee,
+    @JsonKey(name: 'is_favorited') bool? isFavorited,
   }) = _RestaurantDto;
 
   factory RestaurantDto.fromJson(Map<String, dynamic> json) =>

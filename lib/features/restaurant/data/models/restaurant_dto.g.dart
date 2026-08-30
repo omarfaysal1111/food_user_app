@@ -13,10 +13,10 @@ _RestaurantDto _$RestaurantDtoFromJson(Map<String, dynamic> json) =>
       cuisineType: json['cuisineType'] as String?,
       coverImageUrl: json['coverImageUrl'] as String?,
       rating: (json['rating'] as num?)?.toDouble(),
-      deliveryTimeMin: (json['deliveryTimeMin'] as num?)?.toInt(),
-      deliveryTimeMax: (json['deliveryTimeMax'] as num?)?.toInt(),
-      deliveryFee: (json['deliveryFee'] as num?)?.toDouble(),
-      isFavorited: json['isFavorited'] as bool?,
+      deliveryTimeMin: (json['prep_time_from'] as num?)?.toInt(),
+      deliveryTimeMax: (json['prep_time_to'] as num?)?.toInt(),
+      deliveryFee: (json['delivery_fee'] as num?)?.toDouble(),
+      isFavorited: json['is_favorited'] as bool?,
     );
 
 Map<String, dynamic> _$RestaurantDtoToJson(_RestaurantDto instance) =>
@@ -26,8 +26,8 @@ Map<String, dynamic> _$RestaurantDtoToJson(_RestaurantDto instance) =>
       'cuisineType': instance.cuisineType,
       'coverImageUrl': instance.coverImageUrl,
       'rating': instance.rating,
-      'deliveryTimeMin': instance.deliveryTimeMin,
-      'deliveryTimeMax': instance.deliveryTimeMax,
-      'deliveryFee': instance.deliveryFee,
-      'isFavorited': instance.isFavorited,
+      'prep_time_from': instance.deliveryTimeMin,
+      'prep_time_to': instance.deliveryTimeMax,
+      'delivery_fee': instance.deliveryFee,
+      'is_favorited': instance.isFavorited,
     };

@@ -138,6 +138,7 @@ class ApiEndpoints {
   // ── Legacy search endpoint (kept for backward compat) ─────────────────────
   static const String search = '/search';
   static const String searchHistory = '/search/history';
+  static const String searchKeywords = '/api/v1/search-keywords';
 
   // ── Restaurants ───────────────────────────────────────────────────────────
   static const String restaurants = '/restaurants';

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RestaurantDto {
 
- String get id; String? get name; String? get cuisineType; String? get coverImageUrl; double? get rating; int? get deliveryTimeMin; int? get deliveryTimeMax; double? get deliveryFee; bool? get isFavorited;
+ String get id; String? get name; String? get cuisineType; String? get coverImageUrl; double? get rating;@JsonKey(name: 'prep_time_from') int? get deliveryTimeMin;@JsonKey(name: 'prep_time_to') int? get deliveryTimeMax;@JsonKey(name: 'delivery_fee') double? get deliveryFee;@JsonKey(name: 'is_favorited') bool? get isFavorited;
 /// Create a copy of RestaurantDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $RestaurantDtoCopyWith<$Res>  {
   factory $RestaurantDtoCopyWith(RestaurantDto value, $Res Function(RestaurantDto) _then) = _$RestaurantDtoCopyWithImpl;
 @useResult
 $Res call({
- String id, String? name, String? cuisineType, String? coverImageUrl, double? rating, int? deliveryTimeMin, int? deliveryTimeMax, double? deliveryFee, bool? isFavorited
+ String id, String? name, String? cuisineType, String? coverImageUrl, double? rating,@JsonKey(name: 'prep_time_from') int? deliveryTimeMin,@JsonKey(name: 'prep_time_to') int? deliveryTimeMax,@JsonKey(name: 'delivery_fee') double? deliveryFee,@JsonKey(name: 'is_favorited') bool? isFavorited
 });
 
 
@@ -161,7 +161,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating,  int? deliveryTimeMin,  int? deliveryTimeMax,  double? deliveryFee,  bool? isFavorited)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @JsonKey(name: 'is_favorited')  bool? isFavorited)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RestaurantDto() when $default != null:
 return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.rating,_that.deliveryTimeMin,_that.deliveryTimeMax,_that.deliveryFee,_that.isFavorited);case _:
@@ -182,7 +182,7 @@ return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating,  int? deliveryTimeMin,  int? deliveryTimeMax,  double? deliveryFee,  bool? isFavorited)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @JsonKey(name: 'is_favorited')  bool? isFavorited)  $default,) {final _that = this;
 switch (_that) {
 case _RestaurantDto():
 return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.rating,_that.deliveryTimeMin,_that.deliveryTimeMax,_that.deliveryFee,_that.isFavorited);case _:
@@ -202,7 +202,7 @@ return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating,  int? deliveryTimeMin,  int? deliveryTimeMax,  double? deliveryFee,  bool? isFavorited)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @JsonKey(name: 'is_favorited')  bool? isFavorited)?  $default,) {final _that = this;
 switch (_that) {
 case _RestaurantDto() when $default != null:
 return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.rating,_that.deliveryTimeMin,_that.deliveryTimeMax,_that.deliveryFee,_that.isFavorited);case _:
@@ -217,7 +217,7 @@ return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.
 @JsonSerializable()
 
 class _RestaurantDto implements RestaurantDto {
-  const _RestaurantDto({required this.id, this.name, this.cuisineType, this.coverImageUrl, this.rating, this.deliveryTimeMin, this.deliveryTimeMax, this.deliveryFee, this.isFavorited});
+  const _RestaurantDto({required this.id, this.name, this.cuisineType, this.coverImageUrl, this.rating, @JsonKey(name: 'prep_time_from') this.deliveryTimeMin, @JsonKey(name: 'prep_time_to') this.deliveryTimeMax, @JsonKey(name: 'delivery_fee') this.deliveryFee, @JsonKey(name: 'is_favorited') this.isFavorited});
   factory _RestaurantDto.fromJson(Map<String, dynamic> json) => _$RestaurantDtoFromJson(json);
 
 @override final  String id;
@@ -225,10 +225,10 @@ class _RestaurantDto implements RestaurantDto {
 @override final  String? cuisineType;
 @override final  String? coverImageUrl;
 @override final  double? rating;
-@override final  int? deliveryTimeMin;
-@override final  int? deliveryTimeMax;
-@override final  double? deliveryFee;
-@override final  bool? isFavorited;
+@override@JsonKey(name: 'prep_time_from') final  int? deliveryTimeMin;
+@override@JsonKey(name: 'prep_time_to') final  int? deliveryTimeMax;
+@override@JsonKey(name: 'delivery_fee') final  double? deliveryFee;
+@override@JsonKey(name: 'is_favorited') final  bool? isFavorited;
 
 /// Create a copy of RestaurantDto
 /// with the given fields replaced by the non-null parameter values.
@@ -263,7 +263,7 @@ abstract mixin class _$RestaurantDtoCopyWith<$Res> implements $RestaurantDtoCopy
   factory _$RestaurantDtoCopyWith(_RestaurantDto value, $Res Function(_RestaurantDto) _then) = __$RestaurantDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String? name, String? cuisineType, String? coverImageUrl, double? rating, int? deliveryTimeMin, int? deliveryTimeMax, double? deliveryFee, bool? isFavorited
+ String id, String? name, String? cuisineType, String? coverImageUrl, double? rating,@JsonKey(name: 'prep_time_from') int? deliveryTimeMin,@JsonKey(name: 'prep_time_to') int? deliveryTimeMax,@JsonKey(name: 'delivery_fee') double? deliveryFee,@JsonKey(name: 'is_favorited') bool? isFavorited
 });
 
 

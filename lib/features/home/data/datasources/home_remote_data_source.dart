@@ -20,7 +20,7 @@ abstract class HomeRemoteDataSource {
   Future<List<SectionModel>> getSections();
 
   /// `GET /api/v1/tags?section_id={sectionId}` — tags for a section.
-  Future<List<TagModel>> getTags({required int sectionId});
+  Future<List<TagModel>> getTags({int? sectionId});
 
   /// `GET /api/v1/stores` — paginated store list with optional filters.
   Future<StoreListResultModel> getStores({
@@ -98,15 +98,28 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   }
 
   @override
-  Future<List<TagModel>> getTags({required int sectionId}) async {
+  Future<List<TagModel>> getTags({int? sectionId}) async {
     try {
+      final queryParams = <String, dynamic>{};
+      if (sectionId != null) {
+        queryParams['section_id'] = sectionId;
+      }
       final response = await _dio.get<dynamic>(
         ApiEndpoints.tags,
-        queryParameters: {'section_id': sectionId},
+        queryParameters: queryParams,
       );
       final data = _extractData(response);
-      if (data is! List) return [];
-      return data
+      
+      final List<dynamic> listData;
+      if (data is List) {
+        listData = data;
+      } else if (data is Map<String, dynamic> && data['items'] is List) {
+        listData = data['items'] as List;
+      } else {
+        return [];
+      }
+
+      return listData
           .whereType<Map<String, dynamic>>()
           .map(TagModel.fromJson)
           .toList();

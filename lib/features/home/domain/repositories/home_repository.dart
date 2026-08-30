@@ -13,7 +13,7 @@ abstract class HomeRepository {
   Future<Either<Failure, List<Section>>> getSections();
 
   /// `GET /api/v1/tags?section_id={id}`
-  Future<Either<Failure, List<Tag>>> getTags({required int sectionId});
+  Future<Either<Failure, List<Tag>>> getTags({int? sectionId});
 
   /// `GET /api/v1/stores` with optional search/tag filters and pagination.
   Future<Either<Failure, StoreListResult>> getStores({

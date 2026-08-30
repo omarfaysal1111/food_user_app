@@ -317,7 +317,10 @@ Future<void> init({SharedPreferences? prefs}) async {
     () => SearchRepositoryImpl(remoteDataSource: sl<SearchRemoteDataSource>()),
   );
   sl.registerFactory<SearchCubit>(
-    () => SearchCubit(searchRepository: sl<SearchRepository>()),
+    () => SearchCubit(
+      searchRepository: sl<SearchRepository>(),
+      getTagsUseCase: sl<GetTagsUseCase>(),
+    ),
   );
 
   // ── Categories & Home ──────────────────────────────────────────────────────

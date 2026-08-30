@@ -37,7 +37,7 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<Either<Failure, List<Tag>>> getTags({required int sectionId}) async {
+  Future<Either<Failure, List<Tag>>> getTags({int? sectionId}) async {
     try {
       final tags = await remoteDataSource.getTags(sectionId: sectionId);
       return Right(tags);

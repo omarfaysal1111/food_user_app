@@ -23,8 +23,8 @@ class GetSectionsUseCase extends UseCase<List<Section>, NoParams> {
 // ── Tags ──────────────────────────────────────────────────────────────────────
 
 class GetTagsParams extends Equatable {
-  final int sectionId;
-  const GetTagsParams({required this.sectionId});
+  final int? sectionId;
+  const GetTagsParams({this.sectionId});
 
   @override
   List<Object?> get props => [sectionId];
